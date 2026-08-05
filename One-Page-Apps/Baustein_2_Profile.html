@@ -527,7 +527,7 @@ body{
           <div style="margin-top:14px">
             <label style="display:block;font-size:11px;color:var(--text-tertiary);margin-bottom:4px;font-weight:500">Zielobjektkategorien (CSV) + Pools werden automatisch geladen</label>
             <div class="url-row">
-              <input id="pi-url" type="text" value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/refs/heads/main/documentation/namespaces/target_object_categories.csv">
+              <input id="pi-url" type="text" value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/47de2824a341812438ef3f044b3f65ce2cad6e32/documentation/namespaces/target_object_categories.csv">
               <button class="btn sm" id="btn-load-pi">⤓ laden</button>
               <button class="btn sm ghost" id="btn-upload-pi">⤴ upload</button>
               <input id="pi-file" type="file" accept=".csv,text/csv" style="display:none">
@@ -872,13 +872,20 @@ const DEFAULTS = {
      `target_object_categories` prop govern processes/ISMS (see determinePool).
    ════════════════════════════════════════════════════════════════════════ */
 
-const ZOK_CSV_URL     = "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/refs/heads/main/documentation/namespaces/target_object_categories.csv";
-const ZO_CONTROLS_URL = "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/main/hilfsdateien/zielobjekt_controls.json";
-
 // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
 // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
 // Katalog-Update = bewusster Pin-Wechsel an allen Stellen zugleich.
 const GPP_CATALOG_PIN_COMMIT = "47de2824a341812438ef3f044b3f65ce2cad6e32";
+// Pin des eigenen Repos für die Hilfsdateien (zielobjekt_controls.json).
+const GPP_TOOLS_PIN_COMMIT = "2ab904b0099f560a06a68950d2b47a8ad019571a";
+
+// Beide Quelldateien hingen bis zuletzt an refs/heads/main bzw. /main/ — damit war
+// der Katalog gepinnt, seine Zielobjektkategorien-Tabelle aber nicht: ein Upstream-
+// Commit konnte die Zuordnung unter einem unveränderten Katalog verschieben.
+// Die CSV liegt im selben Repo wie der Katalog und wird deshalb auf denselben
+// Commit genagelt; die Hilfsdatei auf den Stand des eigenen Repos.
+const ZOK_CSV_URL     = `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/documentation/namespaces/target_object_categories.csv`;
+const ZO_CONTROLS_URL = `https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/${GPP_TOOLS_PIN_COMMIT}/hilfsdateien/zielobjekt_controls.json`;
 const GPP_CATALOG_PIN_SHA256 = "db3a1417d7e904315a0886f450129832e19c57324660358c830357349f552332";
 const GPP_CATALOG_PINNED_URL = `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json`;
 // uuid5(NAMESPACE_URL, GPP_CATALOG_PINNED_URL) — identisch zu den vom Pin-Skript
@@ -1009,6 +1016,8 @@ $("btn-copy-log").addEventListener("click", async () => {
 // bumps when DEFAULTS change shape — invalidates user overrides.
 // v6: sentence_text ist aus S2-Prompt und -Schema entfernt (Text kommt deterministisch aus dem JS-State).
 const PROMPT_VERSION = "v6-idx-merge";
+// Bei jedem Pin-Wechsel hochzählen — verwirft gespeicherte Quell-URLs (siehe loadPrefs).
+const SOURCES_PIN_VERSION = "pin-47de2824";
 $("app-prompt-ver").textContent = PROMPT_VERSION;
 
 function loadPrefs() {
@@ -1023,6 +1032,25 @@ function loadPrefs() {
     localStorage.removeItem("gpp.piurl");
     localStorage.setItem("gpp.prompt.version", PROMPT_VERSION);
     if (storedVer) l.info(`prompt-version migration ${storedVer} → ${PROMPT_VERSION} · stored prompts + URLs gelöscht, defaults aktiv`);
+  }
+
+  // Quellen-Pin-Migration: ein früher gespeicherter Branch-URL (refs/heads/main)
+  // würde den gepinnten Default überschreiben und das Pinning stillschweigend
+  // aushebeln. Beim Wechsel der Pin-Version werden die gespeicherten URLs verworfen;
+  // zusätzlich fliegt jede gespeicherte Branch-URL unabhängig davon raus.
+  const storedSrcVer = localStorage.getItem("gpp.sources.version");
+  if (storedSrcVer !== SOURCES_PIN_VERSION) {
+    localStorage.removeItem("gpp.caturl");
+    localStorage.removeItem("gpp.piurl");
+    localStorage.setItem("gpp.sources.version", SOURCES_PIN_VERSION);
+    if (storedSrcVer) l.info(`Quellen-Pin ${storedSrcVer} → ${SOURCES_PIN_VERSION} · gespeicherte Katalog-/CSV-URLs verworfen, gepinnte Defaults aktiv`);
+  }
+  for (const [key, label] of [["gpp.caturl", "Katalog"], ["gpp.piurl", "Zielobjektkategorien-CSV"]]) {
+    const v = localStorage.getItem(key);
+    if (v && /\/(refs\/heads\/[^/]+|main|master)\//.test(v)) {
+      localStorage.removeItem(key);
+      l.warn(`Gespeicherte ${label}-URL zeigte auf einen Branch statt auf einen Commit — verworfen, gepinnter Default aktiv (Grundregel 8).`);
+    }
   }
 
   // Migration: ein gespeichertes Modell, das nicht mehr im Dropdown steht (typisch

@@ -102,6 +102,51 @@
     }
     nav button.active .ico { color: var(--accent); }
     nav button .ico { font-size: 0.95rem; color: var(--text-quiet); transition: color .15s ease; }
+    /* Artefakt-Zähler je Stufe: zeigt auf einen Blick, wo schon etwas liegt */
+    nav button .cnt {
+      font-family: var(--mono); font-size: 0.58rem; line-height: 1;
+      padding: 3px 5px; border-radius: 5px; min-width: 16px; text-align: center;
+      background: var(--green); color: oklch(0.15 0.02 280); font-weight: 700;
+    }
+    nav button .cnt.zero { display: none; }
+
+    /* ---- Artefakt-Panel ---- */
+    .sheet {
+      position: absolute; inset: 0; z-index: 3; overflow: auto;
+      background: var(--bg-deep); padding: 22px; display: none;
+    }
+    .sheet.open { display: block; }
+    .sheet h2 { margin: 0 0 4px; font-size: 1rem; }
+    .sheet .sub { margin: 0 0 18px; font-size: .78rem; color: var(--text-quiet); line-height: 1.55; max-width: 70ch; }
+    .stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(122px, 1fr)); gap: 10px; margin-bottom: 20px; }
+    .stage-card {
+      border: 1px solid var(--border-1); border-radius: 10px; padding: 11px 12px;
+      background: var(--bg-elev-1); display: flex; flex-direction: column; gap: 3px;
+    }
+    .stage-card.has { border-color: var(--green); }
+    .stage-card .ic { font-size: 1.1rem; color: var(--text-quiet); }
+    .stage-card.has .ic { color: var(--green); }
+    .stage-card .lb { font-size: .72rem; color: var(--text-secondary); }
+    .stage-card .nb { font-family: var(--mono); font-size: 1.25rem; font-weight: 600; }
+    .art { border: 1px solid var(--border-1); border-radius: 10px; padding: 11px 13px; margin-bottom: 8px; }
+    .art .hd { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
+    .art .ti { font-weight: 600; font-size: .86rem; }
+    .art .meta { font-family: var(--mono); font-size: .64rem; color: var(--text-quiet); }
+    .art .acts { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .tag {
+      font-family: var(--mono); font-size: .58rem; letter-spacing: .07em; text-transform: uppercase;
+      padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-2); color: var(--text-quiet);
+    }
+    .btn-s {
+      background: transparent; color: var(--text-secondary); border: 1px solid var(--border-2);
+      border-radius: 7px; padding: 4px 9px; font-size: .7rem; cursor: pointer; font-family: var(--mono);
+    }
+    .btn-s:hover { color: var(--text-primary); border-color: var(--accent); }
+    .btn-s.danger:hover { color: var(--red, oklch(0.65 0.2 25)); border-color: oklch(0.65 0.2 25); }
+    .empty-art {
+      padding: 26px; text-align: center; color: var(--text-quiet); font-size: .82rem;
+      border: 1px dashed var(--border-2); border-radius: 10px;
+    }
 
     .frame-wrap { flex: 1; position: relative; background: var(--bg-deep); }
     iframe { width: 100%; height: 100%; border: 0; display: block; }
@@ -138,6 +183,8 @@
     <div class="brand">◈ Grundschutz<span>++</span> OSCAL Tools</div>
     <span class="build-pill" id="build-pill"></span>
     <div class="spacer"></div>
+    <button class="btn" id="btn-artefacts" title="Alle erzeugten Artefakte ansehen und exportieren">◱ ARTEFAKTE <span id="art-total"></span></button>
+    <a class="btn" href="config.html" title="Zentrale Einstellungen: KI-Zugang, Prompts, Quellen-Pins">⚙ EINSTELLUNGEN</a>
     <a class="btn" id="open-standalone" href="#" target="_blank" rel="noopener" title="Aktuelle App in neuem Tab öffnen">↗ STANDALONE</a>
     <a class="btn" href="https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools" target="_blank" rel="noopener">GitHub</a>
   </header>
@@ -150,21 +197,39 @@
       <span class="progress-track"><span class="progress-fill"></span></span>
     </div>
     <iframe id="app-frame" title="App" src="about:blank"></iframe>
+
+    <section class="sheet" id="art-sheet" aria-label="Artefakte">
+      <h2>Artefakte</h2>
+      <p class="sub">Alles, was die Tools dieser Sammlung erzeugt haben — im Browser dieses Rechners gespeichert (IndexedDB <code>gpp-artefacts</code>), nicht auf einem Server. Die Download-Buttons in den einzelnen Tools bleiben davon unberührt; hier geht es um den Gesamtbestand.</p>
+      <div class="stage-grid" id="stage-grid"></div>
+      <div class="btn-row" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+        <button class="btn" id="btn-export-files">⤓ Einzeldateien herunterladen</button>
+        <button class="btn" id="btn-export-zip">⤓ Als ZIP</button>
+        <button class="btn" id="btn-refresh-art">⟳ Aktualisieren</button>
+        <span style="flex:1"></span>
+        <button class="btn" id="btn-clear-art">Alle löschen</button>
+      </div>
+      <div id="export-note" class="sub" style="margin-bottom:14px"></div>
+      <div id="art-list"></div>
+    </section>
   </div>
 
+  <script src="gpp-core.js"></script>
   <script>
     // Workflow order: Explorer → Katalog/Profil-Erstellung → Modellierung → Umsetzung → Prüfung → Abarbeiten → Validierung.
+    // `stage` und `tool` verbinden die Kachel mit den Artefakten, die das Tool ablegt.
     const APPS = [
-      { id: "explorer",  icon: "⌕", label: "Explorer",         file: "GSpp-Viewer.html",               desc: "BSI Grundschutz++ Katalog-Explorer" },
-      { id: "bsi2gpp",   icon: "◈", label: "BSI → G++ Profil",  file: "Baustein_2_Profile.html",        desc: "BSI-Baustein (PDF) → OSCAL G++ Profil" },
-      { id: "c5oscal",   icon: "◇", label: "C5 → OSCAL",        file: "c5-oscal-converter.html",        desc: "BSI C5:2026 YAML → OSCAL Katalog (deterministisch, ohne KI)" },
-      { id: "sspgen",    icon: "▣", label: "SSP-Generator",     file: "ssp_generator.html",             desc: "OSCAL Blaupausen & Risk Generator (G++)" },
-      { id: "sspgened23",icon: "⬡", label: "SSP-Gen. ED23",     file: "ssp_generator_ed23.html",        desc: "OSCAL Blaupausen & Risk Generator (BSI Edition 2023)" },
-      { id: "sspedit",   icon: "✎", label: "SSP-Editor",        file: "ssp_ausfuellen.html",            desc: "OSCAL SSP ausfüllen / Workspace" },
-      { id: "pruefung",  icon: "◉", label: "Prüfung (AP/AR)",   file: "pruefung_ap_ar.html",            desc: "Assessment Plan & Results Generator" },
-      { id: "poam",      icon: "◬", label: "POA&M",             file: "abarbeiten_POAM_generator.html", desc: "POA&M Generator – Feststellungen abarbeiten" },
-      { id: "validator", icon: "◐", label: "OSCAL-Validator",   file: "oscal-schema-validator.html",    desc: "OSCAL-Artefakte gegen Schema & Regeln prüfen" },
+      { id: "explorer",  icon: "⌕", label: "Explorer",         file: "GSpp-Viewer.html",               stage: "explore",   tool: "GSpp-Viewer",              desc: "BSI Grundschutz++ Katalog-Explorer" },
+      { id: "bsi2gpp",   icon: "◈", label: "BSI → G++ Profil",  file: "Baustein_2_Profile.html",        stage: "author",    tool: "Baustein_2_Profile",       desc: "BSI-Baustein (PDF) → OSCAL G++ Profil" },
+      { id: "c5oscal",   icon: "◇", label: "C5 → OSCAL",        file: "c5-oscal-converter.html",        stage: "author",    tool: "c5-oscal-converter",       desc: "BSI C5:2026 YAML → OSCAL Katalog (deterministisch, ohne KI)" },
+      { id: "sspgen",    icon: "▣", label: "SSP-Generator",     file: "ssp_generator.html",             stage: "model",     tool: "ssp_generator",            desc: "OSCAL Blaupausen & Risk Generator (G++)" },
+      { id: "sspgened23",icon: "⬡", label: "SSP-Gen. ED23",     file: "ssp_generator_ed23.html",        stage: "model",     tool: "ssp_generator_ed23",       desc: "OSCAL Blaupausen & Risk Generator (BSI Edition 2023)" },
+      { id: "sspedit",   icon: "✎", label: "SSP-Editor",        file: "ssp_ausfuellen.html",            stage: "implement", tool: "ssp_ausfuellen",           desc: "OSCAL SSP ausfüllen / Workspace" },
+      { id: "pruefung",  icon: "◉", label: "Prüfung (AP/AR)",   file: "pruefung_ap_ar.html",            stage: "assess",    tool: "pruefung_ap_ar",           desc: "Assessment Plan & Results Generator" },
+      { id: "poam",      icon: "◬", label: "POA&M",             file: "abarbeiten_POAM_generator.html", stage: "remediate", tool: "abarbeiten_POAM_generator", desc: "POA&M Generator – Feststellungen abarbeiten" },
+      { id: "validator", icon: "◐", label: "OSCAL-Validator",   file: "oscal-schema-validator.html",    stage: "validate",  tool: "oscal-schema-validator",   desc: "OSCAL-Artefakte gegen Schema & Regeln prüfen" },
     ];
+    const CORE_OK = typeof gppArtefacts !== "undefined";
 
     const APP_VERSION = "1.0";
     document.getElementById("build-pill").textContent = `build ${APP_VERSION}`;
@@ -179,7 +244,7 @@
       b.type = "button";
       b.dataset.id = app.id;
       b.title = app.desc;
-      b.innerHTML = `<span class="ico">${app.icon}</span>${app.label}`;
+      b.innerHTML = `<span class="ico">${app.icon}</span>${app.label}<span class="cnt zero" data-cnt="${app.tool}">0</span>`;
       b.addEventListener("click", () => select(app.id, true));
       nav.appendChild(b);
     });
@@ -207,6 +272,165 @@
 
     window.addEventListener("hashchange", () => select(location.hash.slice(1) || APPS[0].id, false));
     select(location.hash.slice(1) || APPS[0].id, false);
+
+    /* ================= Artefakte ================= */
+    const sheet = document.getElementById("art-sheet");
+    const STAGE_LABELS = {
+      explore: "Recherche", author: "Katalog & Profil", model: "Modellierung",
+      implement: "Umsetzung", assess: "Prüfung", remediate: "Abarbeitung", validate: "Validierung",
+    };
+    const STAGE_ICONS = {
+      explore: "⌕", author: "◈", model: "▣", implement: "✎", assess: "◉", remediate: "◬", validate: "◐",
+    };
+    const fmtBytes = n => n > 1e6 ? (n / 1e6).toFixed(1) + " MB" : n > 1e3 ? (n / 1e3).toFixed(0) + " kB" : n + " B";
+    /* Umlaute im DATEINAMEN transliterieren: der UTF-8-Flag im ZIP ist gesetzt,
+       aber ältere Entpacker ignorieren ihn und zeigen Buchstabensalat. */
+    const safeName = s => String(s || "artefakt")
+      .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue")
+      .replace(/Ä/g, "Ae").replace(/Ö/g, "Oe").replace(/Ü/g, "Ue").replace(/ß/g, "ss")
+      .replace(/[^A-Za-z0-9._-]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 120) || "artefakt";
+
+    let artefacts = [];
+    async function refreshArtefacts() {
+      if (!CORE_OK) return;
+      try { artefacts = await gppArtefacts.list(); }
+      catch (e) { artefacts = []; console.warn("Artefaktspeicher nicht lesbar", e); }
+      // Zähler an den Reitern
+      const byTool = {};
+      artefacts.forEach(a => { byTool[a.tool] = (byTool[a.tool] || 0) + 1; });
+      document.querySelectorAll("[data-cnt]").forEach(el => {
+        const n = byTool[el.dataset.cnt] || 0;
+        el.textContent = n;
+        el.classList.toggle("zero", n === 0);
+      });
+      document.getElementById("art-total").textContent = artefacts.length ? " " + artefacts.length : "";
+      renderSheet();
+    }
+    function renderSheet() {
+      const grid = document.getElementById("stage-grid");
+      const byStage = {};
+      artefacts.forEach(a => { byStage[a.stage] = (byStage[a.stage] || 0) + 1; });
+      grid.innerHTML = Object.keys(STAGE_LABELS).map(st => {
+        const n = byStage[st] || 0;
+        return `<div class="stage-card ${n ? "has" : ""}">
+          <span class="ic">${STAGE_ICONS[st]}</span>
+          <span class="nb">${n}</span>
+          <span class="lb">${STAGE_LABELS[st]}</span>
+        </div>`;
+      }).join("");
+
+      const list = document.getElementById("art-list");
+      if (!artefacts.length) {
+        list.innerHTML = `<div class="empty-art">Noch keine Artefakte. Sobald ein Tool ein OSCAL-Dokument erzeugt, erscheint es hier — zusätzlich zum gewohnten Download.</div>`;
+        return;
+      }
+      list.innerHTML = artefacts.map(a => {
+        const app = APPS.find(x => x.tool === a.tool);
+        return `<div class="art">
+          <div class="hd">
+            <span class="ti">${escapeHtml(a.title)}</span>
+            <span class="tag">${a.kind}</span>
+            <span class="tag">${STAGE_LABELS[a.stage] || a.stage}</span>
+            <span class="meta">${fmtBytes(a.size)} · ${(a.updatedAt || "").replace("T", " ").slice(0, 16)} · ${escapeHtml(a.tool)}</span>
+          </div>
+          <div class="meta" style="margin-top:3px">${escapeHtml(a.filename)} · sha256 ${(a.sha256 || "").slice(0, 12)}</div>
+          <div class="acts">
+            <button class="btn-s" data-dl="${escapeAttr(a.id)}">⤓ Download</button>
+            ${app ? `<button class="btn-s" data-open="${app.id}">↗ ${escapeHtml(app.label)} öffnen</button>` : ""}
+            <button class="btn-s danger" data-del="${escapeAttr(a.id)}">✕ Löschen</button>
+          </div>
+        </div>`;
+      }).join("");
+      list.querySelectorAll("[data-dl]").forEach(b => b.addEventListener("click", () => downloadOne(b.dataset.dl)));
+      list.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => removeOne(b.dataset.del)));
+      list.querySelectorAll("[data-open]").forEach(b => b.addEventListener("click", () => { closeSheet(); select(b.dataset.open, true); }));
+    }
+    function escapeHtml(s) { return String(s == null ? "" : s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
+    function escapeAttr(s) { return escapeHtml(s).replace(/"/g, "&quot;"); }
+
+    async function downloadOne(id) {
+      const rec = await gppArtefacts.get(id);
+      if (!rec) return;
+      gppDownloadBlob(safeName(rec.filename), new Blob([JSON.stringify(rec.data, null, 2)], { type: "application/json" }));
+    }
+    async function removeOne(id) {
+      const rec = artefacts.find(a => a.id === id);
+      if (!confirm(`Artefakt „${rec ? rec.title : id}" löschen? Bereits heruntergeladene Dateien bleiben davon unberührt.`)) return;
+      await gppArtefacts.remove(id);
+      refreshArtefacts();
+    }
+    /* Eindeutige Dateinamen — zwei Tools dürfen dieselbe filename liefern */
+    function exportNames(records) {
+      const used = new Map();
+      return records.map(r => {
+        let name = safeName(r.filename);
+        if (!/\.json$/i.test(name)) name += ".json";
+        if (used.has(name)) {
+          const n = used.get(name) + 1;
+          used.set(name, n);
+          name = name.replace(/\.json$/i, `_${n}.json`);
+        } else used.set(name, 1);
+        return { rec: r, name };
+      });
+    }
+    document.getElementById("btn-export-files").addEventListener("click", async () => {
+      const all = await gppArtefacts.all();
+      if (!all.length) return;
+      const note = document.getElementById("export-note");
+      const named = exportNames(all);
+      note.textContent = `${named.length} Dateien werden einzeln heruntergeladen — der Browser fragt beim ersten Mal nach der Erlaubnis für mehrere Downloads.`;
+      // gestaffelt, sonst verwirft Chrome alles nach der ersten Datei
+      for (let i = 0; i < named.length; i++) {
+        gppDownloadBlob(named[i].name, new Blob([JSON.stringify(named[i].rec.data, null, 2)], { type: "application/json" }));
+        await new Promise(r => setTimeout(r, 220));
+      }
+      note.textContent = `${named.length} Dateien heruntergeladen.`;
+    });
+    document.getElementById("btn-export-zip").addEventListener("click", async () => {
+      const all = await gppArtefacts.all();
+      if (!all.length) return;
+      const named = exportNames(all);
+      const manifest = {
+        tool: "Grundschutz++ OSCAL Tools",
+        exportedAt: new Date().toISOString(),
+        count: named.length,
+        artefacts: named.map(({ rec, name }) => ({
+          file: name, id: rec.id, title: rec.title, kind: rec.kind, stage: rec.stage,
+          tool: rec.tool, createdAt: rec.createdAt, updatedAt: rec.updatedAt,
+          size: rec.size, sha256: rec.sha256,
+        })),
+      };
+      const files = named.map(({ rec, name }) => ({ name, text: JSON.stringify(rec.data, null, 2), date: rec.updatedAt }));
+      files.unshift({ name: "manifest.json", text: JSON.stringify(manifest, null, 2) });
+      const stamp = new Date().toISOString().slice(0, 10);
+      gppDownloadBlob(`gpp-artefakte_${stamp}.zip`, gppZip(files));
+      document.getElementById("export-note").textContent =
+        `ZIP mit ${named.length} Artefakten und manifest.json erzeugt (Prüfsummen im Manifest).`;
+    });
+    document.getElementById("btn-refresh-art").addEventListener("click", refreshArtefacts);
+    document.getElementById("btn-clear-art").addEventListener("click", async () => {
+      if (!artefacts.length) return;
+      if (!confirm(`Alle ${artefacts.length} Artefakte aus dem Browserspeicher löschen? Heruntergeladene Dateien bleiben erhalten. Vorher exportieren?`)) return;
+      await gppArtefacts.clear();
+      refreshArtefacts();
+    });
+
+    function openSheet() { sheet.classList.add("open"); refreshArtefacts(); }
+    function closeSheet() { sheet.classList.remove("open"); }
+    document.getElementById("btn-artefacts").addEventListener("click", () => {
+      sheet.classList.contains("open") ? closeSheet() : openSheet();
+    });
+    if (!CORE_OK) {
+      document.getElementById("btn-artefacts").disabled = true;
+      document.getElementById("btn-artefacts").title = "gpp-core.js fehlt — bitte die komplette Sammlung entpacken";
+    } else {
+      window.addEventListener("gpp:artefacts-changed", refreshArtefacts);
+      // Tools laufen im iframe und lösen das Event dort aus — deshalb zusätzlich
+      // auf den localStorage-Marker hören, der über Fenstergrenzen hinweg feuert.
+      window.addEventListener("storage", e => { if (e.key === "gpp:cfg:artefacts:touch") refreshArtefacts(); });
+      refreshArtefacts();
+      if (location.hash === "#artefacts") openSheet();
+    }
   </script>
 </body>
 </html>
