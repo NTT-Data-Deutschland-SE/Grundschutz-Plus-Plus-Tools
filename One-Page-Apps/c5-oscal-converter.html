@@ -410,6 +410,7 @@
 
 <div class="copy-toast" id="copyToast">Copied to clipboard!</div>
 
+<script src="gpp-core.js"></script>
 <script>
 // ── Domain ordering as per C5:2026 TOC ──
 const DOMAIN_ORDER = [
@@ -848,6 +849,18 @@ btnDownload.addEventListener('click', () => {
   a.click();
   URL.revokeObjectURL(url);
   log('Downloaded c5-2026-oscal-catalog.json', 'success');
+  // zusätzlich in den gemeinsamen Artefaktbestand (Übersicht in index.html).
+  // Dieses Werkzeug ist rein deterministisch — es hat keine KI-Konfiguration,
+  // nutzt vom Kern also nur den Artefaktspeicher.
+  if (typeof gppArtefacts !== 'undefined') {
+    try {
+      gppArtefacts.save({
+        stage: 'author', kind: 'catalog', tool: 'c5-oscal-converter',
+        title: 'BSI C5:2026 — OSCAL-Katalog', filename: 'c5-2026-oscal-catalog.json',
+        data: JSON.parse(oscalOutput),
+      }).catch(e => log('Artefakt nicht abgelegt: ' + e.message, 'warn'));
+    } catch (e) { log('Artefakt nicht abgelegt (Ausgabe ist kein gültiges JSON).', 'warn'); }
+  }
 });
 
 // ── Copy ──

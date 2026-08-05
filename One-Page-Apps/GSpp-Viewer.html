@@ -612,60 +612,34 @@
         </section>
 
         <section class="rail-sec" id="sec-api">
-            <span class="section-label"><span class="g">◈</span>Backend</span>
-            <div class="backend-switch" id="backendSwitch">
-                <button type="button" class="backend-opt active" id="backendGemini" data-backend="gemini"><span class="g">◈</span>Gemini</button>
-                <button type="button" class="backend-opt" id="backendOpenrouter" data-backend="openrouter"><span class="g">⬡</span>OpenRouter</button>
+            <span class="section-label"><span class="g">◈</span>KI-Zugang</span>
+            <div id="gpp-cfg-summary" class="rail-note">–</div>
+            <div style="display:flex;gap:6px;margin-top:8px">
+                <a class="reset-btn" href="config.html" target="_blank" rel="noopener">⚙ Einstellungen</a>
+                <button class="reset-btn" onclick="applyGppConfig(true)" title="Einstellungen erneut übernehmen">↻</button>
             </div>
-            <small class="rail-note">
-                Auswahl, API-Key und Modell werden je Backend getrennt lokal gespeichert.
-            </small>
-
-            <div id="cfg-gemini" class="backend-cfg">
-                <span class="section-label" style="margin-top: 14px;"><span class="g">◈</span>Google Gemini API Key</span>
-                <input type="password" id="apiKeyInput" class="search-input" placeholder="AIzaSy..." style="font-family: var(--font-mono);" oninput="toggleAiButtons()">
-                <small class="rail-note">
-                    Wird lokal im Browser gespeichert. <a href="https://aistudio.google.com/app/apikey" target="_blank">Hier API-Key erstellen</a>.
-                </small>
-
-                <span class="section-label" style="margin-top: 14px;"><span class="g">◇</span>Modell</span>
-                <select id="modelSelect" class="filter-select" onchange="saveModelChoice()"></select>
-                <small class="rail-note">
-                    Auswahl wird lokal gespeichert. <code>gemini-3.1-pro-preview</code> ist kostenpflichtig; günstiger sind
-                    <code>gemini-3.6-flash</code> oder <code>gemini-3.5-flash-lite</code>.
-                </small>
-            </div>
-
-            <div id="cfg-openrouter" class="backend-cfg hidden">
-                <span class="section-label" style="margin-top: 14px;"><span class="g">⬡</span>OpenRouter API Key</span>
-                <input type="password" id="orKeyInput" class="search-input" placeholder="sk-or-..." style="font-family: var(--font-mono);" oninput="toggleAiButtons()">
-                <small class="rail-note">
-                    Wird lokal im Browser gespeichert. <a href="https://openrouter.ai/keys" target="_blank">Hier API-Key erstellen</a>.
-                </small>
-
-                <span class="section-label" style="margin-top: 14px;"><span class="g">◇</span>Modell (Live-Katalog)</span>
-                <select id="orModelSelect" class="filter-select" onchange="saveOpenRouterModel()">
-                    <option value="">Modellkatalog wird geladen …</option>
-                </select>
-                <div class="or-model-row">
-                    <span class="model-status" id="orModelsStatus">—</span>
-                    <button type="button" class="btn-ghost" id="orModelsRefresh">⋯ NEU LADEN</button>
-                </div>
-                <input type="text" id="orModelCustom" class="filter-select" style="font-family: var(--font-mono); margin-top: 8px;" placeholder="oder Slug frei eingeben: vendor/modell" oninput="saveOpenRouterModel()">
-                <small class="rail-note">
-                    Der Katalog kommt live von <code>/api/v1/models</code> (ohne Key), wird 24 h lokal zwischengespeichert.
-                    <code>◈</code> markiert Modelle mit <code>structured_outputs</code>. Ein eingetragener Slug hat Vorrang
-                    vor der Auswahl.
-                </small>
-            </div>
-
             <small class="rail-note top-sep">
-                ◇ Beim Öffnen per <code>file://</code> kann der Browser die API-Anfrage mit einem CORS-Fehler blockieren.
+                Backend, API-Key und Modell gelten für alle Werkzeuge der Sammlung und werden in
+                <a href="config.html" target="_blank" rel="noopener">config.html</a> gesetzt.
+                ◇ Beim Öffnen per <code>file://</code> kann der Browser die API-Anfrage mit einem CORS-Fehler abweisen.
                 Dann die Datei lokal ausliefern: <code>python -m http.server</code> im Ordner starten und
                 <code>http://localhost:8000/GSpp-Viewer.html</code> aufrufen.
-                OpenRouter erlaubt Browser-Aufrufe ebenso; das Vertrauensmodell ist identisch (eigener
-                <code>sk-or-…</code>-Key, nur im localStorage, nie im Quelltext) und derselbe lokale Server behebt auch dort CORS-Fehler.
             </small>
+
+            <div id="gpp-cfg-shim" hidden aria-hidden="true">
+                <div id="backendSwitch">
+                    <button type="button" id="backendGemini" data-backend="gemini"></button>
+                    <button type="button" id="backendOpenrouter" data-backend="openrouter"></button>
+                </div>
+                <div id="cfg-gemini"><input type="password" id="apiKeyInput"><select id="modelSelect"></select></div>
+                <div id="cfg-openrouter" class="hidden">
+                    <input type="password" id="orKeyInput">
+                    <select id="orModelSelect"></select>
+                    <input type="text" id="orModelCustom">
+                    <button type="button" id="orModelsRefresh"></button>
+                    <span id="orModelsStatus"></span>
+                </div>
+            </div>
         </section>
 
         <section class="rail-sec ai-dependent" id="sec-context">
@@ -678,41 +652,15 @@
         </section>
 
         <section class="rail-sec ai-dependent" id="sec-prompts">
-            <span class="section-label"><span class="g">▣</span>Prompts (editierbar)</span>
+            <span class="section-label"><span class="g">▣</span>Prompts</span>
             <small class="rail-note" style="margin-bottom: 12px;">
-                Genau das, was an das Modell geschickt wird. Änderungen werden lokal gespeichert; Platzhalter in
-                <code>{geschweiften Klammern}</code> werden zur Laufzeit ersetzt.
+                Die Prompts dieses Werkzeugs werden gesammelt in
+                <a href="config.html" target="_blank" rel="noopener">config.html</a> bearbeitet — immer gegen
+                den aktuellen Standardtext, den dieses Werkzeug beim Start anmeldet. Fehlende Pflicht-Platzhalter
+                werden zur Laufzeit angehängt.
             </small>
-
-            <div class="prompt-block">
-                <span class="prompt-label">System-Prompt</span>
-                <textarea id="promptSystem" class="prompt-area" spellcheck="false"></textarea>
-                <div class="prompt-row">
-                    <span class="prompt-hint">{heute}</span>
-                    <button class="prompt-reset" onclick="resetPrompt('promptSystem')">✎ Zurücksetzen</button>
-                </div>
-                <div class="prompt-warn" id="warn-promptSystem"></div>
-            </div>
-
-            <div class="prompt-block">
-                <span class="prompt-label">Prompt: Umsetzung</span>
-                <textarea id="promptImplementation" class="prompt-area" spellcheck="false"></textarea>
-                <div class="prompt-row">
-                    <span class="prompt-hint">{title} {prose} {guidance}</span>
-                    <button class="prompt-reset" onclick="resetPrompt('promptImplementation')">✎ Zurücksetzen</button>
-                </div>
-                <div class="prompt-warn" id="warn-promptImplementation"></div>
-            </div>
-
-            <div class="prompt-block">
-                <span class="prompt-label">Prompt: Risiko</span>
-                <textarea id="promptRisk" class="prompt-area" spellcheck="false"></textarea>
-                <div class="prompt-row">
-                    <span class="prompt-hint">{title} {prose}</span>
-                    <button class="prompt-reset" onclick="resetPrompt('promptRisk')">✎ Zurücksetzen</button>
-                </div>
-                <div class="prompt-warn" id="warn-promptRisk"></div>
-            </div>
+            <div id="prompt-overview"></div>
+            <a class="reset-btn" href="config.html" target="_blank" rel="noopener" style="margin-top:8px">⚙ Prompts bearbeiten</a>
         </section>
 
         <section class="rail-sec" id="sec-load">
@@ -778,7 +726,50 @@
         </div>
     </div>
 
+<script src="gpp-core.js"></script>
     <script>
+        if (typeof gppCfg === 'undefined') {
+            document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
+                '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
+                '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (gs_tools.zip) ' +
+                'statt einzelner Dateien.</p></div>';
+            throw new Error('gpp-core.js missing');
+        }
+        const GPP_TOOL_ID = 'GSpp-Viewer';
+
+        // Spiegelt gpp:cfg:* in die ausgeblendeten Shim-Felder; dieses Tool schreibt nie zurück.
+        window.applyGppConfig = function (verbose) {
+            const backend = gppCfg.get('ai:backend') === 'openrouter' ? 'openrouter' : 'gemini';
+            const model = gppCfg.get('ai:model:' + backend);
+            const g = document.getElementById('apiKeyInput'), o = document.getElementById('orKeyInput');
+            if (g) g.value = gppCfg.get('ai:key:gemini');
+            if (o) o.value = gppCfg.get('ai:key:openrouter');
+            const ms = document.getElementById('modelSelect');
+            if (backend === 'gemini' && ms && model) {
+                if (![...ms.options].some(x => x.value === model)) ms.add(new Option(model, model));
+                ms.value = model;
+            }
+            const oc = document.getElementById('orModelCustom');
+            if (backend === 'openrouter' && oc && model) oc.value = model;
+            if (typeof setBackend === 'function') setBackend(backend, { silent: true });
+            else if (typeof state === 'object') state.backend = backend;
+            if (typeof toggleAiButtons === 'function') toggleAiButtons();
+            renderGppCfgSummary();
+            if (verbose && typeof L === 'object') L.info('Einstellungen aus config.html neu übernommen.');
+        };
+        function renderGppCfgSummary() {
+            const box = document.getElementById('gpp-cfg-summary');
+            if (!box) return;
+            const backend = gppCfg.get('ai:backend');
+            const t = gppCfg.target(backend);
+            const missing = [];
+            if (!t.key) missing.push('API-Key');
+            if (!t.model) missing.push('Modell');
+            box.innerHTML = missing.length
+                ? `<b style="color:#e0a03a">${missing.join(' und ')} fehlt</b> für „${backend}". Katalog laden, suchen und filtern geht ohne Schlüssel.`
+                : `<b>${backend}</b> · <code>${t.model}</code>`;
+        }
+
         // Einzige Quelle der Build-Version. Titel und Topbar-Badge werden daraus gesetzt.
         const BUILD_VERSION = "v9.5.1";
 
@@ -1090,8 +1081,7 @@
             const gEl = byId('apiKeyInput'), oEl = byId('orKeyInput');
             const gKey = gEl ? gEl.value.trim() : "";
             const oKey = oEl ? oEl.value.trim() : "";
-            if (gKey) localStorage.setItem(GEMINI_KEY_STORAGE, gKey); else localStorage.removeItem(GEMINI_KEY_STORAGE);
-            if (oKey) localStorage.setItem(OR_KEY_STORAGE, oKey);     else localStorage.removeItem(OR_KEY_STORAGE);
+            // Keys werden nicht mehr hier gespeichert — sie kommen aus config.html.
 
             const active = state.backend === "openrouter" ? oKey : gKey;
             const had = document.body.classList.contains('has-api-key');
@@ -1313,31 +1303,35 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präßise und du nutzt kei
             }
         }
 
+        const PROMPT_LABELS = {
+            promptSystem: 'System-Prompt (Rolle)',
+            promptImplementation: 'Umsetzungsvorschlag',
+            promptRisk: 'Risiken bei Nicht-Umsetzung',
+        };
+        // Prompts werden zentral in config.html bearbeitet; die Defaults bleiben hier.
         function initPrompts() {
-            let restored = 0;
-            PROMPT_DEFS.forEach(p => {
-                if (localStorage.getItem(p.storageKey)) restored++;
-                const ta = document.getElementById(p.id);
-                if (!ta) return;
-                const saved = localStorage.getItem(p.storageKey);
-                ta.value = (saved !== null && saved !== '') ? saved : p.def;
-                ta.addEventListener('input', () => {
-                    localStorage.setItem(p.storageKey, ta.value);
-                    validatePrompt(p);
-                });
-                validatePrompt(p);
-            });
-            L.debug(`Prompts initialisiert (${restored} von ${PROMPT_DEFS.length} aus localStorage wiederhergestellt).`);
+            gppRegisterPrompts(GPP_TOOL_ID, PROMPT_DEFS.map(p => ({
+                id: p.id, label: PROMPT_LABELS[p.id] || p.id, placeholders: p.required || [], default: p.def,
+            })));
+            renderPromptOverview();
+            window.addEventListener('storage', e => { if (e.key && e.key.startsWith('gpp:cfg:prompt')) renderPromptOverview(); });
+            const custom = PROMPT_DEFS.filter(p => localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${p.id}`) !== null).length;
+            L.debug(`Prompts angemeldet (${custom} von ${PROMPT_DEFS.length} angepasst, bearbeitbar in config.html).`);
         }
-
+        function renderPromptOverview() {
+            const box = document.getElementById('prompt-overview');
+            if (!box) return;
+            box.innerHTML = PROMPT_DEFS.map(p => {
+                const custom = localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${p.id}`) !== null;
+                return `<div style="display:flex;gap:8px;align-items:baseline;padding:3px 0;font-size:11px">
+                    <span style="font-family:monospace;font-size:9px;padding:1px 5px;border-radius:4px;border:1px solid ${custom ? '#e0a03a' : '#475569'};color:${custom ? '#e0a03a' : '#94a3b8'}">${custom ? 'angepasst' : 'standard'}</span>
+                    <span>${PROMPT_LABELS[p.id] || p.id}</span></div>`;
+            }).join('');
+        }
         function resetPrompt(id) {
-            const p = PROMPT_DEFS.find(x => x.id === id);
-            const ta = document.getElementById(id);
-            if (!p || !ta) return;
-            ta.value = p.def;
-            localStorage.setItem(p.storageKey, ta.value);
-            validatePrompt(p);
-            L.info(`Prompt "${id}" auf Standard zurückgesetzt.`);
+            localStorage.removeItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${id}`);
+            renderPromptOverview();
+            L.info(`Prompt "${PROMPT_LABELS[id] || id}" auf Standard zurückgesetzt.`);
         }
 
         // Baut den finalen Prompt aus der Textarea. Fehlende Pflicht-Platzhalter
@@ -1345,8 +1339,8 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präßise und du nutzt kei
         // inhaltsleeren Prompt erzeugt.
         function buildPrompt(id, vars) {
             const p = PROMPT_DEFS.find(x => x.id === id);
-            const ta = document.getElementById(id);
-            let tpl = (ta && ta.value.trim()) ? ta.value : p.def;
+            // Prompttext zentral aus config.html; der Default bleibt hier im Tool.
+            let tpl = gppPrompt(GPP_TOOL_ID, id, p.def) || p.def;
             p.required.forEach(ph => {
                 if (!tpl.includes(ph)) tpl += `\n${ph.slice(1, -1)}: ${ph}`;
             });
@@ -2289,6 +2283,9 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präßise und du nutzt kei
             initOpenRouterModelInputs();
             initBackendSelect();   // setzt state.backend, tauscht die Config-Felder, ruft toggleAiButtons()
             initPrompts();
+            // Ab hier gilt die zentrale Konfiguration aus config.html.
+            applyGppConfig(false);
+            window.addEventListener('storage', e => { if (e.key && e.key.startsWith('gpp:cfg:')) applyGppConfig(false); });
             L.debug(`Aktives Backend: ${backendLabel()} · Modell: ${currentBackendModel()}`);
 
             // KI-Cache aus dem localStorage zurückholen — sonst gehen die

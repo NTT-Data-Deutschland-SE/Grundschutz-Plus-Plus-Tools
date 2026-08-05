@@ -452,31 +452,32 @@ textarea.inp{min-height:80px;line-height:1.55}
         <div class="lbl mb-0 mt-1">◈ Konfiguration</div>
         <div class="border border-slate-700 rounded overflow-hidden">
             <button onclick="tog('sb-ai')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300">◈ KI<span id="ai-badge" class="sb bg-slate-700 text-slate-500 border-slate-600 hidden ml-1">—</span><svg id="icon-sb-ai" class="chev w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg></button>
+            <!-- Backend, Key, Modell und Retries liegen zentral in config.html
+                 (gpp:cfg:*); der ausgeblendete Block hält die alten IDs für den
+                 Bestandscode und wird nur von dort gefüllt. -->
             <div id="sb-ai-content" class="coll-content p-2 bg-slate-900/30 space-y-1.5">
-                <label for="ai-provider" class="text-[9px] font-bold text-slate-500 uppercase tracking-wide">Backend</label>
-                <select id="ai-provider" onchange="onProvChange()" class="inp text-[10px]"><option value="">— Kein —</option><option value="gemini">Gemini</option><option value="openrouter">OpenRouter</option></select>
-                <input type="password" id="ai-key" placeholder="API-Key" oninput="saveAICfg()" class="inp text-[10px]">
-                <!-- Gemini: feste Liste lebender Modell-IDs -->
-                <div id="gm-model-wrap" class="hidden">
-                    <select id="ai-model" class="inp text-[10px] w-full" onchange="saveAICfg()"></select>
-                </div>
-                <!-- OpenRouter: Katalog live aus /api/v1/models + Freitext-Slug -->
-                <div id="or-model-wrap" class="hidden space-y-1.5">
-                    <select id="or-model" class="inp text-[10px] w-full font-mono" onchange="onORPick()" title="Modellkatalog von openrouter.ai — ◈ = Structured Outputs unterstützt"></select>
-                    <input type="text" id="or-slug" placeholder="Modell-Slug, z. B. anthropic/…" oninput="saveAICfg()" class="inp text-[10px] w-full font-mono" title="Wirksamer Slug. Freitext hat Vorrang; die Auswahl oben trägt hier ein.">
-                    <div class="flex items-center gap-1.5">
-                        <span id="or-cat-status" class="text-[8px] text-slate-500 truncate">Katalog noch nicht geladen</span>
-                        <button onclick="refreshORModels()" class="btn ml-auto" title="Modellkatalog neu von openrouter.ai laden">↻</button>
-                    </div>
-                    <label class="flex items-center gap-1.5 text-[8px] text-slate-500 leading-snug"><input type="checkbox" id="or-only-schema" checked onchange="renderORModels()" class="form-checkbox w-3 h-3">nur Modelle mit Structured Outputs</label>
-                </div>
-                <div id="ai-migrate-hint" class="hidden text-[8px] font-bold text-amber-300 bg-amber-950/40 border border-amber-800 rounded px-2 py-1 leading-snug">◬ Der Claude-Direktpfad entfällt (CORS im Browser). Anthropic-Modelle laufen jetzt über OpenRouter — bitte einen eigenen <span class="font-mono">sk-or-…</span>-Key eintragen, der alte Claude-Key wurde nicht übernommen.</div>
+                <div id="gpp-cfg-summary" class="text-[10px] text-slate-400 leading-snug">–</div>
                 <div class="flex items-center gap-1.5">
-                    <label for="ai-retries" class="text-[9px] font-bold text-slate-500 uppercase tracking-wide flex-shrink-0">Retries</label>
-                    <input type="number" id="ai-retries" min="0" max="5" value="2" oninput="saveAICfg()" class="inp text-[10px] w-16 py-0.5" title="Wiederholungen pro KI-Aufruf bei Fehlern (exponentieller Backoff: 500ms → 1s → 2s)">
+                    <a href="config.html" target="_blank" rel="noopener" class="btn">⚙ Einstellungen</a>
+                    <button onclick="applyGppConfig(true)" class="btn" title="Einstellungen erneut übernehmen">↻</button>
                 </div>
-                <p class="text-[8px] text-slate-500 leading-snug">CORS-Fehler? Die Datei nicht per <span class="font-mono text-slate-400">file://</span> öffnen, sondern im Ordner <span class="font-mono text-slate-400">python -m http.server</span> starten und über <span class="font-mono text-slate-400">http://localhost:8000/</span> aufrufen. OpenRouter erlaubt Browser-Aufrufe ausdrücklich — nötig ist nur ein eigener <span class="font-mono text-slate-400">sk-or-…</span>-Key, der ausschließlich in <span class="font-mono text-slate-400">localStorage</span> liegt und niemals im Code steht.</p>
-                <div class="flex gap-2 text-[8px]"><a href="https://openrouter.ai/settings/keys" target="_blank" class="text-violet-400 underline">OpenRouter</a><a href="https://aistudio.google.com/apikey" target="_blank" class="text-blue-400 underline">Gemini</a></div>
+                <div id="ai-migrate-hint" class="hidden text-[8px] font-bold text-amber-300 bg-amber-950/40 border border-amber-800 rounded px-1.5 py-1 leading-snug"></div>
+                <p class="text-[8px] text-slate-500 leading-snug">CORS-Fehler? Die Datei nicht per <span class="font-mono text-slate-400">file://</span> öffnen, sondern den Ordner mit <span class="font-mono text-slate-400">python -m http.server</span> servieren.</p>
+
+                <div id="gpp-cfg-shim" hidden aria-hidden="true">
+                    <select id="ai-provider"><option value="">—</option><option value="gemini">Gemini</option><option value="openrouter">OpenRouter</option></select>
+                    <input type="password" id="ai-key">
+                    <div id="gm-model-wrap" class="hidden"><select id="ai-model"></select></div>
+                    <div id="or-model-wrap" class="hidden">
+                        <select id="or-model"></select>
+                        <input type="text" id="or-slug">
+                        <span id="or-cat-status"></span>
+                        <button id="or-refresh-shim" onclick="refreshORModels()"></button>
+                        <input type="checkbox" id="or-only-schema">
+                    </div>
+                    <input type="number" id="ai-retries" min="0" max="5" value="2">
+                </div>
+            </div>
             </div>
         </div>
         <!-- Navigation -->
@@ -572,32 +573,12 @@ textarea.inp{min-height:80px;line-height:1.55}
         <div id="sec-prompts" class="mb-4 bg-slate-800 border border-slate-700 rounded-xl p-4 transition-all duration-300">
             <h2 class="text-sm font-bold text-white mb-1">◉ KI-Prompts</h2>
             <p class="text-[10px] text-slate-400 mb-3 leading-relaxed">Alle Prompts, die dieses Tool an das Modell sendet, sind hier editierbar — Änderungen werden im Browser gespeichert. Der Platzhalter <span class="font-mono text-cyan-300">{kontext}</span> wird zur Laufzeit durch die deterministisch aufgebauten Control-Daten (Katalogtext, SSP-Eintrag, Reifegrade, bisherige Beobachtung) ersetzt.</p>
-            <div class="space-y-4">
-                <div>
-                    <div class="flex items-center justify-between mb-1">
-                        <label for="pr-assess" class="lbl mb-0">◈ Befundvorschlag (aiAssess)</label>
-                        <button onclick="resetPrompt('assess')" class="btn">↺ Zurücksetzen</button>
-                    </div>
-                    <textarea id="pr-assess" spellcheck="false" class="inp prompt-ta w-full text-[11px]"></textarea>
-                    <div id="pw-assess" class="hidden mt-1 text-[10px] font-bold text-amber-300 bg-amber-950/40 border border-amber-800 rounded px-2 py-1">◬ Platzhalter <span class="font-mono">{kontext}</span> fehlt — er wird beim Senden automatisch am Ende angehängt.</div>
-                </div>
-                <div>
-                    <div class="flex items-center justify-between mb-1">
-                        <label for="pr-explain-ml" class="lbl mb-0">▣ Analyse mit vorhandenen Reifegraden (aiExplain)</label>
-                        <button onclick="resetPrompt('explainML')" class="btn">↺ Zurücksetzen</button>
-                    </div>
-                    <textarea id="pr-explain-ml" spellcheck="false" class="inp prompt-ta w-full text-[11px]"></textarea>
-                    <div id="pw-explain-ml" class="hidden mt-1 text-[10px] font-bold text-amber-300 bg-amber-950/40 border border-amber-800 rounded px-2 py-1">◬ Platzhalter <span class="font-mono">{kontext}</span> fehlt — er wird beim Senden automatisch am Ende angehängt.</div>
-                </div>
-                <div>
-                    <div class="flex items-center justify-between mb-1">
-                        <label for="pr-explain-base" class="lbl mb-0">▣ Erklärung ohne Reifegrade (aiExplain)</label>
-                        <button onclick="resetPrompt('explainBase')" class="btn">↺ Zurücksetzen</button>
-                    </div>
-                    <textarea id="pr-explain-base" spellcheck="false" class="inp prompt-ta w-full text-[11px]"></textarea>
-                    <div id="pw-explain-base" class="hidden mt-1 text-[10px] font-bold text-amber-300 bg-amber-950/40 border border-amber-800 rounded px-2 py-1">◬ Platzhalter <span class="font-mono">{kontext}</span> fehlt — er wird beim Senden automatisch am Ende angehängt.</div>
-                </div>
-            </div>
+            <p class="text-[10px] text-slate-400 mb-3 leading-relaxed">Die Prompts dieses Werkzeugs werden gesammelt in
+                <a href="config.html" target="_blank" rel="noopener" class="text-emerald-400 font-bold">config.html</a>
+                bearbeitet — immer gegen den aktuellen Standardtext, den dieses Werkzeug beim Start anmeldet.
+                Fehlt der Platzhalter <span class="font-mono">{kontext}</span>, wird er zur Laufzeit angehängt.</p>
+            <div id="prompt-overview"></div>
+            <a href="config.html" target="_blank" rel="noopener" class="btn mt-3 inline-block">⚙ Prompts bearbeiten</a>
         </div>
 
         <div id="stats-dash" class="hidden mb-4"></div>
@@ -618,7 +599,16 @@ textarea.inp{min-height:80px;line-height:1.55}
   </section>
 </div>
 
+<script src="gpp-core.js"></script>
 <script>
+if(typeof gppCfg==='undefined'){
+    document.body.innerHTML='<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">'+
+        '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek '+
+        '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (gs_tools.zip) '+
+        'statt einzelner Dateien.</p></div>';
+    throw new Error('gpp-core.js missing');
+}
+const GPP_TOOL_ID='pruefung_ap_ar';
 // ============================================================
 // LOG-KONSOLE (fünf Level, ms-Timestamps, Autoscroll, Clear)
 // ============================================================
@@ -1222,7 +1212,38 @@ function loadAICfg(){
         document.getElementById('ai-migrate-hint').classList.remove('hidden');
         L.warn(`Migration: Claude-Direktpfad entfällt (CORS im Browser) — Backend auf OpenRouter umgestellt, Modellvorschlag "${AI_MODELS.openrouter}". Der alte Claude-Key wurde nicht übernommen, bitte einen sk-or-…-Key eintragen.`);
     }
-    if(p){document.getElementById('ai-provider').value=p;onProvChange()}
+    // Ab hier gilt die zentrale Konfiguration aus config.html.
+    applyGppConfig(false);
+    window.addEventListener('storage',e=>{if(e.key&&e.key.startsWith('gpp:cfg:'))applyGppConfig(false)});
+}
+
+// Spiegelt gpp:cfg:* in die ausgeblendeten Shim-Felder; dieses Tool schreibt nie zurück.
+window.applyGppConfig=function(verbose){
+    const backend=gppCfg.get('ai:backend')==='openrouter'?'openrouter':'gemini';
+    const model=gppCfg.get('ai:model:'+backend);
+    AI_KEYS[backend]=gppCfg.get('ai:key:'+backend);
+    if(model)AI_MODELS[backend]=model;
+    const prov=document.getElementById('ai-provider');
+    const key=document.getElementById('ai-key');
+    const retries=document.getElementById('ai-retries');
+    if(prov)prov.value=backend;
+    if(key)key.value=AI_KEYS[backend]||'';
+    if(retries)retries.value=gppCfg.get('run:retries');
+    if(backend==='openrouter'){const slug=document.getElementById('or-slug');if(slug&&model)slug.value=model;}
+    if(typeof onProvChange==='function')onProvChange();
+    renderGppCfgSummary();
+    if(verbose)L.info('Einstellungen aus config.html neu übernommen.');
+};
+function renderGppCfgSummary(){
+    const box=document.getElementById('gpp-cfg-summary');if(!box)return;
+    const backend=gppCfg.get('ai:backend');
+    const t=gppCfg.target(backend);
+    const missing=[];
+    if(!t.key)missing.push('API-Key');
+    if(!t.model)missing.push('Modell');
+    box.innerHTML=missing.length
+        ?`<b class="text-amber-300">${missing.join(' und ')} fehlt</b> für „${backend}". Assessment Plan und Results lassen sich ohne Schlüssel unverändert erstellen und exportieren.`
+        :`<b>${backend}</b> · <span class="font-mono">${t.model}</span> · ${gppCfg.get('run:retries')} Retries`;
 }
 
 // Freitext-Slug hat Vorrang; die Katalogauswahl trägt lediglich dort ein.
@@ -1485,31 +1506,33 @@ const PROMPT_DEFS={
     explainBase:{ta:'pr-explain-base',warn:'pw-explain-base',ls:'oscal_prompt_explain_base',def:DEFAULT_EXPLAIN_BASE_PROMPT}
 };
 
+const PROMPT_LABELS={assess:'Befundvorschlag (aiAssess)',explainML:'Analyse mit Reifegraden (aiExplain)',explainBase:'Erklärung ohne Reifegrade (aiExplain)'};
+// Prompts werden zentral in config.html bearbeitet; die Defaults bleiben hier.
 function initPrompts(){
-    Object.entries(PROMPT_DEFS).forEach(([k,c])=>{
-        const ta=document.getElementById(c.ta);if(!ta)return;
-        let v=null;try{v=localStorage.getItem(c.ls)}catch(e){}
-        ta.value=(v!=null&&v!=='')?v:c.def;
-        ta.addEventListener('input',()=>{try{localStorage.setItem(c.ls,ta.value)}catch(e){}validatePrompt(k)});
-        validatePrompt(k);
-    });
+    gppRegisterPrompts(GPP_TOOL_ID,Object.entries(PROMPT_DEFS).map(([k,c])=>({
+        id:k,label:PROMPT_LABELS[k]||k,placeholders:[PROMPT_PH],default:c.def
+    })));
+    renderPromptOverview();
+    window.addEventListener('storage',e=>{if(e.key&&e.key.startsWith('gpp:cfg:prompt'))renderPromptOverview()});
 }
-// Platzhalter-Validierung: sichtbarer Warnhinweis, wenn {kontext} fehlt.
-function validatePrompt(k){
-    const c=PROMPT_DEFS[k];const ta=document.getElementById(c.ta),w=document.getElementById(c.warn);
-    if(!ta||!w)return;
-    w.classList.toggle('hidden',ta.value.includes(PROMPT_PH));
+function renderPromptOverview(){
+    const box=document.getElementById('prompt-overview');if(!box)return;
+    box.innerHTML=Object.keys(PROMPT_DEFS).map(k=>{
+        const custom=localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${k}`)!==null;
+        return `<div style="display:flex;gap:8px;align-items:baseline;padding:3px 0;font-size:11px">
+            <span style="font-family:monospace;font-size:9px;padding:1px 5px;border-radius:4px;border:1px solid ${custom?'#e0a03a':'#475569'};color:${custom?'#e0a03a':'#94a3b8'}">${custom?'angepasst':'standard'}</span>
+            <span>${PROMPT_LABELS[k]||k}</span></div>`;
+    }).join('');
 }
 window.resetPrompt=k=>{
-    const c=PROMPT_DEFS[k];const ta=document.getElementById(c.ta);if(!ta)return;
-    ta.value=c.def;try{localStorage.setItem(c.ls,c.def)}catch(e){}
-    validatePrompt(k);
+    localStorage.removeItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${k}`);
+    renderPromptOverview();
 };
-// Baut den fertigen Prompt: Template aus der UI, Default als Fallback,
+// Baut den fertigen Prompt: Template zentral aus config.html, Default als Fallback,
 // fehlender Platzhalter wird defensiv angehängt statt den Kontext zu verlieren.
 function buildPrompt(k,ctx){
     const c=PROMPT_DEFS[k];
-    let tpl=(document.getElementById(c.ta)?.value||'').trim();
+    let tpl=(gppPrompt(GPP_TOOL_ID,k,c.def)||'').trim();
     if(!tpl)tpl=c.def;
     if(!tpl.includes(PROMPT_PH))tpl=tpl+'\n\n'+PROMPT_PH;
     return tpl.split(PROMPT_PH).join(ctx);
@@ -1889,6 +1912,10 @@ function exportAP(){
     if(S.dateStart||S.dateEnd||S.tasks.length){const t=[];if(S.dateStart&&S.dateEnd)t.push({uuid:crypto.randomUUID(),type:"action",title:"Assessment-Durchführung",timing:{"within-date-range":{start:`${S.dateStart}T00:00:00Z`,end:`${S.dateEnd}T23:59:59Z`}},"associated-activities":Object.values(byM).map(a=>({"activity-uuid":a.uuid,subjects:[{type:"component","include-all":{}}]}))});S.tasks.forEach(tk=>t.push({uuid:tk.uuid,type:tk.type,title:tk.title}));if(t.length)ap["assessment-plan"].tasks=t}
     L.ok(`Assessment Plan erzeugt: ${cids.length} Controls, ${acts.length} Aktivität(en), Katalog-Pin ${GPP_CATALOG_PIN_COMMIT.slice(0,12)}…`);
     dl(ap,`${sn()}_AP.json`);autoSave();
+    // zusätzlich in den gemeinsamen Artefaktbestand (Übersicht in index.html)
+    gppArtefacts.save({stage:'assess',kind:'ap',tool:GPP_TOOL_ID,
+        title:`${sn()} — Assessment Plan`,filename:`${sn()}_AP.json`,data:ap})
+        .catch(e=>L.warn('Artefakt nicht abgelegt: '+e.message));
 }
 
 function exportAR(){
@@ -1988,6 +2015,9 @@ function exportAR(){
     const ar={"assessment-results":{uuid:crypto.randomUUID(),metadata:{title:`${sn().replace(/_/g,' ')} - Assessment Results`,version:S.meta.version||'1.0.0',"last-modified":ts,"oscal-version":"1.2.2"},"import-ap":{href:`#${apResUuid}`},results:[{uuid:crypto.randomUUID(),title:"Assessment-Ergebnis",description:'Ergebnisse',start:S.dateStart?`${S.dateStart}T00:00:00Z`:ts,end:S.dateEnd?`${S.dateEnd}T23:59:59Z`:ts,"reviewed-controls":{"control-selections":[{"include-controls":cids.map(c=>({"control-id":c}))}]},...(obs.length?{observations:obs}:{}),findings:fin,...(rsk.length?{risks:rsk}:{})}],"back-matter":{resources:[{uuid:apResUuid,title:`Assessment Plan (${sn()}_AP.json)`,rlinks:[{href:`${sn()}_AP.json`}]},pinnedCatalogResource()]}}};
     L.ok(`Assessment Results erzeugt: ${fin.length} Befunde, ${obs.length} Beobachtungen, ${rsk.length} Risiken`);
     dl(ar,`${sn()}_AR.json`);autoSave();
+    gppArtefacts.save({stage:'assess',kind:'ar',tool:GPP_TOOL_ID,
+        title:`${sn()} — Assessment Results`,filename:`${sn()}_AR.json`,data:ar})
+        .catch(e=>L.warn('Artefakt nicht abgelegt: '+e.message));
 }
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}

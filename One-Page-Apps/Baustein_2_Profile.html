@@ -348,140 +348,51 @@ body{
       <div class="rail-scroll">
 
         <div class="rail-section">
-          <div class="rail-label"><span><span class="glyph">◇</span> Backend</span></div>
-          <div class="seg" id="backend-seg">
-            <button type="button" class="seg-btn active" data-backend="gemini">Gemini</button>
-            <button type="button" class="seg-btn" data-backend="openrouter">OpenRouter</button>
+          <div class="rail-label"><span><span class="glyph">◇</span> KI-Zugang</span></div>
+          <div id="gpp-cfg-summary" class="hint">–</div>
+          <div class="btn-row" style="margin-top:8px">
+            <a class="btn small" href="config.html" target="_blank" rel="noopener">⚙ Einstellungen</a>
+            <button type="button" class="btn small" onclick="applyGppConfig(true)" title="Einstellungen erneut übernehmen">↻</button>
           </div>
+          <div class="hint" style="margin-top:8px">Backend, Schlüssel, Modelle, Laufzeit und Checker-Route gelten für alle
+            Werkzeuge der Sammlung und werden in <a href="config.html" target="_blank" rel="noopener">config.html</a> gesetzt.</div>
 
-          <!-- GEMINI-KONFIGURATION -->
-          <div id="cfg-gemini">
-            <div class="field">
-              <label>Gemini API-Key</label>
-              <input id="api-key" type="password" placeholder="x-goog-api-key">
+          <div id="gpp-cfg-shim" hidden aria-hidden="true">
+            <div class="seg" id="backend-seg">
+              <button type="button" class="seg-btn active" data-backend="gemini">Gemini</button>
+              <button type="button" class="seg-btn" data-backend="openrouter">OpenRouter</button>
             </div>
-            <div class="cfg-note">
-              Key bleibt lokal (localStorage), wird nur an generativelanguage.googleapis.com gesendet.
-              Bei CORS-Fehlern der Gemini-Aufrufe: Datei nicht per <code>file://</code> öffnen, sondern im
-              Ordner <code>python -m http.server</code> starten und über <code>http://localhost:8000/…</code> laden.
-            </div>
-            <div class="field">
-              <label>Modell</label>
-              <select id="model">
-                <option value="gemini-3.6-flash" selected>gemini-3.6-flash</option>
-                <option value="gemini-3.5-flash">gemini-3.5-flash</option>
-                <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite</option>
-                <option value="gemini-3.1-pro-preview">gemini-3.1-pro-preview (kostenpflichtig)</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Thinking-Level</label>
+            <div id="cfg-gemini">
+              <input id="api-key" type="password">
+              <select id="model"></select>
               <select id="thinking">
-                <option value="minimal">minimal</option>
-                <option value="low">low</option>
-                <option value="medium" selected>medium</option>
-                <option value="high">high</option>
+                <option value="minimal">minimal</option><option value="low">low</option>
+                <option value="medium" selected>medium</option><option value="high">high</option>
               </select>
             </div>
-          </div>
-
-          <!-- OPENROUTER-KONFIGURATION -->
-          <div id="cfg-openrouter" class="hidden">
-            <div class="field">
-              <label>OpenRouter API-Key</label>
-              <input id="or-key" type="password" placeholder="sk-or-…">
-            </div>
-            <div class="cfg-note">
-              Key bleibt lokal (localStorage), wird nur an openrouter.ai gesendet — getrennt vom Gemini-Key
-              gespeichert. Modellkatalog wird ohne Key geladen und 24 h zwischengespeichert.
-            </div>
-            <div class="field">
-              <label>Modell (Live-Katalog)</label>
-              <select id="or-model"><option value="">— Katalog wird geladen —</option></select>
-            </div>
-            <div class="cfg-note" id="or-cat-info" style="margin:-4px 0 8px">Katalog noch nicht geladen</div>
-            <label class="toggle">
-              <input type="checkbox" id="or-only-structured" checked>
-              <span>nur structured_outputs
-                <span class="desc">Diese App braucht JSON-Schemas — ◇ markiert taugliche Modelle</span>
-              </span>
-            </label>
-            <div class="field">
-              <label>Slug frei eingeben (überschreibt Auswahl)</label>
-              <input id="or-model-free" type="text" placeholder="vendor/slug">
-            </div>
-            <div class="field">
-              <label>Reasoning-Effort (statt Thinking-Level)</label>
+            <div id="cfg-openrouter">
+              <input id="or-key" type="password">
+              <select id="or-model"></select>
+              <input id="or-model-free" type="text">
               <select id="or-effort">
-                <option value="off" selected>nicht senden</option>
-                <option value="low">low</option>
-                <option value="medium">medium</option>
-                <option value="high">high</option>
+                <option value="off">off</option><option value="low">low</option>
+                <option value="medium">medium</option><option value="high">high</option>
               </select>
+              <input type="checkbox" id="or-only-structured">
             </div>
-            <button class="btn sm ghost" id="btn-or-refresh" style="width:100%">⟳ Modellkatalog neu laden</button>
-          </div>
-        </div>
-
-        <div class="rail-section">
-          <div class="rail-label"><span><span class="glyph">◈</span> Pool</span></div>
-          <div class="field-row">
-            <div class="field">
-              <label>Parallel</label>
-              <input id="concurrency" type="number" min="1" max="12" value="4">
-            </div>
-            <div class="field">
-              <label>Retries</label>
-              <input id="retries" type="number" min="0" max="5" value="2">
-            </div>
-          </div>
-          <div class="field-row">
-            <div class="field">
-              <label>Controls/Chunk (S2)</label>
-              <input id="ctrl-chunk" type="number" min="10" max="400" value="100">
-            </div>
-            <div class="field">
-              <label>Chunk (Checker)</label>
-              <input id="chunk-size" type="number" min="1" max="30" value="8">
-            </div>
-          </div>
-        </div>
-
-        <div class="rail-section">
-          <div class="rail-label"><span><span class="glyph">⬡</span> Modus</span></div>
-          <label class="toggle">
+            <input id="concurrency" type="number" value="4">
+            <input id="retries" type="number" value="2">
+            <input id="chunk-size" type="number" value="8">
+            <input id="ctrl-chunk" type="number" value="100">
             <input type="checkbox" id="maker-checker">
-            <span>Maker-Checker
-              <span class="desc">Zweite Prüfung der Matches</span>
-            </span>
-          </label>
-          <label class="toggle">
             <input type="checkbox" id="grounding">
-            <span>Grounding / Websuche
-              <span class="desc">Gemini: googleSearch · OpenRouter: web-Plugin</span>
-            </span>
-          </label>
-        </div>
-
-        <!-- Checker-Engine: erlaubt Maker und Checker auf getrennten Backends -->
-        <div class="rail-section hidden" id="checker-route-section">
-          <div class="rail-label"><span><span class="glyph">◉</span> Checker-Engine</span></div>
-          <div class="field">
-            <label>Backend (Checker-Pass)</label>
+            <input type="checkbox" id="testdrive">
             <select id="checker-backend">
-              <option value="same" selected>— wie Maker —</option>
-              <option value="gemini">Gemini</option>
-              <option value="openrouter">OpenRouter</option>
+              <option value="same" selected>same</option><option value="gemini">Gemini</option><option value="openrouter">OpenRouter</option>
             </select>
-          </div>
-          <div class="field">
-            <label>Modell (leer = Backend-Default)</label>
-            <input id="checker-model" type="text" placeholder="z. B. anthropic/claude-…">
-          </div>
-          <div class="cfg-note" style="margin-bottom:0">
-            Echtes unabhängiges Audit entsteht erst mit gemischten Anbietern — Gemini als Maker,
-            ein Anthropic-Modell über OpenRouter als Checker. Backend + Modell werden je Pass
-            im Log und in den Profil-Props festgehalten.
+            <input id="checker-model" type="text">
+            <div id="checker-route-section" class="hidden"></div>
+            <span id="backend-pill"></span>
           </div>
         </div>
 
@@ -548,48 +459,16 @@ body{
         <!-- PROMPTS CARD -->
         <div class="card">
           <div class="card-head">
-            <div class="card-title"><span class="num">02 · prompts</span> Editierbare Prompts pro Stage</div>
-            <div class="muted" style="font-size:10.5px">alle Änderungen werden in localStorage gespeichert</div>
+            <div class="card-title"><span class="num">02 · prompts</span> Prompts pro Stufe</div>
+            <div class="muted" style="font-size:10.5px">zentral in config.html</div>
           </div>
-          <div class="card-desc">Defaults sind produktiv nutzbar. Felder unten lassen sich frei umformulieren — Platzhalter wie <code>{baustein_id}</code> müssen erhalten bleiben.</div>
-
-          <!-- STAGE 1 PROMPT -->
-          <div class="prompt-block">
-            <div class="prompt-head">
-              <div class="prompt-label"><span class="stage">▶ STAGE 1</span> Klassifikation — PDF → Zielobjektkategorie / Prozess</div>
-              <div class="prompt-actions">
-                <button class="btn sm ghost" data-reset="s1">Reset</button>
-              </div>
-            </div>
-            <textarea class="prompt-ta" id="prompt-s1" data-placeholders="{baustein_id},{baustein_title},{baustein_summary},{categories}"></textarea>
-            <div class="prompt-warn" id="warn-s1"></div>
-          </div>
-
-          <!-- STAGE 2 PROMPT (sentence mapping) -->
-          <div class="prompt-block">
-            <div class="prompt-head">
-              <div class="prompt-label"><span class="stage">▶ STAGE 2</span> Satz-Mapping — PDF-Sätze → G++-Controls aus dem Pool</div>
-              <div class="prompt-actions">
-                <button class="btn sm ghost" data-reset="s2">Reset</button>
-              </div>
-            </div>
-            <textarea class="prompt-ta" id="prompt-s2" data-placeholders="{baustein_id},{baustein_title},{controls},{anforderungen_with_sentences}"></textarea>
-            <div class="prompt-warn" id="warn-s2"></div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-quiet);margin-top:6px;letter-spacing:0.05em">
-              Fallback (kein Pool auflösbar) erzeugt Custom-Controls deterministisch aus den Anforderungen — kein Modell-Call.
-            </div>
-          </div>
-
-          <!-- CHECKER PROMPT -->
-          <div class="prompt-block" id="checker-block" style="display:none">
-            <div class="prompt-head">
-              <div class="prompt-label"><span class="stage" style="color:var(--amber)">▶ CHECKER</span> Validierung der Stage-2-Implementation-Descriptions</div>
-              <div class="prompt-actions">
-                <button class="btn sm ghost" data-reset="check">Reset</button>
-              </div>
-            </div>
-            <textarea class="prompt-ta" id="prompt-check" data-placeholders="{pairs}"></textarea>
-            <div class="prompt-warn" id="warn-check"></div>
+          <div class="card-desc">Die Prompts dieses Werkzeugs werden gesammelt in
+            <a href="config.html" target="_blank" rel="noopener">config.html</a> bearbeitet — immer gegen den
+            aktuellen Standardtext, den dieses Werkzeug beim Start anmeldet. Fehlende Platzhalter werden zur
+            Laufzeit defensiv ergänzt.</div>
+          <div id="prompt-overview" style="margin-top:10px"></div>
+          <div class="btn-row" style="margin-top:12px">
+            <a class="btn small" href="config.html" target="_blank" rel="noopener">⚙ Prompts bearbeiten</a>
           </div>
         </div>
 
@@ -707,8 +586,17 @@ body{
 
 </div>
 
+<script src="gpp-core.js"></script>
 <script>
 "use strict";
+if (typeof gppCfg === "undefined") {
+  document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#111">' +
+    '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
+    '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (gs_tools.zip) ' +
+    'statt einzelner Dateien.</p></div>';
+  throw new Error("gpp-core.js missing");
+}
+const GPP_TOOL_ID = "Baustein_2_Profile";
 
 /* ════════════════════════════════════════════════════════════════════════
    Build-Version — EINE Quelle der Wahrheit. Topbar, Log-Init und die
@@ -884,8 +772,18 @@ const GPP_TOOLS_PIN_COMMIT = "2ab904b0099f560a06a68950d2b47a8ad019571a";
 // Commit konnte die Zuordnung unter einem unveränderten Katalog verschieben.
 // Die CSV liegt im selben Repo wie der Katalog und wird deshalb auf denselben
 // Commit genagelt; die Hilfsdatei auf den Stand des eigenen Repos.
-const ZOK_CSV_URL     = `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/documentation/namespaces/target_object_categories.csv`;
-const ZO_CONTROLS_URL = `https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/${GPP_TOOLS_PIN_COMMIT}/hilfsdateien/zielobjekt_controls.json`;
+const ZOK_CSV_URL     = gppSource("zok-csv", `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/documentation/namespaces/target_object_categories.csv`);
+const ZO_CONTROLS_URL = gppSource("zielobjekt-controls", `https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/${GPP_TOOLS_PIN_COMMIT}/hilfsdateien/zielobjekt_controls.json`);
+// Quellen für die Pin-Übersicht in config.html anmelden (Update-Prüfung dort).
+gppRegisterSources(GPP_TOOL_ID, [
+  { id: "gpp-catalog", label: "G++ resolved catalog", repo: "BSI-Bund/Stand-der-Technik-Bibliothek",
+    path: "control_layer/Grundschutz++/Grundschutz++-resolved_catalog.json",
+    default: `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json` },
+  { id: "zok-csv", label: "Zielobjektkategorien (CSV)", repo: "BSI-Bund/Stand-der-Technik-Bibliothek",
+    path: "documentation/namespaces/target_object_categories.csv", default: ZOK_CSV_URL },
+  { id: "zielobjekt-controls", label: "Zielobjekt-Controls (Hilfsdatei)", repo: "NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools",
+    path: "hilfsdateien/zielobjekt_controls.json", default: ZO_CONTROLS_URL },
+]);
 const GPP_CATALOG_PIN_SHA256 = "db3a1417d7e904315a0886f450129832e19c57324660358c830357349f552332";
 const GPP_CATALOG_PINNED_URL = `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json`;
 // uuid5(NAMESPACE_URL, GPP_CATALOG_PINNED_URL) — identisch zu den vom Pin-Skript
@@ -1086,11 +984,44 @@ function loadPrefs() {
   $("testdrive").checked     = localStorage.getItem("gpp.td")        === "1";
   $("cat-url").value         = localStorage.getItem("gpp.caturl")    || $("cat-url").value;
   $("pi-url").value          = localStorage.getItem("gpp.piurl")     || $("pi-url").value;
-  for (const k of ["s1","s2","check"]) {
-    $(`prompt-${k}`).value = localStorage.getItem(`gpp.prompt.${k}`) || DEFAULTS[k];
-  }
   toggleCheckerUI();
-  setBackend(localStorage.getItem("gpp.backend") || "gemini", false);
+  // Ab hier gilt die zentrale Konfiguration aus config.html.
+  applyGppConfig(false);
+  window.addEventListener("storage", e => { if (e.key && e.key.startsWith("gpp:cfg:")) applyGppConfig(false); });
+}
+
+/* Spiegelt gpp:cfg:* in die ausgeblendeten Shim-Felder; dieses Tool schreibt nie zurück. */
+window.applyGppConfig = function (verbose) {
+  const backend = gppCfg.get("ai:backend") === "openrouter" ? "openrouter" : "gemini";
+  const set = (id, v) => { const el = $(id); if (el && v != null) el.value = v; };
+  set("api-key", gppCfg.get("ai:key:gemini"));
+  set("or-key", gppCfg.get("ai:key:openrouter"));
+  set("model", gppCfg.get("ai:model:gemini") || DEFAULT_MODEL);
+  set("or-model-free", gppCfg.get("ai:model:openrouter"));
+  set("thinking", gppCfg.get("ai:thinking"));
+  set("or-effort", gppCfg.get("ai:thinking"));
+  set("checker-backend", gppCfg.get("ai:checker:backend"));
+  set("checker-model", gppCfg.get("ai:checker:model"));
+  set("concurrency", gppCfg.get("run:concurrency"));
+  set("retries", gppCfg.get("run:retries"));
+  set("chunk-size", gppCfg.get("run:chunk"));
+  const g = $("grounding"); if (g) g.checked = gppCfg.getBool("ai:grounding");
+  const os = $("or-only-structured"); if (os) os.checked = gppCfg.getBool("ai:or:structuredonly");
+  setBackend(backend, false);
+  renderGppCfgSummary();
+  if (verbose) l.ok("Einstellungen aus config.html neu übernommen.");
+};
+function renderGppCfgSummary() {
+  const box = $("gpp-cfg-summary");
+  if (!box) return;
+  const backend = gppCfg.get("ai:backend");
+  const t = gppCfg.target(backend);
+  const missing = [];
+  if (!t.key) missing.push("API-Key");
+  if (!t.model) missing.push("Modell");
+  box.innerHTML = missing.length
+    ? `<b style="color:#e0a03a">${missing.join(" und ")} fehlt</b> für „${backend}". Der Katalog lässt sich ohne Schlüssel laden und durchsuchen; die Baustein-Analyse braucht einen.`
+    : `<b>${backend}</b> · <code>${t.model}</code> · ${gppCfg.get("run:concurrency")} parallel, ${gppCfg.get("run:retries")} Retries`;
 }
 
 function bindPersist(id, key) {
@@ -1126,35 +1057,29 @@ $("testdrive").addEventListener("change", e => {
   updateRunLabel();
 });
 
-for (const k of ["s1","s2","check"]) {
-  const ta = $(`prompt-${k}`);
-  const warn = $(`warn-${k}`);
-  const expected = ta.dataset.placeholders.split(",");
-  const validate = () => {
-    const missing = expected.filter(p => !ta.value.includes(p));
-    if (missing.length) {
-      warn.classList.add("show");
-      warn.textContent = `⚠ fehlende Platzhalter: ${missing.join(", ")} — werden zur Laufzeit defensiv ergänzt`;
-    } else {
-      warn.classList.remove("show");
-    }
-  };
-  ta.addEventListener("input", () => {
-    localStorage.setItem(`gpp.prompt.${k}`, ta.value);
-    validate();
-  });
-  validate();
+/* Prompts werden zentral in config.html bearbeitet; die Defaults bleiben hier
+   und werden beim Start angemeldet. */
+const PROMPT_LABELS = { s1: "Stufe 1 — Baustein-Analyse", s2: "Stufe 2 — Control-Mapping", check: "Checker — Vier-Augen-Prüfung" };
+const PROMPT_PLACEHOLDERS = {
+  s1: ["{baustein_id}", "{baustein_text}"],
+  s2: ["{controls}"],
+  check: ["{pairs}"],
+};
+gppRegisterPrompts(GPP_TOOL_ID, ["s1", "s2", "check"].map(k => ({
+  id: k, label: PROMPT_LABELS[k], placeholders: PROMPT_PLACEHOLDERS[k] || [], default: DEFAULTS[k],
+})));
+function renderPromptOverview() {
+  const box = $("prompt-overview");
+  if (!box) return;
+  box.innerHTML = ["s1", "s2", "check"].map(k => {
+    const custom = localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${k}`) !== null;
+    return `<div style="display:flex;gap:8px;align-items:baseline;padding:3px 0;font-size:12px">
+      <span style="font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:4px;border:1px solid ${custom ? "#e0a03a" : "#475569"};color:${custom ? "#e0a03a" : "#94a3b8"}">${custom ? "angepasst" : "standard"}</span>
+      <span>${PROMPT_LABELS[k]}</span></div>`;
+  }).join("");
 }
-
-document.querySelectorAll("[data-reset]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const key = btn.dataset.reset;
-    $(`prompt-${key}`).value = DEFAULTS[key];
-    localStorage.removeItem(`gpp.prompt.${key}`);
-    $(`prompt-${key}`).dispatchEvent(new Event("input"));
-    l.info(`prompt-${key} → default`);
-  });
-});
+renderPromptOverview();
+window.addEventListener("storage", e => { if (e.key && e.key.startsWith("gpp:cfg:prompt")) renderPromptOverview(); });
 
 function toggleCheckerUI() {
   const on = $("maker-checker").checked;
@@ -2006,7 +1931,8 @@ function resetStages() {
    ════════════════════════════════════════════════════════════════════════ */
 
 function buildPrompt(key, vars) {
-  let tpl = $(`prompt-${key}`).value;
+  // Prompttext zentral aus config.html; der Default bleibt hier im Tool.
+  let tpl = gppPrompt(GPP_TOOL_ID, key, DEFAULTS[key]);
   if (!tpl.trim()) tpl = DEFAULTS[key];
   for (const [name, val] of Object.entries(vars)) {
     const ph = `{${name}}`;
@@ -2831,6 +2757,14 @@ $("btn-download").addEventListener("click", () => {
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
   l.ok(`download · ${a.download}`);
+  // zusätzlich in den gemeinsamen Artefaktbestand (Übersicht in index.html)
+  try {
+    gppArtefacts.save({
+      stage: "author", kind: "profile", tool: GPP_TOOL_ID,
+      title: `${bId} — G++ Profil (${state.pipelineMode || "?"})`,
+      filename: a.download, data: JSON.parse(text),
+    }).catch(e => l.warn("Artefakt nicht abgelegt: " + e.message));
+  } catch (e) { l.warn("Artefakt nicht abgelegt (kein gültiges JSON im Ausgabefeld)."); }
 });
 
 $("btn-download-cat").addEventListener("click", () => {
@@ -2845,6 +2779,10 @@ $("btn-download-cat").addEventListener("click", () => {
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
   l.ok(`download · ${a.download}`);
+  gppArtefacts.save({
+    stage: "author", kind: "catalog", tool: GPP_TOOL_ID,
+    title: `${bId} — eigener Katalog`, filename: a.download, data: state.customCatalog,
+  }).catch(e => l.warn("Artefakt nicht abgelegt: " + e.message));
 });
 
 $("btn-copy").addEventListener("click", async () => {

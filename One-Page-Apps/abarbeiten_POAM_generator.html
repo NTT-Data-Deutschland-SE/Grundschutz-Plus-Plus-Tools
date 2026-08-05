@@ -539,40 +539,29 @@ input[type=date].inp{color-scheme:dark}
                 <span class="flex items-center gap-2"><span class="text-slate-500">◉</span>KI-Backend <span id="ai-badge" class="sb bg-slate-700 text-slate-500 border-slate-600 hidden ml-1">—</span></span>
                 <svg id="icon-sb-ai" class="chev w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
             </button>
+            <!-- Backend, Keys und Modelle liegen zentral in config.html (gpp:cfg:*);
+                 der ausgeblendete Block hält die alten IDs für den Bestandscode. -->
             <div id="sb-ai-content" class="coll-content p-2 bg-slate-900/30 space-y-2">
-
-                <div class="seg" role="group" aria-label="KI-Backend">
-                    <button type="button" id="be-gemini" class="seg-btn active" onclick="setBackend('gemini')" title="Google Gemini — generativelanguage.googleapis.com"><span class="gly">◇</span>Gemini</button>
-                    <button type="button" id="be-openrouter" class="seg-btn" onclick="setBackend('openrouter')" title="OpenRouter — ein Key, viele Anbieter (auch Anthropic)"><span class="gly">⬡</span>OpenRouter</button>
+                <div id="gpp-cfg-summary" class="text-[10px] text-slate-400 leading-snug">–</div>
+                <div class="flex items-center gap-2">
+                    <a href="config.html" target="_blank" rel="noopener" class="ai-btn">⚙ Einstellungen</a>
+                    <button type="button" class="ai-btn" onclick="applyGppConfig(true)" title="Einstellungen erneut übernehmen">↺</button>
                 </div>
+                <div id="or-migrate-hint" class="hidden text-[9px] font-bold text-amber-300 bg-amber-900/30 border border-amber-700/50 rounded px-2 py-1 leading-snug"></div>
 
-                <!-- Gemini-Konfiguration -->
-                <div id="cfg-gemini" class="space-y-2">
-                    <div><label class="lbl" for="gm-key">Gemini API-Key</label>
-                        <input type="password" id="gm-key" placeholder="AIza…" oninput="saveAICfg()" class="inp text-xs font-mono"></div>
-                    <div><label class="lbl" for="gm-model">Modell</label>
-                        <select id="gm-model" class="inp text-xs font-mono" onchange="saveAICfg()"></select></div>
-                    <div class="flex gap-2 text-[9px]"><a href="https://aistudio.google.com/apikey" target="_blank" class="text-blue-400 underline">Gemini Key ↗</a></div>
-                </div>
-
-                <!-- OpenRouter-Konfiguration -->
-                <div id="cfg-openrouter" class="hidden space-y-2">
-                    <div><label class="lbl" for="or-key">OpenRouter API-Key</label>
-                        <input type="password" id="or-key" placeholder="sk-or-…" oninput="saveAICfg()" class="inp text-xs font-mono"></div>
-                    <div id="or-migrate-hint" class="hidden text-[9px] font-bold text-amber-300 bg-amber-900/30 border border-amber-700 rounded px-2 py-1 leading-snug">◬ Frühere Claude-Konfiguration erkannt. Der Direktpfad zu <code class="font-mono">api.anthropic.com</code> scheitert im Browser an CORS; Anthropic-Modelle laufen hier über OpenRouter. Dafür ist ein eigener Key im Format <code class="font-mono">sk-or-…</code> nötig — der alte Anthropic-Key wurde bewusst nicht übernommen.</div>
-                    <div>
-                        <div class="flex items-center gap-2 mb-1"><label class="lbl mb-0" for="or-model">Modell (Live-Katalog)</label>
-                            <button type="button" id="or-refresh" class="ai-btn ml-auto" onclick="refreshOrModels()">↺ Katalog</button></div>
-                        <select id="or-model" class="inp text-xs font-mono" onchange="onOrModelPick()"></select>
+                <div id="gpp-cfg-shim" hidden aria-hidden="true">
+                    <div class="seg"><button type="button" id="be-gemini" onclick="setBackend('gemini')"></button><button type="button" id="be-openrouter" onclick="setBackend('openrouter')"></button></div>
+                    <div id="cfg-gemini"><input type="password" id="gm-key"><select id="gm-model"></select></div>
+                    <div id="cfg-openrouter" class="hidden">
+                        <input type="password" id="or-key">
+                        <button type="button" id="or-refresh" onclick="refreshOrModels()"></button>
+                        <select id="or-model"></select>
+                        <input type="checkbox" id="or-only-schema">
+                        <input type="text" id="or-slug">
+                        <div id="or-cat-status"></div>
                     </div>
-                    <label class="flex items-center gap-1 text-[10px] text-slate-400 cursor-pointer"><input type="checkbox" id="or-struct-only" checked onchange="renderOrModels()" class="form-checkbox h-3 w-3">Nur Modelle mit Structured Outputs</label>
-                    <div><label class="lbl" for="or-slug">Freier Slug (überschreibt Auswahl)</label>
-                        <input type="text" id="or-slug" placeholder="anbieter/modell" oninput="saveAICfg()" class="inp text-xs font-mono"></div>
-                    <div id="or-cat-status" class="text-[9px] text-slate-500 font-mono">Katalog noch nicht geladen</div>
-                    <div class="flex gap-2 text-[9px]"><a href="https://openrouter.ai/settings/keys" target="_blank" class="text-violet-400 underline">OpenRouter Key ↗</a><a href="https://openrouter.ai/models" target="_blank" class="text-violet-400 underline">Modellliste ↗</a></div>
                 </div>
-
-                <p class="text-[9px] text-slate-500 leading-snug">Der Key bleibt lokal im Browser (localStorage), steht nie im Code. Bei CORS-Fehlern unter <code class="text-slate-400">file://</code> das Verzeichnis mit <code class="text-slate-400">python -m http.server</code> ausliefern und die Datei über <code class="text-slate-400">http://localhost:8000/</code> öffnen. OpenRouter erlaubt Aufrufe direkt aus dem Browser; nötig ist ein eigener Key im Format <code class="text-slate-400">sk-or-…</code>, der ebenfalls nur im localStorage liegt und niemals hartkodiert wird.</p>
+            </div>
             </div>
         </div>
 
@@ -622,28 +611,14 @@ input[type=date].inp{color-scheme:dark}
         <!-- KI-Prompts Section -->
         <div id="sec-prompts" class="card p-4 transition-all duration-300">
             <div class="sec-head"><span class="gly">✎</span><h2 class="sec-title">KI-Prompts</h2>
-                <span class="text-[10px] text-slate-500 ml-auto">Änderungen werden lokal gespeichert · Platzhalter <code class="text-amber-500 font-mono">{kontext}</code> wird zur Laufzeit ersetzt</span>
+                <span class="text-[10px] text-slate-500 ml-auto">zentral in config.html</span>
             </div>
-            <p class="text-[10px] text-slate-500 mb-3">Der Kontextblock (System, Komponente, Control-ID, Anforderungstext, Risiko, bisherige Maßnahme) wird deterministisch in JavaScript zusammengesetzt und an der Stelle von <code class="text-amber-500 font-mono">{kontext}</code> eingefügt.</p>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div>
-                    <div class="flex items-center gap-2 mb-1">
-                        <label class="lbl mb-0" for="p-rem">Prompt: Maßnahmen-Vorschlag</label>
-                        <button onclick="resetPrompt('rem')" class="text-[10px] px-2 py-0.5 bg-slate-700 text-slate-200 rounded font-bold hover:bg-slate-600 ml-auto font-mono">↺ Zurücksetzen</button>
-                    </div>
-                    <textarea id="p-rem" class="inp ptxt text-xs" spellcheck="false"></textarea>
-                    <div id="warn-rem" class="hidden mt-1 text-[10px] font-bold text-amber-300 bg-amber-900/30 border border-amber-700 rounded px-2 py-1">◬ Platzhalter <code class="font-mono">{kontext}</code> fehlt — er wird beim Senden automatisch am Ende angehängt.</div>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2 mb-1">
-                        <label class="lbl mb-0" for="p-ms">Prompt: Meilensteine planen</label>
-                        <button onclick="resetPrompt('ms')" class="text-[10px] px-2 py-0.5 bg-slate-700 text-slate-200 rounded font-bold hover:bg-slate-600 ml-auto font-mono">↺ Zurücksetzen</button>
-                    </div>
-                    <textarea id="p-ms" class="inp ptxt text-xs" spellcheck="false"></textarea>
-                    <div id="warn-ms" class="hidden mt-1 text-[10px] font-bold text-amber-300 bg-amber-900/30 border border-amber-700 rounded px-2 py-1">◬ Platzhalter <code class="font-mono">{kontext}</code> fehlt — er wird beim Senden automatisch am Ende angehängt.</div>
-                    <p class="text-[10px] text-slate-500 mt-1">Antwortformat erzwingt das JSON-Schema (<code class="font-mono">title</code>, <code class="font-mono">weeks</code>) — im Prompt nicht nötig.</p>
-                </div>
-            </div>
+            <p class="text-[10px] text-slate-500 mb-3">Der Kontextblock (System, Komponente, Control-ID, Anforderung, Status)
+                wird deterministisch aus den Item-Feldern gebaut und über <span class="font-mono">{kontext}</span> eingesetzt —
+                fehlt der Platzhalter, wird er zur Laufzeit angehängt. Die Prompttexte selbst werden gesammelt in
+                <a href="config.html" target="_blank" rel="noopener" class="text-emerald-400 font-bold">config.html</a> bearbeitet.</p>
+            <div id="prompt-overview"></div>
+            <a href="config.html" target="_blank" rel="noopener" class="ai-btn mt-3 inline-block">⚙ Prompts bearbeiten</a>
         </div>
 
         <div id="stats-dash"></div>
@@ -674,7 +649,16 @@ input[type=date].inp{color-scheme:dark}
 
 </div><!-- /app -->
 
+<script src="gpp-core.js"></script>
 <script>
+if(typeof gppCfg==='undefined'){
+    document.body.innerHTML='<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">'+
+        '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek '+
+        '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (gs_tools.zip) '+
+        'statt einzelner Dateien.</p></div>';
+    throw new Error('gpp-core.js missing');
+}
+const GPP_TOOL_ID='abarbeiten_POAM_generator';
 const BUILD='v2.2';
 const P={arFilename:'',sspHref:'',sysName:'',catalog:new Map(),findings:[],observations:[],risks:[],items:[],meta:{title:'',version:'1.0.0',desc:''},responsible:{name:'',role:'system-owner',email:''}};
 // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
@@ -966,6 +950,34 @@ window.saveAICfg=()=>{
     else b.classList.add('hidden');
 };
 
+// Spiegelt gpp:cfg:* in die ausgeblendeten Shim-Felder; dieses Tool schreibt nie zurück.
+window.applyGppConfig=function(verbose){
+    const backend=gppCfg.get('ai:backend')==='openrouter'?'openrouter':'gemini';
+    const model=gppCfg.get('ai:model:'+backend);
+    if(backend==='gemini'){
+        const gk=gid('gm-key'),gm=gid('gm-model');
+        if(gk)gk.value=gppCfg.get('ai:key:gemini');
+        if(gm&&model){if(![...gm.options].some(o=>o.value===model))gm.add(new Option(model,model));gm.value=model;}
+    }else{
+        const ok=gid('or-key'),os=gid('or-slug');
+        if(ok)ok.value=gppCfg.get('ai:key:openrouter');
+        if(os&&model)os.value=model;
+    }
+    setBackend(backend,true);
+    renderGppCfgSummary();
+    if(verbose)l.info('Einstellungen aus config.html neu übernommen.');
+};
+function renderGppCfgSummary(){
+    const box=gid('gpp-cfg-summary');if(!box)return;
+    const backend=gppCfg.get('ai:backend');
+    const t=gppCfg.target(backend);
+    const missing=[];
+    if(!t.key)missing.push('API-Key');
+    if(!t.model)missing.push('Modell');
+    box.innerHTML=missing.length
+        ?`<b class="text-amber-300">${missing.join(' und ')} fehlt</b> für „${backend}". Feststellungen erfassen, abarbeiten und als POA&amp;M exportieren geht ohne Schlüssel.`
+        :`<b>${backend}</b> · <span class="font-mono">${t.model}</span>`;
+}
 function loadAICfg(){
     fillGeminiModels();
     let backend='';try{backend=localStorage.getItem(LS_BACKEND)||''}catch(e){}
@@ -996,6 +1008,9 @@ function loadAICfg(){
     AI.pendingOrModel=o.m||'';
     renderOrModels();
     setBackend(backend,true);
+    // Ab hier gilt die zentrale Konfiguration aus config.html.
+    applyGppConfig(false);
+    window.addEventListener('storage',e=>{if(e.key&&e.key.startsWith('gpp:cfg:'))applyGppConfig(false)});
     const cur=getAI();
     l.debug(`KI-Konfiguration geladen: Backend ${BACKENDS[backend].label} · Modell ${cur?cur.m:'(keins)'}${cur?' · Key vorhanden':' · kein Key'}`);
 }
@@ -1175,11 +1190,27 @@ const PROMPT_DEFS={
     rem:{el:'p-rem',warn:'warn-rem',ls:'oscal_poam_prompt_rem',def:DEFAULT_REMEDIATION_PROMPT},
     ms:{el:'p-ms',warn:'warn-ms',ls:'oscal_poam_prompt_ms',def:DEFAULT_MILESTONE_PROMPT}
 };
-function initPrompts(){Object.entries(PROMPT_DEFS).forEach(([k,d])=>{const ta=document.getElementById(d.el);if(!ta)return;let v='';try{v=localStorage.getItem(d.ls)||''}catch(e){}ta.value=v||d.def;if(v)l.debug(`Prompt "${k}" aus localStorage übernommen (${v.length} Zeichen)`);ta.addEventListener('input',()=>{try{localStorage.setItem(d.ls,ta.value)}catch(e){}chkPlaceholder(k)});chkPlaceholder(k)})}
+const PROMPT_LABELS={rem:'Maßnahmenvorschlag (Remediation)',ms:'Meilensteine (Milestones)'};
+// Prompts werden zentral in config.html bearbeitet; die Defaults bleiben hier.
+function initPrompts(){
+    gppRegisterPrompts(GPP_TOOL_ID,Object.entries(PROMPT_DEFS).map(([k,d])=>({
+        id:k,label:PROMPT_LABELS[k]||k,placeholders:['{kontext}'],default:d.def})));
+    renderPromptOverview();
+    window.addEventListener('storage',e=>{if(e.key&&e.key.startsWith('gpp:cfg:prompt'))renderPromptOverview()});
+}
+function renderPromptOverview(){
+    const box=document.getElementById('prompt-overview');if(!box)return;
+    box.innerHTML=Object.keys(PROMPT_DEFS).map(k=>{
+        const custom=localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${k}`)!==null;
+        return `<div style="display:flex;gap:8px;align-items:baseline;padding:3px 0;font-size:11px">
+            <span style="font-family:monospace;font-size:9px;padding:1px 5px;border-radius:4px;border:1px solid ${custom?'#e0a03a':'#475569'};color:${custom?'#e0a03a':'#94a3b8'}">${custom?'angepasst':'standard'}</span>
+            <span>${PROMPT_LABELS[k]||k}</span></div>`;
+    }).join('');
+}
 function chkPlaceholder(k){const d=PROMPT_DEFS[k];const ta=document.getElementById(d.el),w=document.getElementById(d.warn);if(!ta||!w)return;w.classList.toggle('hidden',ta.value.includes('{kontext}'))}
-window.resetPrompt=k=>{const d=PROMPT_DEFS[k];if(!d)return;const ta=document.getElementById(d.el);if(!ta)return;ta.value=d.def;try{localStorage.setItem(d.ls,ta.value)}catch(e){}chkPlaceholder(k);l.info(`Prompt "${k}" auf Default zurückgesetzt`)};
+window.resetPrompt=k=>{localStorage.removeItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${k}`);renderPromptOverview();l.info(`Prompt "${PROMPT_LABELS[k]||k}" auf Standard zurückgesetzt.`)};
 // Platzhalter defensiv anhängen, falls der Nutzer ihn gelöscht hat.
-function buildPrompt(k,kontext){const d=PROMPT_DEFS[k];const ta=document.getElementById(d.el);let tpl=(ta?.value||'').trim()||d.def;if(!tpl.includes('{kontext}')){tpl+='\n\n{kontext}';l.warn(`Prompt "${k}": Platzhalter {kontext} fehlte — wurde zur Laufzeit angehängt`)}return tpl.replace('{kontext}',()=>kontext)}
+function buildPrompt(k,kontext){const d=PROMPT_DEFS[k];let tpl=(gppPrompt(GPP_TOOL_ID,k,d.def)||'').trim()||d.def;if(!tpl.includes('{kontext}')){tpl+='\n\n{kontext}';l.warn(`Prompt "${k}": Platzhalter {kontext} fehlte — wurde zur Laufzeit angehängt`)}return tpl.replace('{kontext}',()=>kontext)}
 // Kontextblock deterministisch aus den Item-Feldern zusammensetzen — kein LLM-Job.
 function itemContext(it,c,mode){
     const L=[`System: ${P.sysName||'(unbenannt)'}`];
@@ -1422,6 +1453,10 @@ function exportPOAM(){
     const fname=`${sn()}_POAM.json`;
     l.debug(`Export-Zusammenbau: ${oscalItems.length} poam-items · ${oscalRisks.length} risks · ${P.observations.length} observations · Katalog-Pin als back-matter-Resource gesetzt`);
     dl(poam,fname);autoSave();
+    // zusätzlich in den gemeinsamen Artefaktbestand (Übersicht in index.html)
+    gppArtefacts.save({stage:'remediate',kind:'poam',tool:GPP_TOOL_ID,
+        title:`${sn()} — POA&M`,filename:fname,data:poam})
+        .catch(e=>l.warn('Artefakt nicht abgelegt: '+e.message));
     l.ok(`POA&M exportiert: ${fname}`)}
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
