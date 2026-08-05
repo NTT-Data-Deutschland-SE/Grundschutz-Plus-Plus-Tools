@@ -1,94 +1,501 @@
 <!DOCTYPE html>
-<html lang="de" class="h-full bg-slate-900">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Assessment Plan & Results Generator v9 (build 9.2 — local:// Defs ladbar, SSP-Risikoanalyse)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif']}}}}</script>
+    <title>OSCAL Assessment Plan & Results Generator v9 (build 9.4 — Backends Gemini | OpenRouter, editierbare Prompts, Structured Outputs)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/15.0.0/marked.min.js"></script>
     <style>
-        .coll-content{transition:max-height .35s ease-out,opacity .3s ease-in-out;overflow:hidden;max-height:0;opacity:0}
-        .coll-content.open{max-height:50000px;opacity:1;overflow:visible}
-        .chev{transition:transform .3s ease}.chev.open{transform:rotate(90deg)}
-        .cscroll::-webkit-scrollbar{width:6px;height:6px}.cscroll::-webkit-scrollbar-track{background:#1e293b}.cscroll::-webkit-scrollbar-thumb{background:#475569;border-radius:3px}
-        .drag-over{border-color:#10b981!important;background:rgba(16,185,129,.1)!important}
-        .stat-bar{transition:width .6s cubic-bezier(.4,0,.2,1)}
-        .ctrl-detail{transition:max-height .3s ease-out,opacity .25s ease-in-out,padding .3s ease;max-height:0;opacity:0;padding-top:0;padding-bottom:0;overflow:hidden}
-        .ctrl-detail.open{max-height:1400px;opacity:1;padding-top:.75rem;padding-bottom:.75rem;overflow:visible}
-        .sb{font-size:10px;padding:2px 8px;border-radius:9999px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;border:1px solid}
-        .lbl{display:block;font-size:.65rem;font-weight:700;color:#94a3b8;text-transform:uppercase;margin-bottom:.25rem;letter-spacing:.05em}
-        .inp{padding:.5rem .75rem;background:#0f172a;border:1px solid #475569;border-radius:.5rem;font-size:.875rem;color:#fff;outline:none;transition:border .15s}
-        .inp:focus{border-color:#10b981;box-shadow:0 0 0 2px rgba(16,185,129,.2)}
-        .comp-header{cursor:pointer;user-select:none}.comp-header:hover .comp-title{color:#34d399}
-        .loader-sm{border:3px solid #334155;border-top:3px solid #10b981;border-radius:50%;width:16px;height:16px;animation:sp .8s linear infinite;display:inline-block}
-        @keyframes sp{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-        .ai-btn{background:linear-gradient(135deg,#7c3aed,#6366f1);transition:all .2s;color:#fff;font-weight:700;border-radius:.5rem;font-size:11px;padding:2px 8px;border:none;cursor:pointer}
-        .ai-btn:hover{filter:brightness(1.15);transform:translateY(-1px)}.ai-btn:disabled{opacity:.4;transform:none;cursor:wait}
-        .ai-explain{background:linear-gradient(135deg,#0891b2,#0e7490)}.ai-explain:hover{filter:brightness(1.15)}
-        .ai-out{background:#1e1b4b;border:1px solid #4338ca;border-radius:.5rem;padding:.75rem;margin-top:.5rem;font-size:.8rem;color:#e0e7ff;max-height:400px;overflow-y:auto;line-height:1.6}
-        .ai-out h2{font-size:.95rem;font-weight:700;color:#a5b4fc;margin:1rem 0 .4rem;border-bottom:1px solid #3730a3;padding-bottom:.25rem}
-        .ai-out h3{font-size:.85rem;font-weight:700;color:#c7d2fe;margin:.8rem 0 .3rem}
-        .ai-out strong{color:#e0e7ff}.ai-out em{color:#a5b4fc}
-        .ai-out ul,.ai-out ol{margin:.3rem 0 .3rem 1.2rem}.ai-out li{margin:.15rem 0}
-        .ai-out p{margin:.3rem 0}.ai-out code{background:#312e81;padding:1px 4px;border-radius:3px;font-size:.75rem}
-        .ctrl-title{color:#94a3b8;font-size:11px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-        .sidebar{width:320px;min-width:320px;transition:margin-left .3s ease,opacity .3s;overflow-y:auto}
-        .sidebar.collapsed{margin-left:-320px;opacity:0;pointer-events:none}
-        .sb-toggle{position:fixed;top:12px;left:12px;z-index:50;background:#1e293b;border:1px solid #475569;border-radius:.5rem;padding:6px 10px;color:#e2e8f0;cursor:pointer;font-size:18px;transition:left .3s}
-        .sb-toggle.shifted{left:332px}
-        @media(max-width:768px){.sidebar{width:100%;min-width:100%;position:fixed;top:0;left:0;z-index:40;height:100vh;background:#0f172a}.sidebar.collapsed{margin-left:-100%}}
+/* ============================================================
+   Design-System „Glassmorphic Deep" — handgeschriebenes CSS.
+   Kein Tailwind-CDN. Die im Markup (und in JS-Template-Literalen)
+   vorhandenen Utility-Klassennamen werden hier mit Design-Tokens
+   bedient; slate → Glas, emerald/cyan-Akzente → Violett.
+   ============================================================ */
+:root{
+  --bg-deep:      oklch(0.13 0.02 280);
+  --bg-elev-1:    oklch(0.95 0.005 280 / 0.04);
+  --bg-elev-2:    oklch(0.95 0.005 280 / 0.06);
+  --bg-elev-3:    oklch(0.95 0.005 280 / 0.08);
+  --border-1:     oklch(0.95 0.005 280 / 0.06);
+  --border-2:     oklch(0.95 0.005 280 / 0.10);
+  --text-primary:   oklch(0.95 0.005 280);
+  --text-secondary: oklch(0.75 0.02 280);
+  --text-tertiary:  oklch(0.65 0.02 280);
+  --text-quiet:     oklch(0.55 0.02 280);
+  --accent:         oklch(0.7  0.18 300);
+  --accent-soft:    oklch(0.7  0.18 300 / 0.15);
+  --accent-glow:    oklch(0.7  0.18 300 / 0.4);
+  --red:     oklch(0.65 0.20 25);
+  --amber:   oklch(0.80 0.15 80);
+  --yellow:  oklch(0.85 0.16 95);
+  --green:   oklch(0.75 0.18 145);
+  --blue:    oklch(0.70 0.15 240);
+  --magenta: oklch(0.68 0.19 330);
+  --rail-w: 240px;
+  --topbar-h: 64px;
+  --log-h: 220px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg-deep);
+  color:var(--text-primary);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+h1,h2,h3,h4,p,ul,ol,figure{margin:0}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+::selection{background:oklch(0.7 0.18 300 / 0.35);color:oklch(0.95 0.005 280)}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg-elev-3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent-soft)}
+.cscroll::-webkit-scrollbar{width:6px;height:6px}
+.cscroll::-webkit-scrollbar-track{background:transparent}
+.cscroll::-webkit-scrollbar-thumb{background:var(--bg-elev-3);border-radius:3px}
+.cscroll::-webkit-scrollbar-thumb:hover{background:var(--accent-soft)}
+
+/* --- Atmosphäre: Aurora-Blobs + Noise --- */
+.atmo{position:fixed;pointer-events:none;z-index:0}
+.atmo-a{width:600px;height:600px;border-radius:50%;top:-200px;left:-100px;filter:blur(60px);
+  background:radial-gradient(circle,oklch(0.4 0.18 300/.5),transparent 70%)}
+.atmo-b{width:700px;height:700px;border-radius:50%;bottom:-300px;right:-200px;filter:blur(80px);
+  background:radial-gradient(circle,oklch(0.4 0.16 240/.4),transparent 70%)}
+.atmo-noise{inset:0;opacity:.03;
+  background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><filter id=%22n%22><feTurbulence baseFrequency=%220.9%22/></filter><rect width=%22100%22 height=%22100%22 filter=%22url(%23n)%22/></svg>')}
+
+/* --- Layout-Shell --- */
+.shell{position:relative;z-index:1;display:flex;flex-direction:column;height:100%;min-height:0}
+.topbar{
+  flex:0 0 auto;height:var(--topbar-h);display:flex;align-items:center;gap:16px;
+  padding:0 20px;background:var(--bg-elev-1);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border-2);overflow:hidden;
+}
+.wordmark{display:flex;align-items:baseline;gap:10px;min-width:0}
+.wordmark .mark{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:15px;font-weight:600;
+  letter-spacing:.14em;color:var(--text-primary)}
+.wordmark .mark .glyph{color:var(--accent);margin-right:6px}
+.wordmark .sub{font-size:11px;color:var(--text-quiet);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-meta{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.pill{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid var(--border-2);
+  background:var(--bg-elev-1);color:var(--text-tertiary);white-space:nowrap;display:inline-flex;
+  align-items:center;gap:6px;max-width:38ch;overflow:hidden;text-overflow:ellipsis}
+.pill button{background:none;border:0;padding:0;font:inherit;cursor:pointer}
+.body-row{flex:1 1 auto;display:flex;min-height:0}
+.splitter{flex:0 0 5px;cursor:col-resize;background:transparent;position:relative;transition:background 120ms ease}
+.splitter::after{content:"";position:absolute;inset:0 2px;background:var(--border-1)}
+.splitter:hover::after,.splitter.dragging::after{background:var(--accent-soft)}
+main{flex:1 1 auto;overflow-y:auto;min-height:0;min-width:0;padding:24px}
+.sidebar{
+  flex:0 0 var(--rail-w);width:var(--rail-w);min-width:0;overflow-y:auto;min-height:0;
+  background:var(--bg-elev-1);backdrop-filter:blur(20px);border-right:1px solid var(--border-1);
+  padding:12px;display:flex;flex-direction:column;gap:8px;transition:opacity 160ms ease;
+}
+.sidebar.collapsed{display:none}
+.sb-toggle{
+  background:var(--bg-elev-2);border:1px solid var(--border-2);border-radius:8px;
+  padding:4px 9px;color:var(--text-secondary);cursor:pointer;font-size:14px;line-height:1.2;
+  transition:background 120ms ease,color 120ms ease;
+}
+.sb-toggle:hover{background:var(--bg-elev-3);color:var(--text-primary)}
+
+/* --- Progress (ersetzt den Spinner) --- */
+.progress-wrap{flex:0 0 auto;padding:6px 20px 0;background:transparent}
+.progress-head{display:flex;justify-content:space-between;align-items:center;
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--text-quiet);margin-bottom:4px}
+.progress-track{height:1px;background:var(--border-1);overflow:hidden}
+.progress-fill{height:100%;background:var(--amber);width:0%;transition:width .2s ease}
+.progress-fill.done{background:var(--green)}
+
+/* --- Log-Konsole --- */
+.logbox{flex:0 0 var(--log-h);height:var(--log-h);display:flex;flex-direction:column;min-height:0;
+  background:var(--bg-elev-1);backdrop-filter:blur(20px);border-top:1px solid var(--border-2)}
+.log-head{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:7px 16px;
+  border-bottom:1px solid var(--border-1);font-family:'JetBrains Mono',ui-monospace,monospace;
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-tertiary)}
+.log-head .log-title{color:var(--text-secondary)}
+.log-head .spacer{margin-left:auto}
+.log-btn{background:var(--bg-elev-1);border:1px solid var(--border-2);border-radius:6px;
+  padding:2px 8px;color:var(--text-tertiary);cursor:pointer;font-family:inherit;font-size:10px;
+  letter-spacing:.08em;text-transform:uppercase;transition:background 120ms ease,color 120ms ease}
+.log-btn:hover{background:var(--bg-elev-3);color:var(--text-primary)}
+.log-btn.on{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.log-body{flex:1 1 auto;overflow-y:auto;min-height:0;padding:6px 16px 10px;
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;line-height:1.55}
+.log-line{display:flex;gap:10px;white-space:pre-wrap;word-break:break-word}
+.log-line .ts{color:var(--text-quiet);flex:0 0 auto}
+.log-line .lv{flex:0 0 46px;text-transform:uppercase;font-weight:600}
+.log-info  .lv{color:var(--blue)}   .log-info  .msg{color:var(--text-secondary)}
+.log-ok    .lv{color:var(--green)}  .log-ok    .msg{color:var(--text-primary)}
+.log-warn  .lv{color:var(--amber)}  .log-warn  .msg{color:var(--amber)}
+.log-err   .lv{color:var(--red)}    .log-err   .msg{color:var(--red)}
+.log-debug .lv{color:var(--text-quiet)} .log-debug .msg{color:var(--text-quiet)}
+
+/* --- Glas-Basiskomponenten --- */
+.card,.glass{background:var(--bg-elev-1);border:1px solid var(--border-2);
+  backdrop-filter:blur(20px);border-radius:12px}
+.sb{display:inline-flex;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;
+  font-size:10px;padding:2px 8px;border-radius:999px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.06em;border:1px solid var(--border-2);background:var(--bg-elev-2);color:var(--text-secondary)}
+.lbl{display:block;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;font-weight:500;
+  color:var(--text-quiet);text-transform:uppercase;margin-bottom:.3rem;letter-spacing:.11em}
+.inp{padding:.45rem .6rem;background:var(--bg-elev-1);border:1px solid var(--border-2);
+  border-radius:8px;font-size:.8rem;color:var(--text-primary);outline:none;
+  transition:border-color 140ms ease,box-shadow 140ms ease,background 140ms ease}
+.inp:hover{background:var(--bg-elev-2)}
+.inp:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft);background:var(--bg-elev-2)}
+select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--text-quiet) 50%),linear-gradient(135deg,var(--text-quiet) 50%,transparent 50%);
+  background-position:calc(100% - 14px) 52%,calc(100% - 9px) 52%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:26px}
+select.inp option{background:oklch(0.18 0.02 280);color:var(--text-primary)}
+textarea{resize:vertical}
+textarea.inp{min-height:80px;line-height:1.55}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;
+  border-radius:8px;border:1px solid var(--border-2);background:var(--bg-elev-2);
+  color:var(--text-secondary);padding:.4rem .7rem;font-size:11px;font-weight:600;
+  transition:background 140ms ease,color 140ms ease,border-color 140ms ease}
+.btn:hover{background:var(--bg-elev-3);color:var(--text-primary)}
+.btn-primary{background:var(--accent);border-color:transparent;color:oklch(0.16 0.02 300);
+  box-shadow:0 6px 20px var(--accent-glow)}
+.btn-primary:hover{background:oklch(0.75 0.18 300);color:oklch(0.16 0.02 300)}
+.btn:disabled{opacity:.4;cursor:wait}
+
+/* --- Collapsibles / Chevrons --- */
+.coll-content{transition:max-height .3s ease-out,opacity .2s ease-in-out;overflow:hidden;max-height:0;opacity:0}
+.coll-content.open{max-height:50000px;opacity:1;overflow:visible}
+.chev{transition:transform .18s ease}.chev.open{transform:rotate(90deg)}
+.ctrl-detail{transition:max-height .3s ease-out,opacity .2s ease-in-out,padding .3s ease;
+  max-height:0;opacity:0;padding-top:0;padding-bottom:0;overflow:hidden}
+.ctrl-detail.open{max-height:1600px;opacity:1;padding-top:.75rem;padding-bottom:.75rem;overflow:visible}
+.comp-header{cursor:pointer;user-select:none;transition:background 140ms ease}
+.comp-header:hover .comp-title{color:var(--accent)}
+.ctrl-title{color:var(--text-tertiary);font-size:11px;max-width:280px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.ctrl-row{transition:border-color 140ms ease,background 140ms ease}
+.ctrl-row:hover{border-color:var(--border-2)}
+.dz{transition:border-color 140ms ease,background 140ms ease}
+.dz:hover{background:var(--bg-elev-2)}
+.drag-over{border-color:var(--accent)!important;background:var(--accent-soft)!important}
+.stat-bar{transition:width .6s cubic-bezier(.4,0,.2,1)}
+
+/* --- KI-Buttons + Markdown-Ausgabe --- */
+.ai-btn{background:var(--accent-soft);border:1px solid oklch(0.7 0.18 300 / 0.35);color:var(--accent);
+  font-weight:600;border-radius:7px;font-size:12px;padding:2px 9px;cursor:pointer;
+  transition:background 140ms ease,color 140ms ease}
+.ai-btn:hover{background:oklch(0.7 0.18 300 / 0.28);color:var(--text-primary)}
+.ai-btn:disabled{opacity:.4;cursor:wait}
+.ai-explain{background:var(--bg-elev-2);border-color:var(--border-2);color:var(--text-secondary)}
+.ai-explain:hover{background:var(--bg-elev-3);color:var(--text-primary)}
+.ai-out{background:var(--bg-elev-1);border:1px solid var(--border-2);border-radius:10px;
+  padding:.8rem;margin-top:.6rem;font-size:.8rem;color:var(--text-secondary);
+  max-height:400px;overflow-y:auto;min-height:0;line-height:1.65}
+.ai-out h2{font-size:.9rem;font-weight:600;color:var(--text-primary);margin:1rem 0 .4rem;
+  border-bottom:1px solid var(--border-1);padding-bottom:.25rem}
+.ai-out h3{font-size:.82rem;font-weight:600;color:var(--accent);margin:.8rem 0 .3rem}
+.ai-out strong{color:var(--text-primary)}.ai-out em{color:var(--accent)}
+.ai-out ul,.ai-out ol{margin:.3rem 0 .3rem 1.2rem}.ai-out li{margin:.15rem 0}
+.ai-out p{margin:.35rem 0}
+.ai-out code{font-family:'JetBrains Mono',ui-monospace,monospace;background:var(--bg-elev-3);
+  padding:1px 4px;border-radius:3px;font-size:.72rem}
+.prompt-ta{font-family:'JetBrains Mono',ui-monospace,monospace;resize:vertical;min-height:200px;
+  line-height:1.55;font-size:11px}
+
+/* --- Stats-Karte --- */
+.stats-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media(max-width:700px){.stats-grid{grid-template-columns:1fr}}
+.chart-card{background:var(--bg-elev-1);border:1px solid var(--border-2);border-radius:12px;padding:14px}
+.chart-head{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--text-quiet);margin-bottom:10px}
+.donut-wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.donut-legend{display:flex;flex-direction:column;gap:4px;font-size:11px;min-width:0}
+.donut-legend .row{display:flex;align-items:center;gap:7px;color:var(--text-secondary)}
+.donut-legend .dot{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
+.donut-legend .n{margin-left:auto;font-family:'JetBrains Mono',ui-monospace,monospace;color:var(--text-primary)}
+.hbar-row{display:grid;grid-template-columns:104px 1fr 40px;align-items:center;gap:9px;margin-bottom:6px}
+.hbar-label{font-size:11px;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbar-track{height:6px;background:var(--bg-elev-2);border-radius:3px;overflow:hidden}
+.hbar-fill{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.hbar-value{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;color:var(--text-primary);text-align:right}
+.kpi-row{display:flex;gap:22px;flex-wrap:wrap}
+.kpi{display:flex;flex-direction:column;gap:2px}
+.kpi .v{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:22px;font-weight:600;color:var(--text-primary)}
+.kpi .k{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:9px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--text-quiet)}
+
+/* ============================================================
+   Utility-Schicht — deckt exakt die im Markup/JS verwendeten
+   Klassennamen ab (Ex-Tailwind), mit Design-Token-Werten.
+   ============================================================ */
+.hidden{display:none!important}
+.block{display:block}.flex{display:flex}.grid{display:grid}
+.flex-1{flex:1 1 0%}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}
+.flex-shrink-0{flex-shrink:0}.flex-shrink-1{flex-shrink:1}
+.items-center{align-items:center}.items-start{align-items:flex-start}
+.justify-between{justify-content:space-between}.justify-end{justify-content:flex-end}
+.ml-auto{margin-left:auto}.mt-auto{margin-top:auto}
+.gap-0\.5{gap:2px}.gap-1{gap:4px}.gap-1\.5{gap:6px}.gap-2{gap:8px}.gap-3{gap:12px}.gap-5{gap:20px}
+.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}
+.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.space-y-1>*+*{margin-top:4px}.space-y-1\.5>*+*{margin-top:6px}.space-y-4>*+*{margin-top:16px}
+.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto;min-height:0}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.whitespace-nowrap{white-space:nowrap}.align-top{vertical-align:top}
+.border-collapse{border-collapse:collapse}
+.cursor-pointer{cursor:pointer}
+.text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}
+.italic{font-style:italic}.underline{text-decoration:underline}
+.uppercase{text-transform:uppercase}
+.transition-all{transition:all 160ms ease}.transition-colors{transition:color 160ms ease,background-color 160ms ease,border-color 160ms ease}
+.duration-300{transition-duration:200ms}
+.drop-shadow{filter:none}
+.shadow-lg{box-shadow:none}
+.bg-gradient-to-br,.from-slate-900,.to-slate-800{background-image:none}
+.animate-pulse{animation:gpp-pulse 2s cubic-bezier(.4,0,.6,1) infinite}
+@keyframes gpp-pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* Größen */
+.w-full{width:100%}.h-full{height:100%}
+.w-1\.5{width:6px}.w-2{width:8px}.w-3{width:12px}.w-3\.5{width:14px}.w-4{width:16px}
+.w-12{width:48px}.w-16{width:64px}.w-24{width:96px}.w-28{width:112px}.w-44{width:176px}
+.h-1\.5{height:6px}.h-2{height:8px}.h-3{height:12px}.h-3\.5{height:14px}.h-4{height:16px}
+/* Abstände */
+.p-1{padding:4px}.p-1\.5{padding:6px}.p-2{padding:8px}.p-2\.5{padding:10px}
+.p-3{padding:12px}.p-4{padding:16px}.p-5{padding:20px}
+.px-1{padding-left:4px;padding-right:4px}.px-2{padding-left:8px;padding-right:8px}
+.px-3{padding-left:12px;padding-right:12px}
+.py-0\.5{padding-top:2px;padding-bottom:2px}.py-1{padding-top:4px;padding-bottom:4px}
+.py-1\.5{padding-top:6px;padding-bottom:6px}
+.pr-2{padding-right:8px}.pt-1{padding-top:4px}.pt-1\.5{padding-top:6px}.pt-2{padding-top:8px}
+.mb-0{margin-bottom:0}.mb-0\.5{margin-bottom:2px}.mb-1{margin-bottom:4px}.mb-1\.5{margin-bottom:6px}
+.mb-2{margin-bottom:8px}.mb-3{margin-bottom:12px}.mb-4{margin-bottom:16px}
+.mt-0\.5{margin-top:2px}.mt-1{margin-top:4px}.mt-1\.5{margin-top:6px}.mt-2{margin-top:8px}
+.ml-1{margin-left:4px}.ml-2{margin-left:8px}.mr-1\.5{margin-right:6px}.mr-2{margin-right:8px}
+/* Typografie */
+.font-sans{font-family:'Inter',system-ui,sans-serif}
+.font-mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+.font-bold{font-weight:600}.font-semibold{font-weight:500}
+.text-\[8px\]{font-size:8px}.text-\[9px\]{font-size:9px}
+.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}
+.text-xs{font-size:11.5px}.text-sm{font-size:13px}.text-base{font-size:15px}
+.text-lg{font-size:17px}.text-xl{font-size:20px}
+.leading-tight{line-height:1.25}.leading-snug{line-height:1.38}.leading-relaxed{line-height:1.65}
+.tracking-wide{letter-spacing:.05em}.tracking-wider{letter-spacing:.09em}
+/* Radien + Rahmen */
+.rounded{border-radius:6px}.rounded-lg{border-radius:10px}.rounded-xl{border-radius:12px}
+.rounded-full{border-radius:999px}
+.border{border:1px solid var(--border-1)}
+.border-t{border-top:1px solid var(--border-1)}.border-b{border-bottom:1px solid var(--border-1)}
+.border-r{border-right:1px solid var(--border-1)}
+.border-l-2{border-left:2px solid var(--border-2)}
+.border-dashed{border-style:dashed}
+.ring-1{box-shadow:0 0 0 1px var(--border-2)}
+.ring-2{box-shadow:0 0 0 2px var(--accent-soft)}
+.ring-emerald-500,.ring-emerald-500\/30{box-shadow:0 0 0 2px var(--accent-soft)}
+/* Flächen: slate → Glas */
+.bg-slate-900,.bg-slate-900\/30,.bg-slate-900\/40,.bg-slate-900\/50,.bg-slate-900\/60,.bg-slate-900\/80{background-color:var(--bg-elev-1)}
+.bg-slate-800,.bg-slate-800\/60{background-color:var(--bg-elev-2)}
+.bg-slate-700{background-color:var(--bg-elev-3)}
+.border-slate-700,.border-slate-700\/50{border-color:var(--border-1)}
+.border-slate-600{border-color:var(--border-2)}
+.text-white,.text-slate-200{color:var(--text-primary)}
+.text-slate-300{color:var(--text-secondary)}
+.text-slate-400{color:var(--text-secondary)}
+.text-slate-500{color:var(--text-tertiary)}
+.text-slate-600{color:var(--text-quiet)}
+/* Akzentfamilien (emerald/cyan/indigo/violet/purple → Violett-Achse) */
+.bg-emerald-950\/30,.bg-emerald-950\/40{background-color:color-mix(in oklab,var(--green) 9%,transparent)}
+.bg-emerald-900\/30,.bg-emerald-900\/50{background-color:color-mix(in oklab,var(--green) 15%,transparent)}
+.bg-emerald-900{background-color:color-mix(in oklab,var(--green) 20%,transparent)}
+.bg-emerald-800{background-color:color-mix(in oklab,var(--green) 26%,transparent)}
+.bg-emerald-700{background-color:color-mix(in oklab,var(--green) 34%,transparent)}
+.bg-emerald-600{background-color:var(--green)}
+.bg-emerald-500{background-color:var(--green)}
+.border-emerald-800\/30,.border-emerald-800\/40{border-color:color-mix(in oklab,var(--green) 26%,transparent)}
+.border-emerald-700{border-color:color-mix(in oklab,var(--green) 38%,transparent)}
+.border-emerald-600,.border-emerald-500{border-color:color-mix(in oklab,var(--green) 58%,transparent)}
+.text-emerald-200,.text-emerald-200\/80,.text-emerald-200\/90{color:color-mix(in oklab,var(--green) 45%,var(--text-primary))}
+.text-emerald-300{color:color-mix(in oklab,var(--green) 72%,var(--text-primary))}
+.text-emerald-400,.text-emerald-500{color:var(--green)}
+.bg-cyan-950\/30{background-color:color-mix(in oklab,var(--accent) 8%,transparent)}
+.bg-cyan-900\/50{background-color:color-mix(in oklab,var(--accent) 15%,transparent)}
+.bg-cyan-500{background-color:var(--accent)}
+.border-cyan-800{border-color:color-mix(in oklab,var(--accent) 26%,transparent)}
+.border-cyan-700{border-color:color-mix(in oklab,var(--accent) 38%,transparent)}
+.text-cyan-200\/70{color:color-mix(in oklab,var(--accent) 45%,var(--text-primary))}
+.text-cyan-300{color:color-mix(in oklab,var(--accent) 72%,var(--text-primary))}
+.text-cyan-400{color:var(--accent)}
+.text-cyan-500{color:color-mix(in oklab,var(--accent) 80%,var(--text-quiet))}
+.bg-indigo-950,.bg-indigo-950\/20,.bg-indigo-950\/50{background-color:color-mix(in oklab,var(--accent) 9%,transparent)}
+.bg-indigo-900{background-color:color-mix(in oklab,var(--accent) 20%,transparent)}
+.bg-indigo-700{background-color:color-mix(in oklab,var(--accent) 34%,transparent)}
+.border-indigo-900\/60{border-color:color-mix(in oklab,var(--accent) 22%,transparent)}
+.border-indigo-800{border-color:color-mix(in oklab,var(--accent) 30%,transparent)}
+.border-indigo-700{border-color:color-mix(in oklab,var(--accent) 40%,transparent)}
+.text-indigo-300{color:color-mix(in oklab,var(--accent) 72%,var(--text-primary))}
+.bg-violet-900{background-color:color-mix(in oklab,var(--accent) 20%,transparent)}
+.border-violet-700{border-color:color-mix(in oklab,var(--accent) 40%,transparent)}
+.text-violet-300{color:color-mix(in oklab,var(--accent) 72%,var(--text-primary))}
+.text-violet-400{color:var(--accent)}
+.bg-purple-900{background-color:color-mix(in oklab,var(--magenta) 20%,transparent)}
+.bg-purple-700{background-color:color-mix(in oklab,var(--magenta) 34%,transparent)}
+.border-purple-700{border-color:color-mix(in oklab,var(--magenta) 40%,transparent)}
+.text-purple-300{color:color-mix(in oklab,var(--magenta) 72%,var(--text-primary))}
+/* Semantische Farben */
+.bg-blue-900{background-color:color-mix(in oklab,var(--blue) 20%,transparent)}
+.bg-blue-800{background-color:color-mix(in oklab,var(--blue) 26%,transparent)}
+.bg-blue-600{background-color:color-mix(in oklab,var(--blue) 42%,transparent)}
+.border-blue-700{border-color:color-mix(in oklab,var(--blue) 38%,transparent)}
+.text-blue-200{color:color-mix(in oklab,var(--blue) 45%,var(--text-primary))}
+.text-blue-300{color:color-mix(in oklab,var(--blue) 72%,var(--text-primary))}
+.text-blue-400,.text-blue-500{color:var(--blue)}
+.bg-amber-950\/40{background-color:color-mix(in oklab,var(--amber) 9%,transparent)}
+.bg-amber-900\/50{background-color:color-mix(in oklab,var(--amber) 15%,transparent)}
+.bg-amber-900{background-color:color-mix(in oklab,var(--amber) 20%,transparent)}
+.bg-amber-800{background-color:color-mix(in oklab,var(--amber) 26%,transparent)}
+.bg-amber-500{background-color:var(--amber)}
+.border-amber-800{border-color:color-mix(in oklab,var(--amber) 26%,transparent)}
+.border-amber-700{border-color:color-mix(in oklab,var(--amber) 38%,transparent)}
+.text-amber-200{color:color-mix(in oklab,var(--amber) 45%,var(--text-primary))}
+.text-amber-300{color:color-mix(in oklab,var(--amber) 75%,var(--text-primary))}
+.text-amber-400,.text-amber-500{color:var(--amber)}
+.text-yellow-300{color:color-mix(in oklab,var(--yellow) 80%,var(--text-primary))}
+.text-yellow-400{color:var(--yellow)}
+.bg-red-900\/50{background-color:color-mix(in oklab,var(--red) 15%,transparent)}
+.bg-red-500{background-color:var(--red)}
+.border-red-700{border-color:color-mix(in oklab,var(--red) 38%,transparent)}
+.text-red-300{color:color-mix(in oklab,var(--red) 72%,var(--text-primary))}
+.text-red-400{color:var(--red)}
+/* Hover-Varianten */
+.hover\:bg-slate-600:hover,.hover\:bg-slate-700:hover,.hover\:bg-slate-800:hover{background-color:var(--bg-elev-3)}
+.hover\:bg-emerald-500:hover{background-color:oklch(0.78 0.18 145)}
+.hover\:bg-blue-500:hover{background-color:color-mix(in oklab,var(--blue) 55%,transparent)}
+.hover\:bg-purple-600:hover{background-color:color-mix(in oklab,var(--magenta) 44%,transparent)}
+.hover\:bg-indigo-600:hover{background-color:color-mix(in oklab,var(--accent) 44%,transparent)}
+.hover\:bg-indigo-950\/80:hover{background-color:color-mix(in oklab,var(--accent) 16%,transparent)}
+.hover\:border-emerald-500:hover,.hover\:border-cyan-500:hover,.hover\:border-purple-500:hover{border-color:var(--accent)}
+.hover\:text-emerald-400:hover{color:var(--accent)}
+.hover\:text-white:hover{color:var(--text-primary)}
+/* Checkbox */
+.form-checkbox{appearance:none;-webkit-appearance:none;display:inline-block;flex:0 0 auto;
+  border:1px solid var(--border-2);border-radius:4px;background:var(--bg-elev-2);cursor:pointer;
+  position:relative;transition:background 120ms ease,border-color 120ms ease}
+.form-checkbox:checked{background:var(--accent);border-color:var(--accent)}
+.form-checkbox:checked::after{content:"";position:absolute;left:50%;top:46%;width:3px;height:6px;
+  border:solid oklch(0.16 0.02 300);border-width:0 1.6px 1.6px 0;transform:translate(-50%,-50%) rotate(45deg)}
+.form-checkbox:focus-visible{outline:2px solid var(--accent-soft);outline-offset:1px}
+/* Responsive */
+@media(min-width:768px){
+  .md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .md\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .md\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .md\:col-span-2{grid-column:span 2/span 2}
+  .md\:flex-row{flex-direction:row}
+  .md\:items-center{align-items:center}
+  .md\:p-6{padding:24px}
+}
+@media(min-width:1024px){.lg\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:768px){
+  .sidebar{position:fixed;top:var(--topbar-h);left:0;z-index:40;height:calc(100% - var(--topbar-h));
+    width:min(320px,86vw);flex-basis:auto}
+  .splitter{display:none}
+}
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="h-full font-sans text-slate-200">
+<body>
 
-<button id="sb-btn" class="sb-toggle shifted" onclick="document.getElementById('sidebar').classList.toggle('collapsed');this.classList.toggle('shifted')">☰</button>
+<div class="atmo atmo-a"></div>
+<div class="atmo atmo-b"></div>
+<div class="atmo atmo-noise"></div>
 
-<div class="flex h-full">
-    <!-- SIDEBAR -->
-    <aside id="sidebar" class="sidebar bg-slate-800 border-r border-slate-700 p-3 flex flex-col gap-2 cscroll">
+<div class="shell">
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <button id="sb-btn" class="sb-toggle" title="Seitenleiste ein-/ausblenden" onclick="document.getElementById('sidebar').classList.toggle('collapsed')">◧</button>
+    <div class="wordmark">
+        <span class="mark"><span class="glyph">◈</span>NTT&nbsp;DATA</span>
+        <span class="sub">OSCAL AP &amp; AR — SSP → Prüfung → Assessment Plan + Results</span>
+    </div>
+    <div class="topbar-meta">
+        <span class="pill">build 9.4</span>
+        <span id="cat-status" class="pill">Katalog wird geladen …</span>
+        <span id="ssp-status" class="pill">Kein SSP</span>
+        <span id="comp-status" class="pill hidden"></span>
+    </div>
+  </header>
 
-<div style="background-color: #070e27; padding: 15px; text-align: center; border-bottom: 3px solid #0072bc; margin-bottom: 15px; border-radius: 4px;">
-    <img src="https://mc-8afc6902-e56c-432c-8c3f-3991-cdn-endpoint.azureedge.net/-/media/project/emea/shared/global-logo/globallogo_nttdata_white_resized.png?extension=webp&hash=82AED889DCD1D6C0BA76C56A5F81B4C6" alt="NTT DATA Logo" style="max-width: 150px; height: auto;">
-</div>
+  <!-- PROGRESS (1px-Hairline statt Spinner) -->
+  <div class="progress-wrap hidden" id="prog-wrap">
+    <div class="progress-head"><span id="prog-label">bereit</span><span id="prog-count"></span></div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill"></div></div>
+  </div>
 
-        <div class="pt-1">
-            <h1 class="text-base font-bold text-white leading-tight">OSCAL AP & AR</h1>
-            <p class="text-[10px] text-slate-500 mt-0.5">SSP → Prüfung → AP + AR</p>
-        </div>
-        <div class="space-y-1">
-            <div id="cat-status" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 flex items-center"><span class="loader-sm mr-1.5"></span>Katalog...</div>
-            <div id="ssp-status" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>Kein SSP</div>
-            <div id="comp-status" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 items-center hidden"></div>
-        </div>
+  <div class="body-row">
+    <!-- LINKE RAIL -->
+    <aside id="sidebar" class="sidebar cscroll">
+
         <!-- Import -->
+        <div class="lbl mb-0">⬡ Daten</div>
         <div class="space-y-1.5">
-            <div id="dz-ssp" class="dz border border-dashed border-slate-600 rounded p-2 text-center cursor-pointer hover:border-emerald-500 bg-slate-900/40 text-[10px]" data-type="ssp">📋 SSP laden<input type="file" accept=".json" class="hidden fip" data-type="ssp"></div>
-            <div id="dz-state" class="dz border border-dashed border-slate-600 rounded p-2 text-center cursor-pointer hover:border-purple-500 bg-slate-900/40 text-[10px]" data-type="state">💾 Session laden<input type="file" accept=".json" class="hidden fip" data-type="state"></div>
-            <div id="dz-defs" class="dz border border-dashed border-slate-600 rounded p-2 text-center cursor-pointer hover:border-cyan-500 bg-slate-900/40 text-[10px]" data-type="defs">📁 Profile/Defs laden<span class="block text-[8px] text-slate-500">für local:// Referenzen — mehrere möglich</span><input type="file" accept=".json" multiple class="hidden fip" data-type="defs"></div>
+            <div id="dz-ssp" class="dz border border-dashed border-slate-600 rounded p-2 text-center cursor-pointer hover:border-emerald-500 bg-slate-900/40 text-[10px]" data-type="ssp">▣ SSP laden<input type="file" accept=".json" class="hidden fip" data-type="ssp"></div>
+            <div id="dz-state" class="dz border border-dashed border-slate-600 rounded p-2 text-center cursor-pointer hover:border-purple-500 bg-slate-900/40 text-[10px]" data-type="state">◇ Session laden<input type="file" accept=".json" class="hidden fip" data-type="state"></div>
+            <div id="dz-defs" class="dz border border-dashed border-slate-600 rounded p-2 text-center cursor-pointer hover:border-cyan-500 bg-slate-900/40 text-[10px]" data-type="defs">⬡ Profile/Defs laden<span class="block text-[8px] text-slate-500">für local:// Referenzen — mehrere möglich</span><input type="file" accept=".json" multiple class="hidden fip" data-type="defs"></div>
         </div>
         <!-- AI -->
+        <div class="lbl mb-0 mt-1">◈ Konfiguration</div>
         <div class="border border-slate-700 rounded overflow-hidden">
-            <button onclick="tog('sb-ai')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300">🤖 KI<span id="ai-badge" class="sb bg-slate-700 text-slate-500 border-slate-600 hidden ml-1">—</span><svg id="icon-sb-ai" class="chev w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg></button>
+            <button onclick="tog('sb-ai')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300">◈ KI<span id="ai-badge" class="sb bg-slate-700 text-slate-500 border-slate-600 hidden ml-1">—</span><svg id="icon-sb-ai" class="chev w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg></button>
             <div id="sb-ai-content" class="coll-content p-2 bg-slate-900/30 space-y-1.5">
-                <select id="ai-provider" onchange="onProvChange()" class="inp text-[10px]"><option value="">— Kein —</option><option value="claude">Claude</option><option value="gemini">Gemini</option></select>
+                <label for="ai-provider" class="text-[9px] font-bold text-slate-500 uppercase tracking-wide">Backend</label>
+                <select id="ai-provider" onchange="onProvChange()" class="inp text-[10px]"><option value="">— Kein —</option><option value="gemini">Gemini</option><option value="openrouter">OpenRouter</option></select>
                 <input type="password" id="ai-key" placeholder="API-Key" oninput="saveAICfg()" class="inp text-[10px]">
-                <select id="ai-model" class="inp text-[10px]" onchange="saveAICfg()"></select>
-                <div class="flex gap-2 text-[8px]"><a href="https://console.anthropic.com/settings/keys" target="_blank" class="text-violet-400 underline">Claude</a><a href="https://aistudio.google.com/apikey" target="_blank" class="text-blue-400 underline">Gemini</a></div>
+                <!-- Gemini: feste Liste lebender Modell-IDs -->
+                <div id="gm-model-wrap" class="hidden">
+                    <select id="ai-model" class="inp text-[10px] w-full" onchange="saveAICfg()"></select>
+                </div>
+                <!-- OpenRouter: Katalog live aus /api/v1/models + Freitext-Slug -->
+                <div id="or-model-wrap" class="hidden space-y-1.5">
+                    <select id="or-model" class="inp text-[10px] w-full font-mono" onchange="onORPick()" title="Modellkatalog von openrouter.ai — ◈ = Structured Outputs unterstützt"></select>
+                    <input type="text" id="or-slug" placeholder="Modell-Slug, z. B. anthropic/…" oninput="saveAICfg()" class="inp text-[10px] w-full font-mono" title="Wirksamer Slug. Freitext hat Vorrang; die Auswahl oben trägt hier ein.">
+                    <div class="flex items-center gap-1.5">
+                        <span id="or-cat-status" class="text-[8px] text-slate-500 truncate">Katalog noch nicht geladen</span>
+                        <button onclick="refreshORModels()" class="btn ml-auto" title="Modellkatalog neu von openrouter.ai laden">↻</button>
+                    </div>
+                    <label class="flex items-center gap-1.5 text-[8px] text-slate-500 leading-snug"><input type="checkbox" id="or-only-schema" checked onchange="renderORModels()" class="form-checkbox w-3 h-3">nur Modelle mit Structured Outputs</label>
+                </div>
+                <div id="ai-migrate-hint" class="hidden text-[8px] font-bold text-amber-300 bg-amber-950/40 border border-amber-800 rounded px-2 py-1 leading-snug">◬ Der Claude-Direktpfad entfällt (CORS im Browser). Anthropic-Modelle laufen jetzt über OpenRouter — bitte einen eigenen <span class="font-mono">sk-or-…</span>-Key eintragen, der alte Claude-Key wurde nicht übernommen.</div>
+                <div class="flex items-center gap-1.5">
+                    <label for="ai-retries" class="text-[9px] font-bold text-slate-500 uppercase tracking-wide flex-shrink-0">Retries</label>
+                    <input type="number" id="ai-retries" min="0" max="5" value="2" oninput="saveAICfg()" class="inp text-[10px] w-16 py-0.5" title="Wiederholungen pro KI-Aufruf bei Fehlern (exponentieller Backoff: 500ms → 1s → 2s)">
+                </div>
+                <p class="text-[8px] text-slate-500 leading-snug">CORS-Fehler? Die Datei nicht per <span class="font-mono text-slate-400">file://</span> öffnen, sondern im Ordner <span class="font-mono text-slate-400">python -m http.server</span> starten und über <span class="font-mono text-slate-400">http://localhost:8000/</span> aufrufen. OpenRouter erlaubt Browser-Aufrufe ausdrücklich — nötig ist nur ein eigener <span class="font-mono text-slate-400">sk-or-…</span>-Key, der ausschließlich in <span class="font-mono text-slate-400">localStorage</span> liegt und niemals im Code steht.</p>
+                <div class="flex gap-2 text-[8px]"><a href="https://openrouter.ai/settings/keys" target="_blank" class="text-violet-400 underline">OpenRouter</a><a href="https://aistudio.google.com/apikey" target="_blank" class="text-blue-400 underline">Gemini</a></div>
             </div>
         </div>
+        <!-- Navigation -->
+        <div class="lbl mb-0 mt-1">◉ Navigation</div>
         <!-- Terms Navigation -->
         <div class="border border-slate-700 rounded overflow-hidden">
-            <button onclick="scrollToSec('sec-terms')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300 hover:text-emerald-400 transition-colors">📅 Rahmenbedingungen</button>
+            <button onclick="scrollToSec('sec-terms')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300 hover:text-emerald-400 transition-colors">◐ Rahmenbedingungen</button>
         </div>
         <!-- Meta Navigation -->
         <div class="border border-slate-700 rounded overflow-hidden">
-            <button onclick="scrollToSec('sec-meta')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300 hover:text-emerald-400 transition-colors">📝 Metadaten & Assessor</button>
+            <button onclick="scrollToSec('sec-meta')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300 hover:text-emerald-400 transition-colors">◇ Metadaten &amp; Assessor</button>
+        </div>
+        <!-- Prompts Navigation -->
+        <div class="border border-slate-700 rounded overflow-hidden">
+            <button onclick="scrollToSec('sec-prompts')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300 hover:text-emerald-400 transition-colors">◉ KI-Prompts</button>
         </div>
         <!-- Filters -->
         <div class="border border-slate-700 rounded overflow-hidden">
-            <button onclick="tog('sb-flt')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300">🔍 Filter<svg id="icon-sb-flt" class="chev open w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg></button>
+            <button onclick="tog('sb-flt')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300">⌕ Filter<svg id="icon-sb-flt" class="chev open w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg></button>
             <div id="sb-flt-content" class="coll-content open p-2 bg-slate-900/30 space-y-1.5">
                 <input type="text" id="cf" oninput="fltC()" placeholder="Control / Titel..." class="inp text-[10px] font-mono">
                 <select id="flt-modal" onchange="fltC()" class="inp text-[10px]"><option value="">Modalverb: Alle</option><option value="MUSS">MUSS</option><option value="SOLL">SOLL</option><option value="KANN">KANN</option></select>
@@ -115,22 +522,22 @@
         </div>
         <!-- Export -->
         <div class="mt-auto space-y-1.5 pt-2 border-t border-slate-700">
-            <button onclick="saveSession()" class="w-full bg-purple-700 text-white font-bold py-1.5 px-2 rounded text-[10px] hover:bg-purple-600">💾 Session</button>
-            <button onclick="exportAP()" class="w-full bg-emerald-600 text-white font-bold py-1.5 px-2 rounded text-[10px] hover:bg-emerald-500">📋 AP</button>
-            <button onclick="exportAR()" class="w-full bg-blue-600 text-white font-bold py-1.5 px-2 rounded text-[10px] hover:bg-blue-500">📊 AR</button>
+            <div class="lbl mb-0">⤓ Export</div>
+            <button onclick="saveSession()" class="btn w-full">⤓ Session</button>
+            <button onclick="exportAP()" class="btn btn-primary w-full">⤓ Assessment Plan</button>
+            <button onclick="exportAR()" class="btn w-full">⤓ Assessment Results</button>
         </div>
 
-<div style="margin-top: auto; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; font-size: 0.75rem; color: #94a3b8;">
-    &copy; 2026 NTT DATA Deutschland SE
-</div>
+        <div class="pt-2 text-center text-[9px] text-slate-600 font-mono">&copy; 2026 NTT DATA Deutschland SE</div>
 
     </aside>
+    <div class="splitter" id="splitter" title="Breite der Seitenleiste ziehen"></div>
     <!-- MAIN -->
-    <main class="flex-1 overflow-y-auto p-4 md:p-6">
-        
+    <main id="main-area">
+
         <!-- Rahmenbedingungen Section -->
         <div id="sec-terms" class="hidden mb-4 bg-slate-800 border border-slate-700 rounded-xl p-4 transition-all duration-300">
-            <h2 class="text-sm font-bold text-white mb-3">📅 Rahmenbedingungen</h2>
+            <h2 class="text-sm font-bold text-white mb-3">◐ Rahmenbedingungen</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                 <div><label class="lbl">Beginn</label><input type="date" id="sb-ds" onchange="S.dateStart=this.value" class="inp text-xs"></div>
                 <div><label class="lbl">Ende</label><input type="date" id="sb-de" onchange="S.dateEnd=this.value" class="inp text-xs"></div>
@@ -150,7 +557,7 @@
 
         <!-- Metadaten Section -->
         <div id="sec-meta" class="hidden mb-4 bg-slate-800 border border-slate-700 rounded-xl p-4 transition-all duration-300">
-            <h2 class="text-sm font-bold text-white mb-3">📝 Metadaten & Assessor</h2>
+            <h2 class="text-sm font-bold text-white mb-3">◇ Metadaten &amp; Assessor</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 <div><label class="lbl">Titel</label><input type="text" id="sb-title" onchange="S.meta.title=this.value" class="inp text-xs"></div>
                 <div><label class="lbl">Version</label><input type="text" id="sb-ver" value="1.0.0" onchange="S.meta.version=this.value" class="inp text-xs"></div>
@@ -161,12 +568,140 @@
             </div>
         </div>
 
+        <!-- KI-Prompts Section -->
+        <div id="sec-prompts" class="mb-4 bg-slate-800 border border-slate-700 rounded-xl p-4 transition-all duration-300">
+            <h2 class="text-sm font-bold text-white mb-1">◉ KI-Prompts</h2>
+            <p class="text-[10px] text-slate-400 mb-3 leading-relaxed">Alle Prompts, die dieses Tool an das Modell sendet, sind hier editierbar — Änderungen werden im Browser gespeichert. Der Platzhalter <span class="font-mono text-cyan-300">{kontext}</span> wird zur Laufzeit durch die deterministisch aufgebauten Control-Daten (Katalogtext, SSP-Eintrag, Reifegrade, bisherige Beobachtung) ersetzt.</p>
+            <div class="space-y-4">
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label for="pr-assess" class="lbl mb-0">◈ Befundvorschlag (aiAssess)</label>
+                        <button onclick="resetPrompt('assess')" class="btn">↺ Zurücksetzen</button>
+                    </div>
+                    <textarea id="pr-assess" spellcheck="false" class="inp prompt-ta w-full text-[11px]"></textarea>
+                    <div id="pw-assess" class="hidden mt-1 text-[10px] font-bold text-amber-300 bg-amber-950/40 border border-amber-800 rounded px-2 py-1">◬ Platzhalter <span class="font-mono">{kontext}</span> fehlt — er wird beim Senden automatisch am Ende angehängt.</div>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label for="pr-explain-ml" class="lbl mb-0">▣ Analyse mit vorhandenen Reifegraden (aiExplain)</label>
+                        <button onclick="resetPrompt('explainML')" class="btn">↺ Zurücksetzen</button>
+                    </div>
+                    <textarea id="pr-explain-ml" spellcheck="false" class="inp prompt-ta w-full text-[11px]"></textarea>
+                    <div id="pw-explain-ml" class="hidden mt-1 text-[10px] font-bold text-amber-300 bg-amber-950/40 border border-amber-800 rounded px-2 py-1">◬ Platzhalter <span class="font-mono">{kontext}</span> fehlt — er wird beim Senden automatisch am Ende angehängt.</div>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label for="pr-explain-base" class="lbl mb-0">▣ Erklärung ohne Reifegrade (aiExplain)</label>
+                        <button onclick="resetPrompt('explainBase')" class="btn">↺ Zurücksetzen</button>
+                    </div>
+                    <textarea id="pr-explain-base" spellcheck="false" class="inp prompt-ta w-full text-[11px]"></textarea>
+                    <div id="pw-explain-base" class="hidden mt-1 text-[10px] font-bold text-amber-300 bg-amber-950/40 border border-amber-800 rounded px-2 py-1">◬ Platzhalter <span class="font-mono">{kontext}</span> fehlt — er wird beim Senden automatisch am Ende angehängt.</div>
+                </div>
+            </div>
+        </div>
+
         <div id="stats-dash" class="hidden mb-4"></div>
         <div id="ctrl-area" class="hidden"></div>
     </main>
+  </div>
+
+  <!-- LOG-KONSOLE -->
+  <section class="logbox">
+    <div class="log-head">
+        <span class="log-title">⌸ Konsole</span>
+        <span id="log-count">0 Zeilen</span>
+        <span class="spacer"></span>
+        <button id="log-autoscroll" class="log-btn on" onclick="toggleAutoscroll()" title="Automatisch zur neuesten Zeile scrollen">▼ Autoscroll</button>
+        <button class="log-btn" onclick="clearLog()" title="Konsole leeren">⌫ Leeren</button>
+    </div>
+    <div id="log-body" class="log-body cscroll"></div>
+  </section>
 </div>
 
 <script>
+// ============================================================
+// LOG-KONSOLE (fünf Level, ms-Timestamps, Autoscroll, Clear)
+// ============================================================
+const LOG={lines:0,auto:true,max:2000};
+function logTs(){const d=new Date(),p=(n,w=2)=>String(n).padStart(w,'0');
+    return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}.${p(d.getMilliseconds(),3)}`}
+function logLine(level,msg){
+    const body=document.getElementById('log-body');if(!body)return;
+    const el=document.createElement('div');
+    el.className='log-line log-'+level;
+    const t=document.createElement('span');t.className='ts';t.textContent=logTs();
+    const l=document.createElement('span');l.className='lv';l.textContent=level;
+    const m=document.createElement('span');m.className='msg';m.textContent=String(msg);
+    el.append(t,l,m);body.appendChild(el);LOG.lines++;
+    while(body.childElementCount>LOG.max)body.removeChild(body.firstChild);
+    const c=document.getElementById('log-count');if(c)c.textContent=LOG.lines+' Zeilen';
+    if(LOG.auto)body.scrollTop=body.scrollHeight;
+}
+const L={info:m=>logLine('info',m),ok:m=>logLine('ok',m),warn:m=>logLine('warn',m),
+         err:m=>logLine('err',m),debug:m=>logLine('debug',m)};
+window.toggleAutoscroll=()=>{LOG.auto=!LOG.auto;
+    const b=document.getElementById('log-autoscroll');if(b)b.classList.toggle('on',LOG.auto);
+    if(LOG.auto){const body=document.getElementById('log-body');if(body)body.scrollTop=body.scrollHeight}};
+window.clearLog=()=>{const body=document.getElementById('log-body');if(body)body.innerHTML='';
+    LOG.lines=0;const c=document.getElementById('log-count');if(c)c.textContent='0 Zeilen'};
+
+// ============================================================
+// PROGRESS (1px-Hairline: amber → grün, ~800ms später ausblenden)
+// ============================================================
+let _progHide=null;
+function showProgress(label,done,total){
+    const w=document.getElementById('prog-wrap'),f=document.getElementById('prog-fill');
+    if(!w||!f)return;
+    clearTimeout(_progHide);w.classList.remove('hidden');
+    const pct=total>0?Math.min(100,(done/total)*100):0;
+    f.style.width=pct+'%';
+    const fin=total>0&&done>=total;
+    f.classList.toggle('done',fin);
+    const lb=document.getElementById('prog-label');if(lb)lb.textContent=label;
+    const ct=document.getElementById('prog-count');if(ct)ct.textContent=total>0?`${done}/${total}`:'';
+    if(fin)_progHide=setTimeout(hideProgress,800);
+}
+function hideProgress(){const w=document.getElementById('prog-wrap'),f=document.getElementById('prog-fill');
+    if(!w||!f)return;w.classList.add('hidden');f.style.width='0%';f.classList.remove('done')}
+
+// ============================================================
+// STATUS-PILLS in der Top-Bar
+// ============================================================
+const PILL_TONE={ok:'var(--green)',warn:'var(--amber)',err:'var(--red)',
+                 info:'var(--accent)',quiet:'var(--text-tertiary)'};
+function setPill(id,tone,html){
+    const e=document.getElementById(id);if(!e)return;
+    const c=PILL_TONE[tone]||PILL_TONE.quiet;
+    e.className='pill';e.style.color=c;
+    e.style.borderColor=`color-mix(in oklab,${c} 38%,transparent)`;
+    e.style.background=`color-mix(in oklab,${c} 10%,transparent)`;
+    // Pills mit Aktion (z. B. „neu laden") dürfen nicht abgeschnitten werden.
+    e.style.maxWidth=html.includes('<button')?'none':'';
+    e.innerHTML=html;
+}
+
+// ============================================================
+// LAYOUT: ziehbarer Splitter, Rail-Breite in localStorage
+// ============================================================
+const RAIL_MIN=200,RAIL_MAX=420,RAIL_KEY='oscal_ap_rail_w';
+function setRailWidth(px){
+    const v=Math.max(RAIL_MIN,Math.min(RAIL_MAX,Math.round(px)));
+    document.documentElement.style.setProperty('--rail-w',v+'px');return v}
+function initSplitter(){
+    let stored=null;try{stored=localStorage.getItem(RAIL_KEY)}catch(e){}
+    if(stored)setRailWidth(parseInt(stored,10)||240);
+    const sp=document.getElementById('splitter'),sb=document.getElementById('sidebar');
+    if(!sp||!sb)return;
+    let dragging=false,w=240;
+    sp.addEventListener('mousedown',e=>{dragging=true;sp.classList.add('dragging');
+        document.body.style.userSelect='none';e.preventDefault()});
+    window.addEventListener('mousemove',e=>{if(!dragging)return;w=setRailWidth(e.clientX-sb.getBoundingClientRect().left)});
+    window.addEventListener('mouseup',()=>{if(!dragging)return;dragging=false;
+        sp.classList.remove('dragging');document.body.style.userSelect='';
+        try{localStorage.setItem(RAIL_KEY,w)}catch(e){}
+        L.debug(`Rail-Breite ${w}px gespeichert`)});
+}
+
 // ============================================================
 // STATE
 // ============================================================
@@ -194,16 +729,41 @@ const GPP_CATALOG_RESOURCE_UUID='944d9eb5-aa84-5c12-86d3-94ed8e2569f5';
 async function sha256Hex(buf){const d=await crypto.subtle.digest('SHA-256',buf);return Array.from(new Uint8Array(d)).map(b=>b.toString(16).padStart(2,'0')).join('')}
 // Back-matter-Resource für den gepinnten Katalog — feldidentisch zur Ausgabe von scripts/pin_profile_imports.py.
 function pinnedCatalogResource(){return{uuid:GPP_CATALOG_RESOURCE_UUID,title:`Grundschutz++-resolved_catalog.json @ ${GPP_CATALOG_PIN_COMMIT.slice(0,12)}`,rlinks:[{href:CATALOG_URL,hashes:[{algorithm:'SHA-256',value:GPP_CATALOG_PIN_SHA256}]}]}}
-const MODELS={claude:[{id:'claude-opus-4-6-20250514',label:'Claude Opus 4.6 (Top)'},{id:'claude-sonnet-4-6-20250514',label:'Claude Sonnet 4.6 (Fast)'}],gemini:[{id:'gemini-3.1-pro-preview',label:'Gemini 3.1 Pro Preview'},{id:'gemini-3.1-flash',label:'Gemini 3.1 Flash (Prod)'}]};
-const STM={
-    'implemented':{l:'Implementiert',c:'bg-emerald-900 text-emerald-300 border-emerald-700',b:'#10b981'},
-    'partial':{l:'Teilweise',c:'bg-amber-900 text-amber-300 border-amber-700',b:'#f59e0b'},
-    'planned':{l:'Geplant',c:'bg-blue-900 text-blue-300 border-blue-700',b:'#3b82f6'},
-    'alternative':{l:'Alternativ',c:'bg-purple-900 text-purple-300 border-purple-700',b:'#a855f7'},
-    'not-applicable':{l:'N/A',c:'bg-slate-700 text-slate-400 border-slate-600',b:'#64748b'},
-    'nicht-angegeben':{l:'Kein Status',c:'bg-red-900/50 text-red-300 border-red-700',b:'#ef4444'},
-    'nur-komponente':{l:'Nur Komp.-Def.',c:'bg-cyan-900/50 text-cyan-300 border-cyan-700',b:'#06b6d4'}
+// Backends. Der frühere Claude-Direktpfad (api.anthropic.com aus dem Browser) ist entfallen:
+// er scheitert außerhalb einer Artifact-Umgebung an CORS. Anthropic-Modelle bleiben über
+// OpenRouter erreichbar — ein Key, erlaubtes Browser-CORS, dieselben Modelle.
+const BACKEND_LABEL={gemini:'Gemini',openrouter:'OpenRouter'};
+// Nur lebende Modell-IDs. Erster Eintrag = Default (wird vorausgewählt).
+// OpenRouter bekommt bewusst KEINE fest verdrahtete Liste — sein Katalog wird live geladen.
+const GEMINI_DEFAULT_MODEL='gemini-3.6-flash';
+const MODELS={
+    gemini:[
+        {id:GEMINI_DEFAULT_MODEL,label:'Gemini 3.6 Flash (Default)'},
+        {id:'gemini-3.5-flash',label:'Gemini 3.5 Flash'},
+        {id:'gemini-3.5-flash-lite',label:'Gemini 3.5 Flash Lite (schnell/günstig)'},
+        {id:'gemini-3.1-pro-preview',label:'Gemini 3.1 Pro Preview (kostenpflichtig)'}
+    ]
 };
+// Eine einzige Farbquelle für Status-Badges UND Charts: STM[status].b.
+// `st` ist der daraus abgeleitete Inline-Style des Badges — Badge und Donut
+// zeigen damit garantiert denselben Farbwert.
+const STM={
+    'implemented':{l:'Implementiert',b:'oklch(0.75 0.18 145)'},
+    'partial':{l:'Teilweise',b:'oklch(0.80 0.15 80)'},
+    'planned':{l:'Geplant',b:'oklch(0.70 0.15 240)'},
+    'alternative':{l:'Alternativ',b:'oklch(0.68 0.19 330)'},
+    'not-applicable':{l:'N/A',b:'oklch(0.75 0.02 280)'},
+    'nicht-angegeben':{l:'Kein Status',b:'oklch(0.65 0.20 25)'},
+    'nur-komponente':{l:'Nur Komp.-Def.',b:'oklch(0.70 0.18 300)'}
+};
+function badgeStyle(col){return `color:${col};border-color:color-mix(in oklab,${col} 40%,transparent);background:color-mix(in oklab,${col} 14%,transparent)`}
+Object.values(STM).forEach(m=>{m.st=badgeStyle(m.b)});
+// Reihenfolge für Charts und Legenden.
+const STM_ORDER=['implemented','partial','planned','alternative','nicht-angegeben','nur-komponente','not-applicable'];
+// Befundstatus — Farben wie die Befund-Punkte in der Control-Liste.
+const FINDING_COL={satisfied:'oklch(0.75 0.18 145)','not-satisfied':'oklch(0.65 0.20 25)',
+                   other:'oklch(0.80 0.15 80)',offen:'oklch(0.55 0.02 280)'};
+const METHOD_COL={EXAMINE:'oklch(0.70 0.15 240)',INTERVIEW:'oklch(0.80 0.15 80)',TEST:'oklch(0.70 0.18 300)'};
 
 // ============================================================
 // INIT
@@ -217,6 +777,10 @@ document.addEventListener('DOMContentLoaded',()=>{
         dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');const fs=e.dataTransfer.files;if(!fs.length)return;ty==='defs'?loadDefFiles(fs):loadFile(fs[0],ty)});
         fi.addEventListener('change',e=>{const fs=e.target.files;if(!fs.length)return;ty==='defs'?loadDefFiles(fs):loadFile(fs[0],ty);e.target.value=''});
     });
+    initSplitter();
+    L.info('OSCAL AP & AR — build 9.4 gestartet');
+    L.debug('Bei CORS-Fehlern: Ordner mit `python -m http.server` bedienen und über http://localhost:8000/ öffnen.');
+    initPrompts();
     loadAICfg();
     loadCatalog();
     loadED23Map();
@@ -228,11 +792,17 @@ document.addEventListener('DOMContentLoaded',()=>{
 // ============================================================
 async function loadCatalog(){
     const cs=document.getElementById('cat-status');
+    const t0=performance.now();
+    setPill('cat-status','info','Katalog wird geladen …');
+    showProgress('Katalog laden',0,1);
+    L.info(`G++-Katalog wird geladen (Pin ${GPP_CATALOG_PIN_COMMIT.slice(0,12)}…)`);
     try{
         const r=await fetch(CATALOG_URL);const buf=await r.arrayBuffer();
+        L.debug(`Katalog empfangen: ${(buf.byteLength/1024).toFixed(1)} kB in ${Math.round(performance.now()-t0)} ms`);
         // Pin-Prüfung (Grundregel 8): Die gepinnte Quelle muss exakt den bekannten SHA-256 liefern.
         const hash=await sha256Hex(buf);
-        if(hash!==GPP_CATALOG_PIN_SHA256){cs.textContent='Katalog: Pin-Verletzung (SHA-256 weicht ab)';throw new Error(`Pin-Verletzung: ${hash.slice(0,12)}… statt ${GPP_CATALOG_PIN_SHA256.slice(0,12)}…`)}
+        if(hash!==GPP_CATALOG_PIN_SHA256){setPill('cat-status','err','Katalog: Pin-Verletzung');L.err(`Katalog-Pin verletzt: SHA-256 ${hash.slice(0,12)}… statt ${GPP_CATALOG_PIN_SHA256.slice(0,12)}…`);hideProgress();throw new Error(`Pin-Verletzung: ${hash.slice(0,12)}… statt ${GPP_CATALOG_PIN_SHA256.slice(0,12)}…`)}
+        L.ok(`Katalog-Pin verifiziert (SHA-256 ${hash.slice(0,12)}…)`);
         const d=JSON.parse(new TextDecoder().decode(buf));
         function idx(items){if(!items)return;items.forEach(i=>{
             if(i.id){let prose='';if(i.parts){const p=i.parts.find(p=>p.name==='statement'||p.prose);if(p&&p.prose)prose=p.prose}
@@ -242,10 +812,13 @@ async function loadCatalog(){
             if(i.controls)idx(i.controls);if(i.groups)idx(i.groups);
         })}
         idx(d.catalog.groups);
-        cs.className="px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-900/50 text-emerald-400 border border-emerald-700 flex items-center";
-        cs.innerHTML=`<span class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>Katalog: ${S.catalog.size} Controls`;
+        setPill('cat-status','ok',`◉ Katalog: ${S.catalog.size} Controls`);
+        showProgress('Katalog laden',1,1);
+        L.ok(`Katalog indiziert: ${S.catalog.size} Controls in ${Math.round(performance.now()-t0)} ms`);
     }catch(e){
-        cs.innerHTML=`<span class="w-2 h-2 rounded-full bg-red-500 mr-2"></span>Katalog-Fehler`;
+        setPill('cat-status','err','◬ Katalog-Fehler');
+        hideProgress();
+        L.err('Katalog konnte nicht geladen werden: '+shortErr(e.message));
         console.error(e);
     }
 }
@@ -315,14 +888,15 @@ function parseProfileEntry(d){
 // FILE HANDLING
 // ============================================================
 function loadFile(file,type){
-    if(!file.name.endsWith('.json'))return alert('Bitte JSON.');
+    if(!file.name.endsWith('.json')){L.err(`${file.name}: keine JSON-Datei`);return alert('Bitte JSON.')}
+    L.info(`${type==='ssp'?'SSP':'Session'}-Datei "${file.name}" (${(file.size/1024).toFixed(1)} kB) wird gelesen`);
     const r=new FileReader();
     r.onload=e=>{
         try{
             const d=JSON.parse(e.target.result.replace(/^\uFEFF/,''));
             if(type==='ssp'){if(!d['system-security-plan'])throw new Error('Kein SSP.');S.ssp=d['system-security-plan'];S.sspFilename=file.name;initSSP()}
             else if(type==='state'){restoreSession(d)}
-        }catch(err){alert('Fehler: '+err.message)}
+        }catch(err){L.err(`${file.name}: ${shortErr(err.message)}`);alert('Fehler: '+err.message)}
     };
     r.readAsText(file);
 }
@@ -331,16 +905,19 @@ function loadFile(file,type){
 // Gespeichert nach Dateiname; danach werden offene Component-Defs neu aufgelöst.
 function loadDefFiles(files){
     let pending=files.length,loaded=0,errs=[];
+    L.info(`${files.length} Profil-/Definitions-Datei(en) werden gelesen`);
     const done=()=>{
         if(pending)return;
+        L.ok(`${loaded} Profil-Datei(en) im Speicher${errs.length?`, ${errs.length} fehlerhaft`:''}`);
+        errs.forEach(x=>L.err('Profil-Datei: '+x));
         if(errs.length)alert('Einige Dateien nicht geladen:\n'+errs.join('\n'));
         if(S.ssp){loadCompDefs()} // erneut auflösen — local:// greift jetzt auf S.localDefs zu
-        else{const cs=document.getElementById('comp-status');cs.classList.remove('hidden');cs.style.display='flex';cs.className="px-3 py-1 rounded-lg text-xs font-semibold bg-cyan-900/50 text-cyan-300 border border-cyan-700 flex items-center";cs.innerHTML=`<span class="w-2 h-2 rounded-full bg-cyan-500 mr-2"></span>${loaded} Profil(e) bereit — jetzt SSP laden`}
+        else setPill('comp-status','info',`⬡ ${loaded} Profil(e) bereit — jetzt SSP laden`);
     };
     [...files].forEach(file=>{
         if(!file.name.endsWith('.json')){errs.push(file.name+' (kein JSON)');pending--;done();return}
         const r=new FileReader();
-        r.onload=e=>{try{S.localDefs.set(file.name,JSON.parse(e.target.result.replace(/^﻿/,'')));loaded++}catch(err){errs.push(file.name+': '+err.message)}pending--;done()};
+        r.onload=e=>{try{S.localDefs.set(file.name,JSON.parse(e.target.result.replace(/^﻿/,'')));loaded++;L.debug(`Profil "${file.name}" (${(file.size/1024).toFixed(1)} kB) geladen`)}catch(err){errs.push(file.name+': '+err.message)}pending--;done()};
         r.onerror=()=>{errs.push(file.name);pending--;done()};
         r.readAsText(file);
     });
@@ -366,7 +943,8 @@ async function fetchDef(u){
             if(!r.ok)throw new Error(`HTTP ${r.status} ${r.statusText}`);
             const buf=await r.arrayBuffer();
             const hash=await sha256Hex(buf);
-            if(hash!==expected)throw new Error(`Pin-Verletzung für ${rl.href}: SHA-256 ${hash.slice(0,12)}… statt ${expected.slice(0,12)}…`);
+            if(hash!==expected){L.err(`Pin-Verletzung für ${rl.href}: ${hash.slice(0,12)}… statt ${expected.slice(0,12)}…`);throw new Error(`Pin-Verletzung für ${rl.href}: SHA-256 ${hash.slice(0,12)}… statt ${expected.slice(0,12)}…`)}
+            L.ok(`Pin verifiziert: ${rl.href.split('/').pop()} (SHA-256 ${hash.slice(0,12)}…)`);
             return JSON.parse(new TextDecoder().decode(buf).replace(/^﻿/,''));
         }
         return fetchDef(rl.href);
@@ -377,8 +955,8 @@ async function fetchDef(u){
         if(S.localDefs.has(u.replace(/^local:\/\//i,'')))return S.localDefs.get(u.replace(/^local:\/\//i,''));
         let r;
         try{r=await fetch(ln,{cache:'no-cache'})}
-        catch(e){throw new Error(`"${ln}" nicht gefunden — bitte über "📁 Profile/Defs laden" wählen (oder Seite per Webserver öffnen)`)}
-        if(!r.ok)throw new Error(`"${ln}" nicht gefunden (HTTP ${r.status}) — bitte über "📁 Profile/Defs laden" wählen`);
+        catch(e){throw new Error(`"${ln}" nicht gefunden — bitte über „⬡ Profile/Defs laden" wählen (oder Seite per Webserver öffnen)`)}
+        if(!r.ok)throw new Error(`"${ln}" nicht gefunden (HTTP ${r.status}) — bitte über „⬡ Profile/Defs laden" wählen`);
         return JSON.parse((await r.text()).replace(/^﻿/,''));
     }
     const r=await fetch(u,{mode:'cors',cache:'no-cache'});
@@ -415,19 +993,20 @@ function applyDefData(uuid,d){
 function ser(){return JSON.stringify({_v:9,sspFilename:S.sspFilename,meta:S.meta,sspRisks:S.sspRisks,assessor:S.assessor,terms:S.terms,tasks:S.tasks,dateStart:S.dateStart,dateEnd:S.dateEnd,excluded:[...S.excluded],methods:[...S.methods.entries()].map(([k,v])=>[k,[...v]]),findings:[...S.findings.entries()],aiCache:[...S.aiCache.entries()],compGroups:[...S.compGroups.entries()].map(([k,m])=>[k,[...m.entries()]]),compMeta:[...S.compMeta.entries()],allCids:[...S.allCids]})}
 
 function restoreSession(d){
-    if(!d._v||d._v<6)return alert('Session-Format zu alt oder inkompatibel (v9 benötigt).');
+    if(!d._v||d._v<6){L.err(`Session-Format v${d._v||'?'} zu alt (v9 benötigt)`);return alert('Session-Format zu alt oder inkompatibel (v9 benötigt).')}
     S.sspFilename=d.sspFilename||'';S.meta=d.meta||{title:'',version:'1.0.0',desc:''};S.sspRisks=d.sspRisks||[];S.assessor=d.assessor||{name:'',type:'organization',email:''};
     S.terms=d.terms||{roe:'',disclosures:'',methodology:''};S.tasks=d.tasks||[];S.dateStart=d.dateStart||'';S.dateEnd=d.dateEnd||'';
     S.excluded=new Set(d.excluded||[]);S.methods=new Map((d.methods||[]).map(([k,v])=>[k,new Set(v)]));
     S.findings=new Map(d.findings||[]);S.aiCache=new Map(d.aiCache||[]);
     S.compGroups=new Map((d.compGroups||[]).map(([k,arr])=>[k,new Map(arr)]));
     S.compMeta=new Map(d.compMeta||[]);S.allCids=new Set(d.allCids||[]);
+    L.ok(`Session wiederhergestellt: ${S.allCids.size} Controls, ${S.compMeta.size} Komponenten, ${S.findings.size} Befunde`);
     setSt('ssp-status',true,`Session: ${S.allCids.size} Controls`);showUI();
 }
 
-window.saveSession=()=>dl(JSON.parse(ser()),`${sn()}_session.json`);
+window.saveSession=()=>{const j=ser();L.ok(`Session exportiert: ${S.allCids.size} Controls, ${(j.length/1024).toFixed(1)} kB`);dl(JSON.parse(j),`${sn()}_session.json`)};
 function autoSave(){try{localStorage.setItem('oscal_ap_v9',ser())}catch(e){}}
-function tryAutoRestore(){try{const s=localStorage.getItem('oscal_ap_v9');if(!s)return;const d=JSON.parse(s);if(d._v>=9&&d.allCids?.length>0&&confirm(`Autosave: ${d.allCids.length} Controls (${d.sspFilename}). Wiederherstellen?`))restoreSession(d)}catch(e){}}
+function tryAutoRestore(){try{const s=localStorage.getItem('oscal_ap_v9');if(!s)return;const d=JSON.parse(s);if(d._v>=9&&d.allCids?.length>0){L.info(`Autosave gefunden: ${d.allCids.length} Controls (${d.sspFilename||'ohne SSP-Name'})`);if(confirm(`Autosave: ${d.allCids.length} Controls (${d.sspFilename}). Wiederherstellen?`))restoreSession(d);else L.debug('Autosave verworfen')}}catch(e){}}
 setInterval(()=>{if(S.allCids.size>0)autoSave()},30000);
 
 // ============================================================
@@ -459,6 +1038,8 @@ async function initSSP(){
 
     S.sspRisks=extractSSPRisks(ssp);
     const riskTxt=S.sspRisks.length?`, ${S.sspRisks.length} Risiken`:'';
+    L.ok(`SSP "${sn}" geparst: ${S.allCids.size} Controls, ${S.compMeta.size} Komponenten${riskTxt}`);
+    if(S.sspRisks.length)L.debug(`${S.sspRisks.length} Risiken aus der back-matter-Risikoanalyse übernommen`);
     setSt('ssp-status',true,`SSP: ${sn} — ${S.allCids.size} Controls${riskTxt}`);showUI();await loadCompDefs();
 }
 
@@ -496,47 +1077,55 @@ function showUI(){
 // ============================================================
 async function loadCompDefs(){
     const toLoad=[];S.compMeta.forEach((m,u)=>{if(m.defUrl)toLoad.push({uuid:u,url:m.defUrl,title:m.title})});
-    if(!toLoad.length)return;
-    const cs=document.getElementById('comp-status');cs.classList.remove('hidden');cs.style.display='flex';
+    if(!toLoad.length){L.debug('Keine Komponenten-Profile im SSP referenziert');return}
+    L.info(`${toLoad.length} Komponenten-Profil(e) werden aufgelöst`);
     let done=0,newN=0,fails=[];
+    showProgress('Profile auflösen',0,toLoad.length);
     for(const it of toLoad){
-        cs.innerHTML=`<span class="loader-sm mr-2"></span>${esc(it.title)} (${done+1}/${toLoad.length})`;
+        setPill('comp-status','info',`&#x22EF; ${esc(it.title)} (${done+1}/${toLoad.length})`);
+        const t0=performance.now();
         try{
             const txt=JSON.stringify(await fetchDef(it.url));
-            let d;try{d=JSON.parse(txt.replace(/^\uFEFF/,''))}catch(pe){throw new Error('Kein gültiges JSON: '+pe.message)}
-            newN+=applyDefData(it.uuid,d);
+            let d;try{d=JSON.parse(txt.replace(/^﻿/,''))}catch(pe){throw new Error('Kein gültiges JSON: '+pe.message)}
+            const a=applyDefData(it.uuid,d);newN+=a;
+            L.debug(`Profil "${it.title}": +${a} Controls, ${(txt.length/1024).toFixed(1)} kB in ${Math.round(performance.now()-t0)} ms`);
         }catch(e){
             console.error(`Fehler bei ${it.title}:`,e);
+            L.err(`Profil "${it.title}" nicht ladbar: ${shortErr(e.message)}`);
             fails.push({title:it.title,err:e.message,url:it.url,uuid:it.uuid});
-        }done++}
+        }done++;showProgress('Profile auflösen',done,toLoad.length)}
     if(fails.length){
-        cs.className="px-3 py-1 rounded-lg text-xs font-semibold bg-amber-900/50 text-amber-300 border border-amber-700 flex items-center";
         const hasLocal=fails.some(f=>/^local:\/\//i.test(f.url));
-        cs.innerHTML=`<span class="w-2 h-2 rounded-full bg-amber-500 mr-2"></span>${done-fails.length}/${done} Defs geladen, +${newN} Controls — <button onclick="retryFailedDefs()" class="ml-2 underline text-amber-200 hover:text-white font-bold">⟳ ${fails.length} fehlgeschlagene neu laden</button>${hasLocal?' &middot; <span class="text-amber-200">local:// Profile per „📁 Profile/Defs laden" wählen</span>':''}`;
+        setPill('comp-status','warn',`&#x25EC; ${done-fails.length}/${done} Defs, +${newN} Controls <button onclick="retryFailedDefs()" class="ml-2 underline text-amber-200 hover:text-white font-bold">&#x27F3; ${fails.length} neu laden</button>${hasLocal?' &middot; local:// per &#x2B21; Profile/Defs laden':''}`);
+        L.warn(`${fails.length} von ${done} Profilen fehlgeschlagen${hasLocal?' — local://-Referenzen bitte über „⬡ Profile/Defs laden“ bereitstellen':''}`);
         S._failedDefs=fails;
     }else{
-        cs.className="px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-900/50 text-emerald-400 border border-emerald-700 flex items-center";
-        cs.innerHTML=`<span class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>${done} Defs → +${newN} Controls (${S.allCids.size} total)`;
+        setPill('comp-status','ok',`&#x25C9; ${done} Defs → +${newN} Controls (${S.allCids.size} gesamt)`);
+        L.ok(`Alle ${done} Profile aufgelöst: +${newN} Controls, ${S.allCids.size} gesamt`);
     }
     renderStats();renderControls();
 }
 
 window.retryFailedDefs=async()=>{
     const fails=S._failedDefs||[];if(!fails.length)return;
-    const cs=document.getElementById('comp-status');
+    L.info(`Erneuter Versuch für ${fails.length} Profil(e)`);
     let retried=0,newN=0,stillFailing=[];
+    showProgress('Profile erneut laden',0,fails.length);
     for(const it of fails){
-        cs.innerHTML=`<span class="loader-sm mr-2"></span>Retry: ${esc(it.title)} (${retried+1}/${fails.length})`;
+        setPill('comp-status','info',`&#x22EF; Retry: ${esc(it.title)} (${retried+1}/${fails.length})`);
         try{
             const d=await fetchDef(it.url);
-            newN+=applyDefData(it.uuid,d);
-        }catch(e){stillFailing.push({...it,err:e.message})}retried++}
+            const a=applyDefData(it.uuid,d);newN+=a;
+            L.ok(`Profil "${it.title}" im zweiten Versuch geladen (+${a} Controls)`);
+        }catch(e){L.err(`Profil "${it.title}" weiterhin nicht ladbar: ${shortErr(e.message)}`);stillFailing.push({...it,err:e.message})}
+        retried++;showProgress('Profile erneut laden',retried,fails.length)}
     S._failedDefs=stillFailing;
     if(stillFailing.length){
-        cs.innerHTML=`<span class="w-2 h-2 rounded-full bg-red-500 mr-2"></span>${stillFailing.length} Defs nicht ladbar: ${stillFailing.map(f=>'<span class="text-red-300">'+esc(f.title)+' ('+esc(f.err)+')</span>').join(', ')}`;
+        setPill('comp-status','err',`&#x25EC; ${stillFailing.length} Defs nicht ladbar: ${esc(stillFailing.map(f=>f.title).join(', '))}`);
+        L.err(`${stillFailing.length} Profile weiterhin nicht ladbar`);
     }else{
-        cs.className="px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-900/50 text-emerald-400 border border-emerald-700 flex items-center";
-        cs.innerHTML=`<span class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>Alle Defs geladen (${S.allCids.size} total)`;
+        setPill('comp-status','ok',`&#x25C9; Alle Defs geladen (${S.allCids.size} gesamt)`);
+        L.ok(`Alle Profile geladen — ${S.allCids.size} Controls gesamt`);
     }
     renderStats();renderControls();
 };
@@ -544,18 +1133,282 @@ window.retryFailedDefs=async()=>{
 // ============================================================
 // AI CONFIG
 // ============================================================
-window.onProvChange=()=>{const p=document.getElementById('ai-provider').value;const s=document.getElementById('ai-model');s.innerHTML='';(MODELS[p]||[]).forEach(m=>{const o=document.createElement('option');o.value=m.id;o.textContent=m.label;s.appendChild(o)});saveAICfg()};
-window.saveAICfg=()=>{const c={p:document.getElementById('ai-provider').value,k:document.getElementById('ai-key').value,m:document.getElementById('ai-model').value};try{localStorage.setItem('oscal_ai',JSON.stringify(c))}catch(e){}const b=document.getElementById('ai-badge');if(c.p&&c.k){b.classList.remove('hidden');b.className='sb bg-violet-900 text-violet-300 border-violet-700';b.textContent=c.p==='claude'?'Claude':'Gemini'}else b.classList.add('hidden')};
-function loadAICfg(){try{const c=JSON.parse(localStorage.getItem('oscal_ai')||'{}');if(c.p){document.getElementById('ai-provider').value=c.p;onProvChange();if(c.k)document.getElementById('ai-key').value=c.k;if(c.m)document.getElementById('ai-model').value=c.m;saveAICfg()}}catch(e){}}
-function getAI(){const p=document.getElementById('ai-provider').value,k=document.getElementById('ai-key').value,m=document.getElementById('ai-model').value;return(p&&k)?{p,k,m}:null}
+// Keys und Modelle liegen je Backend GETRENNT im localStorage: ein Gemini-Key ist
+// für OpenRouter wertlos und umgekehrt. Speicherform ab 9.4:
+//   {p:'gemini'|'openrouter', keys:{gemini,openrouter}, models:{gemini,openrouter}, r}
+const AI_CFG_LS='oscal_ai';
+const AI_KEYS={gemini:'',openrouter:''};
+const AI_MODELS={gemini:'',openrouter:''};
+
+// --- OpenRouter-Modellkatalog (live, kein Auth nötig, 24 h im localStorage) ---
+const OR_MODELS_URL='https://openrouter.ai/api/v1/models';
+const OR_CHAT_URL='https://openrouter.ai/api/v1/chat/completions';
+const OR_CAT_LS='oscal_or_catalog';
+const OR_CAT_TTL_MS=24*60*60*1000;
+const OR_DEFAULT_SLUG='anthropic/claude-sonnet-4.6';
+const OR_TITLE='OSCAL AP & AR Generator';
+let OR_CATALOG=[];      // [{id,name,so}] — so = supported_parameters enthält structured_outputs
+let OR_CAT_TS=0;
+function orReferer(){return /^https?:$/.test(location.protocol)?location.origin:'https://localhost'}
+
+// Migration alter Anthropic-Modell-IDs auf OpenRouter-Slugs, deterministisch:
+// "claude-opus-4-6-20250514" → "anthropic/claude-opus-4.6".
+function claudeIdToORSlug(id){
+    const m=/^claude-([a-z]+)-(\d+)-(\d+)/.exec(String(id||''));
+    return m?`anthropic/claude-${m[1]}-${m[2]}.${m[3]}`:OR_DEFAULT_SLUG;
+}
+
+window.onProvChange=()=>{
+    const p=document.getElementById('ai-provider').value;
+    const s=document.getElementById('ai-model');s.innerHTML='';
+    (MODELS[p]||[]).forEach(m=>{const o=document.createElement('option');o.value=m.id;o.textContent=m.label;s.appendChild(o)});
+    document.getElementById('gm-model-wrap').classList.toggle('hidden',p!=='gemini');
+    document.getElementById('or-model-wrap').classList.toggle('hidden',p!=='openrouter');
+    const kf=document.getElementById('ai-key');
+    kf.placeholder=p==='openrouter'?'OpenRouter-Key (sk-or-…)':(p==='gemini'?'Gemini API-Key':'API-Key');
+    kf.value=AI_KEYS[p]||'';
+    if(p==='gemini'&&AI_MODELS.gemini)s.value=AI_MODELS.gemini;
+    if(p==='openrouter'){
+        document.getElementById('or-slug').value=AI_MODELS.openrouter||'';
+        ensureORCatalog();
+    }
+    saveAICfg();
+};
+
+window.saveAICfg=()=>{
+    const p=document.getElementById('ai-provider').value;
+    if(p){
+        AI_KEYS[p]=document.getElementById('ai-key').value;
+        AI_MODELS[p]=(p==='openrouter')
+            ? document.getElementById('or-slug').value.trim()
+            : document.getElementById('ai-model').value;
+    }
+    const c={p,keys:AI_KEYS,models:AI_MODELS,r:document.getElementById('ai-retries')?.value};
+    try{localStorage.setItem(AI_CFG_LS,JSON.stringify(c))}catch(e){}
+    const b=document.getElementById('ai-badge');
+    if(p&&AI_KEYS[p]){b.classList.remove('hidden');b.className='sb bg-violet-900 text-violet-300 border-violet-700';b.textContent=BACKEND_LABEL[p]||p}
+    else b.classList.add('hidden');
+};
+
+function loadAICfg(){
+    let c={};
+    try{c=JSON.parse(localStorage.getItem(AI_CFG_LS)||'{}')}catch(e){}
+    const ri=document.getElementById('ai-retries');if(ri&&c.r!=null&&c.r!=='')ri.value=c.r;
+    if(c.keys)Object.assign(AI_KEYS,c.keys);
+    if(c.models)Object.assign(AI_MODELS,c.models);
+    let p=c.p||'';
+    let migrated=false;
+    if(!c.keys&&c.p){
+        // Altformat {p,k,m} aus 9.3 und früher.
+        if(c.p==='claude'){
+            // Der Claude-Direktpfad entfällt (CORS im Browser). Backend auf OpenRouter,
+            // Modell als anthropic/…-Slug vorschlagen. Den alten sk-ant-Key NICHT übernehmen:
+            // OpenRouter braucht ein anderes Key-Format (sk-or-…).
+            p='openrouter';
+            AI_MODELS.openrouter=claudeIdToORSlug(c.m);
+            migrated=true;
+        }else{
+            AI_KEYS[c.p]=c.k||'';
+            AI_MODELS[c.p]=c.m||'';
+        }
+    }
+    // Gemini-Modell-Migration: abgeschaltete/umbenannte IDs auf den aktuellen Default.
+    if(AI_MODELS.gemini&&!MODELS.gemini.some(x=>x.id===AI_MODELS.gemini)){
+        console.warn(`Gespeichertes Modell "${AI_MODELS.gemini}" existiert nicht mehr — zurückgesetzt auf "${GEMINI_DEFAULT_MODEL}".`);
+        AI_MODELS.gemini='';
+    }
+    if(!AI_MODELS.gemini)AI_MODELS.gemini=GEMINI_DEFAULT_MODEL;
+    if(migrated){
+        document.getElementById('ai-migrate-hint').classList.remove('hidden');
+        L.warn(`Migration: Claude-Direktpfad entfällt (CORS im Browser) — Backend auf OpenRouter umgestellt, Modellvorschlag "${AI_MODELS.openrouter}". Der alte Claude-Key wurde nicht übernommen, bitte einen sk-or-…-Key eintragen.`);
+    }
+    if(p){document.getElementById('ai-provider').value=p;onProvChange()}
+}
+
+// Freitext-Slug hat Vorrang; die Katalogauswahl trägt lediglich dort ein.
+window.onORPick=()=>{
+    const v=document.getElementById('or-model').value;
+    if(v)document.getElementById('or-slug').value=v;
+    saveAICfg();
+};
+
+window.renderORModels=()=>{
+    const sel=document.getElementById('or-model');if(!sel)return;
+    const only=document.getElementById('or-only-schema')?.checked!==false;
+    const list=only?OR_CATALOG.filter(m=>m.so):OR_CATALOG;
+    const cur=(document.getElementById('or-slug')?.value||'').trim();
+    sel.innerHTML='';
+    const ph=document.createElement('option');ph.value='';
+    ph.textContent=list.length?`— Modell wählen (${list.length}) —`:'— Katalog leer —';
+    sel.appendChild(ph);
+    list.forEach(m=>{
+        const o=document.createElement('option');o.value=m.id;
+        // ◈ = Structured Outputs bestätigt, ◇ = nicht ausgewiesen.
+        o.textContent=`${m.so?'◈':'◇'} ${m.id}`;
+        o.title=m.name||m.id;
+        sel.appendChild(o);
+    });
+    sel.value=list.some(m=>m.id===cur)?cur:'';
+    const st=document.getElementById('or-cat-status');
+    if(st)st.textContent=OR_CATALOG.length
+        ?`${list.length}/${OR_CATALOG.length} Modelle · Stand ${OR_CAT_TS?new Date(OR_CAT_TS).toLocaleDateString('de-DE'):'?'}`
+        :'Katalog noch nicht geladen';
+};
+
+// Katalog aus dem Cache anzeigen; erst nach 24 h (oder auf Wunsch) neu holen.
+function ensureORCatalog(force){
+    if(!OR_CATALOG.length){
+        try{
+            const c=JSON.parse(localStorage.getItem(OR_CAT_LS)||'null');
+            if(c&&Array.isArray(c.models)&&c.models.length){OR_CATALOG=c.models;OR_CAT_TS=c.ts||0}
+        }catch(e){}
+    }
+    renderORModels();
+    if(!force&&OR_CATALOG.length&&(Date.now()-OR_CAT_TS)<OR_CAT_TTL_MS)return Promise.resolve(OR_CATALOG);
+    return fetchORCatalog();
+}
+
+async function fetchORCatalog(){
+    const st=document.getElementById('or-cat-status');
+    if(st)st.textContent='Katalog wird geladen …';
+    try{
+        const r=await fetch(OR_MODELS_URL,{headers:{'Accept':'application/json'}});
+        const d=await r.json();
+        if(d.error)throw new Error(d.error.message||`HTTP ${r.status} ${r.statusText}`);
+        const list=(d.data||[])
+            .map(m=>({id:m.id,name:m.name||m.id,so:(m.supported_parameters||[]).includes('structured_outputs')}))
+            .filter(m=>m.id)
+            .sort((a,b)=>a.id.localeCompare(b.id));
+        if(!list.length)throw new Error('Katalog leer');
+        OR_CATALOG=list;OR_CAT_TS=Date.now();
+        try{localStorage.setItem(OR_CAT_LS,JSON.stringify({ts:OR_CAT_TS,models:list}))}catch(e){}
+        L.ok(`OpenRouter-Katalog geladen: ${list.length} Modelle, davon ${list.filter(m=>m.so).length} mit Structured Outputs`);
+        renderORModels();
+    }catch(e){
+        L.warn(`OpenRouter-Modellkatalog nicht ladbar: ${shortErr(e.message)} — Slug kann von Hand eingetragen werden.`);
+        if(st)st.textContent='Katalog nicht ladbar — Slug frei eintragen';
+    }
+    return OR_CATALOG;
+}
+window.refreshORModels=()=>ensureORCatalog(true);
+
+function getAI(){
+    const p=document.getElementById('ai-provider').value,k=document.getElementById('ai-key').value;
+    const m=(p==='openrouter')
+        ? ((document.getElementById('or-slug').value||'').trim()||document.getElementById('or-model').value)
+        : document.getElementById('ai-model').value;
+    return(p&&k)?{p,k,m}:null;
+}
 
 // ============================================================
 // AI CALLS
 // ============================================================
-async function callAI(prompt){
+const AI_RETRIES_DEFAULT=2;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+// Rohe API-Fehlermeldungen können sehr lang sein — vor der Anzeige kürzen.
+function shortErr(m){const s=String(m??'').replace(/\s+/g,' ').trim();return s.length>400?s.slice(0,400)+'…':s}
+
+// Toleranter Parser: erst direkt, dann ohne Code-Fence, dann größter {...}-Block.
+// Bei gesetztem responseJsonSchema greift meist schon der erste Versuch.
+function extractJson(text){
+    const t=String(text||'').trim();
+    try{return JSON.parse(t)}catch(e){}
+    const s=t.replace(/^\s*```(?:json)?/i,'').replace(/```\s*$/,'').trim();
+    try{return JSON.parse(s)}catch(e){}
+    const a=s.indexOf('{'),b=s.lastIndexOf('}');
+    if(a>=0&&b>a){try{return JSON.parse(s.slice(a,b+1))}catch(e){}}
+    throw new Error('Antwort enthielt kein verwertbares JSON.');
+}
+
+// Structured Output für den Befundvorschlag — ersetzt das frühere "Antworte NUR als JSON".
+const ASSESS_SCHEMA={
+    type:'object',
+    properties:{
+        status:{type:'string',enum:['satisfied','not-satisfied','other']},
+        observation:{type:'string'},
+        risk:{type:'string'},
+        remarks:{type:'string'}
+    },
+    required:['status','observation','risk','remarks']
+};
+
+// Ein einzelner Gemini-Aufruf. Keine Sampling-Parameter (temperature/topP/topK/
+// candidateCount) im Body — auf Gemini 3.x sind sie deprecated bzw. werden abgelehnt.
+// API-Key als Header, niemals ?key= in der URL.
+async function geminiOnce(ai,prompt,schema){
+    const body={contents:[{role:'user',parts:[{text:prompt}]}]};
+    if(schema)body.generationConfig={responseMimeType:'application/json',responseJsonSchema:schema};
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(ai.m)}:generateContent`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-goog-api-key':ai.k},
+        body:JSON.stringify(body)
+    });
+    const d=await r.json();
+    if(d.error)throw new Error(shortErr(d.error.message||`HTTP ${r.status} ${r.statusText}`));
+    return (d.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('\n');
+}
+
+// Ein einzelner OpenRouter-Aufruf (OpenAI-kompatible Chat Completions).
+// Structured Outputs laufen über response_format; require_parameters sorgt dafür,
+// dass OpenRouter nur zu Providern routet, die das Schema tatsächlich honorieren.
+// Ebenfalls keine Sampling-Parameter.
+async function openrouterOnce(ai,prompt,schema){
+    if(!ai.m)throw new Error('Kein OpenRouter-Modell gewählt — Slug eintragen oder aus dem Katalog wählen.');
+    const body={model:ai.m,messages:[{role:'user',content:prompt}]};
+    if(schema){
+        body.response_format={type:'json_schema',json_schema:{name:'befund',strict:true,schema}};
+        body.provider={require_parameters:true};
+    }
+    const r=await fetch(OR_CHAT_URL,{
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':`Bearer ${ai.k}`,
+            'HTTP-Referer':orReferer(),   // optionale Attribution
+            'X-Title':OR_TITLE
+        },
+        body:JSON.stringify(body)
+    });
+    const d=await r.json().catch(()=>({}));
+    // OpenRouter liefert Fehler auch in 200-Bodies.
+    if(d&&d.error)throw new Error(shortErr(d.error.message||JSON.stringify(d.error)));
+    if(!r.ok)throw new Error(shortErr(`HTTP ${r.status} ${r.statusText}`));
+    return d?.choices?.[0]?.message?.content??'';
+}
+
+// Backend-Weiche — die einzige Stelle, die das Backend kennt. Alles darüber
+// (callAI, extractJson, buildPrompt, Prompts, Progress, Logging, Stats) bleibt
+// backend-agnostisch.
+async function callAIOnce(ai,prompt,schema){
+    return ai.p==='openrouter'?openrouterOnce(ai,prompt,schema):geminiOnce(ai,prompt,schema);
+}
+
+// Retry-Wrapper mit exponentiellem Backoff (500ms → 1s → 2s), Default 2 Wiederholungen.
+async function callAI(prompt,schema,label='KI-Aufruf'){
     const ai=getAI();if(!ai)throw new Error('Keine KI konfiguriert.');
-    if(ai.p==='claude'){const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ai.k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:ai.m,max_tokens:2000,messages:[{role:'user',content:prompt}]})});const d=await r.json();if(d.error)throw new Error(d.error.message);return d.content?.[0]?.text||''}
-    else{const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${ai.m}:generateContent?key=${ai.k}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.3}})});const d=await r.json();if(d.error)throw new Error(d.error.message);return d.candidates?.[0]?.content?.parts?.[0]?.text||''}
+    const rv=parseInt(document.getElementById('ai-retries')?.value,10);
+    const retries=(Number.isFinite(rv)&&rv>=0)?rv:AI_RETRIES_DEFAULT;
+    let attempt=0;
+    // Jeder Aufruf protokolliert Backend und Modell — gemischte Läufe bleiben auditierbar.
+    const who=`${BACKEND_LABEL[ai.p]||ai.p} · ${ai.m||'(kein Modell)'}`;
+    L.info(`${label} → ${who} · Prompt ${(prompt.length/1024).toFixed(1)} kB${schema?' · Structured Output':''}`);
+    while(true){
+        const t0=performance.now();
+        try{
+            const out=await callAIOnce(ai,prompt,schema);
+            L.ok(`${label} ← ${who} · ${(String(out||'').length/1024).toFixed(1)} kB in ${Math.round(performance.now()-t0)} ms`);
+            return out;
+        }
+        catch(e){
+            attempt++;
+            if(attempt>retries){L.err(`${label} endgültig fehlgeschlagen nach ${attempt} Versuch(en): ${shortErr(e.message)}`);throw new Error(shortErr(e.message))}
+            const wait=500*Math.pow(2,attempt-1);
+            L.warn(`${label} fehlgeschlagen (${shortErr(e.message)}) — Retry ${attempt}/${retries} in ${wait} ms`);
+            console.warn(`KI-Aufruf fehlgeschlagen (${shortErr(e.message)}) — Retry ${attempt}/${retries} in ${wait}ms`);
+            await sleep(wait);
+        }
+    }
 }
 
 function sysCtx(){const sc=S.ssp?.['system-characteristics'];return sc?`System "${sc['system-name']||'?'}": ${sc.description||'keine Beschreibung'}`:'System unbekannt (Session ohne SSP)'}
@@ -564,74 +1417,52 @@ function matCtx(e){if(!e?.statements?.length)return'';return'\nVorhandene Reifeg
 function sspCtx(e){if(!e||e.fromDef)return'';let s=`\nSSP-Eintrag der Organisation:\n- Status: ${e.status}`;if(e.date)s+=`\n- Datum: ${e.date}`;if(e.stmtId){s+=`\n- Gewählter Reifegrad: ${e.stmtId}`;const ml=(e.statements||[]).find(st=>st.id===e.stmtId);if(ml)s+=` → "${ml.desc}": ${ml.statement}`}if(e.desc)s+=`\n- Kommentar: "${e.desc}"`;return s}
 function siblingNote(cid){const parts=cid.split('.');if(parts.length<2)return'';const prefix=parts.slice(0,-1).join('.');return`\n\nWICHTIG: Bewerte NUR das Control ${cid} isoliert. Das BSI Grundschutz++ hat sehr granulare, detaillierte Controls. Andere Controls derselben Gruppe (${prefix}.*) werden separat geprüft und sind hier nicht Gegenstand.`}
 
-window.aiAssess=async(cid,rk)=>{
-    if(!getAI())return alert('KI konfigurieren (oben).');
-    const e=findE(cid),ci=catInfo(cid),f=S.findings.get(cid)||{};
-    const btn=document.getElementById('ai-a-'+rk);if(btn){btn.disabled=true;btn.textContent='⏳'}
-    const prompt=`Du bist ein erfahrener IT-Sicherheitsauditor. Bewerte das OSCAL-Control.
+// ============================================================
+// PROMPTS (editierbar, in der UI unter „◉ KI-Prompts")
+// ============================================================
+// Die Control-Daten werden deterministisch zusammengesetzt und über {kontext}
+// in die vom Anwender editierbaren Templates eingesetzt.
+const PROMPT_PH='{kontext}';
 
-${sysCtx()}
-Control: ${cid} — ${ci.title||'(Titel unbekannt)'}
-${ci.prose?'Anforderungstext: '+ci.prose.substring(0,500):''}
-Status laut SSP: ${e?.status||'unbekannt'}
-Komponente: ${e?._comp||'?'}
-${e?.desc?'SSP-Beschreibung: '+e.desc:''}${e?.defDesc?' | Komp.-Def.: '+e.defDesc.substring(0,300):''}
-${sspCtx(e)}
-${matCtx(e)}
-${f.observation?'\nBisherige Beobachtung des Assessors: '+f.observation:''}
-${siblingNote(cid)}
+const DEFAULT_ASSESS_PROMPT=`Du bist ein erfahrener IT-Sicherheitsauditor mit BSI-Grundschutz-Erfahrung. Bewerte das folgende OSCAL-Control.
 
-Beziehe den SSP-Eintrag der Organisation (Reifegrad, Kommentar, Status) und die Komponentendefinition in deine Bewertung ein. Antworte NUR als JSON:
-{"status":"satisfied|not-satisfied|other","observation":"1-2 Sätze","risk":"1 Satz falls nicht erfüllt, sonst leer","remarks":"1 Satz Hinweis"}`;
-    try{
-        const txt=await callAI(prompt);const res=JSON.parse(txt.replace(/```json\n?|```/g,'').trim());
-        if(res.status){const f2=S.findings.get(cid)||{status:'',observation:'',risk:'',remarks:''};
-            f2.status=res.status;f2.observation=res.observation||f2.observation;f2.risk=res.risk||'';f2.remarks=res.remarks||'';S.findings.set(cid,f2);
-            const s=document.getElementById('f-s-'+rk);if(s)s.value=f2.status;
-            const o=document.getElementById('f-o-'+rk);if(o)o.value=f2.observation;
-            const rk2=document.getElementById('f-r-'+rk);if(rk2)rk2.value=f2.risk;
-            const rm=document.getElementById('f-m-'+rk);if(rm)rm.value=f2.remarks;
-            setF(cid,'status',f2.status)}
-    }catch(e){alert('KI: '+e.message)}finally{if(btn){btn.disabled=false;btn.textContent='🤖'}}
-};
+${PROMPT_PH}
 
-window.aiExplain=async(cid,rk)=>{
-    if(!getAI())return alert('KI konfigurieren (oben).');
-    const cached=S.aiCache.get(cid);
-    const out=document.getElementById('ai-x-'+rk);
-    if(cached?.explain){out.innerHTML=marked.parse(cached.explain);out.style.display='block';return}
-    const btn=document.getElementById('ai-e-'+rk);if(btn){btn.disabled=true;btn.textContent='⏳'}
-    const ci=catInfo(cid);const e=findE(cid);
-    const hasML=(e?.statements||[]).length>0;
-    const prompt=hasML
-        ?`Du bist ein IT-Sicherheitsexperte. Analysiere das Control im Kontext: ${sysCtx()}
+Bewertungsregeln:
+- Beziehe den SSP-Eintrag der Organisation (Status, gewählter Reifegrad, Kommentar) und die Komponentendefinition in die Bewertung ein.
+- "satisfied" nur, wenn die Anforderung nachvollziehbar und vollständig erfüllt ist.
+- "not-satisfied" bei erkennbaren Lücken.
+- "other", wenn die Datenlage keine belastbare Aussage zulässt.
+- Keine Spekulation über nicht genannte Komponenten oder benachbarte Controls.
 
-Control-ID: ${cid} — ${ci.title||'unbekannt'}
-${ci.prose?'Anforderungstext: '+ci.prose.substring(0,600):''}
-${sspCtx(e)}
-${matCtx(e)}
+Felder der Antwort:
+- status: satisfied | not-satisfied | other
+- observation: 1-2 Sätze, was konkret festgestellt wurde
+- risk: 1 Satz zum Risiko, falls nicht erfüllt — sonst leerer String
+- remarks: 1 Satz Hinweis für den Assessor (z. B. nächster Prüfschritt)`;
 
-Es gibt bereits ${e.statements.length} definierte Reifegrade.${e.stmtId?' Die Organisation hat Reifegrad '+e.stmtId+' im SSP gewählt.':' Die Organisation hat noch keinen Reifegrad im SSP gesetzt.'} Ergänze bitte auf Deutsch in Markdown:
+const DEFAULT_EXPLAIN_ML_PROMPT=`Du bist ein IT-Sicherheitsexperte und unterstützt einen Auditor bei der Prüfvorbereitung.
+
+${PROMPT_PH}
+
+Antworte auf Deutsch in Markdown mit genau diesen Abschnitten:
 
 ## Einordnung und Kontext
 (2-3 Sätze: Warum ist dieses Control wichtig? Typische Schwachstellen)
 
 ## Bewertungshinweise je Reifegrad
-(Für jeden vorhandenen Reifegrad: Worauf achten? Was sind Red Flags?${e.stmtId?' Gehe besonders auf den gewählten Reifegrad '+e.stmtId+' ein: Ist die Wahl angemessen für das System? Was muss man prüfen um diesen Reifegrad zu bestätigen?':''})
+(Für jeden oben genannten Reifegrad: Worauf achten? Was sind Red Flags? Falls die Organisation bereits einen Reifegrad gewählt hat: Ist die Wahl für dieses System angemessen, und was muss geprüft werden, um sie zu bestätigen?)
 
 ## Ergänzende Prüfungshandlungen
 - **EXAMINE**: (zusätzliche Dokumente/Nachweise über die Basis-Prüfung hinaus)
 - **INTERVIEW**: (spezifische Gesprächspartner und Fragen)
-- **TEST**: (konkrete technische Tests, Tool-Vorschläge)
-${siblingNote(cid)}`
+- **TEST**: (konkrete technische Tests, Tool-Vorschläge)`;
 
-        :`Du bist ein IT-Sicherheitsexperte. Erkläre das Control im Kontext: ${sysCtx()}
+const DEFAULT_EXPLAIN_BASE_PROMPT=`Du bist ein IT-Sicherheitsexperte und erklärst einem Auditor ein Control.
 
-Control-ID: ${cid} — ${ci.title||'unbekannt'}
-${ci.prose?'Anforderungstext: '+ci.prose.substring(0,800):''}
-${sspCtx(e)}
+${PROMPT_PH}
 
-Antworte auf Deutsch in Markdown:
+Antworte auf Deutsch in Markdown mit genau diesen Abschnitten:
 
 ## Was fordert dieses Control?
 (2-3 Sätze)
@@ -646,26 +1477,208 @@ Antworte auf Deutsch in Markdown:
 ## Empfohlene Prüfungshandlungen
 - **EXAMINE**: (welche Dokumente/Nachweise prüfen)
 - **INTERVIEW**: (wen befragen, welche Fragen stellen)
-- **TEST**: (welche technischen Tests durchführen)
-${siblingNote(cid)}`;
+- **TEST**: (welche technischen Tests durchführen)`;
+
+const PROMPT_DEFS={
+    assess:{ta:'pr-assess',warn:'pw-assess',ls:'oscal_prompt_assess',def:DEFAULT_ASSESS_PROMPT},
+    explainML:{ta:'pr-explain-ml',warn:'pw-explain-ml',ls:'oscal_prompt_explain_ml',def:DEFAULT_EXPLAIN_ML_PROMPT},
+    explainBase:{ta:'pr-explain-base',warn:'pw-explain-base',ls:'oscal_prompt_explain_base',def:DEFAULT_EXPLAIN_BASE_PROMPT}
+};
+
+function initPrompts(){
+    Object.entries(PROMPT_DEFS).forEach(([k,c])=>{
+        const ta=document.getElementById(c.ta);if(!ta)return;
+        let v=null;try{v=localStorage.getItem(c.ls)}catch(e){}
+        ta.value=(v!=null&&v!=='')?v:c.def;
+        ta.addEventListener('input',()=>{try{localStorage.setItem(c.ls,ta.value)}catch(e){}validatePrompt(k)});
+        validatePrompt(k);
+    });
+}
+// Platzhalter-Validierung: sichtbarer Warnhinweis, wenn {kontext} fehlt.
+function validatePrompt(k){
+    const c=PROMPT_DEFS[k];const ta=document.getElementById(c.ta),w=document.getElementById(c.warn);
+    if(!ta||!w)return;
+    w.classList.toggle('hidden',ta.value.includes(PROMPT_PH));
+}
+window.resetPrompt=k=>{
+    const c=PROMPT_DEFS[k];const ta=document.getElementById(c.ta);if(!ta)return;
+    ta.value=c.def;try{localStorage.setItem(c.ls,c.def)}catch(e){}
+    validatePrompt(k);
+};
+// Baut den fertigen Prompt: Template aus der UI, Default als Fallback,
+// fehlender Platzhalter wird defensiv angehängt statt den Kontext zu verlieren.
+function buildPrompt(k,ctx){
+    const c=PROMPT_DEFS[k];
+    let tpl=(document.getElementById(c.ta)?.value||'').trim();
+    if(!tpl)tpl=c.def;
+    if(!tpl.includes(PROMPT_PH))tpl=tpl+'\n\n'+PROMPT_PH;
+    return tpl.split(PROMPT_PH).join(ctx);
+}
+
+// Deterministisch aufgebauter Control-Kontext für {kontext}.
+function ctxAssess(cid){
+    const e=findE(cid),ci=catInfo(cid),f=S.findings.get(cid)||{};
+    return [
+        sysCtx(),
+        `Control: ${cid} — ${ci.title||'(Titel unbekannt)'}`,
+        ci.prose?'Anforderungstext: '+ci.prose.substring(0,500):'',
+        `Status laut SSP: ${e?.status||'unbekannt'}`,
+        `Komponente: ${e?._comp||'?'}`,
+        e?.desc?'SSP-Beschreibung: '+e.desc:'',
+        e?.defDesc?'Komp.-Def.: '+e.defDesc.substring(0,300):'',
+        sspCtx(e).trim(),
+        matCtx(e).trim(),
+        f.observation?'Bisherige Beobachtung des Assessors: '+f.observation:'',
+        siblingNote(cid).trim()
+    ].filter(x=>x&&x.trim()).join('\n');
+}
+function ctxExplain(cid){
+    const ci=catInfo(cid),e=findE(cid);
+    const sts=e?.statements||[];
+    const lines=[
+        sysCtx(),
+        `Control-ID: ${cid} — ${ci.title||'unbekannt'}`,
+        ci.prose?'Anforderungstext: '+ci.prose.substring(0,sts.length?600:800):'',
+        sspCtx(e).trim()
+    ];
+    if(sts.length){
+        lines.push(matCtx(e).trim());
+        lines.push(`Es gibt bereits ${sts.length} definierte Reifegrade.`+(e.stmtId?` Die Organisation hat Reifegrad ${e.stmtId} im SSP gewählt.`:' Die Organisation hat noch keinen Reifegrad im SSP gesetzt.'));
+    }
+    lines.push(siblingNote(cid).trim());
+    return {hasML:sts.length>0,ctx:lines.filter(x=>x&&x.trim()).join('\n')};
+}
+
+window.aiAssess=async(cid,rk)=>{
+    if(!getAI()){L.warn('Befundvorschlag angefordert, aber keine KI konfiguriert');return alert('KI konfigurieren (oben).')}
+    const btn=document.getElementById('ai-a-'+rk);if(btn){btn.disabled=true;btn.textContent='⋯'}
+    const prompt=buildPrompt('assess',ctxAssess(cid));
     try{
-        const txt=await callAI(prompt);
+        const txt=await callAI(prompt,ASSESS_SCHEMA,`Befundvorschlag ${cid}`);const res=extractJson(txt);
+        if(res.status){const f2=S.findings.get(cid)||{status:'',observation:'',risk:'',remarks:''};
+            f2.status=res.status;f2.observation=res.observation||f2.observation;f2.risk=res.risk||'';f2.remarks=res.remarks||'';S.findings.set(cid,f2);
+            const s=document.getElementById('f-s-'+rk);if(s)s.value=f2.status;
+            const o=document.getElementById('f-o-'+rk);if(o)o.value=f2.observation;
+            const rk2=document.getElementById('f-r-'+rk);if(rk2)rk2.value=f2.risk;
+            const rm=document.getElementById('f-m-'+rk);if(rm)rm.value=f2.remarks;
+            setF(cid,'status',f2.status);L.ok(`Befundvorschlag ${cid} übernommen: status=${res.status}`)}
+        else L.warn(`Befundvorschlag ${cid}: Antwort ohne Feld "status"`);
+    }catch(e){L.err(`Befundvorschlag ${cid}: ${shortErr(e.message)}`);alert('KI: '+shortErr(e.message))}finally{if(btn){btn.disabled=false;btn.textContent='◈'}}
+};
+
+window.aiExplain=async(cid,rk)=>{
+    if(!getAI()){L.warn('Analyse angefordert, aber keine KI konfiguriert');return alert('KI konfigurieren (oben).')}
+    const cached=S.aiCache.get(cid);
+    const out=document.getElementById('ai-x-'+rk);
+    if(cached?.explain){out.innerHTML=marked.parse(cached.explain);out.style.display='block';L.debug(`Analyse ${cid} aus dem Cache angezeigt`);return}
+    const btn=document.getElementById('ai-e-'+rk);if(btn){btn.disabled=true;btn.textContent='⋯'}
+    const {hasML,ctx}=ctxExplain(cid);
+    const prompt=buildPrompt(hasML?'explainML':'explainBase',ctx);
+    try{
+        const txt=await callAI(prompt,null,`Analyse ${cid} (${hasML?'mit':'ohne'} Reifegrade)`);
         S.aiCache.set(cid,{...(S.aiCache.get(cid)||{}),explain:txt});
         if(out){out.innerHTML=marked.parse(txt);out.style.display='block'}
-    }catch(e){alert('KI: '+e.message)}finally{if(btn){btn.disabled=false;btn.textContent='📖'}}
+        L.ok(`Analyse ${cid} gerendert (${(txt.length/1024).toFixed(1)} kB Markdown)`);
+    }catch(e){L.err(`Analyse ${cid}: ${shortErr(e.message)}`);alert('KI: '+shortErr(e.message))}finally{if(btn){btn.disabled=false;btn.textContent='▣'}}
 };
 
 // ============================================================
 // STATS
 // ============================================================
+// Reines SVG — keine Chart-Bibliothek. Ein Donut für die primäre
+// Statusverteilung, daneben horizontale Balken. Alle Zahlen werden hier
+// in JS berechnet (nie vom Modell), Farben kommen aus STM/FINDING_COL/METHOD_COL
+// und sind damit identisch mit den Status-Badges der Control-Liste.
+function donutChart(slices,size=150,innerRatio=0.62){
+    const total=slices.reduce((s,x)=>s+x.value,0);
+    if(total===0)return '';
+    const cx=size/2,cy=size/2,r=size/2-6,ri=r*innerRatio;
+    let a=-Math.PI/2;
+    const live=slices.filter(s=>s.value>0);
+    const paths=live.map(s=>{
+        let sweep=(s.value/total)*Math.PI*2;
+        if(live.length===1)sweep=Math.PI*2-0.0001; // Vollkreis zeichnbar halten
+        const a1=a,a2=a+sweep;a=a2;
+        const x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+        const x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+        const xi1=cx+ri*Math.cos(a1),yi1=cy+ri*Math.sin(a1);
+        const xi2=cx+ri*Math.cos(a2),yi2=cy+ri*Math.sin(a2);
+        const large=sweep>Math.PI?1:0;
+        return `<path d="M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} L ${xi2} ${yi2} A ${ri} ${ri} 0 ${large} 0 ${xi1} ${yi1} Z" fill="${s.color}" />`;
+    }).join('');
+    return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img" aria-label="Statusverteilung">${paths}
+        <text x="${cx}" y="${cy-2}" text-anchor="middle" dominant-baseline="central" fill="currentColor"
+              font-family="JetBrains Mono" font-size="22" font-weight="600">${total}</text>
+        <text x="${cx}" y="${cy+18}" text-anchor="middle" fill="currentColor" opacity="0.55"
+              font-family="JetBrains Mono" font-size="9" letter-spacing="1.5">EINTRÄGE</text></svg>`;
+}
+function donutLegend(slices){
+    const total=slices.reduce((s,x)=>s+x.value,0)||1;
+    return slices.filter(s=>s.value>0).map(s=>`<div class="row">
+        <span class="dot" style="background:${s.color}"></span>
+        <span class="truncate">${esc(s.label)}</span>
+        <span class="n">${s.value} · ${((s.value/total)*100).toFixed(0)}%</span></div>`).join('');
+}
+function hBarRows(items){
+    const max=Math.max(1,...items.map(i=>i.value));
+    return items.map(i=>`<div class="hbar-row">
+        <div class="hbar-label">${esc(i.label)}</div>
+        <div class="hbar-track"><div class="hbar-fill stat-bar" style="width:${(i.value/max)*100}%;background:${i.color}"></div></div>
+        <div class="hbar-value">${i.value}</div></div>`).join('');
+}
 function renderStats(){
-    const dash=document.getElementById('stats-dash');const counts={};let total=0;
-    S.compGroups.forEach(m=>m.forEach(i=>{total++;counts[i.status||'nicht-angegeben']=(counts[i.status||'nicht-angegeben']||0)+1}));
-    let bars='';['implemented','partial','planned','alternative','nicht-angegeben','nur-komponente','not-applicable'].forEach(st=>{
-        const n=counts[st];if(!n)return;const m=STM[st];const pct=((n/total)*100).toFixed(1);
-        bars+=`<div class="flex items-center gap-3 mb-1.5"><span class="sb ${m.c} w-28 text-center flex-shrink-0">${m.l}</span><div class="flex-1 bg-slate-900 rounded-full h-4 overflow-hidden border border-slate-700"><div class="stat-bar h-full rounded-full flex items-center justify-end pr-2" style="width:${pct}%;background:${m.b}"><span class="text-[9px] font-bold text-white drop-shadow">${n}</span></div></div><span class="text-xs text-slate-400 w-12 text-right font-mono">${pct}%</span></div>`});
-    let rated=0;S.findings.forEach((f,c)=>{if(!S.excluded.has(c)&&f.status)rated++});
-    dash.innerHTML=`<div class="bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700 rounded-xl p-5 shadow-lg"><div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 gap-3"><h2 class="text-lg font-bold text-white">Umsetzungsstatus</h2><div class="flex gap-5 text-sm"><div class="text-center"><div class="text-xl font-bold text-white">${S.allCids.size}</div><div class="text-[10px] text-slate-400 uppercase">Controls</div></div><div class="text-center"><div class="text-xl font-bold text-emerald-400" id="stat-rated">${rated}</div><div class="text-[10px] text-slate-400 uppercase">Bewertet</div></div></div></div>${bars}</div>`;
+    const dash=document.getElementById('stats-dash');if(!dash)return;
+    // 1) Umsetzungsstatus je Komponenteneintrag (deterministisch aus S.compGroups)
+    const counts={};let total=0;
+    S.compGroups.forEach(m=>m.forEach(i=>{const k=i.status||'nicht-angegeben';counts[k]=(counts[k]||0)+1;total++}));
+    const statusSlices=STM_ORDER.filter(k=>counts[k]).map(k=>({label:STM[k].l,value:counts[k],color:STM[k].b}));
+    // 2) Befundstatus über die Controls im Prüf-Scope
+    const scope=[...S.allCids].filter(c=>!S.excluded.has(c));
+    const fc={satisfied:0,'not-satisfied':0,other:0,offen:0};
+    scope.forEach(c=>{const st=(S.findings.get(c)||{}).status;
+        if(st==='satisfied')fc.satisfied++;else if(st==='not-satisfied')fc['not-satisfied']++;
+        else if(st==='other')fc.other++;else fc.offen++});
+    const rated=fc.satisfied+fc['not-satisfied']+fc.other;
+    const findingRows=[
+        {label:'Erfüllt',value:fc.satisfied,color:FINDING_COL.satisfied},
+        {label:'Nicht erfüllt',value:fc['not-satisfied'],color:FINDING_COL['not-satisfied']},
+        {label:'Sonstig',value:fc.other,color:FINDING_COL.other},
+        {label:'Offen',value:fc.offen,color:FINDING_COL.offen}
+    ];
+    // 3) Geplante Prüfmethoden im Scope
+    const mc={EXAMINE:0,INTERVIEW:0,TEST:0};
+    scope.forEach(c=>(S.methods.get(c)||new Set()).forEach(m=>{if(mc[m]!=null)mc[m]++}));
+    const methodRows=[
+        {label:'EXAMINE',value:mc.EXAMINE,color:METHOD_COL.EXAMINE},
+        {label:'INTERVIEW',value:mc.INTERVIEW,color:METHOD_COL.INTERVIEW},
+        {label:'TEST',value:mc.TEST,color:METHOD_COL.TEST}
+    ];
+    // Ohne Daten keine Karte — leere Charts werden nicht als Platzhalter gezeigt.
+    if(!total&&!scope.length){dash.classList.add('hidden');dash.innerHTML='';return}
+    dash.classList.remove('hidden');
+    dash.innerHTML=`<div class="card p-4">
+        <div class="flex justify-between items-center mb-3 gap-3 flex-wrap">
+            <div class="lbl mb-0">▣ Kennzahlen</div>
+            <div class="kpi-row">
+                <div class="kpi"><span class="v">${S.allCids.size}</span><span class="k">Controls</span></div>
+                <div class="kpi"><span class="v">${scope.length}</span><span class="k">im Scope</span></div>
+                <div class="kpi"><span class="v" id="stat-rated">${rated}</span><span class="k">bewertet</span></div>
+                <div class="kpi"><span class="v">${S.compMeta.size}</span><span class="k">Komponenten</span></div>
+            </div>
+        </div>
+        <div class="stats-grid">
+            <div class="chart-card">
+                <div class="chart-head">Umsetzungsstatus (SSP + Komponentendefinitionen)</div>
+                <div class="donut-wrap">${donutChart(statusSlices)}<div class="donut-legend flex-1">${donutLegend(statusSlices)}</div></div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-head">Befundstatus im Prüf-Scope</div>
+                ${hBarRows(findingRows)}
+                <div class="chart-head" style="margin:14px 0 8px">Geplante Prüfmethoden</div>
+                ${hBarRows(methodRows)}
+            </div>
+        </div>
+    </div>`;
 }
 
 // ============================================================
@@ -723,14 +1736,14 @@ function renderControls(){
             let sspBlock = '';
             if(hasSSPData) {
                 sspBlock = `<div class="mb-3 p-2.5 bg-emerald-950/30 border border-emerald-800/40 rounded-lg">
-                    <div class="flex items-center gap-1.5 mb-1.5"><span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">📝 SSP-Eintrag der Organisation</span></div>
+                    <div class="flex items-center gap-1.5 mb-1.5"><span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">◇ SSP-Eintrag der Organisation</span></div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
-                        <div><span class="text-slate-500">Status:</span> <span class="sb ${sm.c}">${sm.l}</span></div>
+                        <div><span class="text-slate-500">Status:</span> <span class="sb" style="${sm.st}">${sm.l}</span></div>
                         ${info.user?`<div><span class="text-slate-500">Bearbeiter:</span> <span class="text-white font-semibold">${esc(info.user)}</span></div>`:''}
                         ${info.date?`<div><span class="text-slate-500">Datum:</span> <span class="text-white">${info.date}</span></div>`:''}
                         ${hasStmtId?`<div><span class="text-slate-500">Reifegrad:</span> <span class="text-cyan-300 font-mono font-bold">${esc(info.stmtId)}</span></div>`:''}
                     </div>
-                    ${info.desc?`<div class="mt-1.5 text-xs text-emerald-200/80 italic border-t border-emerald-800/30 pt-1.5">💬 "${esc(info.desc)}"</div>`:''}
+                    ${info.desc?`<div class="mt-1.5 text-xs text-emerald-200/80 italic border-t border-emerald-800/30 pt-1.5">◇ „${esc(info.desc)}“</div>`:''}
                     ${selectedML?`<div class="mt-1.5 p-2 bg-emerald-900/30 rounded border-l-2 border-emerald-500">
                         <div class="text-[10px] text-emerald-400 font-bold mb-0.5">Gewählter Reifegrad: ${esc(selectedML.desc)}</div>
                         ${selectedML.statement?`<div class="text-xs text-emerald-200/90">${esc(selectedML.statement)}</div>`:''}
@@ -747,28 +1760,28 @@ function renderControls(){
                     ${modal?`<span class="text-[9px] font-bold flex-shrink-0 ${modal==='MUSS'?'text-red-400':modal==='SOLL'?'text-yellow-400':'text-slate-400'}">${modal}</span>`:''}
                     ${secLevel?`<span class="text-[9px] text-slate-500 flex-shrink-0">${esc(secLevel)}</span>`:''}
                     <span class="ctrl-title flex-shrink-1">${esc(ci.title)||'<span class="text-slate-600 italic">—</span>'}</span>
-                    <span class="sb ${sm.c} flex-shrink-0 ml-auto">${sm.l}</span>
+                    <span class="sb flex-shrink-0 ml-auto" style="${sm.st}">${sm.l}</span>
                     ${hasStmtId?`<span class="text-[9px] text-cyan-400 font-mono flex-shrink-0">${esc(info.stmtId)}</span>`:''}
                     <div class="flex gap-1 flex-shrink-0" onclick="event.stopPropagation()">
                         <label class="flex items-center gap-0.5 cursor-pointer"><input type="checkbox" ${mth.has('EXAMINE')?'checked':''} onchange="togM('${cid}','EXAMINE',this.checked)" class="mcb form-checkbox h-3 w-3 text-blue-500 rounded border-slate-600 bg-slate-700"><span class="text-[9px] text-blue-400 font-bold">EX</span></label>
                         <label class="flex items-center gap-0.5 cursor-pointer"><input type="checkbox" ${mth.has('INTERVIEW')?'checked':''} onchange="togM('${cid}','INTERVIEW',this.checked)" class="mcb form-checkbox h-3 w-3 text-amber-500 rounded border-slate-600 bg-slate-700"><span class="text-[9px] text-amber-400 font-bold">IN</span></label>
                         <label class="flex items-center gap-0.5 cursor-pointer"><input type="checkbox" ${mth.has('TEST')?'checked':''} onchange="togM('${cid}','TEST',this.checked)" class="mcb form-checkbox h-3 w-3 text-emerald-500 rounded border-slate-600 bg-slate-700"><span class="text-[9px] text-emerald-400 font-bold">TE</span></label>
                     </div>
-                    <span class="fp text-xs ml-1 ${f.status==='satisfied'?'text-emerald-400':f.status==='not-satisfied'?'text-red-400':f.status==='other'?'text-amber-400':'text-slate-600'}" data-fp="${cid}">${f.status==='satisfied'?'✅':f.status==='not-satisfied'?'❌':f.status==='other'?'⚠️':'○'}</span>
+                    <span class="fp text-xs ml-1 ${f.status==='satisfied'?'text-emerald-400':f.status==='not-satisfied'?'text-red-400':f.status==='other'?'text-amber-400':'text-slate-600'}" data-fp="${cid}">${f.status==='satisfied'?'✓':f.status==='not-satisfied'?'✗':f.status==='other'?'◬':'○'}</span>
                     <svg class="chev w-3.5 h-3.5 text-slate-500" id="cch-${rk}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
                 </div>
                 <div class="ctrl-detail px-3 border-t border-slate-700/50" id="cbd-${rk}">
                     ${ci.prose?`<div class="text-xs text-slate-400 mb-2 leading-relaxed bg-slate-800/60 p-2 rounded border-l-2 border-slate-600">${esc(ci.prose).substring(0,600)}${ci.prose.length>600?'…':''}</div>`:''}
-                    <div class="mb-2"><button onclick="event.stopPropagation();showED23('${cid}','${rk}')" class="text-xs font-semibold text-cyan-300 bg-slate-800 border border-slate-600 rounded px-2 py-1 hover:bg-slate-700">📑 Zeige BSI ED23 Anforderungen</button><div id="ed23-${rk}" class="hidden mt-2 bg-slate-800/60 p-2 rounded border-l-2 border-cyan-700"></div></div>
+                    <div class="mb-2"><button onclick="event.stopPropagation();showED23('${cid}','${rk}')" class="text-xs font-semibold text-cyan-300 bg-slate-800 border border-slate-600 rounded px-2 py-1 hover:bg-slate-700">▣ Zeige BSI ED23 Anforderungen</button><div id="ed23-${rk}" class="hidden mt-2 bg-slate-800/60 p-2 rounded border-l-2 border-cyan-700"></div></div>
                     ${sspBlock}
                     ${info.defDesc?`<div class="text-xs text-cyan-200/70 mb-2 leading-relaxed bg-cyan-950/30 p-2 rounded border-l-2 border-cyan-800"><span class="text-[10px] text-cyan-500 font-bold uppercase">Komp.-Def.:</span> ${esc(info.defDesc).substring(0,500)}${(info.defDesc||'').length>500?'…':''}</div>`:''}
                     ${(info.defProps||[]).length?`<div class="mb-2 flex flex-wrap gap-1">${(info.defProps||[]).map(p=>`<span class="text-[10px] bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-800">${esc(p.name)}: ${esc(p.value)}</span>`).join('')}</div>`:''}
                     ${params.length?`<div class="mb-2 flex flex-wrap gap-1">${params.map(p=>`<span class="text-xs bg-slate-800 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-800 font-mono">${esc(p['param-id'])}="${esc(p.values?.[0]||'')}"</span>`).join('')}</div>`:''}
-                    ${info.fromDef&&!info.statements?.length?'<div class="text-xs text-cyan-400 mb-2">ℹ️ Nur Komponentendefinition — kein SSP-Eintrag.</div>':''}
+                    ${info.fromDef&&!info.statements?.length?'<div class="text-xs text-cyan-400 mb-2">◇ Nur Komponentendefinition — kein SSP-Eintrag.</div>':''}
                     ${(info.statements||[]).length?`
                     <div class="mb-3 border border-indigo-900/60 rounded-lg overflow-hidden">
                         <button onclick="event.stopPropagation();document.getElementById('ml-${rk}').classList.toggle('hidden')" class="w-full text-left px-3 py-1.5 bg-indigo-950/50 text-indigo-300 text-xs font-bold hover:bg-indigo-950/80 transition-colors flex items-center gap-2">
-                            <span>📊 ${info.statements.length} Reifegrade</span>${hasStmtId?`<span class="text-emerald-400 text-[10px]">✓ Org. hat ${esc(info.stmtId)} gewählt</span>`:`<span class="text-amber-400 text-[10px]">⚠ Kein Reifegrad im SSP gesetzt</span>`}
+                            <span>▤ ${info.statements.length} Reifegrade</span>${hasStmtId?`<span class="text-emerald-400 text-[10px]">✓ Org. hat ${esc(info.stmtId)} gewählt</span>`:`<span class="text-amber-400 text-[10px]">◬ Kein Reifegrad im SSP gesetzt</span>`}
                         </button>
                         <div id="ml-${rk}" class="${hasStmtId?'hidden':''} p-2 space-y-1.5 bg-indigo-950/20">
                             ${info.statements.map((st,idx)=>{
@@ -782,8 +1795,8 @@ function renderControls(){
                                         ${isSelected?'<span class="sb bg-emerald-900 text-emerald-300 border-emerald-700">Gewählt</span>':''}
                                     </div>
                                     ${st.statement?`<div class="text-xs ${isSelected?'text-emerald-200':'text-slate-300'} mb-1">${esc(st.statement)}</div>`:''}
-                                    ${st.guidance?`<div class="text-[10px] text-slate-500 italic">💡 ${esc(st.guidance)}</div>`:''}
-                                    ${st.assessMethod?`<div class="text-[10px] text-blue-400 mt-0.5">🔍 ${esc(st.assessMethod)}</div>`:''}
+                                    ${st.guidance?`<div class="text-[10px] text-slate-500 italic">◇ ${esc(st.guidance)}</div>`:''}
+                                    ${st.assessMethod?`<div class="text-[10px] text-blue-400 mt-0.5">⌕ ${esc(st.assessMethod)}</div>`:''}
                                 </div>`;
                             }).join('')}
                         </div>
@@ -791,9 +1804,9 @@ function renderControls(){
                     <div class="bg-slate-800 border border-slate-700 rounded-lg p-3">
                         <div class="flex items-center gap-2 mb-2 flex-wrap">
                             <span class="text-xs font-bold text-blue-300 uppercase">Befund</span>
-                            <select onchange="setF('${cid}','status',this.value)" id="f-s-${rk}" class="inp text-xs py-1 px-2 w-44"><option value="" ${!f.status?'selected':''}>— offen —</option><option value="satisfied" ${f.status==='satisfied'?'selected':''}>✅ Erfüllt</option><option value="not-satisfied" ${f.status==='not-satisfied'?'selected':''}>❌ Nicht erfüllt</option><option value="other" ${f.status==='other'?'selected':''}>⚠️ Sonstig</option></select>
-                            <button id="ai-a-${rk}" onclick="event.stopPropagation();aiAssess('${cid}','${rk}')" class="ai-btn" title="KI: Befundvorschlag">🤖</button>
-                            <button id="ai-e-${rk}" onclick="event.stopPropagation();aiExplain('${cid}','${rk}')" class="ai-btn ai-explain" title="${(info.statements||[]).length?'KI: Ergänzende Analyse':'KI: Control erklären + Reifegrade'}">📖</button>
+                            <select onchange="setF('${cid}','status',this.value)" id="f-s-${rk}" class="inp text-xs py-1 px-2 w-44"><option value="" ${!f.status?'selected':''}>— offen —</option><option value="satisfied" ${f.status==='satisfied'?'selected':''}>✓ Erfüllt</option><option value="not-satisfied" ${f.status==='not-satisfied'?'selected':''}>✗ Nicht erfüllt</option><option value="other" ${f.status==='other'?'selected':''}>◬ Sonstig</option></select>
+                            <button id="ai-a-${rk}" onclick="event.stopPropagation();aiAssess('${cid}','${rk}')" class="ai-btn" title="KI: Befundvorschlag">◈</button>
+                            <button id="ai-e-${rk}" onclick="event.stopPropagation();aiExplain('${cid}','${rk}')" class="ai-btn ai-explain" title="${(info.statements||[]).length?'KI: Ergänzende Analyse':'KI: Control erklären + Reifegrade'}">▣</button>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                             <div><label class="text-[10px] text-slate-500 uppercase font-bold">Beobachtung</label><textarea rows="2" id="f-o-${rk}" onchange="setF('${cid}','observation',this.value)" class="inp w-full text-xs mt-0.5">${esc(f.observation||'')}</textarea></div>
@@ -833,7 +1846,7 @@ window.togM=(c,m,on)=>{let s=S.methods.get(c);if(!s){s=new Set();S.methods.set(c
 window.bulkM=m=>{const l=m==='EXAMINE'?'EX':m==='INTERVIEW'?'IN':'TE';S.allCids.forEach(c=>{if(S.excluded.has(c))return;let s=S.methods.get(c);if(!s){s=new Set();S.methods.set(c,s)}s.add(m)});document.querySelectorAll('.ctrl-row').forEach(r=>{const c=r.dataset.cid;if(!c||S.excluded.has(c))return;r.querySelectorAll('.mcb').forEach(cb=>{if(cb.parentElement.querySelector('span')?.textContent===l)cb.checked=true})})};
 window.bulkMC=()=>{S.allCids.forEach(c=>{if(S.excluded.has(c))return;S.methods.set(c,new Set())});document.querySelectorAll('.mcb').forEach(cb=>cb.checked=false)};
 window.setF=(c,k,v)=>{let f=S.findings.get(c);if(!f){f={status:'',observation:'',risk:'',remarks:''};S.findings.set(c,f)}f[k]=v;
-    document.querySelectorAll(`[data-fp="${c}"]`).forEach(p=>{p.textContent=f.status==='satisfied'?'✅':f.status==='not-satisfied'?'❌':f.status==='other'?'⚠️':'○';p.className=`fp text-xs ml-1 ${f.status==='satisfied'?'text-emerald-400':f.status==='not-satisfied'?'text-red-400':f.status==='other'?'text-amber-400':'text-slate-600'}`});
+    document.querySelectorAll(`[data-fp="${c}"]`).forEach(p=>{p.textContent=f.status==='satisfied'?'✓':f.status==='not-satisfied'?'✗':f.status==='other'?'◬':'○';p.className=`fp text-xs ml-1 ${f.status==='satisfied'?'text-emerald-400':f.status==='not-satisfied'?'text-red-400':f.status==='other'?'text-amber-400':'text-slate-600'}`});
     if(k==='status')document.querySelectorAll(`.ctrl-row[data-cid="${c}"] select`).forEach(s=>{if(s.id.startsWith('f-s-'))s.value=v});
     let n=0;S.findings.forEach((f2,cc)=>{if(!S.excluded.has(cc)&&f2.status)n++});const rn=document.getElementById('rated-n');if(rn)rn.textContent=n;const sr=document.getElementById('stat-rated');if(sr)sr.textContent=n};
 window.fltC=()=>{
@@ -859,7 +1872,8 @@ window.fltC=()=>{
 // ============================================================
 function exportAP(){
     const ts=new Date().toISOString(),au=crypto.randomUUID();const cids=[...S.allCids].filter(c=>!S.excluded.has(c)).sort();
-    if(!cids.length)return alert('Keine Controls im Prüf-Scope — include-controls wäre leer (Schema-Verstoß).');
+    L.info(`Assessment Plan wird erzeugt (${cids.length} Controls im Scope)`);
+    if(!cids.length){L.err('AP-Export abgebrochen: keine Controls im Prüf-Scope');return alert('Keine Controls im Prüf-Scope — include-controls wäre leer (Schema-Verstoß).')}
     const byM={};cids.forEach(c=>{(S.methods.get(c)||new Set(['EXAMINE'])).forEach(m=>{if(!byM[m])byM[m]={uuid:crypto.randomUUID(),cids:[]};byM[m].cids.push(c)})});
     const acts=Object.entries(byM).map(([m,a])=>({uuid:a.uuid,title:`${m}-Prüfung`,description:`${m} für ${a.cids.length} Controls.`,props:[{name:"method",ns:"http://csrc.nist.gov/ns/oscal",value:m}],"related-controls":{"control-selections":[{"include-controls":a.cids.map(c=>({"control-id":c}))}]}}));
     // Pin-Muster (Grundregel 8): import-ssp als Fragment auf eine back-matter-Resource;
@@ -873,11 +1887,13 @@ function exportAP(){
     ap["assessment-plan"]["assessment-subjects"]=[{type:"component",description:"Systemkomponenten","include-all":{}}];
     ap["assessment-plan"]["assessment-assets"]={"assessment-platforms":[{uuid:crypto.randomUUID(),title:"Assessment-Plattform"}]};
     if(S.dateStart||S.dateEnd||S.tasks.length){const t=[];if(S.dateStart&&S.dateEnd)t.push({uuid:crypto.randomUUID(),type:"action",title:"Assessment-Durchführung",timing:{"within-date-range":{start:`${S.dateStart}T00:00:00Z`,end:`${S.dateEnd}T23:59:59Z`}},"associated-activities":Object.values(byM).map(a=>({"activity-uuid":a.uuid,subjects:[{type:"component","include-all":{}}]}))});S.tasks.forEach(tk=>t.push({uuid:tk.uuid,type:tk.type,title:tk.title}));if(t.length)ap["assessment-plan"].tasks=t}
+    L.ok(`Assessment Plan erzeugt: ${cids.length} Controls, ${acts.length} Aktivität(en), Katalog-Pin ${GPP_CATALOG_PIN_COMMIT.slice(0,12)}…`);
     dl(ap,`${sn()}_AP.json`);autoSave();
 }
 
 function exportAR(){
     const ts=new Date().toISOString();const cids=[...S.allCids].filter(c=>!S.excluded.has(c)).sort();
+    L.info(`Assessment Results werden erzeugt (${cids.length} Controls im Scope)`);
     const obs=[],fin=[],rsk=[];
     
     cids.forEach(c=>{
@@ -964,11 +1980,13 @@ function exportAR(){
         rsk.push(oscalRisk);
     });
 
-    if(!fin.length)return alert('Keine bewerteten Controls.');
+    if(!fin.length){L.err('AR-Export abgebrochen: keine bewerteten Controls');return alert('Keine bewerteten Controls.')}
+    L.debug(`AR-Bestandteile: ${fin.length} findings, ${obs.length} observations, ${rsk.length} risks (davon ${S.sspRisks.length} aus der SSP-Risikoanalyse)`);
     // Pin-Muster (Grundregel 8): import-ap als Fragment auf eine back-matter-Resource;
     // die Katalog-Resource dokumentiert, gegen welchen Katalogstand geprüft wurde.
     const apResUuid=crypto.randomUUID();
     const ar={"assessment-results":{uuid:crypto.randomUUID(),metadata:{title:`${sn().replace(/_/g,' ')} - Assessment Results`,version:S.meta.version||'1.0.0',"last-modified":ts,"oscal-version":"1.2.2"},"import-ap":{href:`#${apResUuid}`},results:[{uuid:crypto.randomUUID(),title:"Assessment-Ergebnis",description:'Ergebnisse',start:S.dateStart?`${S.dateStart}T00:00:00Z`:ts,end:S.dateEnd?`${S.dateEnd}T23:59:59Z`:ts,"reviewed-controls":{"control-selections":[{"include-controls":cids.map(c=>({"control-id":c}))}]},...(obs.length?{observations:obs}:{}),findings:fin,...(rsk.length?{risks:rsk}:{})}],"back-matter":{resources:[{uuid:apResUuid,title:`Assessment Plan (${sn()}_AP.json)`,rlinks:[{href:`${sn()}_AP.json`}]},pinnedCatalogResource()]}}};
+    L.ok(`Assessment Results erzeugt: ${fin.length} Befunde, ${obs.length} Beobachtungen, ${rsk.length} Risiken`);
     dl(ar,`${sn()}_AR.json`);autoSave();
 }
 
@@ -978,7 +1996,7 @@ function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace
 let ED23_MAP={};
 const ED23_MAP_URL="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/main/hilfsdateien/gpp_ed23_anforderungen.json";
 function buildEd23MapFromOscal(doc){if(doc&&doc.gpp_ed23_anforderungen_map)return doc.gpp_ed23_anforderungen_map;const out={},mc=doc&&doc["mapping-collection"];if(!mc)return out;(mc.mappings||[]).forEach(mp=>(mp.maps||[]).forEach(m=>{const src=(m.sources||[])[0];if(!src)return;const cid=src["id-ref"];(m.targets||[]).forEach(t=>{const label=(t.props||[]).find(p=>p.name==="label"||p.name==="title");(out[cid]=out[cid]||[]).push({id:t["id-ref"],name:(label&&label.value)||"",begruendung:m.remarks||""})})}));return out}
-async function loadED23Map(){try{const r=await fetch(ED23_MAP_URL);if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();ED23_MAP=buildEd23MapFromOscal(d)}catch(e){console.warn('BSI ED23-Anforderungen nicht geladen:',e);ED23_MAP={}}}
+async function loadED23Map(){try{const r=await fetch(ED23_MAP_URL);if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();ED23_MAP=buildEd23MapFromOscal(d);L.ok(`BSI-ED23-Zuordnungen geladen: ${Object.keys(ED23_MAP).length} Controls`)}catch(e){console.warn('BSI ED23-Anforderungen nicht geladen:',e);L.warn('BSI-ED23-Anforderungen nicht geladen: '+shortErr(e.message));ED23_MAP={}}}
 function renderED23Table(list){
     if(!list||!list.length)return '<p class="text-xs text-slate-500 italic">Keine passenden BSI ED23-Anforderungen hinterlegt.</p>';
     const rows=list.map(a=>`<tr class="border-b border-slate-700/50 align-top"><td class="py-1 pr-2 font-mono font-bold text-cyan-300 whitespace-nowrap">${esc(a.id)}</td><td class="py-1 pr-2 text-slate-200">${esc(a.name)}</td><td class="py-1 text-slate-400">${esc(a.begruendung||'')}</td></tr>`).join('');
@@ -987,7 +2005,7 @@ function renderED23Table(list){
 function showED23(cid,rk){const box=document.getElementById('ed23-'+rk);if(!box)return;if(!box.classList.contains('hidden')){box.classList.add('hidden');return}box.innerHTML=renderED23Table(ED23_MAP[cid]);box.classList.remove('hidden')}
 function sn(){return(S.meta.title||'System').replace(/[^a-zA-Z0-9äöüÄÖÜß\-]/g,'_').replace(/_+/g,'_')}
 function dl(o,n){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(o,null,2)],{type:'application/json;charset=utf-8'}));a.download=n;document.body.appendChild(a);a.click();document.body.removeChild(a)}
-function setSt(id,ok,txt){const e=document.getElementById(id);e.className=`px-3 py-1 rounded-lg text-xs font-semibold ${ok?'bg-emerald-900/50 text-emerald-400 border border-emerald-700':'bg-slate-700 text-slate-400 border border-slate-600'} flex items-center`;e.innerHTML=`<span class="w-2 h-2 rounded-full ${ok?'bg-emerald-500':'bg-amber-500 animate-pulse'} mr-2"></span>${txt}`}
+function setSt(id,ok,txt){setPill(id,ok?'ok':'warn',`${ok?'◉':'◐'} ${esc(txt)}`)}
 </script>
 </body>
 </html>

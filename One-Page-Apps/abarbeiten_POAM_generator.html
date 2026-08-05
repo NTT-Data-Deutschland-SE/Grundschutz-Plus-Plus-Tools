@@ -1,104 +1,589 @@
 <!DOCTYPE html>
-<html lang="de" class="h-full bg-slate-900">
+<html lang="de" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL POA&M Generator v2</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif']}}}}</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/15.0.0/marked.min.js"></script>
+    <title>OSCAL POA&M Generator v2.2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        *{box-sizing:border-box}
-        .sidebar{width:320px;min-width:320px;transition:margin-left .3s ease,opacity .3s;overflow-y:auto}
-        .sidebar.collapsed{margin-left:-320px;opacity:0;pointer-events:none}
-        .sb-toggle{position:fixed;top:12px;left:12px;z-index:50;background:#1e293b;border:1px solid #475569;border-radius:.5rem;padding:6px 10px;color:#e2e8f0;cursor:pointer;font-size:18px;transition:left .3s}
-        .sb-toggle.shifted{left:332px}
-        .coll-content{transition:max-height .3s ease-out,opacity .3s;overflow:hidden;max-height:0;opacity:0}
-        .coll-content.open{max-height:50000px;opacity:1;overflow:visible}
-        .chev{transition:transform .3s}.chev.open{transform:rotate(90deg)}
-        .cscroll::-webkit-scrollbar{width:5px}.cscroll::-webkit-scrollbar-track{background:#1e293b}.cscroll::-webkit-scrollbar-thumb{background:#475569;border-radius:3px}
-        .drag-over{border-color:#f59e0b!important;background:rgba(245,158,11,.08)!important}
-        .stat-bar{transition:width .5s cubic-bezier(.4,0,.2,1)}
-        .sb{font-size:10px;padding:2px 7px;border-radius:9999px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;border:1px solid}
-        .lbl{display:block;font-size:.6rem;font-weight:700;color:#94a3b8;text-transform:uppercase;margin-bottom:.2rem;letter-spacing:.05em}
-        .inp{padding:.4rem .6rem;background:#0f172a;border:1px solid #475569;border-radius:.4rem;font-size:.8rem;color:#fff;outline:none;width:100%}
-        .inp:focus{border-color:#f59e0b;box-shadow:0 0 0 2px rgba(245,158,11,.15)}
-        .ai-btn{background:linear-gradient(135deg,#7c3aed,#6366f1);color:#fff;font-weight:700;border-radius:.4rem;font-size:10px;padding:3px 8px;border:none;cursor:pointer;transition:all .15s}
-        .ai-btn:hover{filter:brightness(1.15)}.ai-btn:disabled{opacity:.4;cursor:wait}
-        .poam-card{transition:border-color .15s}.poam-card:hover{border-color:#f59e0b}
-        .prio-high{border-left:4px solid #ef4444}.prio-medium{border-left:4px solid #f59e0b}.prio-low{border-left:4px solid #3b82f6}
-        .ms-done{text-decoration:line-through;opacity:.5}
-        .overdue{animation:pred 2s infinite}
-        @keyframes pred{0%,100%{border-color:#7f1d1d}50%{border-color:#ef4444}}
-        .loader-sm{border:2px solid #334155;border-top:2px solid #f59e0b;border-radius:50%;width:14px;height:14px;animation:sp .7s linear infinite;display:inline-block}
-        @keyframes sp{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-        @media(max-width:768px){.sidebar{width:100%;min-width:100%;position:fixed;top:0;left:0;z-index:40;height:100vh;background:#0f172a}.sidebar.collapsed{margin-left:-100%}}
+/* ==========================================================================
+   Design-System "Glassmorphic Deep" — handgeschriebenes CSS, kein Tailwind.
+   Die Utility-Klassennamen im Markup sind aus der Tailwind-Ära erhalten
+   geblieben; bedient werden sie ausschliesslich von diesem Stylesheet.
+   Farbabbildung: slate -> Glas/Neutraltöne, amber/emerald-Akzente -> Violett,
+   semantische Farben (rot/amber/grün/blau) bleiben semantisch.
+   ========================================================================== */
+:root{
+  --bg-deep:        oklch(0.13 0.02 280);
+  --bg-elev-1:      oklch(0.95 0.005 280 / 0.04);
+  --bg-elev-2:      oklch(0.95 0.005 280 / 0.06);
+  --bg-elev-3:      oklch(0.95 0.005 280 / 0.08);
+  --border-1:       oklch(0.95 0.005 280 / 0.06);
+  --border-2:       oklch(0.95 0.005 280 / 0.10);
+  --text-primary:   oklch(0.95 0.005 280);
+  --text-secondary: oklch(0.75 0.02 280);
+  --text-tertiary:  oklch(0.65 0.02 280);
+  --text-quiet:     oklch(0.55 0.02 280);
+  --accent:         oklch(0.7  0.18 300);
+  --accent-soft:    oklch(0.7  0.18 300 / 0.15);
+  --accent-glow:    oklch(0.7  0.18 300 / 0.4);
+  --red:            oklch(0.65 0.2  25);
+  --amber:          oklch(0.80 0.15 80);
+  --green:          oklch(0.75 0.18 145);
+  --blue:           oklch(0.70 0.15 240);
+  --indigo:         oklch(0.62 0.13 265);
+  --font-ui:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --rail:240px;
+  --topbar-h:62px;
+  --log-h:220px;
+}
+
+/* --- Reset (Tailwind-Preflight-Ersatz, damit border-l-2 & Co. greifen) ---- */
+*,*::before,*::after{box-sizing:border-box;border:0 solid var(--border-1)}
+html,body{margin:0;padding:0}
+html{height:100%}
+body{
+  height:100%;
+  background:var(--bg-deep);
+  color:var(--text-primary);
+  font-family:var(--font-ui);
+  font-size:14px;
+  line-height:1.5;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,p{margin:0}
+button{font:inherit;color:inherit;background:none;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+code{font-family:var(--font-mono);font-size:.92em}
+a{color:var(--accent);text-decoration:none}
+svg{display:block}
+::selection{background:oklch(0.7 0.18 300 / 0.35);color:oklch(0.95 0.005 280)}
+
+/* --- Scrollbars ---------------------------------------------------------- */
+*{scrollbar-width:thin;scrollbar-color:var(--bg-elev-3) transparent}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg-elev-3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+.cscroll::-webkit-scrollbar{width:6px}
+.cscroll::-webkit-scrollbar-track{background:transparent}
+.cscroll::-webkit-scrollbar-thumb{background:var(--bg-elev-3);border-radius:3px}
+.cscroll::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+
+/* --- Atmosphäre: Aurora-Blobs + Noise ----------------------------------- */
+.atmo{position:fixed;pointer-events:none;z-index:0}
+.atmo-a{width:600px;height:600px;border-radius:50%;top:-200px;left:-100px;filter:blur(60px);
+  background:radial-gradient(circle,oklch(0.4 0.18 300/.5),transparent 70%)}
+.atmo-b{width:700px;height:700px;border-radius:50%;bottom:-300px;right:-200px;filter:blur(80px);
+  background:radial-gradient(circle,oklch(0.4 0.16 240/.4),transparent 70%)}
+.atmo-noise{inset:0;opacity:.03;
+  background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><filter id=%22n%22><feTurbulence baseFrequency=%220.9%22/></filter><rect width=%22100%22 height=%22100%22 filter=%22url(%23n)%22/></svg>')}
+
+/* --- Layout-Shell -------------------------------------------------------- */
+.app{position:relative;z-index:1;display:grid;grid-template-rows:var(--topbar-h) 1fr var(--log-h);height:100vh;min-height:0}
+.topbar{
+  display:flex;align-items:center;gap:14px;padding:0 18px;position:relative;
+  background:var(--bg-elev-1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border-2);min-height:0;
+}
+.brand{display:flex;align-items:center;gap:9px;flex-shrink:0}
+.brand-mark{color:var(--accent);font-size:17px;line-height:1}
+.brand-word{font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:.18em;color:var(--text-primary)}
+.brand-sep{width:1px;height:22px;background:var(--border-2)}
+.brand-app{font-size:13px;font-weight:600;color:var(--text-secondary);letter-spacing:.01em}
+.topbar-meta{display:flex;align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
+.icon-btn{
+  display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;
+  border:1px solid var(--border-2);border-radius:8px;background:var(--bg-elev-1);
+  color:var(--text-tertiary);font-size:14px;transition:background .15s ease,color .15s ease,border-color .15s ease;
+}
+.icon-btn:hover{background:var(--bg-elev-3);color:var(--text-primary);border-color:var(--accent)}
+.icon-btn.shifted{color:var(--accent);border-color:var(--accent)}
+
+.workspace{display:flex;min-height:0;overflow:hidden}
+.splitter{width:5px;flex:0 0 5px;cursor:col-resize;background:transparent;border-right:1px solid var(--border-1);transition:background .15s ease}
+.splitter:hover,.splitter.dragging{background:var(--accent-soft)}
+#main{min-height:0;min-width:0}
+
+/* --- Progress-Hairline (ersetzt den verbotenen Spinner) ------------------- */
+.progress-wrap{position:absolute;left:0;right:0;bottom:-1px;display:flex;align-items:center;gap:10px;opacity:0;transition:opacity .2s ease}
+.progress-wrap.on{opacity:1}
+.progress-label{position:absolute;right:18px;bottom:6px;font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--text-quiet);white-space:nowrap}
+.progress-track{height:1px;width:100%;background:var(--border-1);overflow:hidden}
+.progress-fill{height:100%;width:0%;background:var(--accent);transition:width .2s ease,background .2s ease}
+.progress-fill.creep{animation:creep 24s cubic-bezier(.1,.7,.2,1) forwards}
+.progress-fill.done{width:100%!important;background:var(--green);animation:none}
+@keyframes creep{from{width:2%}to{width:92%}}
+
+/* --- Sidebar / Rail ------------------------------------------------------ */
+.sidebar{
+  width:var(--rail);min-width:var(--rail);flex:0 0 var(--rail);
+  overflow-y:auto;overflow-x:hidden;min-height:0;
+  background:var(--bg-elev-1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  transition:margin-left .2s ease,opacity .2s ease;
+}
+.sidebar.collapsed{margin-left:calc(-1 * var(--rail));opacity:0;pointer-events:none}
+.sidebar.collapsed + .splitter{display:none}
+.rail-group{margin-bottom:2px}
+.rail-label{font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--text-quiet);margin:0 0 6px 2px}
+.nav-item{
+  display:flex;align-items:center;gap:9px;width:100%;padding:7px 9px;border-radius:8px;
+  font-size:12px;font-weight:500;color:var(--text-secondary);text-align:left;
+  transition:background .15s ease,color .15s ease;
+}
+.nav-item:hover{background:var(--bg-elev-2);color:var(--text-primary)}
+.nav-item.active{background:var(--accent-soft);color:var(--text-primary)}
+.nav-item .gly{color:var(--text-quiet);font-size:13px;width:14px;text-align:center;flex-shrink:0}
+.nav-item:hover .gly,.nav-item.active .gly{color:var(--accent)}
+.rail-foot{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;color:var(--text-quiet);text-align:center;
+  padding-top:12px;border-top:1px solid var(--border-1)}
+
+/* --- Glas-Flächen -------------------------------------------------------- */
+.glass,.card{
+  background:var(--bg-elev-1);
+  border:1px solid oklch(0.95 0.005 280 / 0.08);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-radius:12px;
+}
+.sec-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.sec-head .gly{color:var(--accent);font-size:13px}
+.sec-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-primary)}
+
+/* --- Formularelemente ---------------------------------------------------- */
+.lbl{display:block;font-family:var(--font-mono);font-size:9px;font-weight:600;color:var(--text-quiet);
+  text-transform:uppercase;letter-spacing:.12em;margin-bottom:.25rem}
+.inp{
+  padding:.42rem .6rem;background:oklch(0.95 0.005 280 / 0.03);
+  border:1px solid var(--border-2);border-radius:8px;font-size:.8rem;color:var(--text-primary);
+  outline:none;width:100%;transition:border-color .15s ease,box-shadow .15s ease,background .15s ease;
+}
+.inp::placeholder{color:var(--text-quiet)}
+.inp:hover{background:var(--bg-elev-2)}
+.inp:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+select.inp{appearance:none;background-image:none;cursor:pointer}
+select.inp option{background:oklch(0.17 0.02 280);color:var(--text-primary)}
+textarea{resize:vertical}
+textarea.inp{min-height:70px;line-height:1.5;overflow-y:auto}
+.ptxt{font-family:var(--font-mono);resize:vertical;min-height:200px;line-height:1.5}
+input[type=date].inp{color-scheme:dark}
+.form-checkbox{accent-color:var(--accent);cursor:pointer}
+
+/* --- Segment-Umschalter (Backend-Auswahl) -------------------------------- */
+.seg{display:flex;gap:4px;padding:3px;background:oklch(0.95 0.005 280 / 0.03);
+  border:1px solid var(--border-2);border-radius:9px}
+.seg-btn{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:5px 6px;border-radius:6px;font-family:var(--font-mono);font-size:9px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--text-tertiary);
+  transition:background .15s ease,color .15s ease}
+.seg-btn:hover{background:var(--bg-elev-2);color:var(--text-primary)}
+.seg-btn.active{background:var(--accent-soft);color:var(--accent)}
+.seg-btn .gly{font-size:11px;line-height:1;color:var(--text-quiet)}
+.seg-btn:hover .gly,.seg-btn.active .gly{color:var(--accent)}
+
+/* --- Buttons ------------------------------------------------------------- */
+.ai-btn{
+  background:var(--accent-soft);color:var(--accent);font-weight:600;border-radius:7px;font-size:10px;
+  padding:3px 9px;border:1px solid oklch(0.7 0.18 300 / 0.35);cursor:pointer;
+  font-family:var(--font-mono);letter-spacing:.04em;
+  transition:background .15s ease,color .15s ease;
+}
+.ai-btn:hover{background:oklch(0.7 0.18 300 / 0.28);color:var(--text-primary)}
+.ai-btn:disabled{opacity:.45;cursor:wait}
+
+/* --- Drop-Zones ---------------------------------------------------------- */
+.dz{transition:border-color .15s ease,background .15s ease}
+.drag-over{border-color:var(--accent)!important;background:var(--accent-soft)!important}
+.fip{display:none}
+
+/* --- Collapsibles -------------------------------------------------------- */
+.coll-content{transition:max-height .2s ease-out,opacity .2s ease;overflow:hidden;max-height:0;opacity:0}
+.coll-content.open{max-height:50000px;opacity:1;overflow:visible}
+.chev{transition:transform .2s ease}
+.chev.open{transform:rotate(90deg)}
+
+/* --- Badges / POA&M-Karten ---------------------------------------------- */
+.sb{font-family:var(--font-mono);font-size:9px;padding:2px 7px;border-radius:999px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.08em;border:1px solid;white-space:nowrap}
+.poam-card{transition:border-color .15s ease,background .15s ease}
+.poam-card:hover{border-color:var(--border-2);background:oklch(0.95 0.005 280 / 0.05)}
+.prio-high{border-left:3px solid var(--red)}
+.prio-medium{border-left:3px solid var(--amber)}
+.prio-low{border-left:3px solid var(--blue)}
+.ms-done{text-decoration:line-through;opacity:.5}
+.overdue{box-shadow:inset 3px 0 0 var(--red)}
+
+/* --- Log-Konsole --------------------------------------------------------- */
+.logbox{
+  display:flex;flex-direction:column;min-height:0;
+  background:var(--bg-elev-1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border-2);
+}
+.log-head{display:flex;align-items:center;gap:10px;padding:7px 16px;border-bottom:1px solid var(--border-1);flex-shrink:0}
+.log-title{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--text-secondary)}
+.log-count{font-family:var(--font-mono);font-size:10px;color:var(--text-quiet)}
+.log-tools{margin-left:auto;display:flex;align-items:center;gap:8px}
+.log-btn{font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 9px;border:1px solid var(--border-2);border-radius:7px;color:var(--text-tertiary);
+  transition:color .15s ease,border-color .15s ease,background .15s ease}
+.log-btn:hover{color:var(--text-primary);background:var(--bg-elev-2)}
+.log-btn.on{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.log-body{flex:1;min-height:0;overflow-y:auto;padding:6px 16px 10px;font-family:var(--font-mono);font-size:11px;line-height:1.55}
+.log-row{display:flex;gap:10px;white-space:pre-wrap;word-break:break-word}
+.log-ts{color:var(--text-quiet);flex-shrink:0}
+.log-lv{flex-shrink:0;width:44px;font-weight:600;letter-spacing:.06em}
+.log-msg{flex:1;min-width:0;color:var(--text-secondary)}
+.lv-info  .log-lv{color:var(--blue)}
+.lv-ok    .log-lv{color:var(--green)}
+.lv-warn  .log-lv{color:var(--amber)}
+.lv-err   .log-lv{color:var(--red)}
+.lv-debug .log-lv{color:var(--text-quiet)}
+.lv-err   .log-msg{color:var(--red)}
+.lv-warn  .log-msg{color:var(--amber)}
+.lv-debug .log-msg{color:var(--text-quiet)}
+
+/* --- Statistik-Karte (nur SVG/CSS) -------------------------------------- */
+.stats-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media(max-width:700px){.stats-grid{grid-template-columns:minmax(0,1fr)}}
+.stat-sub{background:oklch(0.95 0.005 280 / 0.03);border:1px solid var(--border-1);border-radius:10px;padding:12px 14px;min-width:0}
+.stat-sub-h{font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--text-quiet);margin-bottom:10px}
+.donut-wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.donut-wrap svg{color:var(--text-primary);flex-shrink:0}
+.legend{display:flex;flex-direction:column;gap:4px;min-width:0}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text-secondary);white-space:nowrap}
+.legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.legend-val{font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);margin-left:auto;padding-left:8px}
+.hbar-row{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.hbar-label{font-size:11px;color:var(--text-secondary);width:104px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbar-track{flex:1;min-width:0;height:6px;background:oklch(0.95 0.005 280 / 0.06);border-radius:3px;overflow:hidden}
+.hbar-fill{height:100%;border-radius:3px;transition:width .35s cubic-bezier(.4,0,.2,1)}
+.hbar-value{font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);width:26px;text-align:right;flex-shrink:0}
+.kpi-row{display:flex;gap:22px;align-items:flex-end}
+.kpi-v{font-family:var(--font-mono);font-size:20px;font-weight:600;line-height:1.1}
+.kpi-l{font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-quiet);margin-top:2px}
+.stat-bar{transition:width .35s cubic-bezier(.4,0,.2,1)}
+
+/* ==========================================================================
+   Utility-Klassen (Ersatz für die entfernte Tailwind-CDN)
+   ========================================================================== */
+.flex{display:flex}
+.flex-1{flex:1 1 0%;min-width:0}
+.flex-col{flex-direction:column}
+.flex-shrink-0{flex-shrink:0}
+.flex-wrap{flex-wrap:wrap}
+.items-center{align-items:center}
+.justify-between{justify-content:space-between}
+.justify-end{justify-content:flex-end}
+.ml-auto{margin-left:auto}
+.mt-auto{margin-top:auto}
+.grid{display:grid}
+.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}
+.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.gap-1{gap:.25rem}
+.gap-2{gap:.5rem}
+.gap-3{gap:.75rem}
+.gap-4{gap:1rem}
+.space-y-1 > * + *{margin-top:.25rem}
+.space-y-1\.5 > * + *{margin-top:.375rem}
+.space-y-2 > * + *{margin-top:.5rem}
+.space-y-3 > * + *{margin-top:.75rem}
+.space-y-4 > * + *{margin-top:1rem}
+.hidden{display:none!important}
+.overflow-hidden{overflow:hidden}
+.overflow-y-auto{overflow-y:auto;min-height:0}
+.h-full{height:100%}
+.w-full{width:100%}
+.text-center{text-align:center}
+.text-right{text-align:right}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.italic{font-style:italic}
+.underline{text-decoration:underline;text-underline-offset:2px}
+.uppercase{text-transform:uppercase}
+.tracking-wider{letter-spacing:.06em}
+.leading-snug{line-height:1.4}
+.leading-tight{line-height:1.22}
+.align-middle{vertical-align:middle}
+.cursor-pointer{cursor:pointer}
+.max-w-\[300px\]{max-width:300px}
+.w-1\.5{width:.375rem}.h-1\.5{height:.375rem}
+.w-3{width:.75rem}.h-3{height:.75rem}
+.w-3\.5{width:.875rem}.h-3\.5{height:.875rem}
+.w-5{width:1.25rem}
+.w-28{width:7rem}
+.w-32{width:8rem}
+.p-1\.5{padding:.375rem}
+.p-2{padding:.5rem}
+.p-3{padding:.75rem}
+.p-4{padding:1rem}
+.px-1{padding-left:.25rem;padding-right:.25rem}
+.px-1\.5{padding-left:.375rem;padding-right:.375rem}
+.px-2{padding-left:.5rem;padding-right:.5rem}
+.px-3{padding-left:.75rem;padding-right:.75rem}
+.px-4{padding-left:1rem;padding-right:1rem}
+.py-0\.5{padding-top:.125rem;padding-bottom:.125rem}
+.py-1{padding-top:.25rem;padding-bottom:.25rem}
+.py-2{padding-top:.5rem;padding-bottom:.5rem}
+.py-2\.5{padding-top:.625rem;padding-bottom:.625rem}
+.py-8{padding-top:2rem;padding-bottom:2rem}
+.pt-1{padding-top:.25rem}
+.pt-3{padding-top:.75rem}
+.pb-3{padding-bottom:.75rem}
+.mb-0{margin-bottom:0}
+.mb-1{margin-bottom:.25rem}
+.mb-1\.5{margin-bottom:.375rem}
+.mb-2{margin-bottom:.5rem}
+.mb-3{margin-bottom:.75rem}
+.mt-1{margin-top:.25rem}
+.ml-1{margin-left:.25rem}
+.mr-1\.5{margin-right:.375rem}
+.rounded{border-radius:6px}
+.rounded-lg{border-radius:10px}
+.rounded-xl{border-radius:12px}
+.rounded-full{border-radius:999px}
+.border{border-width:1px;border-style:solid}
+.border-r{border-right-width:1px;border-right-style:solid}
+.border-t{border-top-width:1px;border-top-style:solid}
+.border-l-2{border-left-width:2px;border-left-style:solid}
+.border-dashed{border-style:dashed}
+.text-\[9px\]{font-size:9px;line-height:1.45}
+.text-\[10px\]{font-size:10px;line-height:1.45}
+.text-\[11px\]{font-size:11px;line-height:1.45}
+.text-xs{font-size:.75rem;line-height:1.45}
+.text-sm{font-size:.875rem;line-height:1.4}
+.text-lg{font-size:1.05rem;line-height:1.3}
+.font-bold{font-weight:600}
+.font-semibold{font-weight:600}
+.font-normal{font-weight:400}
+.font-sans{font-family:var(--font-ui)}
+.font-mono{font-family:var(--font-mono)}
+.shadow-lg{box-shadow:none}
+.transition-all{transition:all .15s ease}
+.transition-colors{transition:color .15s ease,background-color .15s ease,border-color .15s ease}
+.duration-300{transition-duration:.15s}
+.ring-2{box-shadow:0 0 0 2px var(--accent-soft),0 0 0 1px var(--accent)}
+.ring-amber-500{box-shadow:0 0 0 2px var(--accent-soft),0 0 0 1px var(--accent)}
+.animate-pulse{animation:pulsecalm 2.4s ease-in-out infinite}
+@keyframes pulsecalm{0%,100%{opacity:1}50%{opacity:.45}}
+
+/* --- Farbabbildung: Flächen (slate -> Glas) ------------------------------ */
+.bg-slate-700{background-color:var(--bg-elev-3)}
+.bg-slate-800{background-color:var(--bg-elev-1)}
+.bg-slate-800\/50{background-color:oklch(0.95 0.005 280 / 0.05)}
+.bg-slate-800\/60{background-color:oklch(0.95 0.005 280 / 0.05)}
+.bg-slate-900{background-color:oklch(0.95 0.005 280 / 0.03)}
+.bg-slate-900\/30{background-color:oklch(0.95 0.005 280 / 0.02)}
+.bg-slate-900\/40{background-color:oklch(0.95 0.005 280 / 0.02)}
+.bg-slate-900\/60{background-color:oklch(0.95 0.005 280 / 0.03)}
+.bg-gradient-to-br{background-image:none}
+.from-slate-900{--tw-from:none}
+.to-slate-800{--tw-to:none}
+
+/* --- Farbabbildung: Rahmen ---------------------------------------------- */
+.border-slate-600{border-color:var(--border-2)}
+.border-slate-700{border-color:var(--border-1)}
+
+/* --- Farbabbildung: Text (neutral) -------------------------------------- */
+.text-white{color:var(--text-primary)}
+.text-slate-200{color:var(--text-primary)}
+.text-slate-300{color:var(--text-secondary)}
+.text-slate-300\/80{color:var(--text-secondary)}
+.text-slate-400{color:var(--text-tertiary)}
+.text-slate-500{color:var(--text-quiet)}
+
+/* --- Semantik: rot ------------------------------------------------------- */
+.bg-red-900{background-color:oklch(0.65 0.2 25 / 0.16)}
+.bg-red-900\/50{background-color:oklch(0.65 0.2 25 / 0.14)}
+.bg-red-950\/20{background-color:oklch(0.65 0.2 25 / 0.08)}
+.text-red-300{color:var(--red)}
+.text-red-300\/80{color:var(--red)}
+.text-red-400{color:var(--red)}
+.text-red-500{color:var(--red)}
+.border-red-700{border-color:oklch(0.65 0.2 25 / 0.45)}
+.border-red-800{border-color:oklch(0.65 0.2 25 / 0.35)}
+.hover\:bg-red-900:hover{background-color:oklch(0.65 0.2 25 / 0.26)}
+
+/* --- Semantik: amber (Warnung / "in Arbeit" / Prio mittel) --------------- */
+.bg-amber-900{background-color:oklch(0.80 0.15 80 / 0.16)}
+.bg-amber-900\/30{background-color:oklch(0.80 0.15 80 / 0.10)}
+.bg-amber-500{background-color:var(--amber)}
+.text-amber-300{color:var(--amber)}
+.border-amber-700{border-color:oklch(0.80 0.15 80 / 0.42)}
+
+/* --- Semantik: grün ------------------------------------------------------ */
+.bg-emerald-900{background-color:oklch(0.75 0.18 145 / 0.16)}
+.bg-emerald-900\/50{background-color:oklch(0.75 0.18 145 / 0.14)}
+.text-emerald-300{color:var(--green)}
+.text-emerald-400{color:var(--green)}
+.border-emerald-700{border-color:oklch(0.75 0.18 145 / 0.42)}
+
+/* --- Semantik: blau (Prio niedrig / Beobachtung) ------------------------- */
+.bg-blue-900{background-color:oklch(0.70 0.15 240 / 0.16)}
+.bg-blue-950\/20{background-color:oklch(0.70 0.15 240 / 0.08)}
+.text-blue-300{color:var(--blue)}
+.text-blue-300\/80{color:var(--blue)}
+.text-blue-400{color:var(--blue)}
+.text-blue-500{color:var(--blue)}
+.border-blue-700{border-color:oklch(0.70 0.15 240 / 0.42)}
+.border-blue-800{border-color:oklch(0.70 0.15 240 / 0.32)}
+
+/* --- Komponenten-Chip (ehemals cyan) -> ruhiges Glas --------------------- */
+.bg-cyan-950\/40{background-color:var(--bg-elev-2)}
+.text-cyan-400{color:var(--text-secondary)}
+.border-cyan-800{border-color:var(--border-2)}
+
+/* --- Akzent: violett (ehemals amber/purple/violet) ---------------------- */
+.text-amber-400,.text-amber-500,.text-violet-400{color:var(--accent)}
+.hover\:text-amber-400:hover{color:var(--accent)}
+.hover\:border-amber-500:hover{border-color:var(--accent)}
+.hover\:border-purple-500:hover{border-color:var(--accent)}
+.bg-violet-900,.bg-purple-900{background-color:var(--accent-soft)}
+.text-violet-300,.text-purple-300{color:var(--accent)}
+.border-violet-700,.border-purple-700{border-color:oklch(0.7 0.18 300 / 0.45)}
+/* Sekundär-Button (Session speichern / neuer Eintrag) */
+.bg-purple-700,.bg-amber-700{background-color:var(--accent-soft);color:var(--accent);
+  border:1px solid oklch(0.7 0.18 300 / 0.35);transition:background .15s ease,color .15s ease}
+.hover\:bg-purple-600:hover,.hover\:bg-amber-600:hover{background-color:oklch(0.7 0.18 300 / 0.26);color:var(--text-primary)}
+.hover\:bg-slate-600:hover{background-color:var(--bg-elev-3)}
+/* Primär-CTA: solides Violett mit Glow */
+.bg-amber-600{background-color:var(--accent);color:oklch(0.16 0.03 300);
+  box-shadow:0 6px 20px var(--accent-glow);transition:background .15s ease,box-shadow .15s ease}
+.hover\:bg-amber-500:hover{background-color:oklch(0.76 0.17 300);box-shadow:0 8px 24px var(--accent-glow)}
+/* Indigo bleibt als eigener Statuston (Abweichung genehmigt) */
+.bg-indigo-900{background-color:oklch(0.62 0.13 265 / 0.18)}
+.text-indigo-300{color:var(--indigo)}
+.border-indigo-700{border-color:oklch(0.62 0.13 265 / 0.45)}
+
+/* --- Responsive Varianten ----------------------------------------------- */
+@media(min-width:768px){
+  .md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .md\:grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .md\:p-6{padding:1.5rem}
+}
+@media(min-width:1024px){
+  .lg\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lg\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:768px){
+  .sidebar{width:min(88vw,320px);min-width:min(88vw,320px);flex-basis:min(88vw,320px);
+    position:fixed;top:var(--topbar-h);left:0;z-index:40;height:calc(100vh - var(--topbar-h) - var(--log-h));
+    background:oklch(0.16 0.02 280)}
+  .sidebar.collapsed{margin-left:-100%}
+  .splitter{display:none}
+  .kpi-row{flex-wrap:wrap;gap:14px}
+}
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="h-full font-sans text-slate-200">
 
-<button id="sb-btn" class="sb-toggle shifted" onclick="toggleSidebar()">☰</button>
+<div class="atmo atmo-a"></div>
+<div class="atmo atmo-b"></div>
+<div class="atmo atmo-noise"></div>
 
-<div class="flex h-full">
-    <!-- ========== SIDEBAR ========== -->
-    <aside id="sidebar" class="sidebar bg-slate-800 border-r border-slate-700 p-4 flex flex-col gap-4 cscroll">
+<div class="app">
 
-<div style="background-color: #070e27; padding: 15px; text-align: center; border-bottom: 3px solid #0072bc; margin-bottom: 15px; border-radius: 4px;">
-    <img src="https://mc-8afc6902-e56c-432c-8c3f-3991-cdn-endpoint.azureedge.net/-/media/project/emea/shared/global-logo/globallogo_nttdata_white_resized.png?extension=webp&hash=82AED889DCD1D6C0BA76C56A5F81B4C6" alt="NTT DATA Logo" style="max-width: 150px; height: auto;">
-</div>
-
-        <div class="pt-1">
-            <h1 class="text-lg font-bold text-white leading-tight">OSCAL POA&M</h1>
-            <p class="text-[10px] text-slate-500 mt-1">Schritt 4: AR → Maßnahmen → POA&M</p>
+    <!-- ========== TOP BAR ========== -->
+    <header class="topbar">
+        <button id="sb-btn" class="icon-btn shifted" onclick="toggleSidebar()" title="Seitenleiste ein-/ausblenden">◧</button>
+        <div class="brand">
+            <span class="brand-mark">◈</span>
+            <span class="brand-word">NTT DATA</span>
         </div>
+        <div class="brand-sep"></div>
+        <div class="brand-app">OSCAL POA&M <span id="build-ver" class="text-[10px] font-mono font-normal text-amber-500 align-middle"></span></div>
+        <div class="topbar-meta">
+            <div id="cat-status" class="px-2 py-1 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 flex items-center"><span class="mr-1.5">⋯</span>Katalog…</div>
+            <div id="ar-status" class="px-2 py-1 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 flex items-center"><span class="mr-1.5">◇</span>Kein AR</div>
+        </div>
+        <div id="progress-wrap" class="progress-wrap">
+            <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+            <div id="progress-label" class="progress-label"></div>
+        </div>
+    </header>
 
-        <!-- Status -->
-        <div class="space-y-1.5">
-            <div id="cat-status" class="px-2 py-1 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 flex items-center"><span class="loader-sm mr-1.5"></span>Katalog...</div>
-            <div id="ar-status" class="px-2 py-1 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>Kein AR</div>
+    <div class="workspace">
+
+    <!-- ========== SIDEBAR / RAIL ========== -->
+    <aside id="sidebar" class="sidebar p-3 flex flex-col gap-3 cscroll">
+
+        <div class="rail-group">
+            <div class="rail-label">Navigation</div>
+            <div class="space-y-1">
+                <button class="nav-item" data-nav="sec-meta" onclick="navTo(this,'sec-meta')"><span class="gly">▣</span>Metadaten</button>
+                <button class="nav-item" data-nav="sec-prompts" onclick="navTo(this,'sec-prompts')"><span class="gly">✎</span>KI-Prompts</button>
+                <button class="nav-item" data-nav="items-area" onclick="navTo(this,'items-area')"><span class="gly">◈</span>POA&amp;M Items</button>
+            </div>
         </div>
 
         <!-- Import -->
-        <div class="space-y-2">
-            <div class="lbl">Import</div>
-            <div id="dz-ar" class="dz border border-dashed border-slate-600 rounded-lg p-3 text-center cursor-pointer hover:border-amber-500 bg-slate-900/40 text-xs" data-type="ar">
-                📊 AR laden (.json)<input type="file" accept=".json" class="hidden fip" data-type="ar">
-            </div>
-            <div id="dz-state" class="dz border border-dashed border-slate-600 rounded-lg p-3 text-center cursor-pointer hover:border-purple-500 bg-slate-900/40 text-xs" data-type="state">
-                💾 Session laden<input type="file" accept=".json" class="hidden fip" data-type="state">
+        <div class="rail-group">
+            <div class="rail-label">Import</div>
+            <div class="space-y-2">
+                <div id="dz-ar" class="dz border border-dashed border-slate-600 rounded-lg p-3 text-center cursor-pointer hover:border-amber-500 bg-slate-900/40 text-xs" data-type="ar">
+                    <span class="text-slate-400 mr-1.5">⬡</span>AR laden (.json)<input type="file" accept=".json" class="hidden fip" data-type="ar">
+                </div>
+                <div id="dz-state" class="dz border border-dashed border-slate-600 rounded-lg p-3 text-center cursor-pointer hover:border-purple-500 bg-slate-900/40 text-xs" data-type="state">
+                    <span class="text-slate-400 mr-1.5">⤓</span>Session laden<input type="file" accept=".json" class="hidden fip" data-type="state">
+                </div>
             </div>
         </div>
 
-        <!-- AI -->
+        <!-- KI -->
         <div class="border border-slate-700 rounded-lg overflow-hidden">
             <button onclick="tog('sb-ai')" class="w-full flex justify-between items-center p-2 bg-slate-900/60 text-xs font-bold text-slate-300">
-                🤖 KI <span id="ai-badge" class="sb bg-slate-700 text-slate-500 border-slate-600 hidden ml-1">—</span>
+                <span class="flex items-center gap-2"><span class="text-slate-500">◉</span>KI-Backend <span id="ai-badge" class="sb bg-slate-700 text-slate-500 border-slate-600 hidden ml-1">—</span></span>
                 <svg id="icon-sb-ai" class="chev w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
             </button>
             <div id="sb-ai-content" class="coll-content p-2 bg-slate-900/30 space-y-2">
-                <select id="ai-provider" onchange="onProvChange()" class="inp text-xs"><option value="">— Kein —</option><option value="claude">Claude</option><option value="gemini">Gemini</option></select>
-                <input type="password" id="ai-key" placeholder="API-Key" oninput="saveAICfg()" class="inp text-xs">
-                <select id="ai-model" class="inp text-xs" onchange="saveAICfg()"></select>
-                <div class="flex gap-2 text-[9px]"><a href="https://console.anthropic.com/settings/keys" target="_blank" class="text-violet-400 underline">Claude Key</a><a href="https://aistudio.google.com/apikey" target="_blank" class="text-blue-400 underline">Gemini Key</a></div>
+
+                <div class="seg" role="group" aria-label="KI-Backend">
+                    <button type="button" id="be-gemini" class="seg-btn active" onclick="setBackend('gemini')" title="Google Gemini — generativelanguage.googleapis.com"><span class="gly">◇</span>Gemini</button>
+                    <button type="button" id="be-openrouter" class="seg-btn" onclick="setBackend('openrouter')" title="OpenRouter — ein Key, viele Anbieter (auch Anthropic)"><span class="gly">⬡</span>OpenRouter</button>
+                </div>
+
+                <!-- Gemini-Konfiguration -->
+                <div id="cfg-gemini" class="space-y-2">
+                    <div><label class="lbl" for="gm-key">Gemini API-Key</label>
+                        <input type="password" id="gm-key" placeholder="AIza…" oninput="saveAICfg()" class="inp text-xs font-mono"></div>
+                    <div><label class="lbl" for="gm-model">Modell</label>
+                        <select id="gm-model" class="inp text-xs font-mono" onchange="saveAICfg()"></select></div>
+                    <div class="flex gap-2 text-[9px]"><a href="https://aistudio.google.com/apikey" target="_blank" class="text-blue-400 underline">Gemini Key ↗</a></div>
+                </div>
+
+                <!-- OpenRouter-Konfiguration -->
+                <div id="cfg-openrouter" class="hidden space-y-2">
+                    <div><label class="lbl" for="or-key">OpenRouter API-Key</label>
+                        <input type="password" id="or-key" placeholder="sk-or-…" oninput="saveAICfg()" class="inp text-xs font-mono"></div>
+                    <div id="or-migrate-hint" class="hidden text-[9px] font-bold text-amber-300 bg-amber-900/30 border border-amber-700 rounded px-2 py-1 leading-snug">◬ Frühere Claude-Konfiguration erkannt. Der Direktpfad zu <code class="font-mono">api.anthropic.com</code> scheitert im Browser an CORS; Anthropic-Modelle laufen hier über OpenRouter. Dafür ist ein eigener Key im Format <code class="font-mono">sk-or-…</code> nötig — der alte Anthropic-Key wurde bewusst nicht übernommen.</div>
+                    <div>
+                        <div class="flex items-center gap-2 mb-1"><label class="lbl mb-0" for="or-model">Modell (Live-Katalog)</label>
+                            <button type="button" id="or-refresh" class="ai-btn ml-auto" onclick="refreshOrModels()">↺ Katalog</button></div>
+                        <select id="or-model" class="inp text-xs font-mono" onchange="onOrModelPick()"></select>
+                    </div>
+                    <label class="flex items-center gap-1 text-[10px] text-slate-400 cursor-pointer"><input type="checkbox" id="or-struct-only" checked onchange="renderOrModels()" class="form-checkbox h-3 w-3">Nur Modelle mit Structured Outputs</label>
+                    <div><label class="lbl" for="or-slug">Freier Slug (überschreibt Auswahl)</label>
+                        <input type="text" id="or-slug" placeholder="anbieter/modell" oninput="saveAICfg()" class="inp text-xs font-mono"></div>
+                    <div id="or-cat-status" class="text-[9px] text-slate-500 font-mono">Katalog noch nicht geladen</div>
+                    <div class="flex gap-2 text-[9px]"><a href="https://openrouter.ai/settings/keys" target="_blank" class="text-violet-400 underline">OpenRouter Key ↗</a><a href="https://openrouter.ai/models" target="_blank" class="text-violet-400 underline">Modellliste ↗</a></div>
+                </div>
+
+                <p class="text-[9px] text-slate-500 leading-snug">Der Key bleibt lokal im Browser (localStorage), steht nie im Code. Bei CORS-Fehlern unter <code class="text-slate-400">file://</code> das Verzeichnis mit <code class="text-slate-400">python -m http.server</code> ausliefern und die Datei über <code class="text-slate-400">http://localhost:8000/</code> öffnen. OpenRouter erlaubt Aufrufe direkt aus dem Browser; nötig ist ein eigener Key im Format <code class="text-slate-400">sk-or-…</code>, der ebenfalls nur im localStorage liegt und niemals hartkodiert wird.</p>
             </div>
         </div>
 
-        <!-- Meta Navigation -->
-        <div class="border border-slate-700 rounded-lg overflow-hidden">
-            <button onclick="scrollToSec('sec-meta')" class="w-full flex justify-between items-center p-2 bg-slate-900/60 text-xs font-bold text-slate-300 hover:text-amber-400 transition-colors">
-                📝 Metadaten
-            </button>
-        </div>
-
-        <!-- Filters -->
+        <!-- Filter -->
         <div class="border border-slate-700 rounded-lg overflow-hidden">
             <button onclick="tog('sb-flt')" class="w-full flex justify-between items-center p-2 bg-slate-900/60 text-xs font-bold text-slate-300">
-                🔍 Filter
+                <span class="flex items-center gap-2"><span class="text-slate-500">⌕</span>Filter</span>
                 <svg id="icon-sb-flt" class="chev open w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
             </button>
             <div id="sb-flt-content" class="coll-content open p-2 bg-slate-900/30 space-y-2">
-                <input type="text" id="flt-txt" oninput="flt()" placeholder="Control / Titel..." class="inp text-xs font-mono">
+                <input type="text" id="flt-txt" oninput="flt()" placeholder="Control / Titel…" class="inp text-xs font-mono">
                 <select id="flt-comp" onchange="flt()" class="inp text-xs"><option value="">Komponente: Alle</option></select>
                 <select id="flt-pr" onchange="flt()" class="inp text-xs"><option value="">Prio: Alle</option><option value="high">Hoch</option><option value="medium">Mittel</option><option value="low">Niedrig</option></select>
                 <select id="flt-st" onchange="flt()" class="inp text-xs"><option value="">Status: Alle</option><option value="open">Offen</option><option value="in-progress">In Arbeit</option><option value="closed">Erledigt</option><option value="deviation-requested">Abw. beantragt</option><option value="deviation-approved">Abw. genehmigt</option><option value="risk-accepted">Risiko akzeptiert</option></select>
@@ -108,45 +593,90 @@
 
         <!-- Export -->
         <div class="mt-auto space-y-2 pt-3 border-t border-slate-700">
-            <button onclick="saveSession()" class="w-full bg-purple-700 text-white font-bold py-2 px-3 rounded-lg hover:bg-purple-600 text-xs">💾 Session</button>
-            <button onclick="exportPOAM()" class="w-full bg-amber-600 text-white font-bold py-2.5 px-3 rounded-lg hover:bg-amber-500 text-xs shadow-lg">📋 POA&M Export</button>
+            <div class="rail-label">Export</div>
+            <button onclick="saveSession()" class="w-full bg-purple-700 font-bold py-2 px-3 rounded-lg hover:bg-purple-600 text-xs">⤓ Session</button>
+            <button onclick="exportPOAM()" class="w-full bg-amber-600 font-bold py-2.5 px-3 rounded-lg hover:bg-amber-500 text-xs shadow-lg">⤓ POA&M Export</button>
         </div>
 
-<div style="margin-top: auto; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; font-size: 0.75rem; color: #94a3b8;">
-    &copy; 2026 NTT DATA Deutschland SE
-</div>
+        <div class="rail-foot">© 2026 NTT DATA Deutschland SE</div>
 
     </aside>
 
+    <div id="splitter" class="splitter" title="Breite ziehen"></div>
+
     <!-- ========== MAIN ========== -->
     <main id="main" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
-        
+
         <!-- Metadaten Section -->
-        <div id="sec-meta" class="hidden bg-slate-800 border border-slate-700 rounded-xl p-4 transition-all duration-300">
-            <h2 class="text-sm font-bold text-white mb-3">📝 Metadaten</h2>
+        <div id="sec-meta" class="hidden card p-4 transition-all duration-300">
+            <div class="sec-head"><span class="gly">▣</span><h2 class="sec-title">Metadaten</h2></div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 <div><label class="lbl">Titel</label><input type="text" id="m-title" onchange="P.meta.title=this.value" class="inp text-xs"></div>
-                <div><label class="lbl">Version</label><input type="text" id="m-ver" value="1.0.0" onchange="P.meta.version=this.value" class="inp text-xs"></div>
+                <div><label class="lbl">Version</label><input type="text" id="m-ver" value="1.0.0" onchange="P.meta.version=this.value" class="inp text-xs font-mono"></div>
                 <div><label class="lbl">Verantwortlicher</label><input type="text" id="m-resp" onchange="P.responsible.name=this.value" class="inp text-xs" placeholder="Name"></div>
                 <div><label class="lbl">Rolle</label><select id="m-role" onchange="P.responsible.role=this.value" class="inp text-xs"><option value="system-owner">System Owner</option><option value="isso">ISSO</option><option value="ciso">CISO</option></select></div>
                 <div><label class="lbl">E-Mail</label><input type="email" id="m-email" onchange="P.responsible.email=this.value" class="inp text-xs"></div>
             </div>
         </div>
 
+        <!-- KI-Prompts Section -->
+        <div id="sec-prompts" class="card p-4 transition-all duration-300">
+            <div class="sec-head"><span class="gly">✎</span><h2 class="sec-title">KI-Prompts</h2>
+                <span class="text-[10px] text-slate-500 ml-auto">Änderungen werden lokal gespeichert · Platzhalter <code class="text-amber-500 font-mono">{kontext}</code> wird zur Laufzeit ersetzt</span>
+            </div>
+            <p class="text-[10px] text-slate-500 mb-3">Der Kontextblock (System, Komponente, Control-ID, Anforderungstext, Risiko, bisherige Maßnahme) wird deterministisch in JavaScript zusammengesetzt und an der Stelle von <code class="text-amber-500 font-mono">{kontext}</code> eingefügt.</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <label class="lbl mb-0" for="p-rem">Prompt: Maßnahmen-Vorschlag</label>
+                        <button onclick="resetPrompt('rem')" class="text-[10px] px-2 py-0.5 bg-slate-700 text-slate-200 rounded font-bold hover:bg-slate-600 ml-auto font-mono">↺ Zurücksetzen</button>
+                    </div>
+                    <textarea id="p-rem" class="inp ptxt text-xs" spellcheck="false"></textarea>
+                    <div id="warn-rem" class="hidden mt-1 text-[10px] font-bold text-amber-300 bg-amber-900/30 border border-amber-700 rounded px-2 py-1">◬ Platzhalter <code class="font-mono">{kontext}</code> fehlt — er wird beim Senden automatisch am Ende angehängt.</div>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <label class="lbl mb-0" for="p-ms">Prompt: Meilensteine planen</label>
+                        <button onclick="resetPrompt('ms')" class="text-[10px] px-2 py-0.5 bg-slate-700 text-slate-200 rounded font-bold hover:bg-slate-600 ml-auto font-mono">↺ Zurücksetzen</button>
+                    </div>
+                    <textarea id="p-ms" class="inp ptxt text-xs" spellcheck="false"></textarea>
+                    <div id="warn-ms" class="hidden mt-1 text-[10px] font-bold text-amber-300 bg-amber-900/30 border border-amber-700 rounded px-2 py-1">◬ Platzhalter <code class="font-mono">{kontext}</code> fehlt — er wird beim Senden automatisch am Ende angehängt.</div>
+                    <p class="text-[10px] text-slate-500 mt-1">Antwortformat erzwingt das JSON-Schema (<code class="font-mono">title</code>, <code class="font-mono">weeks</code>) — im Prompt nicht nötig.</p>
+                </div>
+            </div>
+        </div>
+
         <div id="stats-dash"></div>
-        
+
         <div id="items-area">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-lg font-bold text-white" id="items-heading">POA&M Items</h2>
-                <button onclick="addMan()" class="text-xs px-4 py-2 bg-amber-700 text-white rounded-lg hover:bg-amber-600 font-bold">+ Neuer Eintrag</button>
+                <button onclick="addMan()" class="text-xs px-4 py-2 bg-amber-700 rounded-lg hover:bg-amber-600 font-bold">+ Neuer Eintrag</button>
             </div>
             <div id="il" class="space-y-3"></div>
         </div>
     </main>
-</div>
+
+    </div><!-- /workspace -->
+
+    <!-- ========== LOG-KONSOLE ========== -->
+    <section class="logbox">
+        <div class="log-head">
+            <span class="log-title">◐ Konsole</span>
+            <span id="log-count" class="log-count">0 Zeilen</span>
+            <div class="log-tools">
+                <button id="log-autoscroll" class="log-btn on" onclick="toggleAutoscroll()">Autoscroll</button>
+                <button id="log-clear" class="log-btn" onclick="clearLog()">Leeren</button>
+            </div>
+        </div>
+        <div id="log-body" class="log-body cscroll"></div>
+    </section>
+
+</div><!-- /app -->
 
 <script>
-const P={arFilename:'',sspHref:'',sysName:'',catalog:new Map(),findings:[],observations:[],risks:[],items:[],meta:{title:'',version:'1.0.0',desc:''},responsible:{name:'',role:'system-owner',email:''},aiCache:new Map()};
+const BUILD='v2.2';
+const P={arFilename:'',sspHref:'',sysName:'',catalog:new Map(),findings:[],observations:[],risks:[],items:[],meta:{title:'',version:'1.0.0',desc:''},responsible:{name:'',role:'system-owner',email:''}};
 // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
 // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
 const GPP_CATALOG_PIN_COMMIT='47de2824a341812438ef3f044b3f65ce2cad6e32';
@@ -157,13 +687,101 @@ const GPP_CATALOG_RESOURCE_UUID='944d9eb5-aa84-5c12-86d3-94ed8e2569f5';
 async function sha256Hex(buf){const d=await crypto.subtle.digest('SHA-256',buf);return Array.from(new Uint8Array(d)).map(b=>b.toString(16).padStart(2,'0')).join('')}
 // Back-matter-Resource für den gepinnten Katalog — feldidentisch zur Ausgabe von scripts/pin_profile_imports.py.
 function pinnedCatalogResource(){return{uuid:GPP_CATALOG_RESOURCE_UUID,title:`Grundschutz++-resolved_catalog.json @ ${GPP_CATALOG_PIN_COMMIT.slice(0,12)}`,rlinks:[{href:CATALOG_URL,hashes:[{algorithm:'SHA-256',value:GPP_CATALOG_PIN_SHA256}]}]}}
-const MODELS={claude:[{id:'claude-opus-4-6-20250514',label:'Opus 4.6'},{id:'claude-sonnet-4-6-20250514',label:'Sonnet 4.6'}],gemini:[{id:'gemini-3.1-pro-preview',label:'3.1 Pro'},{id:'gemini-3.1-flash',label:'3.1 Flash'}]};
+// --- Backends -------------------------------------------------------------
+// Der frühere Claude-Direktpfad (api.anthropic.com aus dem Browser) ist entfallen:
+// er scheitert ausserhalb einer Artifact-Umgebung an CORS. Anthropic-Modelle bleiben
+// über OpenRouter erreichbar — ein Key, erlaubtes Browser-CORS, gleiche Modelle.
+const BACKENDS={gemini:{label:'Gemini'},openrouter:{label:'OpenRouter'}};
+const GEMINI_MODELS=[{id:'gemini-3.6-flash',label:'3.6 Flash (Standard)'},{id:'gemini-3.5-flash',label:'3.5 Flash'},{id:'gemini-3.5-flash-lite',label:'3.5 Flash Lite'},{id:'gemini-3.1-pro-preview',label:'3.1 Pro (kostenpflichtig)'}];
+const DEFAULT_GEMINI_MODEL='gemini-3.6-flash';
+const GEMINI_URL=m=>`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`;
+const OR_CHAT_URL='https://openrouter.ai/api/v1/chat/completions';
+const OR_MODELS_URL='https://openrouter.ai/api/v1/models';
+const OR_TITLE='OSCAL POA&M Generator';
+const OR_CAT_TTL=24*60*60*1000;           // Modellkatalog nach 24 h auffrischen
+// Migrationshilfe: alte Claude-Modell-ID → Vorschlag für den OpenRouter-Slug.
+const CLAUDE_SLUG_MAP={'claude-sonnet-5':'anthropic/claude-sonnet-5','claude-opus-5':'anthropic/claude-opus-5'};
+const LS_BACKEND='oscal_ai_backend',LS_GEMINI='oscal_ai_gemini',LS_OR='oscal_ai_openrouter',LS_OR_CAT='oscal_or_models',LS_AI_LEGACY='oscal_ai';
+const AI_RETRIES=2;                       // Retries pro LLM-Call (Backoff 500ms → 1s → 2s)
+// Meilenstein-Antwort als Structured Output statt "NUR JSON"-Bettelei im Prompt.
+const MILESTONE_SCHEMA={type:'object',properties:{milestones:{type:'array',items:{type:'object',properties:{title:{type:'string',description:'Kurzer, prüfbarer Meilenstein-Titel auf Deutsch'},weeks:{type:'integer',description:'Kalenderwochen ab heute bis zur Fälligkeit'}},required:['title','weeks']}}},required:['milestones']};
+
+const DEFAULT_REMEDIATION_PROMPT=`Du bist erfahrener IT-Sicherheitsberater und formulierst einen konkreten Maßnahmenplan für genau EINE Anforderung aus dem BSI Grundschutz++.
+
+{kontext}
+
+Regeln:
+- Bewerte AUSSCHLIESSLICH das oben genannte Control. Grundschutz++ ist granular — keine benachbarten Anforderungen mitbehandeln.
+- Beschreibe umsetzbare, prüfbare Schritte (was wird getan, womit, woran ist die Umsetzung erkennbar).
+- Nenne Rollen/Verantwortlichkeiten nur, wenn sie sich aus dem Kontext ergeben — nichts erfinden.
+- Beziehe eine bereits vorhandene Maßnahme ein und schärfe sie, statt sie zu ignorieren.
+- 3–5 Sätze Fließtext, Deutsch, kein Markdown, keine Aufzählungszeichen, keine Überschriften.
+- Keine Rückfragen, keine Vorbemerkungen, keine Wiederholung des Controls — nur der Maßnahmentext.`;
+
+const DEFAULT_MILESTONE_PROMPT=`Du planst die Umsetzung einer IT-Sicherheitsmaßnahme in Meilensteine.
+
+{kontext}
+
+Regeln:
+- 3–5 Meilensteine in sachlich sinnvoller Reihenfolge (Konzeption → Umsetzung → Nachweis/Wirksamkeitsprüfung).
+- "weeks" = ganzzahlige Kalenderwochen ab heute bis zur Fälligkeit des jeweiligen Meilensteins, streng aufsteigend.
+- Realistische Abstände: kleine Maßnahmen in 2–8 Wochen gesamt, komplexe in 12–26 Wochen.
+- Titel kurz, prüfbar und auf Deutsch (max. ca. 80 Zeichen), kein Markdown.
+- Kleine Maßnahme → wenige Meilensteine (3 genügen); mehr ist NICHT besser.`;
 const PM={high:{l:'Hoch',c:'bg-red-900 text-red-300 border-red-700'},medium:{l:'Mittel',c:'bg-amber-900 text-amber-300 border-amber-700'},low:{l:'Niedrig',c:'bg-blue-900 text-blue-300 border-blue-700'}};
 const SM={open:{l:'Offen',c:'bg-red-900/50 text-red-300 border-red-700'},'in-progress':{l:'In Arbeit',c:'bg-amber-900 text-amber-300 border-amber-700'},closed:{l:'Erledigt',c:'bg-emerald-900 text-emerald-300 border-emerald-700'},'deviation-requested':{l:'Abw. beantr.',c:'bg-purple-900 text-purple-300 border-purple-700'},'deviation-approved':{l:'Abw. genehm.',c:'bg-indigo-900 text-indigo-300 border-indigo-700'},'risk-accepted':{l:'Risiko akz.',c:'bg-slate-700 text-slate-300 border-slate-600'}};
+// Einzige Quelle der Wahrheit für die Diagrammfarben — identisch zu den
+// Badge-Farbtönen oben (siehe CSS-Abschnitt "Semantik").
+const PRIO_COLORS={high:'oklch(0.65 0.2 25)',medium:'oklch(0.80 0.15 80)',low:'oklch(0.70 0.15 240)'};
+const STATUS_COLORS={open:'oklch(0.65 0.2 25)','in-progress':'oklch(0.80 0.15 80)',closed:'oklch(0.75 0.18 145)','deviation-requested':'oklch(0.7 0.18 300)','deviation-approved':'oklch(0.62 0.13 265)','risk-accepted':'oklch(0.55 0.02 280)'};
+
+// ============================ LOG-KONSOLE ============================
+const LOGSTATE={lines:0,auto:true,max:1200};
+function logTs(){const d=new Date();const p=(n,w=2)=>String(n).padStart(w,'0');return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}.${p(d.getMilliseconds(),3)}`}
+function logLine(level,msg){
+    const body=document.getElementById('log-body');if(!body)return;
+    const row=document.createElement('div');row.className=`log-row lv-${level}`;
+    const ts=document.createElement('span');ts.className='log-ts';ts.textContent=logTs();
+    const lv=document.createElement('span');lv.className='log-lv';lv.textContent=level.toUpperCase();
+    const tx=document.createElement('span');tx.className='log-msg';tx.textContent=String(msg);
+    row.append(ts,lv,tx);body.appendChild(row);
+    LOGSTATE.lines++;
+    while(body.childElementCount>LOGSTATE.max)body.removeChild(body.firstElementChild);
+    const cnt=document.getElementById('log-count');if(cnt)cnt.textContent=`${LOGSTATE.lines} Zeilen`;
+    if(LOGSTATE.auto)body.scrollTop=body.scrollHeight;
+}
+const l={info:m=>logLine('info',m),ok:m=>logLine('ok',m),warn:m=>logLine('warn',m),err:m=>logLine('err',m),debug:m=>logLine('debug',m)};
+window.toggleAutoscroll=()=>{LOGSTATE.auto=!LOGSTATE.auto;const b=document.getElementById('log-autoscroll');if(b)b.classList.toggle('on',LOGSTATE.auto);
+    if(LOGSTATE.auto){const body=document.getElementById('log-body');if(body)body.scrollTop=body.scrollHeight}};
+window.clearLog=()=>{const body=document.getElementById('log-body');if(body)body.innerHTML='';LOGSTATE.lines=0;const c=document.getElementById('log-count');if(c)c.textContent='0 Zeilen'};
+
+// ============================ PROGRESS-HAIRLINE ============================
+// Ersetzt den früheren CSS-Spinner: 1px-Linie, violett laufend, grün bei Abschluss.
+let progTimer=null;
+function startProgress(label){
+    const w=document.getElementById('progress-wrap'),f=document.getElementById('progress-fill'),t=document.getElementById('progress-label');
+    if(!w||!f)return;clearTimeout(progTimer);
+    f.classList.remove('done','creep');f.style.width='';void f.offsetWidth;f.classList.add('creep');
+    if(t)t.textContent=label||'';w.classList.add('on');
+}
+function setProgress(label,done,total){
+    const f=document.getElementById('progress-fill'),t=document.getElementById('progress-label');
+    if(!f)return;f.classList.remove('creep');
+    f.style.width=`${total?Math.round(done/total*100):0}%`;
+    if(t&&label)t.textContent=`${label} ${done}/${total}`;
+}
+function endProgress(ok,label){
+    const w=document.getElementById('progress-wrap'),f=document.getElementById('progress-fill'),t=document.getElementById('progress-label');
+    if(!w||!f)return;f.classList.remove('creep');f.style.width='100%';
+    if(ok)f.classList.add('done');
+    if(t&&label)t.textContent=label;
+    clearTimeout(progTimer);
+    progTimer=setTimeout(()=>{w.classList.remove('on');f.classList.remove('done');f.style.width='0%';if(t)t.textContent=''},800);
+}
 
 function mkItem(fU,rU,cid,title,desc,comp,compUuid,obsTxt,rskTxt,remTxt){return{uuid:crypto.randomUUID(),controlId:cid||'',component:comp||'',componentUuid:compUuid||'',title:title||'',description:desc||'',observationText:obsTxt||'',riskText:rskTxt||'',remarkText:remTxt||'',priority:'medium',status:'open',findingUuids:fU?[fU]:[],riskUuids:rU?[rU]:[],deadline:'',responsible:'',remediation:'',milestones:[],remarks:'',deviationJustification:'',createdAt:new Date().toISOString()}}
 
-// SIDEBAR
+// SIDEBAR / RAIL
 function toggleSidebar(){const sb=document.getElementById('sidebar'),btn=document.getElementById('sb-btn');sb.classList.toggle('collapsed');btn.classList.toggle('shifted')}
 window.tog=id=>{document.getElementById(id+'-content')?.classList.toggle('open');document.getElementById('icon-'+id)?.classList.toggle('open')};
 window.scrollToSec = id => {
@@ -174,6 +792,23 @@ window.scrollToSec = id => {
         setTimeout(() => el.classList.remove('ring-2', 'ring-amber-500'), 1500);
     }
 };
+window.navTo=(btn,id)=>{document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));btn?.classList.add('active');scrollToSec(id)};
+
+// Ziehbarer Splitter; Rail-Breite in localStorage.
+const RAIL_LS='oscal_poam_rail',RAIL_MIN=200,RAIL_MAX=420;
+function applyRail(px){const w=Math.max(RAIL_MIN,Math.min(RAIL_MAX,Math.round(px)));document.documentElement.style.setProperty('--rail',w+'px');return w}
+try{const v=parseInt(localStorage.getItem(RAIL_LS)||'',10);if(v)applyRail(v)}catch(e){}
+function initSplitter(){
+    const sp=document.getElementById('splitter');if(!sp)return;
+    let dragging=false;
+    const move=e=>{if(!dragging)return;e.preventDefault();applyRail(e.clientX)};
+    const up=()=>{if(!dragging)return;dragging=false;sp.classList.remove('dragging');document.body.style.userSelect='';
+        const w=getComputedStyle(document.documentElement).getPropertyValue('--rail').trim();
+        try{localStorage.setItem(RAIL_LS,parseInt(w,10))}catch(e){}
+        l.debug(`Rail-Breite gespeichert: ${w}`)};
+    sp.addEventListener('mousedown',e=>{dragging=true;sp.classList.add('dragging');document.body.style.userSelect='none';e.preventDefault()});
+    window.addEventListener('mousemove',move);window.addEventListener('mouseup',up);
+}
 
 // INIT
 document.addEventListener('DOMContentLoaded',()=>{
@@ -181,26 +816,40 @@ document.addEventListener('DOMContentLoaded',()=>{
         dz.addEventListener('click',()=>fi.click());dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over')});dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
         dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');if(e.dataTransfer.files.length)loadF(e.dataTransfer.files[0],ty)});
         fi.addEventListener('change',e=>{if(e.target.files.length)loadF(e.target.files[0],ty)})});
-    loadAICfg();loadCatalog();tryAR()});
+    const bv=document.getElementById('build-ver');if(bv)bv.textContent=BUILD;
+    document.title=`OSCAL POA&M Generator ${BUILD}`;
+    initSplitter();
+    l.info(`OSCAL POA&M Generator ${BUILD} gestartet`);
+    l.debug(`Katalog-Pin: commit ${GPP_CATALOG_PIN_COMMIT.slice(0,12)}… · SHA-256 ${GPP_CATALOG_PIN_SHA256.slice(0,12)}…`);
+    if(location.protocol==='file:')l.warn('Aufruf über file:// — bei CORS-Fehlern das Verzeichnis mit "python -m http.server" ausliefern.');
+    initPrompts();loadAICfg();loadCatalog();tryAR()});
 
 // CATALOG
-async function loadCatalog(){const cs=document.getElementById('cat-status');try{const r=await fetch(CATALOG_URL);const buf=await r.arrayBuffer();const hash=await sha256Hex(buf);if(hash!==GPP_CATALOG_PIN_SHA256){cs.textContent='Katalog-Fehler: Pin-Verletzung (SHA-256 weicht ab)';throw new Error(`Pin-Verletzung: ${hash.slice(0,12)}… statt ${GPP_CATALOG_PIN_SHA256.slice(0,12)}…`)}const d=JSON.parse(new TextDecoder().decode(buf));function idx(it){if(!it)return;it.forEach(i=>{if(i.id){let pr='';if(i.parts){const p=i.parts.find(p=>p.name==='statement'||p.prose);if(p&&p.prose)pr=p.prose}P.catalog.set(i.id,{title:i.title||'',prose:pr})}if(i.controls)idx(i.controls);if(i.groups)idx(i.groups)})}idx(d.catalog.groups);cs.className="px-2 py-1 rounded text-[10px] font-semibold bg-emerald-900/50 text-emerald-400 border border-emerald-700 flex items-center";cs.innerHTML=`✓ ${P.catalog.size} Controls`}catch(e){cs.textContent='Katalog-Fehler'}}
+async function loadCatalog(){const cs=document.getElementById('cat-status');const t0=performance.now();
+    l.info('Katalog wird geladen (gepinnter G++-Stand)…');startProgress('Katalog');
+    try{const r=await fetch(CATALOG_URL);const buf=await r.arrayBuffer();
+    l.debug(`Katalog geladen: ${(buf.byteLength/1024).toFixed(0)} kB in ${Math.round(performance.now()-t0)} ms`);
+    const hash=await sha256Hex(buf);if(hash!==GPP_CATALOG_PIN_SHA256){cs.textContent='Katalog-Fehler: Pin-Verletzung (SHA-256 weicht ab)';throw new Error(`Pin-Verletzung: ${hash.slice(0,12)}… statt ${GPP_CATALOG_PIN_SHA256.slice(0,12)}…`)}
+    l.ok(`Katalog-Pin geprüft: SHA-256 stimmt (${hash.slice(0,12)}…)`);
+    const d=JSON.parse(new TextDecoder().decode(buf));function idx(it){if(!it)return;it.forEach(i=>{if(i.id){let pr='';if(i.parts){const p=i.parts.find(p=>p.name==='statement'||p.prose);if(p&&p.prose)pr=p.prose}P.catalog.set(i.id,{title:i.title||'',prose:pr})}if(i.controls)idx(i.controls);if(i.groups)idx(i.groups)})}idx(d.catalog.groups);cs.className="px-2 py-1 rounded text-[10px] font-semibold bg-emerald-900/50 text-emerald-400 border border-emerald-700 flex items-center";cs.innerHTML=`✓ ${P.catalog.size} Controls`;
+    l.ok(`Katalog indiziert: ${P.catalog.size} Controls in ${Math.round(performance.now()-t0)} ms`);endProgress(true,'Katalog bereit')}
+    catch(e){cs.textContent='Katalog-Fehler';l.err(`Katalog konnte nicht geladen werden: ${shortErr(e.message)}`);endProgress(false,'Katalog-Fehler')}}
 function ct(cid){return P.catalog.get(cid)||{title:'',prose:''}}
 
 // FILES
-function loadF(f,ty){if(!f.name.endsWith('.json'))return alert('JSON.');const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result.replace(/^\uFEFF/,''));if(ty==='ar')importAR(d,f.name);else restoreS(d)}catch(e){alert(e.message)}};r.readAsText(f)}
+function loadF(f,ty){if(!f.name.endsWith('.json'))return alert('JSON.');l.info(`Datei gewählt: ${f.name} (${(f.size/1024).toFixed(1)} kB, Typ ${ty})`);const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result.replace(/^\uFEFF/,''));if(ty==='ar')importAR(d,f.name);else restoreS(d)}catch(e){l.err(`Datei konnte nicht gelesen werden: ${shortErr(e.message)}`);alert(e.message)}};r.readAsText(f)}
 
 // IMPORT AR
 function importAR(d,fn){
-    const ar=d['assessment-results'];if(!ar)return alert('Kein assessment-results.');
+    const ar=d['assessment-results'];if(!ar){l.err('Import abgebrochen: kein assessment-results im Dokument.');return alert('Kein assessment-results.')}
     P.arFilename=fn;
     // Fragment-hrefs (Pin-Muster) über die back-matter des AR auf die reale Quelle
     // auflösen, damit die Provenienz statt eines toten "#uuid" übernommen wird.
     let refHref=ar['import-ap']?.href||'';
-    if(refHref.startsWith('#')){const res=(ar['back-matter']?.resources||[]).find(rr=>rr.uuid===refHref.slice(1));refHref=res?.rlinks?.[0]?.href||refHref}
+    if(refHref.startsWith('#')){const res=(ar['back-matter']?.resources||[]).find(rr=>rr.uuid===refHref.slice(1));refHref=res?.rlinks?.[0]?.href||refHref;l.debug(`import-ap-Fragment über back-matter aufgelöst → ${refHref||'(nicht auflösbar)'}`)}
     P.sspHref=refHref;
-    const res=ar.results?.[0];if(!res)return alert('Keine results.');
-    
+    const res=ar.results?.[0];if(!res){l.err('Import abgebrochen: keine results im Assessment Result.');return alert('Keine results.')}
+
     P.sysName=(ar.metadata?.title||'').replace(/ - Assessment Results/,'');
     P.meta.title=`${P.sysName} - POA&M`;
     document.getElementById('m-title').value=P.meta.title;
@@ -216,7 +865,7 @@ function importAR(d,fn){
         relRisks:(f['related-risks']||[]).map(r=>r['risk-uuid']),
         relObs:(f['related-observations']||[]).map(o=>o['observation-uuid'])
     }));
-    
+
     P.observations=(res.observations||[]).map(o=>({
         uuid:o.uuid,
         title:o.title,
@@ -225,14 +874,14 @@ function importAR(d,fn){
         collected:o.collected||'',
         subjects:o.subjects||[]
     }));
-    
+
     P.risks=(res.risks||[]).map(r=>({uuid:r.uuid,title:r.title,description:r.description,status:r.status||'open'}));
-    
+
     P.items=[];
     P.findings.filter(f=>f.status==='not-satisfied').forEach(f=>{
         const ru=f.relRisks[0]||'';
         const rk=P.risks.find(r=>r.uuid===ru);
-        
+
         let subjectsList = [];
         let obsTxt = '';
         if(f.relObs && f.relObs.length > 0) {
@@ -242,12 +891,12 @@ function importAR(d,fn){
                 if(ob.subjects) subjectsList = ob.subjects.filter(s => s.type === 'component');
             }
         }
-        
+
         const rskTxt = rk?.description || '';
         const remTxt = f.remarks || f.description || '';
         const itemTitle = `Maßnahme: ${f.targetId} — ${ct(f.targetId).title||''}`.trim();
         const fallbackDesc = rskTxt || remTxt;
-        
+
         if (subjectsList.length > 0) {
             subjectsList.forEach(s => {
                 const compName = s.title || s['subject-uuid'];
@@ -258,44 +907,376 @@ function importAR(d,fn){
             P.items.push(mkItem(f.uuid,ru,f.targetId,itemTitle,fallbackDesc,'','',obsTxt,rskTxt,remTxt));
         }
     });
-    
+
+    l.ok(`AR importiert: ${fn} — System "${P.sysName||'(unbenannt)'}"`);
+    l.info(`AR-Inhalt: ${P.findings.length} findings · ${P.observations.length} observations · ${P.risks.length} risks · Quelle ${P.sspHref||'(keine)'}`);
+    const notSat=P.findings.filter(f=>f.status==='not-satisfied').length;
+    const withCtl=P.items.filter(i=>P.catalog.has(i.controlId)).length;
+    l.info(`POA&M-Items deterministisch erzeugt: ${P.items.length} aus ${notSat} not-satisfied findings · ${withCtl} mit Katalog-Treffer (Join gegen ${P.catalog.size} Controls)`);
     setSt('ar-status',true,`AR: ${P.items.length} Items`);render()
 }
 
 // SESSION
-function ser(){return JSON.stringify({_t:'poam',_v:2,arFilename:P.arFilename,sspHref:P.sspHref,sysName:P.sysName,meta:P.meta,responsible:P.responsible,findings:P.findings,observations:P.observations,risks:P.risks,items:P.items,aiCache:[...P.aiCache.entries()]})}
+function ser(){return JSON.stringify({_t:'poam',_v:2,arFilename:P.arFilename,sspHref:P.sspHref,sysName:P.sysName,meta:P.meta,responsible:P.responsible,findings:P.findings,observations:P.observations,risks:P.risks,items:P.items})}
 function restoreS(d){
-    if(d._t!=='poam')return alert('Keine POA&M-Session.');
+    if(d._t!=='poam'){l.err('Session-Import abgelehnt: kein POA&M-Session-Dokument.');return alert('Keine POA&M-Session.')}
     Object.assign(P,{arFilename:d.arFilename||'',sspHref:d.sspHref||'',sysName:d.sysName||'',meta:d.meta||{title:'',version:'1.0.0',desc:''},responsible:d.responsible||{name:'',role:'system-owner',email:''},findings:d.findings||[],observations:d.observations||[],risks:d.risks||[],items:d.items||[]});
-    P.aiCache=new Map(d.aiCache||[]);
     document.getElementById('m-title').value=P.meta.title;document.getElementById('m-ver').value=P.meta.version;
     document.getElementById('m-resp').value=P.responsible.name;document.getElementById('m-email').value=P.responsible.email;
     document.getElementById('sec-meta').classList.remove('hidden');
+    l.ok(`Session geladen: ${P.items.length} Items · Quelle ${P.arFilename||'(unbekannt)'}`);
     setSt('ar-status',true,`Session: ${P.items.length} Items`);render()
 }
-window.saveSession=()=>dl(JSON.parse(ser()),`${sn()}_poam_session.json`);
+window.saveSession=()=>{const n=`${sn()}_poam_session.json`;dl(JSON.parse(ser()),n);l.ok(`Session exportiert: ${n} (${P.items.length} Items)`)};
 function autoSave(){try{localStorage.setItem('oscal_poam_v2',ser())}catch(e){}}
-function tryAR(){try{const s=localStorage.getItem('oscal_poam_v2');if(!s)return;const d=JSON.parse(s);if(d._t==='poam'&&d.items?.length&&confirm(`POA&M Autosave (${d.items.length} Items). Laden?`))restoreS(d)}catch(e){}}
-setInterval(()=>{if(P.items.length)autoSave()},30000);
+function tryAR(){try{const s=localStorage.getItem('oscal_poam_v2');if(!s)return;const d=JSON.parse(s);if(d._t==='poam'&&d.items?.length){l.info(`Autosave gefunden: ${d.items.length} Items`);if(confirm(`POA&M Autosave (${d.items.length} Items). Laden?`))restoreS(d);else l.debug('Autosave verworfen')}}catch(e){}}
+setInterval(()=>{if(P.items.length){autoSave();l.debug(`Autosave: ${P.items.length} Items in localStorage gesichert`)}},30000);
 
-// AI CONFIG
-window.onProvChange=()=>{const p=document.getElementById('ai-provider').value;const s=document.getElementById('ai-model');s.innerHTML='';(MODELS[p]||[]).forEach(m=>{const o=document.createElement('option');o.value=m.id;o.textContent=m.label;s.appendChild(o)});saveAICfg()};
-window.saveAICfg=()=>{const c={p:document.getElementById('ai-provider').value,k:document.getElementById('ai-key').value,m:document.getElementById('ai-model').value};try{localStorage.setItem('oscal_ai',JSON.stringify(c))}catch(e){}const b=document.getElementById('ai-badge');if(c.p&&c.k){b.classList.remove('hidden');b.className='sb bg-violet-900 text-violet-300 border-violet-700';b.textContent=c.p==='claude'?'Claude':'Gemini'}else b.classList.add('hidden')};
-function loadAICfg(){try{const c=JSON.parse(localStorage.getItem('oscal_ai')||'{}');if(c.p){document.getElementById('ai-provider').value=c.p;onProvChange();if(c.k)document.getElementById('ai-key').value=c.k;if(c.m)document.getElementById('ai-model').value=c.m;saveAICfg()}}catch(e){}}
-function getAI(){const p=document.getElementById('ai-provider').value,k=document.getElementById('ai-key').value,m=document.getElementById('ai-model').value;return(p&&k)?{p,k,m}:null}
-async function callAI(prompt){const ai=getAI();if(!ai)throw new Error('KI konfigurieren.');if(ai.p==='claude'){const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ai.k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:ai.m,max_tokens:2000,messages:[{role:'user',content:prompt}]})});const d=await r.json();if(d.error)throw new Error(d.error.message);return d.content?.[0]?.text||''}else{const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${ai.m}:generateContent?key=${ai.k}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.3}})});const d=await r.json();if(d.error)throw new Error(d.error.message);return d.candidates?.[0]?.content?.parts?.[0]?.text||''}}
+// ============================ KI-KONFIGURATION ============================
+// Zwei Backends, getrennt persistiert: Key, Modell und die Backend-Auswahl selbst.
+const gid=id=>document.getElementById(id);
+const AI={backend:'gemini',orCatalog:[],orCatalogTs:0,pendingOrModel:''};
+
+function fillGeminiModels(){const s=gid('gm-model');if(!s||s.options.length)return;
+    GEMINI_MODELS.forEach(m=>{const o=document.createElement('option');o.value=m.id;o.textContent=m.label;s.appendChild(o)});s.value=DEFAULT_GEMINI_MODEL}
+
+// Backend-Umschalter in der Rail. Tauscht die Config-Felder, persistiert die Wahl.
+function setBackend(b,silent){
+    if(!BACKENDS[b])b='gemini';
+    AI.backend=b;
+    gid('be-gemini')?.classList.toggle('active',b==='gemini');
+    gid('be-openrouter')?.classList.toggle('active',b==='openrouter');
+    gid('cfg-gemini')?.classList.toggle('hidden',b!=='gemini');
+    gid('cfg-openrouter')?.classList.toggle('hidden',b!=='openrouter');
+    saveAICfg();
+    if(!silent)l.info(`KI-Backend gewechselt: ${BACKENDS[b].label}`);
+    if(b==='openrouter')ensureOrModels();
+}
+// Freitext-Slug schlägt die Katalog-Auswahl.
+function orModelId(){const s=(gid('or-slug')?.value||'').trim();return s||(gid('or-model')?.value||'')}
+function onOrModelPick(){saveAICfg();const s=(gid('or-slug')?.value||'').trim();
+    if(s)l.warn(`Freitext-Slug "${s}" ist gesetzt und überschreibt die Katalog-Auswahl.`);else l.debug(`OpenRouter-Modell gewählt: ${gid('or-model')?.value||'(keins)'}`)}
+
+window.saveAICfg=()=>{
+    try{localStorage.setItem(LS_BACKEND,AI.backend)}catch(e){}
+    try{localStorage.setItem(LS_GEMINI,JSON.stringify({k:gid('gm-key')?.value||'',m:gid('gm-model')?.value||''}))}catch(e){}
+    try{localStorage.setItem(LS_OR,JSON.stringify({k:gid('or-key')?.value||'',m:gid('or-model')?.value||AI.pendingOrModel||'',slug:(gid('or-slug')?.value||'').trim()}))}catch(e){}
+    const ai=getAI(),b=gid('ai-badge');if(!b)return;
+    if(ai){b.className='sb bg-violet-900 text-violet-300 border-violet-700';b.textContent=BACKENDS[ai.p].label}
+    else b.classList.add('hidden');
+};
+
+function loadAICfg(){
+    fillGeminiModels();
+    let backend='';try{backend=localStorage.getItem(LS_BACKEND)||''}catch(e){}
+    let g={},o={};
+    try{g=JSON.parse(localStorage.getItem(LS_GEMINI)||'{}')||{}}catch(e){}
+    try{o=JSON.parse(localStorage.getItem(LS_OR)||'{}')||{}}catch(e){}
+    if(!BACKENDS[backend]){
+        // Sanfte Migration der alten {p,k,m}-Konfiguration (Provider "claude" | "gemini").
+        let legacy=null;try{legacy=JSON.parse(localStorage.getItem(LS_AI_LEGACY)||'null')}catch(e){}
+        if(legacy&&legacy.p==='gemini'){backend='gemini';g={k:legacy.k||'',m:legacy.m||''};
+            l.info('Alte Gemini-Konfiguration übernommen.')}
+        else if(legacy&&legacy.p==='claude'){
+            backend='openrouter';
+            const slug=CLAUDE_SLUG_MAP[legacy.m]||(legacy.m?`anthropic/${legacy.m}`:'');
+            o={k:'',m:'',slug};
+            gid('or-migrate-hint')?.classList.remove('hidden');
+            l.warn(`Claude-Direktpfad entfällt (CORS ausserhalb einer Artifact-Umgebung) — Backend auf OpenRouter migriert, Slug-Vorschlag "${slug||'(keiner)'}". Der Anthropic-Key wurde NICHT übernommen: OpenRouter braucht einen eigenen Key im Format sk-or-….`);
+        } else backend='gemini';
+    }
+    const gk=gid('gm-key'),gm=gid('gm-model');
+    if(gk)gk.value=g.k||'';
+    if(gm){const known=GEMINI_MODELS.some(m=>m.id===g.m);gm.value=known?g.m:DEFAULT_GEMINI_MODEL;
+        // Migration: gespeicherte Modell-ID kann inzwischen abgeschaltet sein — dann zurück auf den Default.
+        if(g.m&&!known)l.warn(`Gespeichertes Gemini-Modell "${g.m}" existiert nicht mehr — zurückgesetzt auf ${gm.value}`)}
+    const ok=gid('or-key'),os=gid('or-slug');
+    if(ok)ok.value=o.k||'';
+    if(os)os.value=o.slug||'';
+    AI.pendingOrModel=o.m||'';
+    renderOrModels();
+    setBackend(backend,true);
+    const cur=getAI();
+    l.debug(`KI-Konfiguration geladen: Backend ${BACKENDS[backend].label} · Modell ${cur?cur.m:'(keins)'}${cur?' · Key vorhanden':' · kein Key'}`);
+}
+
+function getAI(){
+    if(AI.backend==='openrouter'){
+        const k=(gid('or-key')?.value||'').trim(),m=orModelId();
+        return(k&&m)?{p:'openrouter',k,m}:null;
+    }
+    const k=(gid('gm-key')?.value||'').trim(),m=gid('gm-model')?.value||'';
+    return(k&&m)?{p:'gemini',k,m}:null;
+}
+// Klartext, warum ein Call nicht laufen kann — statt eines pauschalen "KI konfigurieren".
+function aiMissingReason(){
+    if(AI.backend==='openrouter'){
+        if(!(gid('or-key')?.value||'').trim())return 'OpenRouter-Key fehlt (Format sk-or-…)';
+        if(!orModelId())return 'kein OpenRouter-Modell gewählt';
+    }else{
+        if(!(gid('gm-key')?.value||'').trim())return 'Gemini-Key fehlt';
+        if(!(gid('gm-model')?.value||''))return 'kein Gemini-Modell gewählt';
+    }
+    return 'KI nicht konfiguriert';
+}
+
+// --- OpenRouter-Modellkatalog: live laden, 24 h cachen -------------------
+function setOrCatStatus(t){const e=gid('or-cat-status');if(e)e.textContent=t}
+function renderOrModels(){
+    const s=gid('or-model');if(!s)return;
+    const only=gid('or-struct-only')?.checked!==false;
+    const cur=AI.pendingOrModel||s.value||'';
+    const list=AI.orCatalog.filter(m=>only?m.st:true);
+    s.innerHTML='';
+    if(!list.length){const o=document.createElement('option');o.value='';
+        o.textContent=AI.orCatalog.length?'— keine Treffer —':'— Katalog nicht geladen —';s.appendChild(o)}
+    // ◆ = Structured Outputs unterstützt (die Meilenstein-Planung braucht ein Schema), ○ = nicht.
+    list.forEach(m=>{const o=document.createElement('option');o.value=m.id;o.textContent=`${m.st?'◆':'○'} ${m.id}`;s.appendChild(o)});
+    if(cur&&list.some(m=>m.id===cur))s.value=cur;
+    // Noch nicht anwendbare Auswahl (Katalog fehlt oder Modell ausgefiltert) für später merken.
+    AI.pendingOrModel=(s.value===cur)?'':cur;
+    saveAICfg();
+}
+async function ensureOrModels(force){
+    if(!force){
+        if(AI.orCatalog.length){renderOrModels();return}
+        let c=null;try{c=JSON.parse(localStorage.getItem(LS_OR_CAT)||'null')}catch(e){}
+        if(c&&Array.isArray(c.models)&&c.models.length&&(Date.now()-(c.ts||0))<OR_CAT_TTL){
+            AI.orCatalog=c.models;AI.orCatalogTs=c.ts;renderOrModels();
+            setOrCatStatus(`${c.models.length} Modelle (Cache, ${new Date(c.ts).toLocaleString('de-DE')})`);
+            l.debug(`OpenRouter-Katalog aus Cache: ${c.models.length} Modelle · Alter ${Math.round((Date.now()-c.ts)/60000)} min (Auffrischung nach 24 h)`);
+            return;
+        }
+    }
+    await fetchOrModels();
+}
+async function fetchOrModels(){
+    const btn=gid('or-refresh');if(btn)btn.disabled=true;
+    setOrCatStatus('Katalog wird geladen…');
+    const t0=performance.now();
+    l.info('OpenRouter-Modellkatalog wird geladen (GET /api/v1/models, ohne Auth)…');
+    try{
+        const r=await fetch(OR_MODELS_URL);
+        const d=await r.json().catch(()=>({}));
+        if(d.error)throw new Error(shortErr(d.error.message||JSON.stringify(d.error)));
+        if(!r.ok)throw new Error(shortErr(`HTTP ${r.status}`));
+        const models=(d.data||[]).filter(m=>m&&m.id).map(m=>{const sp=m.supported_parameters||[];
+            return{id:m.id,st:sp.includes('structured_outputs')||sp.includes('response_format')}})
+            .sort((a,b)=>(b.st-a.st)||a.id.localeCompare(b.id));
+        if(!models.length)throw new Error('Katalog enthielt keine Modelle');
+        AI.orCatalog=models;AI.orCatalogTs=Date.now();
+        try{localStorage.setItem(LS_OR_CAT,JSON.stringify({ts:AI.orCatalogTs,models}))}catch(e){l.warn('Modellkatalog konnte nicht gecacht werden (localStorage voll?)')}
+        renderOrModels();
+        const ns=models.filter(m=>m.st).length;
+        setOrCatStatus(`${models.length} Modelle · ${ns} mit Structured Outputs · ${new Date(AI.orCatalogTs).toLocaleString('de-DE')}`);
+        l.ok(`OpenRouter-Katalog geladen: ${models.length} Modelle, davon ${ns} mit Structured Outputs — in ${Math.round(performance.now()-t0)} ms`);
+        const slug=(gid('or-slug')?.value||'').trim();
+        if(slug&&!models.some(m=>m.id===slug))l.warn(`Slug "${slug}" steht nicht im OpenRouter-Katalog — bitte prüfen oder ein Modell aus der Liste wählen.`);
+    }catch(e){setOrCatStatus('Katalog-Fehler');l.err(`OpenRouter-Katalog konnte nicht geladen werden: ${shortErr(e.message)}`)}
+    finally{if(btn)btn.disabled=false}
+}
+function refreshOrModels(){fetchOrModels()}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function shortErr(m){const s=String(m==null?'':m);return s.length>400?s.slice(0,400)+'…':s}
+const stripFences=s=>s.replace(/^\s*```(?:json)?/i,'').replace(/```\s*$/i,'').trim();
+// Toleranter Parser: direkt → ohne Fences → Ausschnitt zwischen erster {/[ und letzter }/].
+function extractJson(text){
+    const t=String(text||'').trim();
+    try{return JSON.parse(t)}catch(e){}
+    const s=stripFences(t);
+    try{return JSON.parse(s)}catch(e){}
+    const ob=s.indexOf('{'),oe=s.lastIndexOf('}');
+    if(ob>=0&&oe>ob){try{return JSON.parse(s.slice(ob,oe+1))}catch(e){}}
+    const ab=s.indexOf('['),ae=s.lastIndexOf(']');
+    if(ab>=0&&ae>ab){try{return JSON.parse(s.slice(ab,ae+1))}catch(e){}}
+    throw new Error('Antwort enthielt kein verwertbares JSON');
+}
+// Ein einzelner LLM-Call. Bewusst OHNE Sampling-Parameter (Temperatur, Top-P, Top-K, Candidate-Count):
+// auf Gemini 3.x deprecated bzw. unsupported, künftige Modelle antworten darauf mit HTTP 400.
+// Gilt für beide Backends gleichermassen.
+async function geminiOnce(ai,prompt,schema){
+    const body={contents:[{role:'user',parts:[{text:prompt}]}]};
+    if(schema)body.generationConfig={responseMimeType:'application/json',responseJsonSchema:schema};
+    l.debug(`→ Gemini · ${ai.m} · generateContent${schema?' · responseJsonSchema':''}`);
+    const r=await fetch(GEMINI_URL(ai.m),{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-goog-api-key':ai.k},   // Key im Header, nie als Query-Parameter in der URL
+        body:JSON.stringify(body)});
+    const d=await r.json().catch(()=>({}));
+    if(d.error)throw new Error(shortErr(d.error.message||JSON.stringify(d.error)));
+    if(!r.ok)throw new Error(shortErr(`HTTP ${r.status} — ${JSON.stringify(d)}`));
+    const txt=(d.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('\n');
+    if(!txt)throw new Error(shortErr(`Leere Modell-Antwort${d.candidates?.[0]?.finishReason?` (finishReason: ${d.candidates[0].finishReason})`:''}`));
+    return txt;
+}
+// OpenAI-kompatibler Strict-Mode verlangt additionalProperties:false auf jedem Objekt-Knoten.
+// Das Schema wird dafür nur lokal geklont — MILESTONE_SCHEMA selbst bleibt unangetastet,
+// damit der Gemini-Pfad exakt derselbe bleibt.
+function orStrictSchema(node){
+    if(Array.isArray(node))return node.map(orStrictSchema);
+    if(!node||typeof node!=='object')return node;
+    const out={};for(const k of Object.keys(node))out[k]=orStrictSchema(node[k]);
+    if(out.type==='object'&&out.properties&&out.additionalProperties===undefined)out.additionalProperties=false;
+    return out;
+}
+async function openrouterOnce(ai,prompt,schema){
+    const body={model:ai.m,messages:[{role:'user',content:prompt}]};
+    if(schema){
+        body.response_format={type:'json_schema',json_schema:{name:'ergebnis',strict:true,schema:orStrictSchema(schema)}};
+        body.provider={require_parameters:true};   // nur an Anbieter routen, die response_format wirklich beachten
+    }
+    const ref=(location.origin&&location.origin!=='null')?location.origin:'https://localhost';
+    l.debug(`→ OpenRouter · ${ai.m} · chat/completions${schema?' · json_schema strict + provider.require_parameters':''}`);
+    const r=await fetch(OR_CHAT_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${ai.k}`,'HTTP-Referer':ref,'X-Title':OR_TITLE},
+        body:JSON.stringify(body)});
+    const d=await r.json().catch(()=>({}));
+    if(d.error)throw new Error(shortErr(d.error.message||JSON.stringify(d.error)));   // Fehler kommen auch in 200-Bodies
+    if(!r.ok)throw new Error(shortErr(`HTTP ${r.status} — ${JSON.stringify(d)}`));
+    const ch=d.choices?.[0];
+    let txt=ch?.message?.content;
+    if(Array.isArray(txt))txt=txt.map(p=>typeof p==='string'?p:(p?.text||'')).join('\n');
+    txt=typeof txt==='string'?txt:'';
+    if(!txt)throw new Error(shortErr(`Leere Modell-Antwort${ch?.finish_reason?` (finish_reason: ${ch.finish_reason})`:''}`));
+    return txt;
+}
+// Backend-Weiche: die einzige Stelle, an der die Backends auseinandergehen.
+// Alles darüber (callAI mit Retries, extractJson, Prompts, Progress, Log, Statistik)
+// bleibt backend-agnostisch.
+async function callAIOnce(prompt,schema){
+    const ai=getAI();if(!ai)throw new Error('KI konfigurieren.');
+    return ai.p==='openrouter'?openrouterOnce(ai,prompt,schema):geminiOnce(ai,prompt,schema);
+}
+// Retry mit exponentiellem Backoff: 500ms → 1s → 2s.
+async function callAI(prompt,schema,retries=AI_RETRIES,label='KI-Call'){
+    let attempt=0;
+    const ai=getAI();
+    l.info(`${label} → Backend ${ai?`${BACKENDS[ai.p]?.label||ai.p} · Modell ${ai.m}`:'(unkonfiguriert)'} · Prompt ${(prompt.length/1024).toFixed(1)} kB${schema?' · Structured Output':''}`);
+    while(true){
+        const t0=performance.now();
+        try{const txt=await callAIOnce(prompt,schema);
+            l.ok(`${label} ← ${(txt.length/1024).toFixed(1)} kB in ${Math.round(performance.now()-t0)} ms`);
+            return txt}
+        catch(e){
+            attempt++;
+            const msg=String(e.message||'');
+            if(attempt>retries||msg.includes('KI konfigurieren')){l.err(`${label} endgültig fehlgeschlagen: ${shortErr(msg)}`);throw e}
+            const wait=500*Math.pow(2,attempt-1);
+            console.warn(`KI-Call fehlgeschlagen (${msg}) — Retry ${attempt}/${retries} in ${wait}ms`);
+            l.warn(`${label} fehlgeschlagen (${shortErr(msg)}) — Retry ${attempt}/${retries} in ${wait} ms`);
+            await sleep(wait);
+        }
+    }
+}
+
+// PROMPTS (editierbar, persistent, mit Platzhalter-Prüfung)
+const PROMPT_DEFS={
+    rem:{el:'p-rem',warn:'warn-rem',ls:'oscal_poam_prompt_rem',def:DEFAULT_REMEDIATION_PROMPT},
+    ms:{el:'p-ms',warn:'warn-ms',ls:'oscal_poam_prompt_ms',def:DEFAULT_MILESTONE_PROMPT}
+};
+function initPrompts(){Object.entries(PROMPT_DEFS).forEach(([k,d])=>{const ta=document.getElementById(d.el);if(!ta)return;let v='';try{v=localStorage.getItem(d.ls)||''}catch(e){}ta.value=v||d.def;if(v)l.debug(`Prompt "${k}" aus localStorage übernommen (${v.length} Zeichen)`);ta.addEventListener('input',()=>{try{localStorage.setItem(d.ls,ta.value)}catch(e){}chkPlaceholder(k)});chkPlaceholder(k)})}
+function chkPlaceholder(k){const d=PROMPT_DEFS[k];const ta=document.getElementById(d.el),w=document.getElementById(d.warn);if(!ta||!w)return;w.classList.toggle('hidden',ta.value.includes('{kontext}'))}
+window.resetPrompt=k=>{const d=PROMPT_DEFS[k];if(!d)return;const ta=document.getElementById(d.el);if(!ta)return;ta.value=d.def;try{localStorage.setItem(d.ls,ta.value)}catch(e){}chkPlaceholder(k);l.info(`Prompt "${k}" auf Default zurückgesetzt`)};
+// Platzhalter defensiv anhängen, falls der Nutzer ihn gelöscht hat.
+function buildPrompt(k,kontext){const d=PROMPT_DEFS[k];const ta=document.getElementById(d.el);let tpl=(ta?.value||'').trim()||d.def;if(!tpl.includes('{kontext}')){tpl+='\n\n{kontext}';l.warn(`Prompt "${k}": Platzhalter {kontext} fehlte — wurde zur Laufzeit angehängt`)}return tpl.replace('{kontext}',()=>kontext)}
+// Kontextblock deterministisch aus den Item-Feldern zusammensetzen — kein LLM-Job.
+function itemContext(it,c,mode){
+    const L=[`System: ${P.sysName||'(unbenannt)'}`];
+    if(it.component)L.push(`Komponente: ${it.component}`);
+    L.push(`Control: ${it.controlId||'(ohne Control-ID)'}${c.title?' — '+c.title:''}`);
+    if(c.prose)L.push(`Anforderung: ${c.prose.substring(0,400)}`);
+    if(mode==='rem'){
+        const risk=it.riskText||it.description||'';
+        if(risk)L.push(`Risiko/Befund: ${risk.substring(0,600)}`);
+        if(it.observationText)L.push(`Beobachtung: ${it.observationText.substring(0,600)}`);
+        if(it.remediation)L.push(`Bisherige Maßnahme: ${it.remediation.substring(0,800)}`);
+    }else{
+        L.push(`Maßnahme: ${(it.remediation||it.description||'(noch nicht formuliert)').substring(0,800)}`);
+        if(it.deadline)L.push(`Frist: ${it.deadline}`);
+    }
+    return L.join('\n');
+}
 
 // RENDER
 function render(){renderStats();renderItems()}
 
+// --- Diagramme: reines SVG/CSS, keine Bibliothek --------------------------
+function donutChart(slices,size=150,innerRatio=0.62){
+    const total=slices.reduce((s,x)=>s+x.value,0);
+    if(total===0)return '';
+    const cx=size/2,cy=size/2,r=size/2-6,ri=r*innerRatio;
+    let a=-Math.PI/2;
+    const paths=slices.filter(s=>s.value>0).map(s=>{
+        const sweep=(s.value/total)*Math.PI*2;
+        const a1=a,a2=a+sweep;a=a2;
+        if(sweep>=Math.PI*2-1e-9){
+            return `<circle cx="${cx}" cy="${cy}" r="${(r+ri)/2}" fill="none" stroke="${s.color}" stroke-width="${r-ri}"/>`;
+        }
+        const x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+        const x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+        const xi1=cx+ri*Math.cos(a1),yi1=cy+ri*Math.sin(a1);
+        const xi2=cx+ri*Math.cos(a2),yi2=cy+ri*Math.sin(a2);
+        const large=sweep>Math.PI?1:0;
+        return `<path d="M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} L ${xi2} ${yi2} A ${ri} ${ri} 0 ${large} 0 ${xi1} ${yi1} Z" fill="${s.color}"/>`;
+    }).join('');
+    return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img" aria-label="Statusverteilung">${paths}
+        <text x="${cx}" y="${cy-2}" text-anchor="middle" dominant-baseline="central" fill="currentColor" font-family="JetBrains Mono" font-size="21" font-weight="600">${total}</text>
+        <text x="${cx}" y="${cy+18}" text-anchor="middle" fill="currentColor" opacity="0.55" font-family="JetBrains Mono" font-size="8" letter-spacing="1.5">ITEMS</text></svg>`;
+}
+function hBarRows(items){
+    const max=Math.max(1,...items.map(i=>i.value));
+    return items.map(i=>`<div class="hbar-row">
+        <div class="hbar-label" title="${esc(i.label)}">${esc(i.label)}</div>
+        <div class="hbar-track"><div class="hbar-fill stat-bar" style="width:${(i.value/max*100).toFixed(1)}%;background:${i.color}"></div></div>
+        <div class="hbar-value">${i.value}</div></div>`).join('');
+}
+
 function renderStats(){
-    const d=document.getElementById('stats-dash'),n=P.items.length;if(!n){d.innerHTML='';return}
-    const bySt={},byPr={};P.items.forEach(i=>{bySt[i.status]=(bySt[i.status]||0)+1;byPr[i.priority]=(byPr[i.priority]||0)+1});
+    const d=document.getElementById('stats-dash'),n=P.items.length;
+    if(!n){d.innerHTML='';d.style.display='none';return}
+    d.style.display='';
+    const bySt={},byPr={},byComp={};
+    P.items.forEach(i=>{bySt[i.status]=(bySt[i.status]||0)+1;byPr[i.priority]=(byPr[i.priority]||0)+1;const c=(i.component||'').trim();if(c)byComp[c]=(byComp[c]||0)+1});
     const today=new Date().toISOString().split('T')[0];
     const od=P.items.filter(i=>i.deadline&&i.status!=='closed'&&i.deadline<today).length;
     const msT=P.items.reduce((s,i)=>s+i.milestones.length,0),msD=P.items.reduce((s,i)=>s+i.milestones.filter(m=>m.done).length,0);
-    let bars='';['open','in-progress','closed','deviation-requested','deviation-approved','risk-accepted'].forEach(st=>{const c=bySt[st];if(!c)return;const m=SM[st];bars+=`<div class="flex items-center gap-2 mb-1"><span class="sb ${m.c} w-28 text-center flex-shrink-0">${m.l}</span><div class="flex-1 bg-slate-900 rounded-full h-3 overflow-hidden border border-slate-700"><div class="stat-bar h-full rounded-full" style="width:${(c/n*100).toFixed(1)}%;background:${st==='closed'?'#10b981':st==='open'?'#ef4444':'#f59e0b'}"></div></div><span class="text-[10px] text-slate-400 w-5 text-right">${c}</span></div>`});
-    d.innerHTML=`<div class="bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700 rounded-xl p-4 shadow-lg"><div class="flex justify-between items-center mb-3"><h2 class="text-sm font-bold text-white">Dashboard</h2><div class="flex gap-4 text-xs"><div class="text-center"><span class="font-bold text-white text-lg">${n}</span><div class="text-[9px] text-slate-500">Items</div></div><div class="text-center"><span class="font-bold ${od?'text-red-400':'text-emerald-400'} text-lg">${od}</span><div class="text-[9px] text-slate-500">Überfällig</div></div><div class="text-center"><span class="font-bold text-amber-400 text-lg">${msD}/${msT}</span><div class="text-[9px] text-slate-500">Milestones</div></div></div></div>${bars}</div>`;
+
+    // Donut: primäre Verteilung (Status). Farben identisch mit den Badge-Farben.
+    const stOrder=['open','in-progress','closed','deviation-requested','deviation-approved','risk-accepted'];
+    const stSlices=stOrder.filter(s=>bySt[s]).map(s=>({label:SM[s].l,value:bySt[s],color:STATUS_COLORS[s]}));
+    const legend=stSlices.map(s=>`<div class="legend-item"><span class="legend-dot" style="background:${s.color}"></span>${esc(s.label)}<span class="legend-val">${s.value} · ${(s.value/n*100).toFixed(0)}%</span></div>`).join('');
+
+    // Horizontale Balken: Priorität
+    const prOrder=['high','medium','low'];
+    const prBars=hBarRows(prOrder.filter(p=>byPr[p]).map(p=>({label:PM[p].l,value:byPr[p],color:PRIO_COLORS[p]})));
+
+    // Horizontale Balken: Top-Komponenten (max. 8)
+    const compAll=Object.entries(byComp).sort((a,b)=>b[1]-a[1]);
+    const compTop=compAll.slice(0,8);
+    const compRest=compAll.length-compTop.length;
+    const compBars=compTop.length?hBarRows(compTop.map(([k,v])=>({label:k,value:v,color:'oklch(0.7 0.18 300)'})))
+        +(compRest>0?`<div class="text-[10px] text-slate-500 mt-1">…und ${compRest} weitere</div>`:''):'';
+
+    d.innerHTML=`<div class="card p-4">
+        <div class="sec-head"><span class="gly">◉</span><h2 class="sec-title">Auswertung</h2></div>
+        <div class="kpi-row mb-3">
+            <div><div class="kpi-v text-white">${n}</div><div class="kpi-l">Items</div></div>
+            <div><div class="kpi-v ${od?'text-red-400':'text-emerald-400'}">${od}</div><div class="kpi-l">Überfällig</div></div>
+            <div><div class="kpi-v text-amber-500">${msD}/${msT}</div><div class="kpi-l">Meilensteine</div></div>
+            <div><div class="kpi-v text-slate-300">${Object.keys(byComp).length}</div><div class="kpi-l">Komponenten</div></div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-sub">
+                <div class="stat-sub-h">Status-Verteilung</div>
+                <div class="donut-wrap">${donutChart(stSlices)}<div class="legend">${legend}</div></div>
+            </div>
+            <div class="stat-sub">
+                <div class="stat-sub-h">Priorität</div>
+                ${prBars}
+                ${compBars?`<div class="stat-sub-h" style="margin-top:14px">Items je Komponente</div>${compBars}`:''}
+            </div>
+        </div></div>`;
 }
 
 function renderItems(){
@@ -315,43 +1296,43 @@ function renderItems(){
                 <span class="sb ${pm.c}">${pm.l}</span>
                 ${it.controlId?`<span class="font-mono font-bold text-white text-xs">${esc(it.controlId)}</span>`:''}
                 <span class="text-xs text-slate-300 truncate max-w-[300px]">${esc(titleText)}</span>
-                ${it.component?`<span class="text-[9px] text-cyan-400 bg-cyan-950/40 px-1.5 py-0.5 rounded border border-cyan-800">📦 ${esc(it.component)}</span>`:''}
+                ${it.component?`<span class="text-[9px] text-cyan-400 bg-cyan-950/40 px-1.5 py-0.5 rounded border border-cyan-800 font-mono">◇ ${esc(it.component)}</span>`:''}
                 <span class="sb ${sm.c} ml-auto flex-shrink-0">${sm.l}</span>
-                ${od?'<span class="text-red-400 text-[10px] font-bold">⏰</span>':''}
-                ${msT?`<span class="text-[10px] text-slate-500">${msD}/${msT} MS</span>`:''}
-                ${it.deadline?`<span class="text-[10px] text-slate-500">📅${it.deadline}</span>`:''}
+                ${od?'<span class="text-red-400 text-[10px] font-bold" title="Überfällig">◬</span>':''}
+                ${msT?`<span class="text-[10px] text-slate-500 font-mono">${msD}/${msT} MS</span>`:''}
+                ${it.deadline?`<span class="text-[10px] text-slate-500 font-mono">${it.deadline}</span>`:''}
                 <svg class="chev w-3.5 h-3.5 text-slate-500 flex-shrink-0" id="ich-${i}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
             </div>
             <div class="coll-content px-3 pb-3" id="ib-${i}">
-                ${c.prose?`<div class="text-xs text-slate-500 mb-2 bg-slate-800/60 p-2 rounded border-l-2 border-slate-600">${esc(c.prose).substring(0,400)}${c.prose.length>400?'…':''}</div>`:''}
-                ${it.observationText?`<div class="text-xs text-blue-300/80 mb-1.5 bg-blue-950/20 p-2 rounded border-l-2 border-blue-800">👁️ <strong class="uppercase text-[9px] tracking-wider text-blue-500">Beobachtung:</strong><br>${esc(it.observationText)}</div>`:''}
-                ${it.riskText?`<div class="text-xs text-red-300/80 mb-1.5 bg-red-950/20 p-2 rounded border-l-2 border-red-800">🔴 <strong class="uppercase text-[9px] tracking-wider text-red-500">Risiko:</strong><br>${esc(it.riskText)}</div>`:''}
-                ${it.remarkText?`<div class="text-xs text-slate-300/80 mb-3 bg-slate-800/50 p-2 rounded border-l-2 border-slate-600">💬 <strong class="uppercase text-[9px] tracking-wider text-slate-500">Bemerkung:</strong><br>${esc(it.remarkText)}</div>`:''}
+                ${c.prose?`<div class="text-xs text-slate-500 mb-2 bg-slate-800/60 p-2 rounded border-l-2 border-slate-600 overflow-y-auto" style="max-height:220px">${esc(c.prose).substring(0,400)}${c.prose.length>400?'…':''}</div>`:''}
+                ${it.observationText?`<div class="text-xs text-blue-300/80 mb-1.5 bg-blue-950/20 p-2 rounded border-l-2 border-blue-800 overflow-y-auto" style="max-height:240px">◉ <strong class="uppercase text-[9px] tracking-wider text-blue-500 font-mono">Beobachtung</strong><br>${esc(it.observationText)}</div>`:''}
+                ${it.riskText?`<div class="text-xs text-red-300/80 mb-1.5 bg-red-950/20 p-2 rounded border-l-2 border-red-800 overflow-y-auto" style="max-height:240px">◬ <strong class="uppercase text-[9px] tracking-wider text-red-500 font-mono">Risiko</strong><br>${esc(it.riskText)}</div>`:''}
+                ${it.remarkText?`<div class="text-xs text-slate-300/80 mb-3 bg-slate-800/50 p-2 rounded border-l-2 border-slate-600 overflow-y-auto" style="max-height:240px">⋯ <strong class="uppercase text-[9px] tracking-wider text-slate-500 font-mono">Bemerkung</strong><br>${esc(it.remarkText)}</div>`:''}
 
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-2 mb-3">
                     <div><label class="lbl">Priorität</label><select onchange="upd(${i},'priority',this.value);render()" class="inp text-xs">${['high','medium','low'].map(p=>`<option value="${p}" ${it.priority===p?'selected':''}>${PM[p].l}</option>`).join('')}</select></div>
                     <div><label class="lbl">Status</label><select onchange="upd(${i},'status',this.value);render()" class="inp text-xs">${Object.entries(SM).map(([k,v])=>`<option value="${k}" ${it.status===k?'selected':''}>${v.l}</option>`).join('')}</select></div>
-                    <div><label class="lbl">Frist</label><input type="date" value="${it.deadline}" onchange="upd(${i},'deadline',this.value);renderStats()" class="inp text-xs"></div>
+                    <div><label class="lbl">Frist</label><input type="date" value="${it.deadline}" onchange="upd(${i},'deadline',this.value);renderStats()" class="inp text-xs font-mono"></div>
                     <div><label class="lbl">Verantwortlich</label><input type="text" value="${esc(it.responsible)}" onchange="upd(${i},'responsible',this.value)" class="inp text-xs"></div>
-                    <div><label class="lbl">Komponente</label><input type="text" value="${esc(it.component||'')}" onchange="upd(${i},'component',this.value);renderItems()" class="inp text-xs" placeholder="z.B. ISMS, App..."></div>
+                    <div><label class="lbl">Komponente</label><input type="text" value="${esc(it.component||'')}" onchange="upd(${i},'component',this.value);renderItems()" class="inp text-xs" placeholder="z.B. ISMS, App…"></div>
                 </div>
 
-                <div class="mb-3"><div class="flex items-center gap-2 mb-1"><label class="lbl mb-0">Maßnahme</label><button onclick="aiRem(${i})" class="ai-btn" id="air-${i}">🤖 Vorschlag</button></div>
+                <div class="mb-3"><div class="flex items-center gap-2 mb-1"><label class="lbl mb-0">Maßnahme</label><button onclick="aiRem(${i})" class="ai-btn" id="air-${i}">▶ Vorschlag</button></div>
                     <textarea rows="3" id="rem-${i}" onchange="upd(${i},'remediation',this.value)" class="inp text-xs">${esc(it.remediation)}</textarea></div>
 
                 ${it.status.includes('deviation')||it.status==='risk-accepted'?`<div class="mb-3"><label class="lbl">Begründung Abweichung / Risikoakzeptanz</label><textarea rows="2" onchange="upd(${i},'deviationJustification',this.value)" class="inp text-xs">${esc(it.deviationJustification||'')}</textarea></div>`:''}
 
-                <div class="mb-3"><div class="flex items-center gap-2 mb-2"><label class="lbl mb-0">Meilensteine</label><button onclick="aiMS(${i})" class="ai-btn" id="aim-${i}">🤖 Planen</button><button onclick="addMS(${i})" class="text-[10px] px-2 py-1 bg-slate-700 text-white rounded font-bold">+ Manuell</button></div>
+                <div class="mb-3"><div class="flex items-center gap-2 mb-2"><label class="lbl mb-0">Meilensteine</label><button onclick="aiMS(${i})" class="ai-btn" id="aim-${i}">▶ Planen</button><button onclick="addMS(${i})" class="text-[10px] px-2 py-1 bg-slate-700 text-slate-200 rounded font-bold hover:bg-slate-600 font-mono">+ Manuell</button></div>
                     <div class="space-y-1">${it.milestones.map((ms,mi)=>`
                         <div class="flex items-center gap-2 p-1.5 bg-slate-800 border border-slate-700 rounded ${ms.done?'ms-done':''}">
-                            <input type="checkbox" ${ms.done?'checked':''} onchange="tMS(${i},${mi},this.checked)" class="form-checkbox h-3 w-3 text-amber-500 rounded border-slate-600 bg-slate-700">
+                            <input type="checkbox" ${ms.done?'checked':''} onchange="tMS(${i},${mi},this.checked)" class="form-checkbox h-3 w-3 rounded border-slate-600 bg-slate-700">
                             <input type="text" value="${esc(ms.title)}" onchange="uMS(${i},${mi},'title',this.value)" class="inp flex-1 text-[11px] py-0.5">
-                            <input type="date" value="${ms.dueDate||''}" onchange="uMS(${i},${mi},'dueDate',this.value)" class="inp w-32 text-[11px] py-0.5">
-                            <button onclick="dMS(${i},${mi})" class="text-red-400 text-xs px-1">✕</button>
+                            <input type="date" value="${ms.dueDate||''}" onchange="uMS(${i},${mi},'dueDate',this.value)" class="inp w-32 text-[11px] py-0.5 font-mono">
+                            <button onclick="dMS(${i},${mi})" class="text-red-400 text-xs px-1" title="Meilenstein löschen">✕</button>
                         </div>`).join('')}</div></div>
 
                 <div class="mb-2"><label class="lbl">Bemerkungen</label><textarea rows="2" onchange="upd(${i},'remarks',this.value)" class="inp text-xs">${esc(it.remarks||'')}</textarea></div>
-                <div class="flex justify-end"><button onclick="delI(${i})" class="text-[10px] px-3 py-1 bg-red-900/50 text-red-300 border border-red-800 rounded hover:bg-red-900 font-bold">🗑 Löschen</button></div>
+                <div class="flex justify-end"><button onclick="delI(${i})" class="text-[10px] px-3 py-1 bg-red-900/50 text-red-300 border border-red-800 rounded hover:bg-red-900 font-bold font-mono">✕ Löschen</button></div>
             </div></div>`;
     });
     el.innerHTML=h;
@@ -379,8 +1360,8 @@ function updateCompFilter() {
 // Interactions
 window.togI=i=>{document.getElementById('ib-'+i)?.classList.toggle('open');document.getElementById('ich-'+i)?.classList.toggle('open')};
 window.upd=(i,k,v)=>{P.items[i][k]=v};
-window.delI=i=>{if(!confirm('Löschen?'))return;P.items.splice(i,1);render()};
-window.addMan=()=>{P.items.push(mkItem('','','','Neuer Eintrag','','','','','',''));render()};
+window.delI=i=>{if(!confirm('Löschen?'))return;const it=P.items[i];l.warn(`Item gelöscht: ${it?.controlId||'(ohne Control)'}`);P.items.splice(i,1);render()};
+window.addMan=()=>{P.items.push(mkItem('','','','Neuer Eintrag','','','','','',''));l.info(`Manueller Eintrag angelegt (jetzt ${P.items.length} Items)`);render()};
 window.addMS=i=>{P.items[i].milestones.push({uuid:crypto.randomUUID(),title:'Meilenstein',dueDate:'',done:false});renderItems()};
 window.tMS=(i,mi,d)=>{P.items[i].milestones[mi].done=d;renderStats()};
 window.uMS=(i,mi,k,v)=>{P.items[i].milestones[mi][k]=v};
@@ -388,18 +1369,28 @@ window.dMS=(i,mi)=>{P.items[i].milestones.splice(mi,1);renderItems()};
 window.flt=()=>{const t=(document.getElementById('flt-txt')?.value||'').toLowerCase();const fp=document.getElementById('flt-pr')?.value||'';const fs=document.getElementById('flt-st')?.value||'';const fc=document.getElementById('flt-comp')?.value||'';const fo=document.getElementById('flt-od')?.checked;document.querySelectorAll('.poam-card').forEach(c=>{let s=true;if(t&&!c.dataset.cid?.includes(t)&&!c.dataset.t?.includes(t))s=false;if(fp&&c.dataset.pr!==fp)s=false;if(fs&&c.dataset.st!==fs)s=false;if(fc&&c.dataset.comp!==fc)s=false;if(fo&&c.dataset.od!=='1')s=false;c.style.display=s?'':'none'})};
 
 // AI
-window.aiRem=async i=>{if(!getAI())return alert('KI konfigurieren.');const it=P.items[i];const c=ct(it.controlId);const btn=document.getElementById('air-'+i);if(btn){btn.disabled=true;btn.textContent='⏳'}
-try{const txt=await callAI(`IT-Sicherheitsberater. Konkreter Maßnahmenplan:\n\nSystem: ${P.sysName}${it.component?', Komponente: '+it.component:''}\nControl: ${it.controlId} — ${c.title}\n${c.prose?'Anforderung: '+c.prose.substring(0,400):''}\nRisiko: ${it.description}\n${it.remediation?'Bisherig: '+it.remediation:''}\n\nNUR ${it.controlId} bewerten (BSI Grundschutz++ = granulare Controls).\n3-5 Sätze Fließtext, Deutsch, kein Markdown.`);
-P.items[i].remediation=txt.trim();const ta=document.getElementById('rem-'+i);if(ta)ta.value=txt.trim()}catch(e){alert('KI: '+e.message)}finally{if(btn){btn.disabled=false;btn.textContent='🤖 Vorschlag'}}};
+window.aiRem=async i=>{if(!getAI()){const w=aiMissingReason();l.err(`KI-Aufruf abgelehnt: ${w}`);return alert(`KI konfigurieren — ${w}.`)}
+const it=P.items[i];const c=ct(it.controlId);const btn=document.getElementById('air-'+i);if(btn){btn.disabled=true;btn.textContent='⋯ läuft'}
+const lbl=`Maßnahme ${it.controlId||'#'+(i+1)}`;startProgress(lbl);
+try{const txt=await callAI(buildPrompt('rem',itemContext(it,c,'rem')),null,AI_RETRIES,lbl);
+P.items[i].remediation=txt.trim();const ta=document.getElementById('rem-'+i);if(ta)ta.value=txt.trim();endProgress(true,'Maßnahme übernommen')}
+catch(e){endProgress(false,'Fehler');alert('KI: '+shortErr(e.message))}finally{if(btn){btn.disabled=false;btn.textContent='▶ Vorschlag'}}};
 
-window.aiMS=async i=>{if(!getAI())return alert('KI konfigurieren.');const it=P.items[i];const c=ct(it.controlId);const btn=document.getElementById('aim-'+i);if(btn){btn.disabled=true;btn.textContent='⏳'}
-try{const txt=await callAI(`3-5 Meilensteine für IT-Sicherheitsmaßnahme:\n\nSystem: ${P.sysName}${it.component?', Komponente: '+it.component:''}\nControl: ${it.controlId} — ${c.title}\nMaßnahme: ${it.remediation||it.description||'?'}\n\nNUR JSON: [{"title":"...","weeks":2}] (weeks ab heute)`);
-const arr=JSON.parse(txt.replace(/```json\n?|```/g,'').trim());
-if(Array.isArray(arr)){const now=new Date();P.items[i].milestones=arr.map(m=>{const d=new Date(now);d.setDate(d.getDate()+((m.weeks||4)*7));return{uuid:crypto.randomUUID(),title:m.title,dueDate:d.toISOString().split('T')[0],done:false}});renderItems();renderStats()}}catch(e){alert('KI: '+e.message)}finally{if(btn){btn.disabled=false;btn.textContent='🤖 Planen'}}};
+window.aiMS=async i=>{if(!getAI()){const w=aiMissingReason();l.err(`KI-Aufruf abgelehnt: ${w}`);return alert(`KI konfigurieren — ${w}.`)}
+const it=P.items[i];const c=ct(it.controlId);const btn=document.getElementById('aim-'+i);if(btn){btn.disabled=true;btn.textContent='⋯ läuft'}
+const lbl=`Meilensteine ${it.controlId||'#'+(i+1)}`;startProgress(lbl);
+try{const txt=await callAI(buildPrompt('ms',itemContext(it,c,'ms')),MILESTONE_SCHEMA,AI_RETRIES,lbl);
+const parsed=extractJson(txt);
+const arr=Array.isArray(parsed)?parsed:(parsed?.milestones||[]);
+if(Array.isArray(arr)&&arr.length){const now=new Date();P.items[i].milestones=arr.map(m=>{const d=new Date(now);d.setDate(d.getDate()+((m.weeks||4)*7));return{uuid:crypto.randomUUID(),title:m.title||'Meilenstein',dueDate:d.toISOString().split('T')[0],done:false}});
+l.ok(`${arr.length} Meilensteine übernommen (Fälligkeiten deterministisch aus "weeks" berechnet)`);renderItems();renderStats();endProgress(true,'Meilensteine übernommen')}
+else throw new Error('Antwort enthielt keine Meilensteine')}
+catch(e){endProgress(false,'Fehler');alert('KI: '+shortErr(e.message))}finally{if(btn){btn.disabled=false;btn.textContent='▶ Planen'}}};
 
 // EXPORT
 function exportPOAM(){
-    if(!P.items.length)return alert('Keine POA&M-Items vorhanden — poam-items ist im Schema Pflicht (minItems 1).');
+    if(!P.items.length){l.err('Export abgebrochen: keine POA&M-Items (minItems 1).');return alert('Keine POA&M-Items vorhanden — poam-items ist im Schema Pflicht (minItems 1).')}
+    l.info(`POA&M-Export gestartet: ${P.items.length} Items`);
     const ts=new Date().toISOString(),ru=crypto.randomUUID();
     // Risk-Status auf die OSCAL-Wertemenge gemappt (open|investigating|remediating|deviation-requested|deviation-approved|closed);
     // der Original-Status bleibt im poam-item als Prop "status" erhalten.
@@ -428,12 +1419,15 @@ function exportPOAM(){
             pinnedCatalogResource()
         ]}}};
     if(P.responsible.name){poam["plan-of-action-and-milestones"].metadata.parties=[{uuid:ru,type:'person',name:P.responsible.name}];if(P.responsible.email)poam["plan-of-action-and-milestones"].metadata.parties[0]["email-addresses"]=[P.responsible.email];poam["plan-of-action-and-milestones"].metadata["responsible-parties"]=[{"role-id":P.responsible.role,"party-uuids":[ru]}]}
-    dl(poam,`${sn()}_POAM.json`);autoSave()}
+    const fname=`${sn()}_POAM.json`;
+    l.debug(`Export-Zusammenbau: ${oscalItems.length} poam-items · ${oscalRisks.length} risks · ${P.observations.length} observations · Katalog-Pin als back-matter-Resource gesetzt`);
+    dl(poam,fname);autoSave();
+    l.ok(`POA&M exportiert: ${fname}`)}
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function sn(){return(P.meta.title||P.sysName||'System').replace(/[^a-zA-Z0-9äöüÄÖÜß\-]/g,'_').replace(/_+/g,'_')}
 function dl(o,n){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(o,null,2)],{type:'application/json;charset=utf-8'}));a.download=n;document.body.appendChild(a);a.click();document.body.removeChild(a)}
-function setSt(id,ok,t){const e=document.getElementById(id);e.className=`px-2 py-1 rounded text-[10px] font-semibold ${ok?'bg-emerald-900/50 text-emerald-400 border border-emerald-700':'bg-slate-700 text-slate-400 border border-slate-600'} flex items-center`;e.innerHTML=`${ok?'✓':'⏳'} ${t}`}
+function setSt(id,ok,t){const e=document.getElementById(id);e.className=`px-2 py-1 rounded text-[10px] font-semibold ${ok?'bg-emerald-900/50 text-emerald-400 border border-emerald-700':'bg-slate-700 text-slate-400 border border-slate-600'} flex items-center`;e.innerHTML=`${ok?'✓':'⋯'} ${t}`}
 </script>
 </body>
 </html>

@@ -6,6 +6,8 @@ Und es gibt auch eine Anwendung den Anwenderkatalog zu betrachten: [GSpp-Viewer.
 
 **Katalog-Pinning (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8):** Alle Tools laden den G++-Anwenderkatalog von einer Commit-gepinnten URL und verifizieren den Inhalt per SHA-256 gegen den im Repo hinterlegten Pin (gleiche Werte wie `Gpp-ai-tool/src/constants.py` und die Back-Matter-Resources der 229 gepinnten Profile). Fragment-Importe (`href: "#uuid"`) werden über die Back-Matter aufgelöst und — wo ein Hash hinterlegt ist — geprüft; erzeugte OSCAL-Artefakte (Profile, SSPs, AP/AR, POA&M) schreiben ihre Referenzen selbst im Pin-Muster. Ein Katalog-Update ist ein bewusster Pin-Wechsel: neue Werte in `Gpp-ai-tool/src/constants.py`, Skript-Neulauf über die Profile und Aktualisierung der Pin-Konstanten in den hier liegenden Apps — in einem Commit.
 
+**Gemeinsame Konventionen aller Apps:** Jede Anwendung ist eine einzelne `.html`-Datei ohne Build-Schritt und trägt eine sichtbare Build-Version. Wo KI eingesetzt wird, gilt: deterministisch lösbare Schritte (Parsen, Joins, Zählen, Rechnen, UUIDs, Schema-Prüfung, OSCAL-Montage) laufen in JavaScript, das Modell bekommt nur die Fälle, die echtes Urteilsvermögen brauchen. Als Backend stehen **Gemini** und **OpenRouter** zur Wahl; der API-Key bleibt im `localStorage` des Browsers und wird nie fest in die Datei geschrieben. **Alle Prompts sind in der Oberfläche editierbar** — mit Zurücksetzen-Button, lokaler Speicherung und Platzhalter-Prüfung —, damit nachvollziehbar bleibt, was dem Modell tatsächlich gesagt wird, und Fachleute die Vorgaben an ihre Domäne anpassen können. Läuft eine App über `file://` und meldet der Browser einen CORS-Fehler, hilft ein lokaler Server: `python -m http.server` und dann `http://localhost:8000/…` aufrufen. KI-Vorschläge sind grundsätzlich Entwürfe und vor produktiver Nutzung fachlich zu prüfen.
+
 [Dieses Video erklärt die Tools](https://www.youtube.com/watch?v=lY3wi6qHTRc)
 
 ## [BSI zu G++ OSCAL Generator](./Baustein_2_Profile.html)
@@ -32,6 +34,16 @@ Eine serverlose, vollständig im Browser laufende Single-Page Application (SPA),
 ## [OSCAL Schema Validator](./oscal-schema-validator.html)
 
 Ein vollständig im Browser laufender Validator für OSCAL-1.2.2-Dateien (Catalog, Profile, Component Definition, SSP, Assessment Plan/Results, POA&M) — alle sieben NIST-Schemas sind eingebettet, das Tool funktioniert daher auch offline und ohne Backend. Jeder Schema-Fehler wird mit exakter Zeilennummer und JSON-Pointer angezeigt, per Klick springt die Quelltextansicht zur Fehlerstelle; ein zweistufiger Fix-Workflow (erst Vorschau, dann Anwenden mit automatischer Revalidierung) behebt Standardfälle wie fehlende Pflichtfelder, ungültige UUIDs oder abgerissene Strings deterministisch lokal, komplexere Fälle per Gemini-Vorschlag. Der integrierte „Rules Check" prüft zusätzlich die Regeln, die das JSON Schema nicht ausdrücken kann: UUID-Eindeutigkeit, Auflösung von Fragment-, Rollen- und Party-Referenzen, das Import-Pinning nach Grundregel 8 des Katalogarbeit-Skills (Import als Fragment auf eine Back-Matter-Resource mit Commit-gepinnter rlink-URL und genau einem SHA-256-Hash; ungepinnte Branch-URLs werden als Warnung gemeldet) sowie — bei geladenem Quell-Katalog oder -Profile — ob referenzierte `control-id`s, `param-id`s und `statement-id`s dort tatsächlich existieren. Der Dateityp wird direkt beim Laden der Eingabedatei erkannt (Datei-Button, Drag&Drop oder Einfügen); Schema-Auswahl und Rules-Prompt folgen automatisch. Im Dokument verlinkte Quell-Kataloge/-Profile (`imports` bzw. `import-profile`, auch über das Pin-Muster mit Back-Matter-Resource) lädt das Tool selbstständig als Referenzdokument nach — manuell per „Load linked source", bei Dateiladung automatisch, sofern die verlinkte Quelle eine abrufbare URL ist. Semantische Prüfungen (Beschreibungsqualität, Konventionen, Props-Konsistenz) übernimmt ein editierbarer KI-Prompt je Dateityp. Wie bei allen Tools dieser Sammlung gilt: KI-Vorschläge sind Entwürfe und vor produktiver Nutzung fachlich zu prüfen.
+
+---
+## [C5 zu OSCAL Konverter](./c5-oscal-converter.html)
+
+Wandelt die YAML-Kriteriendateien des BSI C5:2026 in einen NIST-OSCAL-1.2.2-Katalog um. Das Tool ist **vollständig deterministisch**: Parsing, Gruppierung, Joins zwischen Kriterium und Guidance, UUID-Vergabe und der Aufbau der OSCAL-Hülle passieren komplett in JavaScript. Es gibt deshalb kein API-Key-Feld, keine Modellauswahl und keine Prompts — dieselbe Eingabe erzeugt bei jedem Lauf byteweise dasselbe Ergebnis. Die YAML-Bibliothek ist in die Datei eingebettet, das Tool läuft daher auch offline.
+
+---
+## [SSP-Generator Edition 2023](./ssp_generator_ed23.html)
+
+Die Schwester-Anwendung zum [SSP-Generator](./ssp_generator.html), aber für den **BSI IT-Grundschutz Edition 2023** statt für den G++-Anwenderkatalog. Gleicher Ablauf — Metadaten, ISMS- und Asset-Auswahl, Tailoring, Risikoanalyse, OSCAL-Export — nur gegen den ED23-Katalog und dessen Bausteinstruktur.
 
 ---
 
@@ -105,7 +117,7 @@ Dieses Tool dient der detaillierten Bearbeitung von **System Security Plans (SSP
 * **Status-Check**: Das Tool zeigt im Bereich "Ressourcen-Status" an, ob alle referenzierten Dateien korrekt geladen wurden oder ob Quellen fehlen.
 
 ### 2. KI-Assistent konfigurieren (Optional)
-* Hinterlege einen **Gemini API Key**, um intelligente Unterstützung zu erhalten.
+* Wähle ein **Backend** — **Gemini** (Key aus Google AI Studio, `AIza…`) oder **OpenRouter** (Key `sk-or-…`, ein Zugang für Modelle vieler Anbieter, inklusive Anthropic). Key und Modell werden je Backend getrennt lokal im Browser gespeichert.
 * Definiere einen **System Kontext** (z. B. "Wir sind ein KRITIS-Unternehmen"), damit die KI-Vorschläge auf deine Organisation zugeschnitten sind.
 * Du kannst generierte KI-Antworten exportieren und importieren, um sie ohne erneute API-Kosten zu teilen.
 

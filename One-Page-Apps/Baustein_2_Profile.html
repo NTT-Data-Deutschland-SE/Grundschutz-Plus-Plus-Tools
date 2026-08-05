@@ -97,6 +97,18 @@ body{
 .toggle input{margin:0;accent-color:var(--accent)}
 .toggle .desc{color:var(--text-tertiary);font-size:10px;margin-top:2px;display:block}
 
+/* Backend-Umschalter (Gemini | OpenRouter) — gleiche Glass-Sprache wie .toggle */
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:3px;background:var(--bg-elev-2);
+  border:1px solid var(--border-1);border-radius:8px;margin-bottom:10px}
+.seg-btn{padding:6px 8px;border:0;border-radius:6px;background:transparent;
+  color:var(--text-tertiary);font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all .15s ease}
+.seg-btn:hover{background:var(--bg-elev-3);color:var(--text-primary)}
+.seg-btn.active{background:var(--accent-soft);color:var(--accent);
+  box-shadow:inset 0 0 0 1px var(--accent-soft)}
+.cfg-note{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--text-quiet);
+  line-height:1.5;letter-spacing:0.02em;margin:-4px 0 12px}
+
 .splitter{width:4px;flex:0 0 4px;background:transparent;cursor:col-resize;
   transition:background .15s ease;position:relative}
 .splitter:hover,.splitter.dragging{background:var(--accent-soft)}
@@ -207,6 +219,10 @@ body{
   padding:10px 12px;background:var(--bg-elev-2);border:1px solid var(--border-1);
   border-radius:8px;margin-bottom:6px;font-size:11.5px;line-height:1.5}
 .req-row.miss{border-color:oklch(0.65 0.2 25 / 0.3);background:oklch(0.65 0.2 25 / 0.04)}
+/* Chunk fehlgeschlagen/abgebrochen — Control wurde NIE bewertet.
+   Bewusst anders als .miss (echter Kein-Treffer), damit beides unterscheidbar bleibt. */
+.req-row.failed{border-color:oklch(0.80 0.15 80 / 0.45);background:oklch(0.80 0.15 80 / 0.05);
+  border-left-width:3px;border-left-color:var(--amber)}
 .req-row.pending{opacity:.6}
 .req-id{font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:10.5px;
   letter-spacing:0.05em;display:flex;align-items:center;gap:5px}
@@ -317,12 +333,12 @@ body{
       <div>
         <div class="brand-name">Baustein_2_Profile</div>
       </div>
-      <span class="brand-sub">build 0.8.1 · LLM-Klassifikation → G++-Pool (chunked, cached prefix) → Satz-Mapping → OSCAL-Profil mit alters · Token-Tracking · v5-chunked prompt</span>
+      <span class="brand-sub"><span id="app-build">build …</span> · LLM-Klassifikation → G++-Pool (chunked, cached prefix) → Satz-Mapping → OSCAL-Profil mit alters · Token-Tracking · <span id="app-prompt-ver">…</span> prompt</span>
     </div>
     <div class="meta-pills">
       <span id="token-pill" class="pill" title="Token-Verbrauch (kumuliert pro Run)">Σ 0 tok · cache 0 (0%)</span>
       <span id="status-pill" class="pill">bereit</span>
-      <span class="pill live">● Gemini 3</span>
+      <span class="pill live" id="backend-pill">● Gemini 3</span>
     </div>
   </div>
 
@@ -332,27 +348,78 @@ body{
       <div class="rail-scroll">
 
         <div class="rail-section">
-          <div class="rail-label"><span><span class="glyph">◇</span> Modell</span></div>
-          <div class="field">
-            <label>API-Key</label>
-            <input id="api-key" type="password" placeholder="x-goog-api-key">
+          <div class="rail-label"><span><span class="glyph">◇</span> Backend</span></div>
+          <div class="seg" id="backend-seg">
+            <button type="button" class="seg-btn active" data-backend="gemini">Gemini</button>
+            <button type="button" class="seg-btn" data-backend="openrouter">OpenRouter</button>
           </div>
-          <div class="field">
-            <label>Modell</label>
-            <select id="model">
-              <option value="gemini-3.1-pro-preview">gemini-3.1-pro-preview</option>
-              <option value="gemini-3-flash-preview">gemini-3-flash-preview</option>
-              <option value="gemini-3.1-flash-lite-preview">gemini-3.1-flash-lite-preview</option>
-            </select>
+
+          <!-- GEMINI-KONFIGURATION -->
+          <div id="cfg-gemini">
+            <div class="field">
+              <label>Gemini API-Key</label>
+              <input id="api-key" type="password" placeholder="x-goog-api-key">
+            </div>
+            <div class="cfg-note">
+              Key bleibt lokal (localStorage), wird nur an generativelanguage.googleapis.com gesendet.
+              Bei CORS-Fehlern der Gemini-Aufrufe: Datei nicht per <code>file://</code> öffnen, sondern im
+              Ordner <code>python -m http.server</code> starten und über <code>http://localhost:8000/…</code> laden.
+            </div>
+            <div class="field">
+              <label>Modell</label>
+              <select id="model">
+                <option value="gemini-3.6-flash" selected>gemini-3.6-flash</option>
+                <option value="gemini-3.5-flash">gemini-3.5-flash</option>
+                <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite</option>
+                <option value="gemini-3.1-pro-preview">gemini-3.1-pro-preview (kostenpflichtig)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Thinking-Level</label>
+              <select id="thinking">
+                <option value="minimal">minimal</option>
+                <option value="low">low</option>
+                <option value="medium" selected>medium</option>
+                <option value="high">high</option>
+              </select>
+            </div>
           </div>
-          <div class="field">
-            <label>Thinking-Level</label>
-            <select id="thinking">
-              <option value="minimal">minimal</option>
-              <option value="low">low</option>
-              <option value="medium" selected>medium</option>
-              <option value="high">high</option>
-            </select>
+
+          <!-- OPENROUTER-KONFIGURATION -->
+          <div id="cfg-openrouter" class="hidden">
+            <div class="field">
+              <label>OpenRouter API-Key</label>
+              <input id="or-key" type="password" placeholder="sk-or-…">
+            </div>
+            <div class="cfg-note">
+              Key bleibt lokal (localStorage), wird nur an openrouter.ai gesendet — getrennt vom Gemini-Key
+              gespeichert. Modellkatalog wird ohne Key geladen und 24 h zwischengespeichert.
+            </div>
+            <div class="field">
+              <label>Modell (Live-Katalog)</label>
+              <select id="or-model"><option value="">— Katalog wird geladen —</option></select>
+            </div>
+            <div class="cfg-note" id="or-cat-info" style="margin:-4px 0 8px">Katalog noch nicht geladen</div>
+            <label class="toggle">
+              <input type="checkbox" id="or-only-structured" checked>
+              <span>nur structured_outputs
+                <span class="desc">Diese App braucht JSON-Schemas — ◇ markiert taugliche Modelle</span>
+              </span>
+            </label>
+            <div class="field">
+              <label>Slug frei eingeben (überschreibt Auswahl)</label>
+              <input id="or-model-free" type="text" placeholder="vendor/slug">
+            </div>
+            <div class="field">
+              <label>Reasoning-Effort (statt Thinking-Level)</label>
+              <select id="or-effort">
+                <option value="off" selected>nicht senden</option>
+                <option value="low">low</option>
+                <option value="medium">medium</option>
+                <option value="high">high</option>
+              </select>
+            </div>
+            <button class="btn sm ghost" id="btn-or-refresh" style="width:100%">⟳ Modellkatalog neu laden</button>
           </div>
         </div>
 
@@ -390,10 +457,32 @@ body{
           </label>
           <label class="toggle">
             <input type="checkbox" id="grounding">
-            <span>Google-Search-Grounding
-              <span class="desc">Recherche-Tools für Modell</span>
+            <span>Grounding / Websuche
+              <span class="desc">Gemini: googleSearch · OpenRouter: web-Plugin</span>
             </span>
           </label>
+        </div>
+
+        <!-- Checker-Engine: erlaubt Maker und Checker auf getrennten Backends -->
+        <div class="rail-section hidden" id="checker-route-section">
+          <div class="rail-label"><span><span class="glyph">◉</span> Checker-Engine</span></div>
+          <div class="field">
+            <label>Backend (Checker-Pass)</label>
+            <select id="checker-backend">
+              <option value="same" selected>— wie Maker —</option>
+              <option value="gemini">Gemini</option>
+              <option value="openrouter">OpenRouter</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Modell (leer = Backend-Default)</label>
+            <input id="checker-model" type="text" placeholder="z. B. anthropic/claude-…">
+          </div>
+          <div class="cfg-note" style="margin-bottom:0">
+            Echtes unabhängiges Audit entsteht erst mit gemischten Anbietern — Gemini als Maker,
+            ein Anthropic-Modell über OpenRouter als Checker. Backend + Modell werden je Pass
+            im Log und in den Profil-Props festgehalten.
+          </div>
         </div>
 
         <div class="rail-section">
@@ -563,12 +652,14 @@ body{
             <div class="filter-bar">
               <span class="chip ok"><span id="s2-ok">0</span> generated</span>
               <span class="chip err"><span id="s2-miss">0</span> missing-coverage</span>
+              <span class="chip warn hidden" id="s2-fail-chip"><span id="s2-fail">0</span> chunk-fehler / abgebrochen</span>
               <span class="chip warn hidden" id="s2-val-chip"><span id="s2-val">0</span> validation issues</span>
               <select id="s2-filter" class="btn sm">
                 <option value="all">alle anzeigen</option>
                 <option value="ok">nur coverage=full</option>
                 <option value="partial">nur partial</option>
-                <option value="missing">nur missing</option>
+                <option value="missing">nur missing (echter Kein-Treffer)</option>
+                <option value="failed">nur chunk-fehler / abgebrochen</option>
                 <option value="issues">nur validation issues</option>
               </select>
             </div>
@@ -618,6 +709,34 @@ body{
 
 <script>
 "use strict";
+
+/* ════════════════════════════════════════════════════════════════════════
+   Build-Version — EINE Quelle der Wahrheit. Topbar, Log-Init und die
+   OSCAL-Artefakte (party-name im Custom Catalog) referenzieren nur diese
+   Konstante; keine handgepflegten Versionsstrings mehr im File.
+   ════════════════════════════════════════════════════════════════════════ */
+
+const APP_VERSION  = "0.8.4";
+const APP_NAME     = "Baustein_2_Profile";
+
+// Das Dropdown listet ausschließlich lebende Gemini-3.x-Text-Modelle
+// (Stand August 2026). Abgeschaltete Preview-IDs liefern HTTP 404 und dürfen
+// weder als Option noch als gespeicherte Präferenz überleben (siehe loadPrefs).
+const DEFAULT_MODEL = "gemini-3.6-flash";
+
+/* ── OpenRouter (zweites Backend) ─────────────────────────────────────────
+   Ein Key, ein Endpoint, Modelle mehrerer Anbieter hinter einer
+   OpenAI-kompatiblen Chat-Completions-Fläche. Bewusst KEINE fest verdrahtete
+   Modell-Liste und KEIN Default-Slug: der Katalog wird live geladen, weil er
+   sich wöchentlich ändert — ein einkompilierter Slug wäre schnell tot.       */
+const OR_CHAT_URL      = "https://openrouter.ai/api/v1/chat/completions";
+const OR_MODELS_URL    = "https://openrouter.ai/api/v1/models";   // ohne Auth abrufbar
+const OR_CACHE_KEY     = "gpp.or.catalog";
+const OR_CACHE_MAX_AGE = 24 * 60 * 60 * 1000;                     // 24 h
+// Optionale Attributions-Header. file:// liefert origin "null" — dann der
+// dokumentierte Platzhalter.
+const OR_REFERER = (location.origin && location.origin !== "null")
+  ? location.origin : "https://localhost";
 
 /* ════════════════════════════════════════════════════════════════════════
    Default prompts — production-quality. Editable in the UI; reset restores.
@@ -689,7 +808,7 @@ WICHTIG — CHUNKING:
 
 REGELN:
 - mapped_control_ids: mindestens eine, nur IDs aus der unten gelieferten Control-Liste (diesem Chunk). KEINE Halluzination, KEIN Erfinden von Control-IDs.
-- sentence_text: VERBATIM aus der Eingabe zurückgeben — Wort für Wort, kein Umformulieren (dient nur der Zuordnung; anforderung_id + sentence_idx sind maßgeblich).
+- Identifiziere jeden Satz AUSSCHLIESSLICH über anforderung_id + sentence_idx. Gib den Satztext NICHT zurück — das Tool setzt ihn deterministisch aus der Eingabe ein. Ein Satz mit unbekannter id/idx-Kombination wird verworfen.
 - rationale: ein kurzer Satz Deutsch, was den Satz mit dem/den Control(s) verbindet.
 
 BAUSTEIN: {baustein_id} – {baustein_title}
@@ -703,7 +822,6 @@ OUTPUT-JSON:
     {
       "anforderung_id": string,
       "sentence_idx": integer,
-      "sentence_text": string,
       "mapped_control_ids": string[],
       "rationale": string
     }
@@ -805,8 +923,14 @@ const state = {
   categoriesByName: null,   // Map name(lower) → category
   zoControlsMap: null,      // Map zielobjekt-UUID → [control-id]
 
-  // token accounting (Gemini usageMetadata, accumulated per run)
+  // token accounting (Gemini usageMetadata / OpenRouter usage, accumulated per run)
   tokens: { prompt: 0, cached: 0, candidates: 0, thoughts: 0, total: 0, calls: 0 },
+
+  // backend ("gemini" | "openrouter"), OpenRouter-Modellkatalog und die
+  // tatsächlich verwendeten Engines pro Pass (Log + Export-Nachweis).
+  backend: "gemini",
+  orModels: [],
+  engines: { maker: null, checker: null },
 
   // pipeline outputs
   classification: null,     // { object_type, zielobjekt_name, zielobjekt_uuid, confidence, rationale, alternatives }
@@ -859,7 +983,8 @@ const l = {
   debug(m) { this._add("debug", m) },
 };
 
-l.info("init · build 0.8.2 · pdf → klassifikation → pool-chunk-mapping → oscal-profil mit alters · Prozess-Pool aus Katalog (target_object_categories)");
+l.info(`init · ${APP_NAME} build ${APP_VERSION} · pdf → klassifikation → pool-chunk-mapping → oscal-profil mit alters · Prozess-Pool aus Katalog (target_object_categories)`);
+$("app-build").textContent = `build ${APP_VERSION}`;
 
 $("btn-clear-log").addEventListener("click", () => {
   logBody.innerHTML = "";
@@ -881,7 +1006,10 @@ $("btn-copy-log").addEventListener("click", async () => {
    Persistence + prompt textareas
    ════════════════════════════════════════════════════════════════════════ */
 
-const PROMPT_VERSION = "v5-chunked";  // bumps when DEFAULTS change shape — invalidates user overrides
+// bumps when DEFAULTS change shape — invalidates user overrides.
+// v6: sentence_text ist aus S2-Prompt und -Schema entfernt (Text kommt deterministisch aus dem JS-State).
+const PROMPT_VERSION = "v6-idx-merge";
+$("app-prompt-ver").textContent = PROMPT_VERSION;
 
 function loadPrefs() {
   // Migration: if stored prompt-version differs, clear stored prompt overrides so new defaults load
@@ -897,9 +1025,30 @@ function loadPrefs() {
     if (storedVer) l.info(`prompt-version migration ${storedVer} → ${PROMPT_VERSION} · stored prompts + URLs gelöscht, defaults aktiv`);
   }
 
+  // Migration: ein gespeichertes Modell, das nicht mehr im Dropdown steht (typisch
+  // eine abgeschaltete Preview-ID → HTTP 404), würde ein <select> stumm auf ""
+  // setzen und jeden Call scheitern lassen. Explizit auf DEFAULT_MODEL
+  // zurücksetzen und im Log vermerken.
+  const liveModels  = [...$("model").options].map(o => o.value);
+  const storedModel = localStorage.getItem("gpp.model");
+  if (storedModel && !liveModels.includes(storedModel)) {
+    l.warn(`gespeichertes Modell "${storedModel}" existiert nicht mehr (abgeschaltete ID) → zurückgesetzt auf ${DEFAULT_MODEL}`);
+    localStorage.setItem("gpp.model", DEFAULT_MODEL);
+  }
+
+  // Gemini-Konfiguration
   $("api-key").value         = localStorage.getItem("gpp.apikey")    || "";
-  $("model").value           = localStorage.getItem("gpp.model")     || "gemini-3.1-pro-preview";
+  $("model").value           = localStorage.getItem("gpp.model")     || DEFAULT_MODEL;
   $("thinking").value        = localStorage.getItem("gpp.thinking")  || "medium";
+  // OpenRouter-Konfiguration — Key UND Modell getrennt vom Gemini-Pfad
+  $("or-key").value          = localStorage.getItem("gpp.or.key")      || "";
+  $("or-model-free").value   = localStorage.getItem("gpp.or.modelfree")|| "";
+  $("or-effort").value       = localStorage.getItem("gpp.or.effort")   || "off";
+  $("or-only-structured").checked = localStorage.getItem("gpp.or.structonly") !== "0";
+  // Checker-Route (Default: identisch zum Maker)
+  $("checker-backend").value = localStorage.getItem("gpp.checker.backend") || "same";
+  $("checker-model").value   = localStorage.getItem("gpp.checker.model")   || "";
+
   $("concurrency").value     = localStorage.getItem("gpp.conc")      || "4";
   $("retries").value         = localStorage.getItem("gpp.retries")   || "2";
   $("chunk-size").value      = localStorage.getItem("gpp.chunk")     || "8";
@@ -913,6 +1062,7 @@ function loadPrefs() {
     $(`prompt-${k}`).value = localStorage.getItem(`gpp.prompt.${k}`) || DEFAULTS[k];
   }
   toggleCheckerUI();
+  setBackend(localStorage.getItem("gpp.backend") || "gemini", false);
 }
 
 function bindPersist(id, key) {
@@ -923,6 +1073,12 @@ function bindPersist(id, key) {
 bindPersist("api-key", "gpp.apikey");
 bindPersist("model", "gpp.model");
 bindPersist("thinking", "gpp.thinking");
+bindPersist("or-key", "gpp.or.key");
+bindPersist("or-model", "gpp.or.model");
+bindPersist("or-model-free", "gpp.or.modelfree");
+bindPersist("or-effort", "gpp.or.effort");
+bindPersist("checker-backend", "gpp.checker.backend");
+bindPersist("checker-model", "gpp.checker.model");
 bindPersist("concurrency", "gpp.conc");
 bindPersist("retries", "gpp.retries");
 bindPersist("chunk-size", "gpp.chunk");
@@ -976,7 +1132,107 @@ function toggleCheckerUI() {
   const on = $("maker-checker").checked;
   $("checker-block").style.display = on ? "block" : "none";
   $("pip-s4").classList.toggle("hidden", !on);
+  $("checker-route-section").classList.toggle("hidden", !on);
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   Backend-Umschaltung — tauscht ausschließlich die Config-Felder in der Rail.
+   Key und Modell liegen je Backend unter eigenen localStorage-Schlüsseln, die
+   Auswahl selbst unter gpp.backend.
+   ════════════════════════════════════════════════════════════════════════ */
+
+function setBackend(b, persist = true) {
+  state.backend = (b === "openrouter") ? "openrouter" : "gemini";
+  for (const btn of document.querySelectorAll("#backend-seg .seg-btn")) {
+    btn.classList.toggle("active", btn.dataset.backend === state.backend);
+  }
+  $("cfg-gemini").classList.toggle("hidden", state.backend !== "gemini");
+  $("cfg-openrouter").classList.toggle("hidden", state.backend !== "openrouter");
+  $("backend-pill").textContent = state.backend === "openrouter" ? "● OpenRouter" : "● Gemini 3";
+  if (persist) localStorage.setItem("gpp.backend", state.backend);
+  if (state.backend === "openrouter") loadOrModels(false);
+}
+
+document.querySelectorAll("#backend-seg .seg-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (btn.dataset.backend === state.backend) return;
+    setBackend(btn.dataset.backend);
+    l.info(`backend → ${state.backend}`);
+  });
+});
+
+/* ── OpenRouter-Modellkatalog: live laden, 24 h cachen ──────────────────── */
+
+function orCatalogCache() {
+  try {
+    const obj = JSON.parse(localStorage.getItem(OR_CACHE_KEY) || "null");
+    return (obj && Array.isArray(obj.models) && obj.ts) ? obj : null;
+  } catch { return null; }
+}
+
+function renderOrModels(src) {
+  const sel  = $("or-model");
+  const only = $("or-only-structured").checked;
+  const all  = state.orModels || [];
+  const prev = sel.value || localStorage.getItem("gpp.or.model") || "";
+  const list = only ? all.filter(m => m.structured) : all;
+  sel.innerHTML = `<option value="">— Modell wählen —</option>` + list.map(m =>
+    `<option value="${escapeHtml(m.id)}">${m.structured ? "◇" : "·"} ${escapeHtml(m.id)}` +
+    `${m.ctx ? ` · ${Math.round(m.ctx / 1000)}k` : ""}</option>`).join("");
+  if (prev && list.some(m => m.id === prev)) sel.value = prev;
+  $("or-cat-info").textContent = all.length
+    ? `${list.length}/${all.length} Modelle · ${src} · ◇ = structured_outputs`
+    : `Katalog leer · ${src}`;
+}
+
+async function loadOrModels(force = false) {
+  const cached = orCatalogCache();
+  const age    = cached ? Date.now() - cached.ts : Infinity;
+  if (!force && cached && age < OR_CACHE_MAX_AGE) {
+    state.orModels = cached.models;
+    renderOrModels(`cache · ${Math.round(age / 3600000)}h alt`);
+    return;
+  }
+  try {
+    const t0  = performance.now();
+    const res = await fetch(OR_MODELS_URL);           // keine Auth nötig
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const models = (data?.data || [])
+      .map(m => {
+        const sp = m.supported_parameters || [];
+        return {
+          id: m.id,
+          ctx: m.context_length || 0,
+          // Diese App hängt an responseJsonSchema/response_format — Modelle ohne
+          // structured_outputs sind hier praktisch unbrauchbar und werden gefiltert
+          // bzw. deutlich markiert.
+          structured: sp.includes("structured_outputs") || sp.includes("response_format"),
+        };
+      })
+      .filter(m => m.id)
+      .sort((a, b) => a.id.localeCompare(b.id));
+    state.orModels = models;
+    try { localStorage.setItem(OR_CACHE_KEY, JSON.stringify({ ts: Date.now(), models })); } catch {}
+    renderOrModels(`live · ${Math.round(performance.now() - t0)}ms`);
+    l.ok(`OpenRouter-Katalog · ${models.length} Modelle (${models.filter(m => m.structured).length} mit structured_outputs)`);
+  } catch (e) {
+    l.err(`OpenRouter-Katalog fehlgeschlagen: ${e.message}`);
+    if (cached) {
+      state.orModels = cached.models;
+      renderOrModels(`cache (stale, ${Math.round(age / 3600000)}h)`);
+      l.warn("OpenRouter-Katalog aus abgelaufenem Cache verwendet");
+    } else {
+      $("or-cat-info").textContent = `Fehler: ${e.message} — Slug bitte manuell eingeben`;
+    }
+  }
+}
+
+$("btn-or-refresh").addEventListener("click", () => { l.info("OpenRouter-Katalog wird neu geladen…"); loadOrModels(true); });
+$("or-only-structured").addEventListener("change", e => {
+  localStorage.setItem("gpp.or.structonly", e.target.checked ? "1" : "0");
+  renderOrModels("Filter geändert");
+});
 
 /* ════════════════════════════════════════════════════════════════════════
    Splitter
@@ -1432,28 +1688,75 @@ function extractJson(text) {
   throw new Error("JSON aus Modellantwort nicht extrahierbar");
 }
 
-async function llmOnce(prompt, schema) {
-  const apiKey = $("api-key").value.trim();
-  if (!apiKey) throw new Error("API-Key fehlt");
-  const model    = $("model").value;
-  const thinking = $("thinking").value;
+/* ── Route-Auflösung ──────────────────────────────────────────────────────
+   Eine Route bündelt alles Backend-Spezifische für EINEN Pass (Maker oder
+   Checker): Backend, Modell, Key, Denk-Tiefe, Grounding. Alles oberhalb von
+   llmOnce() reicht sie nur durch und bleibt damit backend-agnostisch.        */
+
+function orSelectedModel() {
+  // Freitext-Slug schlägt das Dropdown — beliebige Modelle bleiben erreichbar,
+  // auch wenn der Katalog sie (noch) nicht listet.
+  return ($("or-model-free").value.trim() || $("or-model").value || "").trim();
+}
+
+function backendConfig(backend) {
+  return backend === "openrouter"
+    ? { key: $("or-key").value.trim(),  model: orSelectedModel(), effort: $("or-effort").value, thinking: null }
+    : { key: $("api-key").value.trim(), model: $("model").value,  effort: null, thinking: $("thinking").value };
+}
+
+function resolveRoute(pass = "maker") {
+  let backend = state.backend;
+  if (pass === "checker") {
+    const cb = $("checker-backend").value;
+    if (cb === "gemini" || cb === "openrouter") backend = cb;
+  }
+  const cfg = backendConfig(backend);
+  let model = cfg.model;
+  if (pass === "checker") {
+    const cm = $("checker-model").value.trim();
+    if (cm) model = cm;
+  }
   const grounded = $("grounding").checked;
+  return {
+    pass, backend, model,
+    key: cfg.key,
+    thinking: cfg.thinking,
+    effort: cfg.effort,
+    grounded,
+    // Prosa-trotz-Schema-Fallback (siehe llmJson): bei Grounding auf beiden
+    // Backends — und generell auf OpenRouter, wo die Schema-Treue je Provider
+    // schwankt, auch wenn require_parameters gesetzt ist.
+    schemaFallback: grounded || backend === "openrouter",
+    label: `${backend}:${model || "?"}`,
+  };
+}
+
+/* ── Gemini ──────────────────────────────────────────────────────────────── */
+
+async function geminiOnce(prompt, schema, r) {
+  if (!r.key) throw new Error("Gemini API-Key fehlt");
 
   const body = {
     contents: [{ role: "user", parts: [{ text: prompt }] }],
-    generationConfig: { thinkingConfig: { thinkingLevel: thinking } },
+    generationConfig: { thinkingConfig: { thinkingLevel: r.thinking } },
   };
-  if (grounded) {
-    body.tools = [{ googleSearch: {} }];
-  } else if (schema) {
-    body.generationConfig.responseMimeType  = "application/json";
+  // Structured Outputs sind auf Gemini 3.x offiziell mit Google-Search-Grounding
+  // kombinierbar — das Schema bleibt also AUCH bei aktivem Grounding gesetzt.
+  // Absicherung gegen gelegentliche Prosa-Antworten: extractJson() beim Parsen
+  // plus der einmalige Schema-lose Fallback in llmJson().
+  if (schema) {
+    body.generationConfig.responseMimeType   = "application/json";
     body.generationConfig.responseJsonSchema = schema;
   }
+  if (r.grounded) {
+    body.tools = [{ googleSearch: {} }];
+  }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${r.model}:generateContent`;
   const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+    headers: { "Content-Type": "application/json", "x-goog-api-key": r.key },
     body: JSON.stringify(body),
   });
   if (!res.ok) {
@@ -1466,6 +1769,67 @@ async function llmOnce(prompt, schema) {
   const text = (data?.candidates?.[0]?.content?.parts || []).map(p => p.text || "").join("\n");
   if (!text) throw new Error("leere Modellantwort");
   return text;
+}
+
+/* ── OpenRouter ──────────────────────────────────────────────────────────── */
+
+async function openrouterOnce(prompt, schema, r) {
+  if (!r.key)   throw new Error("OpenRouter API-Key fehlt");
+  if (!r.model) throw new Error("kein OpenRouter-Modell gewählt (Dropdown oder Slug-Feld)");
+
+  const body = {
+    model: r.model,
+    messages: [{ role: "user", content: prompt }],
+  };
+  if (schema) {
+    body.response_format = {
+      type: "json_schema",
+      json_schema: { name: "result", strict: true, schema },
+    };
+    // Ohne require_parameters routet OpenRouter auch zu Providern, die
+    // response_format schlicht ignorieren — dann kommt Prosa statt JSON zurück.
+    body.provider = { require_parameters: true };
+  }
+  // Grounding-Analogon zu googleSearch: das web-Plugin (äquivalent zum
+  // :online-Suffix am Slug).
+  if (r.grounded) body.plugins = [{ id: "web" }];
+  // thinkingConfig gibt es hier nicht — die Entsprechung ist reasoning.effort,
+  // und nur wenn der Anwender sie explizit anfordert.
+  if (r.effort && r.effort !== "off") body.reasoning = { effort: r.effort };
+  // Bewusst KEINE Sampling-Parameter (temperature/top_p/top_k) — gleiche
+  // Disziplin wie auf dem Gemini-Pfad.
+
+  const res = await fetch(OR_CHAT_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${r.key}`,
+      "HTTP-Referer": OR_REFERER,
+      "X-Title": APP_NAME,
+    },
+    body: JSON.stringify(body),
+  });
+  let data = null;
+  try { data = await res.json(); } catch {}
+  // OpenRouter liefert Fehler auch in 200er-Bodies — data.error zuerst prüfen.
+  if (data?.error) {
+    const msg = data.error.message || JSON.stringify(data.error);
+    throw new Error(String(msg).slice(0, 400));
+  }
+  if (!res.ok) throw new Error(`HTTP ${res.status} · ${JSON.stringify(data || {}).slice(0, 400)}`);
+  addOrTokens(data?.usage);
+  const text = data?.choices?.[0]?.message?.content ?? "";
+  if (!text) throw new Error("leere Modellantwort");
+  return text;
+}
+
+/* ── Die EINE Weiche. Alles darüber ist backend-agnostisch. ──────────────── */
+
+async function llmOnce(prompt, schema, route) {
+  const r = route || resolveRoute("maker");
+  return r.backend === "openrouter"
+    ? openrouterOnce(prompt, schema, r)
+    : geminiOnce(prompt, schema, r);
 }
 
 /* ── Token accounting (Gemini usageMetadata) ─────────────────────────────── */
@@ -1484,6 +1848,18 @@ function addTokens(u) {
   t.calls      += 1;
   updateTokenPill();
 }
+// OpenRouter meldet OpenAI-Feldnamen — deterministisch auf die Gemini-Form
+// abbilden, damit Pill und Statistik über beide Backends hinweg zählen.
+function addOrTokens(u) {
+  if (!u) return;
+  addTokens({
+    promptTokenCount:        u.prompt_tokens     || 0,
+    cachedContentTokenCount: u.prompt_tokens_details?.cached_tokens || 0,
+    candidatesTokenCount:    u.completion_tokens || 0,
+    thoughtsTokenCount:      u.completion_tokens_details?.reasoning_tokens || 0,
+    totalTokenCount:         u.total_tokens      || 0,
+  });
+}
 const fmtTok = n => n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1) + "k" : String(n);
 function updateTokenPill() {
   const t = state.tokens;
@@ -1495,23 +1871,49 @@ function updateTokenPill() {
   pill.classList.toggle("live", t.cached > 0);
 }
 
-async function llm(prompt, label, schema) {
+/* Retry-Wrapper — backend-agnostisch: die Route wird nur durchgereicht.
+   Jeder Call protokolliert Backend + Modell, damit gemischte Läufe
+   (Maker auf Gemini, Checker auf OpenRouter) auditierbar bleiben. */
+async function llm(prompt, label, schema, route) {
+  const r = route || resolveRoute("maker");
   const retries = Math.max(0, parseInt($("retries").value) || 0);
   let attempt = 0;
   while (true) {
     if (state.cancel) throw new Error("cancelled");
     const t0 = performance.now();
+    l.debug(`${label} → ${r.label}${schema ? " · schema" : " · kein schema"}${r.grounded ? " · web" : ""}`);
     try {
-      const text = await llmOnce(prompt, schema);
-      l.debug(`${label} ← ${(text.length/1024).toFixed(1)}kb in ${Math.round(performance.now()-t0)}ms`);
+      const text = await llmOnce(prompt, schema, r);
+      l.debug(`${label} ← ${(text.length/1024).toFixed(1)}kb in ${Math.round(performance.now()-t0)}ms · ${r.label}`);
       return text;
     } catch (e) {
       attempt++;
       if (attempt > retries) throw e;
       const wait = 500 * Math.pow(2, attempt - 1);
-      l.warn(`${label} failed (${e.message.slice(0,200)}) — retry ${attempt}/${retries} in ${wait}ms`);
+      l.warn(`${label} failed via ${r.label} (${e.message.slice(0,200)}) — retry ${attempt}/${retries} in ${wait}ms`);
       await sleep(wait);
     }
+  }
+}
+
+/* Ein Call + toleranter Parse. Liefert ein Lauf trotz gesetztem Schema freie
+   Prosa, wird EINMALIG ohne Schema nachgefasst (dokumentierter Workaround) —
+   statt das Schema von vornherein wegzulassen. Wann das greift, entscheidet
+   route.schemaFallback (Grounding auf beiden Backends, plus OpenRouter
+   generell) — llmJson selbst kennt kein Backend. */
+async function llmJson(prompt, label, schema, route) {
+  const r = route || resolveRoute("maker");
+  const text = await llm(prompt, label, schema, r);
+  try {
+    return extractJson(text);
+  } catch (e) {
+    if (!schema || !r.schemaFallback) throw e;
+    l.warn(`${label} (${r.label}): Antwort trotz Schema kein JSON (${e.message}) — einmaliger Fallback ohne Schema`);
+    const fallbackPrompt = prompt +
+      "\n\nWICHTIG: Antworte AUSSCHLIESSLICH mit dem oben spezifizierten JSON-Objekt. " +
+      "Kein Fließtext, keine Markdown-Fences, keine Erklärung davor oder danach.";
+    const text2 = await llm(fallbackPrompt, `${label} · fallback ohne schema`, null, r);
+    return extractJson(text2);
   }
 }
 
@@ -1625,8 +2027,7 @@ async function runStage1Classify() {
     categories: catBlock || "(keine Kategorien geladen)",
   });
 
-  const text = await llm(prompt, "s1 klassifikation", $("grounding").checked ? null : SCHEMA_S1);
-  const parsed = extractJson(text);
+  const parsed = await llmJson(prompt, "s1 klassifikation", SCHEMA_S1);
 
   const cls = {
     object_type: parsed.object_type === "prozess" ? "prozess" : "zielobjekt",
@@ -1749,13 +2150,15 @@ const SCHEMA_S2 = {
       items: {
         type: "object",
         properties: {
+          // Deterministic-first: der Satztext liegt im JS-State und wird beim Merge
+          // über anforderung_id + sentence_idx eingesetzt — das Modell gibt ihn NICHT
+          // zurück (spart Output-Tokens und schließt verfälschte Verbatim-Texte aus).
           anforderung_id: { type: "string" },
           sentence_idx: { type: "integer" },
-          sentence_text: { type: "string" },
           mapped_control_ids: { type: "array", items: { type: "string" } },
           rationale: { type: "string" },
         },
-        required: ["anforderung_id","sentence_idx","sentence_text","mapped_control_ids"],
+        required: ["anforderung_id","sentence_idx","mapped_control_ids"],
       },
     },
   },
@@ -1890,7 +2293,10 @@ async function runStage2_SentenceMapping() {
   }
 
   // 6. Run pool — one call per control-chunk; merge mappings into sentMap.
+  //    Jeder Chunk-Ausgang wird protokolliert: ein fehlgeschlagener oder abgebrochener
+  //    Chunk darf NICHT als "kein Treffer" durchgehen — seine Controls wurden nie bewertet.
   const concurrency = Math.max(1, parseInt($("concurrency").value) || 4);
+  const chunkStatus = new Array(chunks.length).fill(null);  // null = ok · sonst {cancelled, message}
   const tasks = chunks.map((chunk, idx) => async () => {
     const prompt = buildPrompt("s2", {
       baustein_id: state.baustein.id || "?",
@@ -1900,10 +2306,11 @@ async function runStage2_SentenceMapping() {
     });
 
     try {
-      const text = await llm(prompt, `s2 chunk ${idx+1}/${chunks.length} (${chunk.length} Controls)`, $("grounding").checked ? null : SCHEMA_S2);
-      const parsed = extractJson(text);
+      const parsed = await llmJson(prompt, `s2 chunk ${idx+1}/${chunks.length} (${chunk.length} Controls)`, SCHEMA_S2);
       const validControlIds = new Set(chunk.map(c => c.id));
       for (const m of (parsed?.mappings || [])) {
+        // Halluzinations-Filter: nur id/idx-Kombinationen, die im vorab geseedeten
+        // sentMap existieren. Der Satztext kommt aus dem JS-State, nie vom Modell.
         const slot = sentMap.get(`${m.anforderung_id}#${m.sentence_idx}`);
         if (!slot) continue;  // unknown sentence — silently skip (chunk noise)
         const validIds = (m.mapped_control_ids || []).filter(id => validControlIds.has(id));
@@ -1911,13 +2318,40 @@ async function runStage2_SentenceMapping() {
         if (validIds.length && !slot.rationale) slot.rationale = m.rationale || "";
       }
     } catch (e) {
-      l.err(`chunk ${idx+1} failed: ${e.message}`);
+      const msg = (e?.message || String(e)).slice(0, 300);
+      const cancelled = state.cancel || /cancelled/i.test(msg);
+      chunkStatus[idx] = { cancelled, message: msg };
+      if (cancelled) l.warn(`s2 chunk ${idx+1}/${chunks.length} abgebrochen — ${chunk.length} Controls bleiben unbewertet`);
+      else           l.err(`s2 chunk ${idx+1}/${chunks.length} fehlgeschlagen (${chunk.length} Controls unbewertet): ${msg}`);
     }
   });
 
-  await runPool(tasks, concurrency, (d, t) => {
+  const poolResults = await runPool(tasks, concurrency, (d, t) => {
     showProgress(`stage 2 (${state.pipelineMode}) · chunk-mapping (${d}/${t} Chunks)`, d, t);
   });
+
+  // 6b. Post-Pool-Sweep: Chunks, die der Pool wegen Cancel gar nicht erst dispatcht
+  //     hat, tragen keinen eigenen Fehler — hier explizit als abgebrochen markieren.
+  poolResults.forEach((res, idx) => {
+    if (res?.cancelled && !chunkStatus[idx]) {
+      chunkStatus[idx] = { cancelled: true, message: "Chunk wurde wegen Abbruch nie ausgeführt" };
+      l.warn(`s2 chunk ${idx+1}/${chunks.length} nicht ausgeführt (cancel) — ${chunks[idx].length} Controls bleiben unbewertet`);
+    }
+    if (res?.error && !chunkStatus[idx]) {
+      const msg = (res.error?.message || String(res.error)).slice(0, 300);
+      chunkStatus[idx] = { cancelled: false, message: msg };
+      l.err(`s2 chunk ${idx+1}/${chunks.length} fehlgeschlagen (unerwartet): ${msg}`);
+    }
+  });
+
+  // Control-ID → Chunk-Index, damit betroffene Controls zugeordnet werden können.
+  const chunkOfControl = new Map();
+  chunks.forEach((chunk, idx) => { for (const c of chunk) chunkOfControl.set(c.id, idx); });
+  const badChunks = chunkStatus.filter(Boolean).length;
+  if (badChunks) {
+    const affected = chunkStatus.reduce((n, st, idx) => st ? n + chunks[idx].length : n, 0);
+    l.warn(`${badChunks}/${chunks.length} Chunks ohne Ergebnis · ${affected} Controls werden als error/cancelled markiert (NICHT als coverage=missing) · Satz-Recall ist entsprechend unvollständig`);
+  }
 
   // 7. Finalize sentence mappings (merged, one entry per PDF sentence).
   state.sentenceMappings = [...sentMap.values()].map(v => ({
@@ -1945,8 +2379,12 @@ async function runStage2_SentenceMapping() {
     l.info(`${unmappedSentences.length} Sätze ohne Control-Treffer (Kontext / kein passendes Control im Pool)`);
   }
 
-  // 9. Build implReqs from controls, attach mapped sentences
+  // 9. Build implReqs from controls, attach mapped sentences.
+  //    Controls aus einem gescheiterten/abgebrochenen Chunk bekommen coverage
+  //    "error" bzw. "cancelled" — sie sind NICHT dasselbe wie ein echter Kein-Treffer.
   state.implReqs = controls.map(c => {
+    const cIdx = chunkOfControl.get(c.id);
+    const st   = (cIdx != null) ? chunkStatus[cIdx] : null;
     const mapped = sentencesByControl.get(c.id) || [];
     const sourceNames = [...new Set(mapped.map(m => `${m.anforderung_id} ${m.anforderung_name || ""}`.trim()))];
     const description = sourceNames.length
@@ -1965,10 +2403,13 @@ async function runStage2_SentenceMapping() {
       statement_prose: statementProse,
       description,
       source_anforderungen: [...new Set(mapped.map(m => m.anforderung_id))],
-      coverage: mapped.length === 0 ? "missing" : mapped.length <= 2 ? "partial" : "full",
+      coverage: st ? (st.cancelled ? "cancelled" : "error")
+              : mapped.length === 0 ? "missing" : mapped.length <= 2 ? "partial" : "full",
       remarks: null,
       pending: false,
-      error: null,
+      error: st
+        ? `Chunk ${cIdx + 1}/${chunks.length} ${st.cancelled ? "abgebrochen" : "fehlgeschlagen"} — dieses Control wurde nie bewertet (kein Kein-Treffer): ${st.message}`
+        : null,
       validation: null,
     };
   });
@@ -1976,7 +2417,9 @@ async function runStage2_SentenceMapping() {
   // Log sentence-side accounting so the user sees recall at the sentence level
   const totalSent = state.sentenceMappings.length;
   const mappedSent = totalSent - state.unmappedSentences.length;
-  l.ok(`stage 2 (${state.pipelineMode}) done · ${mappedSent}/${totalSent} PDF-Sätze gemappt · ${state.unmappedSentences.length} ohne Treffer · ${state.implReqs.filter(r => r.coverage !== "missing").length}/${state.implReqs.length} Controls erhalten ≥1 Satz`);
+  const failedCtrls = state.implReqs.filter(r => r.coverage === "error" || r.coverage === "cancelled").length;
+  const hitCtrls    = state.implReqs.filter(r => r.coverage === "partial" || r.coverage === "full").length;
+  l.ok(`stage 2 (${state.pipelineMode}) done · ${mappedSent}/${totalSent} PDF-Sätze gemappt · ${state.unmappedSentences.length} ohne Treffer · ${hitCtrls}/${state.implReqs.length} Controls erhalten ≥1 Satz${failedCtrls ? ` · ${failedCtrls} Controls unbewertet (Chunk-Fehler/Abbruch)` : ""}`);
 }
 
 async function runStage2_C2_deterministic() {
@@ -2062,7 +2505,7 @@ function buildCustomCatalog(reqs) {
         parties: [{
           uuid: crypto.randomUUID(),
           type: "organization",
-          name: "Baustein_2_Profile (one-page-app) · build 0.7.1",
+          name: `${APP_NAME} (one-page-app) · build ${APP_VERSION}`,
           props: [{ name: "party-kind", ns: "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools", value: "tool" }],
         }],
       },
@@ -2108,11 +2551,14 @@ function renderStage2() {
   const body = $("s2-body");
   card.classList.remove("hidden");
 
+  const isFailed = r => r.coverage === "error" || r.coverage === "cancelled";
+
   const filter = $("s2-filter").value;
   const rows = state.implReqs.filter(r => {
     if (filter === "ok")      return r.coverage === "full";
     if (filter === "partial") return r.coverage === "partial";
-    if (filter === "missing") return r.coverage === "missing" || r.error;
+    if (filter === "missing") return r.coverage === "missing";       // echter Kein-Treffer
+    if (filter === "failed")  return isFailed(r);                    // Chunk nie ausgewertet
     if (filter === "issues")  return r.validation && ["minor_corrections","major_issues","incorrect"].includes(r.validation.verdict);
     return true;
   });
@@ -2120,12 +2566,18 @@ function renderStage2() {
   body.innerHTML = "";
   for (const r of rows) {
     const div = document.createElement("div");
-    const miss = r.coverage === "missing" || r.error;
-    div.className = "req-row" + (miss ? " miss" : "") + (r.pending ? " pending" : "");
+    const failed = isFailed(r);
+    const miss   = !failed && r.coverage === "missing";
+    div.className = "req-row" + (miss ? " miss" : "") + (failed ? " failed" : "") + (r.pending ? " pending" : "");
     const covColor = r.coverage === "full" ? "var(--green)"
                   : r.coverage === "partial" ? "var(--amber)"
                   : r.coverage === "missing" ? "var(--red)"
+                  : r.coverage === "error" ? "oklch(0.65 0.20 50)"
+                  : r.coverage === "cancelled" ? "var(--amber)"
                   : "var(--text-quiet)";
+    const covLabel = r.coverage === "error" ? "chunk-fehler"
+                  : r.coverage === "cancelled" ? "abgebrochen"
+                  : (r.coverage || "—");
 
     const srcList = (r.source_anforderungen || []).slice(0, 5).join(", ") + ((r.source_anforderungen || []).length > 5 ? "…" : "");
 
@@ -2140,7 +2592,7 @@ function renderStage2() {
         <div style="font-weight:500;margin-bottom:2px">${escapeHtml(r.control_title || "")}</div>
         ${r.pending ? '<div class="rationale"><span class="muted">pending…</span></div>'
           : r.error
-            ? `<div class="rationale" style="color:var(--red)">${escapeHtml(r.error)}</div>`
+            ? `<div class="rationale" style="color:${r.coverage === "cancelled" ? "var(--amber)" : "oklch(0.65 0.20 50)"}">${escapeHtml(r.error)}</div>`
             : `<div class="rationale">
                   <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-quiet);letter-spacing:0.04em;margin-bottom:3px">DESCRIPTION (Anforderungs-Namen):</div>
                   <div style="margin-bottom:8px">${escapeHtml(r.description || "—")}</div>
@@ -2151,7 +2603,7 @@ function renderStage2() {
                   ${r.remarks ? `<br><span style="color:var(--amber);font-size:10px;font-family:'JetBrains Mono',monospace">remarks: ${escapeHtml(r.remarks)}</span>` : ""}
               </div>`}
       </div>
-      <div class="req-ctrl" style="color:${covColor}">${r.pending ? "—" : escapeHtml(r.coverage || "—")}</div>
+      <div class="req-ctrl" style="color:${covColor}">${r.pending ? "—" : escapeHtml(covLabel)}</div>
       <div class="req-conf">
         <span style="color:var(--text-quiet);font-size:9.5px">src:</span>
         <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px">${escapeHtml(srcList || "—")}</span>
@@ -2200,10 +2652,13 @@ function renderStage2() {
   }
 
   const ok    = state.implReqs.filter(r => r.coverage === "full").length;
-  const miss  = state.implReqs.filter(r => r.coverage === "missing" || r.error).length;
+  const miss  = state.implReqs.filter(r => r.coverage === "missing").length;   // echter Kein-Treffer
+  const fail  = state.implReqs.filter(isFailed).length;                        // Chunk nie ausgewertet
   const vIs   = state.implReqs.filter(r => r.validation && ["minor_corrections","major_issues","incorrect"].includes(r.validation.verdict)).length;
   $("s2-ok").textContent   = ok;
   $("s2-miss").textContent = miss;
+  $("s2-fail").textContent = fail;
+  $("s2-fail-chip").classList.toggle("hidden", fail === 0);
   $("s2-val").textContent  = vIs;
   $("s2-val-chip").classList.toggle("hidden", vIs === 0);
 }
@@ -2306,6 +2761,10 @@ async function assembleProfile() {
           { "name": "source-baustein", "ns": NS, "value": bId },
           { "name": "mapping-mode", "ns": NS, "value": state.pipelineMode || "?" },
           ...(state.classification?.zielobjekt_uuid ? [{ "name": "zielobjekt-uuid", "ns": NS, "value": state.classification.zielobjekt_uuid }] : []),
+          // Nachweis, welches Backend+Modell welchen Pass bedient hat — bei
+          // gemischten Maker/Checker-Läufen der eigentliche Audit-Beleg.
+          ...(state.engines.maker   ? [{ "name": "maker-engine",   "ns": NS, "value": state.engines.maker }]   : []),
+          ...(state.engines.checker ? [{ "name": "checker-engine", "ns": NS, "value": state.engines.checker }] : []),
         ],
       },
       "imports": [
@@ -2417,6 +2876,21 @@ async function runChecker() {
 
   state.implReqs.forEach(r => { r.validation = null });
 
+  // Checker-Route: Backend UND Modell dürfen vom Maker abweichen — genau darin
+  // liegt der Audit-Wert (z. B. Gemini als Maker, Anthropic via OpenRouter als
+  // Checker). Einmal auflösen, protokollieren und für den Export festhalten.
+  const checkerRoute = resolveRoute("checker");
+  const makerLabel   = state.engines.maker || resolveRoute("maker").label;
+  state.engines.checker = checkerRoute.label;
+  l.info(`checker-engine · ${checkerRoute.label}${checkerRoute.label === makerLabel
+    ? " (identisch zum Maker — für ein unabhängiges Audit anderes Backend/Modell wählen)"
+    : ` · unabhängig vom Maker (${makerLabel})`}`);
+  if (!checkerRoute.key) {
+    l.err(`checker übersprungen · API-Key für Backend ${checkerRoute.backend} fehlt`);
+    doneStage("s4");
+    return;
+  }
+
   const chunkSize = Math.max(1, parseInt($("chunk-size").value) || 8);
   const chunks = chunk(items, chunkSize);
   const concurrency = Math.max(1, parseInt($("concurrency").value) || 4);
@@ -2445,8 +2919,7 @@ Beurteile, ob diese Sätze inhaltlich tatsächlich zu dem Kernel-Control passen:
     }).join("\n\n");
 
     const prompt = buildPrompt("check", { pairs: pairsBlock });
-    const text = await llm(prompt, `checker ${idx+1}/${chunks.length}`, $("grounding").checked ? null : SCHEMA_CHECK);
-    const parsed = extractJson(text);
+    const parsed = await llmJson(prompt, `checker ${idx+1}/${chunks.length}`, SCHEMA_CHECK, checkerRoute);
     for (const v of (parsed?.validations || [])) {
       const slot = state.implReqs.find(s => s.control_id === v.item_id);
       if (slot) slot.validation = v;
@@ -2475,26 +2948,30 @@ function renderStats() {
   $("stats-card").classList.remove("hidden");
   const grid = $("stats-grid");
 
-  // 1. Coverage distribution donut (Control-Seite)
-  const covBuckets = { full: 0, partial: 0, missing: 0, error: 0 };
+  // 1. Coverage distribution — DER Donut der Karte (primäre kategoriale Verteilung).
+  //    Genau ein Donut, nie zwei: alle weiteren Verteilungen laufen als h-Balken.
+  const covBuckets = { full: 0, partial: 0, missing: 0, error: 0, cancelled: 0 };
   for (const r of completed) {
-    if (r.error) covBuckets.error++;
+    if (r.coverage === "cancelled") covBuckets.cancelled++;
+    else if (r.coverage === "error" || r.error) covBuckets.error++;
     else covBuckets[r.coverage || "missing"]++;
   }
   const covSlices = [
-    { label: "full (3+ Sätze)",    value: covBuckets.full,    color: "oklch(0.75 0.18 145)" },
-    { label: "partial (1–2 Sätze)", value: covBuckets.partial, color: "oklch(0.80 0.15 80)"  },
-    { label: "missing (0 Sätze)",   value: covBuckets.missing, color: "oklch(0.65 0.20 25)"  },
-    { label: "error",               value: covBuckets.error,   color: "oklch(0.55 0.02 280)" },
+    { label: "full (3+ Sätze)",     value: covBuckets.full,      color: "oklch(0.75 0.18 145)" },
+    { label: "partial (1–2 Sätze)", value: covBuckets.partial,   color: "oklch(0.80 0.15 80)"  },
+    { label: "missing (0 Sätze)",   value: covBuckets.missing,   color: "oklch(0.65 0.20 25)"  },
+    { label: "chunk-fehler",        value: covBuckets.error,     color: "oklch(0.65 0.20 50)"  },
+    { label: "abgebrochen",         value: covBuckets.cancelled, color: "oklch(0.55 0.02 280)" },
   ];
 
-  // 1b. Sentence-side coverage (Anforderungs-Seite) — how many sentences found a Control home
+  // 1b. Sentence-side coverage (Anforderungs-Seite) — als horizontale Balken,
+  //     nicht als zweiter Donut.
   const totalSentenceMappings = state.sentenceMappings.length;
   const unmappedSentencesCnt  = state.unmappedSentences.length;
   const mappedSentencesCnt    = totalSentenceMappings - unmappedSentencesCnt;
-  const sentSlices = [
-    { label: "gemappt",              value: mappedSentencesCnt,    color: "oklch(0.75 0.18 145)" },
-    { label: "unmapped (Kontext)",   value: unmappedSentencesCnt,  color: "oklch(0.65 0.20 25)"  },
+  const sentRows = [
+    { label: "gemappt",            value: mappedSentencesCnt,   color: "oklch(0.75 0.18 145)" },
+    { label: "unmapped (Kontext)", value: unmappedSentencesCnt, color: "oklch(0.65 0.20 25)"  },
   ];
 
   // 2. Modalverb distribution (of the Kernel controls)
@@ -2510,17 +2987,14 @@ function renderStats() {
       color: label === "MUSS" ? "oklch(0.7 0.18 300)" : label === "SOLLTE" ? "oklch(0.80 0.15 80)" : "var(--text-quiet)",
     }));
 
-  // 3. Top source-anforderungen referenced (how many controls cite each Anforderung)
+  // 3. Per-Anforderung recall (mapped vs unmapped Sätze). Die frühere separate
+  //    "Top-Anforderungen"-Karte ist hier als Sublabel absorbiert (wie viele
+  //    Controls die Anforderung zitieren) — spart eine Chart-Slot.
   const srcBuckets = {};
   for (const r of completed) {
     for (const aId of (r.source_anforderungen || [])) srcBuckets[aId] = (srcBuckets[aId] || 0) + 1;
   }
-  const srcRows = Object.entries(srcBuckets)
-    .sort(([,a],[,b]) => b - a)
-    .slice(0, 8)
-    .map(([label, value]) => ({ label, value, color: "oklch(0.7 0.15 240)" }));
 
-  // 3b. Per-Anforderung sentence breakdown (mapped vs unmapped for each Anforderung)
   const anfStats = new Map();  // anfId → {mapped: n, unmapped: n}
   for (const m of state.sentenceMappings) {
     const slot = anfStats.get(m.anforderung_id) || { mapped: 0, unmapped: 0 };
@@ -2535,12 +3009,12 @@ function renderStats() {
       value: s.mapped,
       max: s.mapped + s.unmapped,
       color: s.unmapped === 0 ? "oklch(0.75 0.18 145)" : s.mapped === 0 ? "oklch(0.65 0.20 25)" : "oklch(0.80 0.15 80)",
-      sub: `${s.mapped}/${s.mapped + s.unmapped} Sätze gemappt`,
+      sub: `${s.mapped}/${s.mapped + s.unmapped} Sätze · ${srcBuckets[id] || 0} Controls`,
     }));
 
-  // 4. Validation distribution
+  // 4. Validation distribution (höchstes Signal, sobald der Checker gelaufen ist)
   const validations = completed.filter(r => r.validation).map(r => r.validation);
-  let valSection = "";
+  let valSection = null;
   if (validations.length) {
     const VAL_COLORS = {
       confirmed:         "oklch(0.75 0.18 145)",
@@ -2561,13 +3035,17 @@ function renderStats() {
       </div>`;
   }
 
-  grid.innerHTML = `
-    <div class="stat-sub">
+  // Chart-Budget: EIN Donut + max. 3 h-Balken-Karten. Die Liste ist nach
+  // Signalstärke sortiert und wird hart auf 4 gekappt, damit die Karte kein
+  // Dashboard wird und nicht mit den Ergebnissen um Aufmerksamkeit konkurriert.
+  const cards = [
+    // 1 — der einzige Donut: primäre kategoriale Verteilung
+    `<div class="stat-sub">
       <div class="stat-head">Coverage-Verteilung (Control-Seite)</div>
       <div class="donut-wrap">
         ${donutChart(covSlices, 140, 0.6)}
         <div class="donut-legend">
-          ${covSlices.map(s => `
+          ${covSlices.filter(s => s.value > 0).map(s => `
             <div class="legend-row">
               <span class="legend-dot" style="background:${s.color}"></span>
               <span class="legend-label">${s.label}</span>
@@ -2575,42 +3053,38 @@ function renderStats() {
             </div>`).join("")}
         </div>
       </div>
-    </div>
-    ${totalSentenceMappings ? `
+    </div>`,
+
+    // 2 — verdrängte Verteilung: gleicher Inhalt wie früher, jetzt als Balken
+    totalSentenceMappings ? `
     <div class="stat-sub">
       <div class="stat-head">Satz-Verteilung (Anforderungs-Seite)</div>
-      <div class="donut-wrap">
-        ${donutChart(sentSlices, 140, 0.6)}
-        <div class="donut-legend">
-          ${sentSlices.map(s => `
-            <div class="legend-row">
-              <span class="legend-dot" style="background:${s.color}"></span>
-              <span class="legend-label">${s.label}</span>
-              <span class="legend-val">${s.value}</span>
-            </div>`).join("")}
-        </div>
-      </div>
+      ${hBarRows(sentRows)}
       <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--text-quiet);margin-top:8px;letter-spacing:0.05em">
         ${mappedSentencesCnt} von ${totalSentenceMappings} Sätzen wurden auf mindestens 1 Control verteilt.
         ${unmappedSentencesCnt > totalSentenceMappings * 0.3 ? "⚠ Hohe Unmapped-Quote — Modell evtl. zu konservativ" : ""}
       </div>
-    </div>` : ""}
+    </div>` : null,
+
+    // 3 — Checker-Verdict, sobald vorhanden
+    valSection,
+
+    // 4 — Per-Anforderung Recall (inkl. absorbierter Control-Zitat-Zahl)
+    anfRows.length ? `
+    <div class="stat-sub" style="grid-column: 1 / -1">
+      <div class="stat-head">Per-Anforderung Recall (Sätze gemappt · zitierende Controls)</div>
+      ${hBarRowsWithSub(anfRows)}
+    </div>` : null,
+
+    // 5 — Modalverben, nur wenn oben noch ein Slot frei bleibt
+    mvRows.length ? `
     <div class="stat-sub">
       <div class="stat-head">Modalverben (Kernel-Side)</div>
       ${hBarRows(mvRows)}
-    </div>
-    ${srcRows.length ? `
-    <div class="stat-sub">
-      <div class="stat-head">Top-Anforderungen (in Controls referenziert)</div>
-      ${hBarRows(srcRows)}
-    </div>` : ""}
-    ${anfRows.length ? `
-    <div class="stat-sub" style="grid-column: 1 / -1">
-      <div class="stat-head">Per-Anforderung Recall (Satz-Mapping)</div>
-      ${hBarRowsWithSub(anfRows)}
-    </div>` : ""}
-    ${valSection}
-  `;
+    </div>` : null,
+  ].filter(Boolean).slice(0, 4);
+
+  grid.innerHTML = cards.join("\n");
 }
 
 // Variant of hBarRows that shows mapped/total via `max` and adds a per-row sublabel
@@ -2683,12 +3157,30 @@ function updateRunLabel() {
 
 async function run() {
   if (state.running) return;
-  if (!$("api-key").value.trim()) { l.err("API-Key fehlt"); return; }
+
+  // Backend-Vorprüfung: Key/Modell des Maker-Pfads — und, wenn der Checker auf
+  // einem ANDEREN Backend läuft, auch dessen Zugangsdaten. Ein erst nach dem
+  // Maker-Pass auffallender fehlender Key würde die ganze Pass-1-Arbeit entwerten.
+  const makerRoute = resolveRoute("maker");
+  if (!makerRoute.key) { l.err(`API-Key fehlt (Backend ${makerRoute.backend})`); return; }
+  if (makerRoute.backend === "openrouter" && !makerRoute.model) {
+    l.err("kein OpenRouter-Modell gewählt — Dropdown oder Slug-Feld füllen"); return;
+  }
+  if ($("maker-checker").checked) {
+    const cr = resolveRoute("checker");
+    if (cr.backend !== makerRoute.backend) {
+      if (!cr.key)   { l.err(`Checker-Backend ${cr.backend}: API-Key fehlt`); return; }
+      if (cr.backend === "openrouter" && !cr.model) { l.err("Checker-Backend openrouter: kein Modell gewählt"); return; }
+    }
+  }
   if (!state.baustein) { l.err("kein PDF geladen"); return; }
   if (!state.catalogControls.length) { l.err("kein G++ Anwenderkatalog geladen"); return; }
 
   state.running = true;
   state.cancel = false;
+  state.engines = { maker: makerRoute.label, checker: null };
+  l.info(`engine · maker ${makerRoute.label}${makerRoute.grounded ? " · grounding/web an" : ""}` +
+    ($("maker-checker").checked ? ` · checker ${resolveRoute("checker").label}` : ""));
   resetTokens();
   $("btn-run").disabled = true;
   $("btn-cancel").classList.remove("hidden");
@@ -2732,7 +3224,7 @@ async function run() {
 
     await runStage3();
     showProgress("done", 1, 1);
-    l.ok(`pipeline done in ${Math.round((performance.now()-tAll)/100)/10}s · mode=${state.pipelineMode} · ${state.tokens.calls} calls · ${state.tokens.total} tok (cached ${state.tokens.cached})`);
+    l.ok(`pipeline done in ${Math.round((performance.now()-tAll)/100)/10}s · mode=${state.pipelineMode} · maker ${state.engines.maker}${state.engines.checker ? ` · checker ${state.engines.checker}` : ""} · ${state.tokens.calls} calls · ${state.tokens.total} tok (cached ${state.tokens.cached})`);
     $("status-pill").textContent = "fertig";
   } catch (e) {
     l.err(`pipeline aborted: ${e.message}`);
@@ -2765,6 +3257,7 @@ $("btn-clear").addEventListener("click", () => {
   state.unmappedSentences = [];
   state.customCatalog = null;
   state.profileDef = null;
+  state.engines = { maker: null, checker: null };
   $("s1-result").classList.add("hidden");
   $("s2-result").classList.add("hidden");
   $("s3-result").classList.add("hidden");
@@ -2782,6 +3275,7 @@ $("btn-clear").addEventListener("click", () => {
 
 loadPrefs();
 updateRunLabel();
+l.info(`backend · ${state.backend} aktiv · Maker-Route ${resolveRoute("maker").label}`);
 
 // Auto-load G++ Anwenderkatalog + Zielobjektkategorien + Pools on startup
 window.addEventListener("load", () => {
