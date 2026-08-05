@@ -859,6 +859,7 @@ window.fltC=()=>{
 // ============================================================
 function exportAP(){
     const ts=new Date().toISOString(),au=crypto.randomUUID();const cids=[...S.allCids].filter(c=>!S.excluded.has(c)).sort();
+    if(!cids.length)return alert('Keine Controls im Prüf-Scope — include-controls wäre leer (Schema-Verstoß).');
     const byM={};cids.forEach(c=>{(S.methods.get(c)||new Set(['EXAMINE'])).forEach(m=>{if(!byM[m])byM[m]={uuid:crypto.randomUUID(),cids:[]};byM[m].cids.push(c)})});
     const acts=Object.entries(byM).map(([m,a])=>({uuid:a.uuid,title:`${m}-Prüfung`,description:`${m} für ${a.cids.length} Controls.`,props:[{name:"method",ns:"http://csrc.nist.gov/ns/oscal",value:m}],"related-controls":{"control-selections":[{"include-controls":a.cids.map(c=>({"control-id":c}))}]}}));
     // Pin-Muster (Grundregel 8): import-ssp als Fragment auf eine back-matter-Resource;
@@ -902,11 +903,12 @@ function exportAR(){
             let ou=null;
             if(finding.observation){
                 ou=crypto.randomUUID();
+                const meth=[...(S.methods.get(cid)||[])];
                 obs.push({
                     uuid:ou,
                     title:`Beobachtung ${cid}${comp ? ' (' + comp.title + ')' : ''}`,
                     description:finding.observation,
-                    methods:[...(S.methods.get(cid)||['EXAMINE'])],
+                    methods:meth.length?meth:['EXAMINE'],
                     collected:ts,
                     ...(comp ? { subjects: [{ "subject-uuid": comp.uuid, type: "component", title: comp.title }] } : {})
                 });
@@ -919,6 +921,7 @@ function exportAR(){
                     uuid:ru,
                     title:`Risiko ${cid}${comp ? ' (' + comp.title + ')' : ''}`,
                     description:finding.risk,
+                    statement:finding.risk,
                     status:"open"
                 });
             }
@@ -927,7 +930,9 @@ function exportAR(){
                 uuid:crypto.randomUUID(),
                 title:`Befund ${cid}${comp ? ' (' + comp.title + ')' : ''}`,
                 description:finding.remarks||`Bewertung ${cid}`,
-                target:{type:"objective-id","target-id":cid,status:{state:finding.status}}
+                // target.status.state kennt nur satisfied|not-satisfied — "Sonstig" wird
+                // als not-satisfied mit reason "other" abgebildet
+                target:{type:"objective-id","target-id":cid,status:finding.status==='satisfied'?{state:'satisfied'}:{state:'not-satisfied',...(finding.status!=='not-satisfied'?{reason:'other'}:{})}}
             };
             
             if(ou)fd["related-observations"]=[{"observation-uuid":ou}];
@@ -943,9 +948,10 @@ function exportAR(){
         if(r.likelihood)props.push({name:"likelihood",ns:NS,value:r.likelihood});
         if(r.impact)props.push({name:"impact",ns:NS,value:r.impact});
         const oscalRisk={
-            uuid:r.uuid||crypto.randomUUID(),
+            // uuid aus der SSP-Risikoanalyse nur übernehmen, wenn es ein valides v4/v5-UUID ist
+            uuid:(typeof r.uuid==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[45][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(r.uuid))?r.uuid:crypto.randomUUID(),
             title:r.title||'Risiko',
-            description:r.description||'',
+            description:r.description||r.title||'Risiko aus SSP-Risikoanalyse',
             statement:r.threat||r.description||r.title||'Risiko aus SSP-Risikoanalyse',
             status:"open"
         };
@@ -953,7 +959,8 @@ function exportAR(){
         const notes=[];
         if(r.targetComponent)notes.push('Betroffene Komponente: '+(S.compMeta.get(r.targetComponent)?.title||r.targetComponent));
         if(Array.isArray(r.mitigatingControls)&&r.mitigatingControls.length)notes.push('Mitigierende Controls: '+r.mitigatingControls.map(m=>m&&m.id).filter(Boolean).join(', '));
-        if(notes.length)oscalRisk.remarks=notes.join('\n');
+        // risk kennt kein remarks-Feld — Zusatzinfos in die description aufnehmen
+        if(notes.length)oscalRisk.description=[oscalRisk.description,notes.join('\n')].filter(Boolean).join('\n\n');
         rsk.push(oscalRisk);
     });
 

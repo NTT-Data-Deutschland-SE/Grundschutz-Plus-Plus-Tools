@@ -389,17 +389,22 @@
         if (!sspData) return;
         try {
             const ssp = sspData['system-security-plan'];
+            // Pflichtfelder mit Schema-Pattern (kein Leerstring, kein Rand-Whitespace):
+            // leere Eingaben behalten den bisherigen Wert, statt invalides OSCAL zu erzeugen.
             const titleEl = document.getElementById('metadata-title');
-            if(titleEl) ssp.metadata.title = titleEl.value;
+            if(titleEl && titleEl.value.trim()) ssp.metadata.title = titleEl.value.trim();
 
             const remarksEl = document.getElementById('metadata-remarks');
-            if(remarksEl) ssp.metadata.remarks = remarksEl.value;
+            if(remarksEl) {
+                const v = remarksEl.value.trim();
+                if (v) ssp.metadata.remarks = v; else delete ssp.metadata.remarks;
+            }
 
             const sysNameEl = document.getElementById('system-name');
-            if(sysNameEl) ssp['system-characteristics']['system-name'] = sysNameEl.value;
+            if(sysNameEl && sysNameEl.value.trim()) ssp['system-characteristics']['system-name'] = sysNameEl.value.trim();
 
             const sysDescEl = document.getElementById('system-description');
-            if(sysDescEl) ssp['system-characteristics'].description = sysDescEl.value;
+            if(sysDescEl && sysDescEl.value.trim()) ssp['system-characteristics'].description = sysDescEl.value;
 
             ssp.metadata["last-modified"] = new Date().toISOString();
 
@@ -410,6 +415,7 @@
             }
 
             if (!ssp['control-implementation']) ssp['control-implementation'] = {};
+            if (!ssp['control-implementation'].description) ssp['control-implementation'].description = "Umsetzung der Controls je Komponente, erfasst mit dem OSCAL SSP Editor.";
 
             // Params
             const paramInputs = document.querySelectorAll('.param-input');
@@ -443,7 +449,7 @@
 
                 const state = stateEl.value;
                 const description = entry.querySelector(`#desc-${uniqueDomId}`)?.value || '';
-                const name = entry.querySelector(`#name-${uniqueDomId}`)?.value || '';
+                const name = (entry.querySelector(`#name-${uniqueDomId}`)?.value || '').trim();
                 const date = entry.querySelector(`#date-${uniqueDomId}`)?.value || '';
                 const statementRadio = entry.querySelector(`input[name="mat-${uniqueDomId}"]:checked`);
                 const selectedStmtId = (statementRadio && statementRadio.value !== 'manual') ? statementRadio.value : '';
@@ -487,12 +493,23 @@
                     let req = requirements.find(r => r['control-id'] === controlId);
                     if (req && req['by-components']) {
                         req['by-components'] = req['by-components'].filter(bc => bc['component-uuid'] !== compUuid);
+                        // Leeres by-components verletzt minItems:1 — Feld dann ganz entfernen
+                        if (req['by-components'].length === 0) delete req['by-components'];
                     }
                 }
             });
 
-            requirements = requirements.filter(req => req['by-components'] && req['by-components'].length > 0);
-            ssp['control-implementation']['implemented-requirements'] = requirements;
+            // Nur inhaltsleere Requirements entfernen — Anforderungen mit statements,
+            // set-parameters, props, links oder remarks (ohne by-components) sind valides
+            // OSCAL und bleiben erhalten.
+            requirements = requirements.filter(req => (req['by-components']?.length) || req.statements || req['set-parameters'] || req['responsible-roles'] || req.props || req.links || req.remarks);
+            if (requirements.some(r => r['control-id'] !== 'PLACEHOLDER')) requirements = requirements.filter(r => r['control-id'] !== 'PLACEHOLDER');
+            if (requirements.length > 0) {
+                ssp['control-implementation']['implemented-requirements'] = requirements;
+            } else {
+                // Schema verlangt mindestens ein implemented-requirement
+                ssp['control-implementation']['implemented-requirements'] = [{ uuid: crypto.randomUUID(), 'control-id': 'PLACEHOLDER', remarks: 'Noch keine Umsetzung erfasst.' }];
+            }
         } catch (error) {
             console.error("DOM Sync Fehler:", error);
         }

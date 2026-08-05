@@ -2026,8 +2026,10 @@ async function runStage2_C2_deterministic() {
   state.sentenceMappings = [];
   state.unmappedSentences = [];
 
-  // Build a custom OSCAL Catalog
-  state.customCatalog = buildCustomCatalog(reqs);
+  // Build a custom OSCAL Catalog — nie mit leerer Control-Liste (groups[].controls
+  // hat minItems:1; ein leerer Katalog wäre schema-invalid und nutzlos)
+  state.customCatalog = reqs.length ? buildCustomCatalog(reqs) : null;
+  if (!reqs.length) l.warn("C.2: keine Anforderungen erkannt — es wird kein Custom Catalog erzeugt.");
   showProgress("stage 2 (C.2) · deterministic", reqs.length, Math.max(1, reqs.length));
   l.ok(`stage 2 (C.2) done · ${reqs.length} impl-reqs + custom catalog mit ${reqs.length} Controls`);
 }
@@ -2059,22 +2061,23 @@ function buildCustomCatalog(reqs) {
         roles: [{ id: "generator", title: "Generator" }],
         parties: [{
           uuid: crypto.randomUUID(),
-          type: "tool",
+          type: "organization",
           name: "Baustein_2_Profile (one-page-app) · build 0.7.1",
+          props: [{ name: "party-kind", ns: "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools", value: "tool" }],
         }],
       },
       groups: [{
         id: `LOCAL.${bId.replace(/[^A-Z0-9.]/g,"_")}`,
         title: `Lokale Controls aus ${bId}`,
         props: [
-          { name: "source-baustein", value: bId },
+          { name: "source-baustein", ns: "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools", value: bId },
         ],
         controls: reqs.map(r => ({
           id: r.id,
           title: r.name || extractFirstSentenceAsTitle(r.text),
           "class": "local-from-pdf",
           props: [
-            { name: "source-baustein", value: bId },
+            { name: "source-baustein", ns: "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools", value: bId },
             ...(r.modalverb ? [{ name: "modal_verb", value: r.modalverb }] : []),
           ],
           parts: [
@@ -2218,13 +2221,13 @@ $("pi-pick").addEventListener("change", () => {
 async function runStage3() {
   setStage("s3");
   showProgress("stage 3 · assembling", 0, 1);
-  state.profileDef = assembleProfile();
+  state.profileDef = await assembleProfile();
   renderStage3();
   showProgress("stage 3 · done", 1, 1);
   doneStage("s3");
 }
 
-function assembleProfile() {
+async function assembleProfile() {
   const now = new Date().toISOString();
   const bId  = state.baustein?.id || "BSI-Baustein";
   const bTit = state.baustein?.title || "Baustein";
@@ -2235,6 +2238,10 @@ function assembleProfile() {
   // Only controls that actually received ≥1 mapped sentence end up in the profile.
   const matched = state.implReqs.filter(r => !r.pending && !r.error && r.coverage !== "missing");
   const uniqueControls = [...new Set(matched.map(r => r.control_id))];
+  if (uniqueControls.length === 0) {
+    // include-controls[].with-ids hat minItems:1 — ein leeres Profil wäre schema-invalid
+    throw new Error("Kein Control erhielt ein Mapping — es kann kein gültiges Profil erzeugt werden (leere include-controls-Liste).");
+  }
 
   // OSCAL "alters": embed the verbatim Ed2023 PDF text at the matched control,
   // so the migrated requirement source is traceable inside the profile itself.
@@ -2259,6 +2266,34 @@ function assembleProfile() {
     };
   });
 
+  // C.2: die with-ids stammen aus dem lokal erzeugten Custom Catalog, nicht aus dem
+  // G++-Katalog — der Import muss daher auf die Schwesterdatei des Custom Catalogs
+  // zeigen (Pin-Muster wie im ssp_generator: rlink + SHA-256 über die Download-Bytes).
+  const isC2 = state.pipelineMode === "C2" && state.customCatalog;
+  let importHref = `#${GPP_CATALOG_RESOURCE_UUID}`;
+  let resources = [pinnedCatalogResource()];
+  if (isC2) {
+    const catFileName = `${bId.replace(/[^A-Za-z0-9.]/g, "_")}_custom-catalog.json`;
+    const customCatResourceUuid = crypto.randomUUID();
+    let customCatSha = null;
+    if (crypto.subtle) {
+      const bytes = new TextEncoder().encode(JSON.stringify(state.customCatalog, null, 2));
+      const digest = await crypto.subtle.digest("SHA-256", bytes);
+      customCatSha = [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+    importHref = `#${customCatResourceUuid}`;
+    resources = [{
+      uuid: customCatResourceUuid,
+      title: `Custom Catalog aus ${bId} (C.2)`,
+      description: "Deterministisch aus dem Edition-2023-Baustein erzeugter lokaler Katalog — Schwesterdatei dieses Profils.",
+      rlinks: [{
+        href: catFileName,
+        "media-type": "application/oscal.catalog+json",
+        ...(customCatSha ? { hashes: [{ algorithm: "SHA-256", value: customCatSha }] } : {}),
+      }],
+    }];
+  }
+
   const profile = {
     "profile": {
       "uuid": crypto.randomUUID(),
@@ -2275,12 +2310,12 @@ function assembleProfile() {
       },
       "imports": [
         {
-          "href": `#${GPP_CATALOG_RESOURCE_UUID}`,
+          "href": importHref,
           "include-controls": [{ "with-ids": uniqueControls }],
         },
       ],
       ...(alters.length ? { "modify": { "alters": alters } } : {}),
-      "back-matter": { "resources": [pinnedCatalogResource()] },
+      "back-matter": { "resources": resources },
     },
   };
 

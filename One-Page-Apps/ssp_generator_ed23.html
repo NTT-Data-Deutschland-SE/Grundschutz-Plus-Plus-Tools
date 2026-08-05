@@ -3373,10 +3373,13 @@ ${candidates.join('\n')}`;
             });
 
             document.getElementById('add-custom-control-button').addEventListener('click', () => {
-                const id = document.getElementById('custom-control-id').value.trim();
+                let id = document.getElementById('custom-control-id').value.trim();
                 const title = document.getElementById('custom-control-title').value.trim();
                 const stmt = document.getElementById('custom-control-statement').value.trim();
                 if (!id || !title || !stmt) return alert("Alle Felder ausfüllen.");
+                // TokenDatatype: keine Leer-/Sonderzeichen, Beginn mit Buchstabe oder _
+                id = id.replace(/[^A-Za-z0-9ÄÖÜäöüß._\-]/g, '-');
+                if (!/^[A-Za-zÄÖÜäöüß_]/.test(id)) id = '_' + id;
 
                 bpState.customControls.set(id, { id, title, statement: stmt, source: 'custom' });
                 addControlToRisk({ id, source: 'custom' });
@@ -3701,7 +3704,23 @@ ${candidates.join('\n')}`;
 
             // --- Profile-specific data: modifications + custom controls + risk fallback ---
             if (profile) {
-                // Custom controls (inserted)
+                // Neues Format: Custom Controls als eingebetteter Katalog in back-matter
+                // (modify.inserts ist kein valides OSCAL und wird nur noch gelesen).
+                (profile['back-matter']?.resources || []).forEach(r => {
+                    if (r.base64?.['media-type'] !== 'application/oscal.catalog+json' || !r.base64.value) return;
+                    try {
+                        const cat = JSON.parse(base64DecodeUnicode(r.base64.value));
+                        (cat.catalog?.controls || []).forEach(cc => {
+                            const statementPart = (cc.parts || []).find(p => p.name === 'statement');
+                            bpState.customControls.set(cc.id, {
+                                id: cc.id,
+                                title: cc.title || cc.id,
+                                statement: statementPart?.prose || ''
+                            });
+                            bpState.manualControls.add(cc.id);
+                        });
+                    } catch (e) { console.warn('Eingebetteter Custom-Katalog konnte nicht gelesen werden', e); }
+                });
                 const inserts = profile.modify?.inserts || [];
                 inserts.forEach(ins => {
                     (ins.controls || []).forEach(cc => {
@@ -3799,6 +3818,7 @@ ${candidates.join('\n')}`;
         async function generateBlueprintPackage() {
             const t = bpState.metadata.title || "Blaupause";
             const profileData = generateProfile(t);
+            if (!profileData) return;
 
             const safeName = t.replace(/\s+/g, '_');
             downloadJSON(profileData, `${safeName}_Profile.json`);
@@ -3867,8 +3887,10 @@ ${candidates.join('\n')}`;
                 }
             };
 
+            // Custom Controls gehören nicht in den Basis-Import (sie existieren nicht im
+            // Katalog) — sie bekommen unten einen eigenen Import auf den eingebetteten Katalog.
             const baseImportReqIds = new Set([
-                ...bpState.manualControls,
+                ...[...bpState.manualControls].filter(cid => !bpState.customControls.has(cid)),
                 ...bpState.methodik.controls
             ]);
             bpState.praktiken.forEach(p => p.controls.forEach(cid => baseImportReqIds.add(cid)));
@@ -3883,6 +3905,49 @@ ${candidates.join('\n')}`;
                     profile.profile.imports[index + 1]["include-controls"] = [{ "with-ids": Array.from(catalog.controls).sort() }];
                 }
             });
+
+            // Custom Controls: modify.inserts existiert im OSCAL-Profilschema nicht
+            // (modify kennt nur set-parameters und alters). Eigene Controls werden als
+            // eingebetteter Mini-Katalog in back-matter mitgeliefert und über einen
+            // eigenen Import selektiert.
+            if (bpState.customControls.size > 0) {
+                const customCatResUuid = crypto.randomUUID();
+                const customCatalog = {
+                    catalog: {
+                        uuid: crypto.randomUUID(),
+                        metadata: { title: `${t} – Eigene Controls`, "last-modified": ts, version: bpState.metadata.version, "oscal-version": "1.2.2" },
+                        controls: Array.from(bpState.customControls.values()).map(c => ({
+                            id: c.id,
+                            title: c.title,
+                            parts: [{ id: `${c.id}_stm`, name: "statement", prose: c.statement }]
+                        }))
+                    }
+                };
+                profile.profile["back-matter"].resources.push({
+                    uuid: customCatResUuid,
+                    title: "Eigene Controls (eingebetteter Katalog)",
+                    description: "Im Generator angelegte Custom Controls als eingebetteter OSCAL-Katalog.",
+                    base64: { filename: "custom-controls-catalog.json", "media-type": "application/oscal.catalog+json", value: base64EncodeUnicode(JSON.stringify(customCatalog)) }
+                });
+                profile.profile.imports.push({
+                    href: `#${customCatResUuid}`,
+                    "include-controls": [{ "with-ids": Array.from(bpState.customControls.keys()).sort() }]
+                });
+            }
+
+            // Import ohne Control-Auswahl ist schema-invalid (anyOf include-all |
+            // include-controls) — leere Kataloge samt Pin-Resource weglassen.
+            {
+                const dropped = new Set(profile.profile.imports.filter(imp => !imp["include-controls"] && !imp["include-all"]).map(imp => imp.href));
+                if (dropped.size) {
+                    profile.profile.imports = profile.profile.imports.filter(imp => !dropped.has(imp.href));
+                    profile.profile["back-matter"].resources = profile.profile["back-matter"].resources.filter(r => !dropped.has(`#${r.uuid}`));
+                }
+            }
+            if (profile.profile.imports.length === 0) {
+                alert("Keine Controls ausgewählt — es kann kein gültiges OSCAL-Profil erzeugt werden (imports wäre leer).");
+                return null;
+            }
 
             bpState.catalogs.slice(1).forEach(catalog => {
                 profileMetadataProps.push({
@@ -3902,21 +3967,10 @@ ${candidates.join('\n')}`;
                 profileMetadataProps.push({ name: "risk-analysis-details-ref", value: `#${riskUuid}` });
             }
 
-            if (setParams.length > 0 || alters.length > 0 || bpState.customControls.size > 0) {
+            if (setParams.length > 0 || alters.length > 0) {
                 profile.profile.modify = {};
                 if (setParams.length > 0) profile.profile.modify["set-parameters"] = setParams;
                 if (alters.length > 0) profile.profile.modify.alters = alters;
-
-                if (bpState.customControls.size > 0) {
-                    profile.profile.modify.inserts = [{
-                        position: "ending",
-                        controls: Array.from(bpState.customControls.values()).map(c => ({
-                            id: c.id,
-                            title: c.title,
-                            parts: [{ name: "statement", "prose": c.statement }]
-                        }))
-                    }];
-                }
             }
 
             if (profile.profile["back-matter"].resources.length === 0) {

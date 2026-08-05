@@ -399,11 +399,14 @@ if(Array.isArray(arr)){const now=new Date();P.items[i].milestones=arr.map(m=>{co
 
 // EXPORT
 function exportPOAM(){
+    if(!P.items.length)return alert('Keine POA&M-Items vorhanden — poam-items ist im Schema Pflicht (minItems 1).');
     const ts=new Date().toISOString(),ru=crypto.randomUUID();
+    // Risk-Status auf die OSCAL-Wertemenge gemappt (open|investigating|remediating|deviation-requested|deviation-approved|closed);
+    // der Original-Status bleibt im poam-item als Prop "status" erhalten.
     const oscalRisks=P.items.filter(it=>it.status!=='closed').map(it=>{
-        const r={uuid:it.riskUuids?.[0]||crypto.randomUUID(),title:it.title,description:it.description,status:it.status==='risk-accepted'?'risk-accepted':it.status.includes('deviation')?'deviation-approved':'open'};
-        if(it.remediation){r.remediations=[{uuid:crypto.randomUUID(),lifecycle:it.status==='in-progress'?'implementation':'planned',title:`Remediation: ${it.controlId}`,description:it.remediation,
-            ...(it.milestones.length?{tasks:it.milestones.map(ms=>({uuid:ms.uuid,type:'milestone',title:ms.title,...(ms.dueDate?{timing:{"on-date":{date:`${ms.dueDate}T00:00:00Z`}}}:{}),props:ms.done?[{name:"status",value:"completed"}]:[]}))}:{})}]}
+        const r={uuid:it.riskUuids?.[0]||crypto.randomUUID(),title:it.title,description:it.description||it.title,statement:it.riskText||it.description||it.title,status:(it.status==='risk-accepted'||it.status.includes('deviation'))?'deviation-approved':'open'};
+        if(it.remediation){r.remediations=[{uuid:crypto.randomUUID(),lifecycle:'planned',title:`Remediation: ${it.controlId}`,description:it.remediation,
+            ...(it.milestones.length?{tasks:it.milestones.map(ms=>({uuid:ms.uuid,type:'milestone',title:ms.title,...(ms.dueDate?{timing:{"on-date":{date:`${ms.dueDate}T00:00:00Z`}}}:{}),...(ms.done?{props:[{name:"status",value:"completed"}]}:{})}))}:{})}]}
         if(it.deviationJustification)r['risk-log']={entries:[{uuid:crypto.randomUUID(),title:'Abweichung',description:it.deviationJustification,start:ts}]};return r});
     const oscalItems=P.items.map(it=>{const item={uuid:it.uuid,title:it.title,description:it.description||`POA&M: ${it.controlId}`,props:[{name:"priority",value:it.priority},{name:"status",value:it.status}]};
         if(it.deadline)item.props.push({name:"deadline",value:it.deadline});if(it.responsible)item.props.push({name:"responsible",value:it.responsible});
@@ -416,10 +419,10 @@ function exportPOAM(){
     // dazu die Katalog-Resource als Provenienz, gegen welchen Katalogstand die
     // Control-IDs/Titel dieses POA&M gelten.
     const srcResUuid=crypto.randomUUID();
-    const poam={"plan-of-action-and-milestones":{uuid:crypto.randomUUID(),metadata:{title:P.meta.title||'POA&M',version:P.meta.version||'1.0.0',"last-modified":ts,"oscal-version":"1.2.2",roles:[{id:"system-owner",title:"System Owner"},{id:"isso",title:"ISSO"}]},"import-ssp":{href:`#${srcResUuid}`},
-        ...(P.observations.length?{observations:P.observations.map(o=>({uuid:o.uuid,title:o.title,description:o.description,methods:o.methods,collected:o.collected}))}:{}),
-        ...(P.findings.length?{findings:P.findings.map(f=>({uuid:f.uuid,title:f.title,description:f.description,target:{type:"objective-id","target-id":f.targetId,status:{state:f.status}}}))}:{}),
-        risks:oscalRisks,"poam-items":oscalItems,
+    const poam={"plan-of-action-and-milestones":{uuid:crypto.randomUUID(),metadata:{title:P.meta.title||'POA&M',version:P.meta.version||'1.0.0',"last-modified":ts,"oscal-version":"1.2.2",roles:[{id:"system-owner",title:"System Owner"},{id:"isso",title:"ISSO"},{id:"ciso",title:"CISO"}]},"import-ssp":{href:`#${srcResUuid}`},
+        ...(P.observations.length?{observations:P.observations.map(o=>({uuid:o.uuid,title:o.title,description:o.description,methods:o.methods?.length?o.methods:['EXAMINE'],collected:o.collected||ts}))}:{}),
+        ...(P.findings.filter(f=>f.targetId).length?{findings:P.findings.filter(f=>f.targetId).map(f=>({uuid:f.uuid,title:f.title,description:f.description,target:{type:"objective-id","target-id":f.targetId,status:f.status==='satisfied'?{state:'satisfied'}:{state:'not-satisfied',...(f.status&&f.status!=='not-satisfied'?{reason:'other'}:{})}}}))}:{}),
+        ...(oscalRisks.length?{risks:oscalRisks}:{}),"poam-items":oscalItems,
         "back-matter":{resources:[
             {uuid:srcResUuid,title:`Quelldokument (übernommen aus ${P.arFilename||'Assessment Results'})`,rlinks:[{href:P.sspHref||'SSP.json'}]},
             pinnedCatalogResource()

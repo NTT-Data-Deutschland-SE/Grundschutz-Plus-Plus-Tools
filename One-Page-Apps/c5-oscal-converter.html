@@ -460,7 +460,9 @@ btnConvert.addEventListener('click', () => {
     try {
       const docs = jsyaml.load(f.content, { json: true });
       const domain = filename.replace(/\.ya?ml$/i, '').toUpperCase();
-      const items = Array.isArray(docs) ? docs : [docs];
+      // Nicht-Objekte (leere Dateien, Skalare) aussortieren — sie würden später
+      // beim Feldzugriff die gesamte Konvertierung abbrechen
+      const items = (Array.isArray(docs) ? docs : [docs]).filter(it => it && typeof it === 'object');
       parsed.set(domain, items);
       f.status = 'ok';
       log(`✓ Parsed ${filename}: ${items.length} criteria`, 'success');
@@ -701,8 +703,11 @@ btnConvert.addEventListener('click', () => {
         totalParts++;
       }
 
-      // Clean up empty arrays
+      // Clean up empty arrays (minItems:1 — auch in den Sub-Controls)
       if (control.parts.length === 0) delete control.parts;
+      for (const sc of control.controls) {
+        if (sc.parts && sc.parts.length === 0) delete sc.parts;
+      }
       if (control.controls.length === 0) delete control.controls;
 
       group.controls.push(control);
