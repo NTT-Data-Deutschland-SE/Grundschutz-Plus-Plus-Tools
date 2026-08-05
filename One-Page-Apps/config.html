@@ -186,7 +186,10 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
     </div>
     <div class="grid" style="margin-top:16px">
       <div><label class="f" for="run-concurrency">Parallele Aufrufe</label><input type="text" id="run-concurrency" inputmode="numeric"></div>
-      <div><label class="f" for="run-chunk">Chunk-Größe</label><input type="text" id="run-chunk" inputmode="numeric"></div>
+      <div><label class="f" for="run-chunk">Chunk (Anzahl)</label><input type="text" id="run-chunk" inputmode="numeric">
+        <div class="note">Befunde bzw. Elemente je Aufruf — vom Validator und den Prüfwerkzeugen benutzt.</div></div>
+      <div><label class="f" for="run-chunkchars">Chunk (Zeichen)</label><input type="text" id="run-chunkchars" inputmode="numeric">
+        <div class="note">Dokumenttext je Aufruf — von den SSP-Generatoren bei der Dokumentanalyse benutzt.</div></div>
       <div><label class="f" for="run-retries">Retries</label><input type="text" id="run-retries" inputmode="numeric"></div>
     </div>
   </div>
@@ -246,7 +249,8 @@ const FIELDS = [
   ["backend", "ai:backend"], ["key-gemini", "ai:key:gemini"], ["key-openrouter", "ai:key:openrouter"],
   ["model-gemini", "ai:model:gemini"], ["model-openrouter", "ai:model:openrouter"],
   ["thinking", "ai:thinking"], ["checker-backend", "ai:checker:backend"], ["checker-model", "ai:checker:model"],
-  ["run-concurrency", "run:concurrency"], ["run-chunk", "run:chunk"], ["run-retries", "run:retries"],
+  ["run-concurrency", "run:concurrency"], ["run-chunk", "run:chunk"],
+  ["run-chunkchars", "run:chunkchars"], ["run-retries", "run:retries"],
 ];
 const TOGGLES = [["grounding", "ai:grounding"], ["or-structuredonly", "ai:or:structuredonly"]];
 

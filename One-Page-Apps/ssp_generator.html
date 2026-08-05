@@ -676,68 +676,43 @@
             <button type="button" class="nav-item" onclick="clearAIChunkCacheUI()"><span class="nav-ico">⋯</span>Chunk-Cache leeren</button>
         </div>
 
-        <!-- Konfiguration: KI-Zugang + Laufzeit-Einstellungen (Welle 1) -->
+        <!-- KI-Zugang und Laufzeit liegen zentral in config.html (gpp:cfg:*).
+             Hier steht nur noch, was gerade gilt; die Felder im ausgeblendeten
+             Block darunter sind ein Kompatibilitäts-Layer für den Bestandscode
+             und werden ausschließlich aus der zentralen Konfiguration gefüllt. -->
         <div class="rail-group">
             <div class="rail-label">KI-Zugang</div>
-            <div class="rail-field">
-                <label for="ai-doc-provider">Backend</label>
-                <select id="ai-doc-provider" onchange="onAIDocumentProviderChange()">
+            <div id="gpp-cfg-summary" class="rail-hint">–</div>
+            <div class="rail-hintrow" style="margin-top:8px">
+                <a class="rail-mini-btn" href="config.html" target="_blank" rel="noopener">⚙ Einstellungen</a>
+                <button type="button" class="rail-mini-btn" onclick="applyGppConfig(true)" title="Einstellungen erneut übernehmen">↻</button>
+            </div>
+            <p class="rail-note">Bei einem CORS-Fehler die Datei nicht per <code>file://</code> öffnen, sondern im
+                Verzeichnis <code>python -m http.server</code> starten und über <code>http://localhost:8000/…</code> aufrufen.</p>
+
+            <div id="gpp-cfg-shim" hidden aria-hidden="true">
+                <select id="ai-doc-provider">
                     <option value="gemini">Google Gemini</option>
                     <option value="openrouter">OpenRouter</option>
                 </select>
-            </div>
-            <!-- Nur bei OpenRouter: Modellkatalog live aus /api/v1/models (ohne Key), 24 h zwischengespeichert -->
-            <div class="rail-field hidden" id="ai-doc-or-catalog-field">
-                <label for="ai-doc-or-catalog">Modellkatalog</label>
-                <select id="ai-doc-or-catalog" onchange="onOpenRouterCatalogPick()"></select>
-                <div class="rail-hintrow">
-                    <span id="ai-doc-or-status" class="rail-hint">Katalog noch nicht geladen</span>
-                    <button type="button" id="ai-doc-or-refresh" class="rail-mini-btn"
-                        onclick="refreshOpenRouterCatalog(true)" title="Modellkatalog von openrouter.ai neu laden">↻ Laden</button>
+                <div id="ai-doc-or-catalog-field" class="hidden">
+                    <select id="ai-doc-or-catalog"></select>
+                    <span id="ai-doc-or-status"></span>
+                    <button type="button" id="ai-doc-or-refresh"></button>
                 </div>
-            </div>
-            <div class="rail-field">
-                <label for="ai-doc-model">Modell</label>
-                <input id="ai-doc-model" type="text" list="ai-doc-models" onchange="saveAIDocumentConfig()">
+                <input id="ai-doc-model" type="text" list="ai-doc-models">
                 <datalist id="ai-doc-models"></datalist>
-            </div>
-            <div class="rail-field">
-                <label for="ai-doc-key">API-Key</label>
-                <input id="ai-doc-key" type="password" oninput="saveAIDocumentConfig()" autocomplete="off"
-                    placeholder="Nur für diese Sitzung">
-            </div>
-            <div id="ai-doc-key-hint" class="rail-hint rail-hint-warn hidden"></div>
-            <p class="rail-note">Bei einem CORS-Fehler die Datei nicht per <code>file://</code> öffnen, sondern im
-                Verzeichnis <code>python -m http.server</code> starten und über <code>http://localhost:8000/…</code> aufrufen.
-                OpenRouter erlaubt Browser-Aufrufe ausdrücklich und liefert dieselben Anthropic-Modelle mit einem
-                <code>sk-or-…</code>-Key — der frühere Claude-Direktpfad über <code>api.anthropic.com</code> scheiterte
-                außerhalb einer Artifact-Umgebung an CORS und ist deshalb entfallen.</p>
-        </div>
-
-        <div class="rail-group">
-            <div class="rail-label">Laufzeit</div>
-            <div class="rail-grid2">
-                <div class="rail-field">
-                    <label for="ai-doc-concurrency" title="Maximal gleichzeitig laufende KI-Aufrufe">Parallel</label>
-                    <input id="ai-doc-concurrency" type="number" min="1" max="16" step="1" value="4" oninput="saveAIRunSettings()">
-                </div>
-                <div class="rail-field">
-                    <label for="ai-doc-chunksize" title="Zeichen je Chunk bei der Extraktion">Chunk</label>
-                    <input id="ai-doc-chunksize" type="number" min="2000" max="200000" step="1000" value="28000" oninput="saveAIRunSettings()">
-                </div>
-                <div class="rail-field">
-                    <label for="ai-doc-retries" title="Wiederholungen je Aufruf mit exponentiellem Backoff">Retries</label>
-                    <input id="ai-doc-retries" type="number" min="0" max="5" step="1" value="2" oninput="saveAIRunSettings()">
-                </div>
-                <div class="rail-field">
-                    <label for="ai-doc-thinking" title="thinkingConfig.thinkingLevel — wird nur an Gemini gesendet">Thinking</label>
-                    <select id="ai-doc-thinking" onchange="saveAIRunSettings()">
-                        <option value="minimal">minimal</option>
-                        <option value="low">low</option>
-                        <option value="medium" selected>medium</option>
-                        <option value="high">high</option>
-                    </select>
-                </div>
+                <input id="ai-doc-key" type="password" autocomplete="off">
+                <div id="ai-doc-key-hint" class="hidden"></div>
+                <input id="ai-doc-concurrency" type="number" value="4">
+                <input id="ai-doc-chunksize" type="number" value="28000">
+                <input id="ai-doc-retries" type="number" value="2">
+                <select id="ai-doc-thinking">
+                    <option value="minimal">minimal</option>
+                    <option value="low">low</option>
+                    <option value="medium" selected>medium</option>
+                    <option value="high">high</option>
+                </select>
             </div>
         </div>
 
@@ -929,7 +904,17 @@
         </div>
     </div>
 
+<script src="gpp-core.js"></script>
     <script>
+        if (typeof gppCfg === 'undefined') {
+            document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
+                '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
+                '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (gs_tools.zip) ' +
+                'statt einzelner Dateien.</p></div>';
+            throw new Error('gpp-core.js missing');
+        }
+        const GPP_TOOL_ID = 'ssp_generator';
+
         // --- CONFIG & STATE ---
         // Die Stand-der-Technik-Bibliothek wurde umstrukturiert (control_layer/…): alter
         // Pfad "Anwenderkataloge/…" liefert 404.
@@ -1660,38 +1645,32 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             `;
         }
 
-        // --- SECTION 6: EDITIERBARE PROMPTS ---
+        // --- SECTION 6: PROMPTS (zentral in config.html) ---
         function renderAIPromptsHTML() {
-            const cards = Object.entries(AI_PROMPTS).map(([name, def]) => `
-                <div class="p-4 bg-slate-900 border border-slate-700 rounded-lg">
-                    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-2 mb-2">
-                        <div class="min-w-0">
-                            <div class="text-xs font-bold text-cyan-300 uppercase tracking-wider font-mono">${escapeHTML(def.label)}</div>
-                            <div class="text-[11px] text-slate-500 mt-0.5">${escapeHTML(def.hint)}</div>
-                        </div>
-                        <div class="flex items-center gap-3 flex-shrink-0">
-                            <span id="${def.id}-saved" class="text-[10px] text-emerald-400 opacity-0 transition-opacity">gespeichert</span>
-                            <button type="button" onclick="resetAIPrompt('${name}')" class="text-xs font-semibold text-slate-300 border border-slate-600 rounded px-2.5 py-1 hover:bg-slate-700 transition-colors">Zurücksetzen</button>
-                        </div>
-                    </div>
-                    <textarea id="${def.id}" spellcheck="false" oninput="onAIPromptInput('${name}')" style="resize: vertical; min-height: 190px;"
-                        class="w-full px-3 py-2 bg-slate-950 border border-slate-600 rounded-lg text-xs text-slate-200 font-mono leading-relaxed focus:outline-none focus:border-cyan-500 custom-scroll"></textarea>
-                    ${def.placeholders.length ? `<div class="text-[10px] text-slate-500 mt-1 font-mono">Platzhalter: ${def.placeholders.map(escapeHTML).join(' · ')}</div>` : ''}
-                    <div id="${def.id}-warn" class="hidden mt-2 px-2.5 py-1.5 rounded bg-amber-950/40 border border-amber-800/60 text-[11px] text-amber-200"></div>
-                </div>`).join('');
             return `
                 <div class="space-y-4">
-                    <p class="text-xs text-slate-400 leading-relaxed">Alle Prompts, die dieses Tool an das Modell sendet, stehen hier zur Bearbeitung. Änderungen werden sofort im Browser gespeichert (localStorage) und beim nächsten KI-Aufruf verwendet. Platzhalter in geschweiften Klammern werden zur Laufzeit durch die Daten ersetzt; fehlt ein Platzhalter, wird er defensiv angehängt, damit der Aufruf nicht ins Leere läuft. Der Chunk-Cache der Extraktion berücksichtigt den Prompt-Text — nach einer Änderung werden die betroffenen Chunks neu abgerufen.</p>
-                    ${cards}
+                    <p class="text-xs text-slate-400 leading-relaxed">Die Prompts dieses Tools werden gesammelt in
+                        <a href="config.html" target="_blank" rel="noopener" class="text-cyan-400 font-semibold">config.html</a>
+                        bearbeitet — zusammen mit denen der anderen Anwendungen und immer gegen den aktuellen Standardtext,
+                        den dieses Tool beim Start anmeldet. Platzhalter in geschweiften Klammern werden zur Laufzeit ersetzt;
+                        fehlt einer, wird er defensiv angehängt. Der Chunk-Cache der Extraktion berücksichtigt den Prompt-Text —
+                        nach einer Änderung werden die betroffenen Chunks neu abgerufen.</p>
+                    <div class="p-4 bg-slate-900 border border-slate-700 rounded-lg">
+                        <div class="text-xs font-bold text-cyan-300 uppercase tracking-wider font-mono mb-2">Prompts dieses Tools</div>
+                        <div id="ai-prompt-overview"></div>
+                        <a href="config.html" target="_blank" rel="noopener"
+                           class="inline-block mt-3 px-3 py-1.5 border border-slate-600 rounded text-xs font-semibold text-slate-200 hover:bg-slate-700">⚙ Prompts bearbeiten</a>
+                    </div>
                 </div>
             `;
         }
 
+        // Prompttexte kommen zentral aus config.html; der Standardtext bleibt hier
+        // im Tool, damit es ohne fremde Datei erklärbar und lauffähig ist.
         function getAIPromptTemplate(name) {
             const def = AI_PROMPTS[name];
             if (!def) throw new Error(`Unbekannter Prompt: ${name}`);
-            const value = document.getElementById(def.id)?.value;
-            return (value && value.trim()) ? value : def.def;
+            return gppPrompt(GPP_TOOL_ID, name, def.def);
         }
 
         const getAISystemInstruction = () => getAIPromptTemplate('system');
@@ -1728,37 +1707,35 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             warnBox.classList.remove('hidden');
         }
 
-        window.onAIPromptInput = function (name) {
-            const def = AI_PROMPTS[name];
-            const value = document.getElementById(def.id)?.value ?? '';
-            try { localStorage.setItem(`ssp-generator-ai-prompt-${name}`, value); } catch (e) { console.warn('Prompt konnte nicht gespeichert werden:', e); }
-            validateAIPrompt(name);
-            const saved = document.getElementById(`${def.id}-saved`);
-            if (saved) {
-                saved.style.opacity = '1';
-                clearTimeout(saved._fadeTimer);
-                saved._fadeTimer = setTimeout(() => { saved.style.opacity = '0'; }, 1200);
-            }
-        };
-
+        // Bearbeiten und Zurücksetzen passiert in config.html — hier bleibt nur die
+        // Anzeige. Die Funktionen bleiben als no-ops erhalten, falls noch ein
+        // Handler aus einer alten Ansicht darauf zeigt.
+        window.onAIPromptInput = function () { renderPromptOverview(); };
         window.resetAIPrompt = function (name) {
-            const def = AI_PROMPTS[name];
-            const area = document.getElementById(def.id);
-            if (!area) return;
-            area.value = def.def;
-            onAIPromptInput(name);
-            aiLog('info', `Prompt zurückgesetzt: ${def.label}`);
+            localStorage.removeItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${name}`);
+            renderPromptOverview();
+            aiLog('info', `Prompt auf Standard zurückgesetzt: ${AI_PROMPTS[name]?.label || name}`);
         };
 
+        // Meldet die Prompts zur zentralen Bearbeitung an und zeigt in der
+        // Prompt-Karte nur noch, welche vom Standard abweichen.
         function initAIPrompts() {
-            Object.entries(AI_PROMPTS).forEach(([name, def]) => {
-                const area = document.getElementById(def.id);
-                if (!area) return;
-                let stored = null;
-                try { stored = localStorage.getItem(`ssp-generator-ai-prompt-${name}`); } catch (e) { }
-                area.value = (stored && stored.trim()) ? stored : def.def;
-                validateAIPrompt(name);
-            });
+            gppRegisterPrompts(GPP_TOOL_ID, Object.entries(AI_PROMPTS).map(([name, def]) => ({
+                id: name, label: def.label, placeholders: def.placeholders || [], default: def.def,
+            })));
+            renderPromptOverview();
+            window.addEventListener('storage', e => { if (e.key && e.key.startsWith('gpp:cfg:prompt')) renderPromptOverview(); });
+        }
+        function renderPromptOverview() {
+            const box = document.getElementById('ai-prompt-overview');
+            if (!box) return;
+            box.innerHTML = Object.entries(AI_PROMPTS).map(([name, def]) => {
+                const custom = localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${name}`) !== null;
+                return `<div style="display:flex;gap:8px;align-items:baseline;padding:3px 0;font-size:12px">
+                    <span style="font-family:monospace;font-size:10px;padding:1px 5px;border-radius:4px;border:1px solid ${custom ? '#e0a03a' : '#475569'};color:${custom ? '#e0a03a' : '#94a3b8'}">${custom ? 'angepasst' : 'standard'}</span>
+                    <span>${def.label}</span>
+                </div>`;
+            }).join('');
         }
 
         // --- KI-LAUFZEITEINSTELLUNGEN ---
@@ -2144,13 +2121,40 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             return notice;
         }
 
+        // Konfiguration kommt aus config.html (gpp:cfg:*) und wird in die
+        // ausgeblendeten Shim-Felder gespiegelt; dieses Tool schreibt nie zurück.
+        window.applyGppConfig = function (verbose) {
+            const set = (id, v) => { const el = document.getElementById(id); if (el && v != null) el.value = v; };
+            const backend = gppCfg.get('ai:backend');
+            set('ai-doc-provider', backend);
+            set('ai-doc-model', gppCfg.get('ai:model:' + backend));
+            set('ai-doc-key', gppCfg.get('ai:key:' + backend));
+            set('ai-doc-thinking', gppCfg.get('ai:thinking'));
+            set('ai-doc-concurrency', gppCfg.get('run:concurrency'));
+            set('ai-doc-chunksize', gppCfg.get('run:chunkchars'));   // Zeichen, nicht Anzahl
+            set('ai-doc-retries', gppCfg.get('run:retries'));
+            if (typeof onAIDocumentProviderChange === 'function') onAIDocumentProviderChange();
+            renderGppCfgSummary();
+            if (verbose) aiLog('ok', 'Einstellungen aus config.html neu übernommen.');
+        };
+        function renderGppCfgSummary() {
+            const box = document.getElementById('gpp-cfg-summary');
+            if (!box) return;
+            const backend = gppCfg.get('ai:backend');
+            const t = gppCfg.target(backend);
+            const missing = [];
+            if (!t.key) missing.push('API-Key');
+            if (!t.model) missing.push('Modell');
+            box.innerHTML = missing.length
+                ? `<b style="color:#e0a03a">${missing.join(' und ')} fehlt</b> für „${backend}". Ohne Schlüssel laufen alle
+                   nicht-KI-Funktionen weiter — Katalog, Tailoring, Risikoanalyse von Hand und der OSCAL-Export.`
+                : `<b>${backend}</b> · <code>${t.model}</code> · Thinking ${gppCfg.get('ai:thinking')} ·
+                   ${gppCfg.get('run:concurrency')} parallel, ${gppCfg.get('run:retries')} Retries`;
+        }
         function loadAIDocumentConfig() {
             aiBackendMigrationNotice = migrateLegacyAIDocumentConfig();
-            let backend = 'gemini';
-            try { backend = normalizeAIBackend(localStorage.getItem(AI_BACKEND_STORAGE_KEY)); } catch (e) { }
-            const providerInput = document.getElementById('ai-doc-provider');
-            if (providerInput) providerInput.value = backend;
-            onAIDocumentProviderChange();
+            applyGppConfig(false);
+            window.addEventListener('storage', e => { if (e.key && e.key.startsWith('gpp:cfg:')) applyGppConfig(false); });
             if (aiBackendMigrationNotice) aiLog('warn', aiBackendMigrationNotice);
         }
 
@@ -5370,6 +5374,12 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
             const safeName = t.replace(/\s+/g, '_');
             downloadJSON(profileData, `${safeName}_Profile.json`);
+            // zusätzlich in den gemeinsamen Artefaktbestand (Übersicht in index.html);
+            // der Download oben bleibt davon unberührt
+            gppArtefacts.save({
+                stage: 'model', kind: 'profile', tool: GPP_TOOL_ID,
+                title: `${t} — OSCAL-Profil`, filename: `${safeName}_Profile.json`, data: profileData,
+            }).catch(e => console.warn('Artefakt (Profil) nicht abgelegt:', e));
 
             const generateSSPCheckbox = document.getElementById('generate-ssp-checkbox');
             if (generateSSPCheckbox && generateSSPCheckbox.checked) {
@@ -5380,6 +5390,11 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 const profileHash = await sha256Hex(profileBytes);
                 const sspData = generateSSP(t, profileData.profile.uuid, `${safeName}_Profile.json`, profileHash);
                 setTimeout(() => downloadJSON(sspData, `${safeName}_SSP.json`), 600);
+                gppArtefacts.save({
+                    stage: 'model', kind: 'ssp', tool: GPP_TOOL_ID,
+                    title: `${t} — Muster-SSP`, filename: `${safeName}_SSP.json`, data: sspData,
+                    meta: { profile: `${safeName}_Profile.json`, profileSha256: profileHash },
+                }).catch(e => console.warn('Artefakt (SSP) nicht abgelegt:', e));
             }
         }
 

@@ -28,7 +28,12 @@ const GPP_CFG_DEFAULTS = {
   "ai:checker:model": "",
   "ai:or:structuredonly": "1",
   "run:concurrency": "4",
+  // Zwei Chunk-Begriffe, bewusst getrennt: der Validator zerlegt nach ANZAHL
+  // (Befunde je Aufruf), die Generatoren nach ZEICHEN (Dokumenttext je Aufruf).
+  // Ein gemeinsamer Schlüssel hätte in der jeweils anderen Einheit unsinnige
+  // Werte erzeugt — 6 Zeichen bzw. 28000 Befunde.
   "run:chunk": "6",
+  "run:chunkchars": "28000",
   "run:retries": "2",
 };
 
