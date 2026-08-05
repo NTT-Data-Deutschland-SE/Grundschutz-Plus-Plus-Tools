@@ -258,17 +258,22 @@ function base64DecodeUnicode(str){
     catch(e){return null}
 }
 
-// Liest die detaillierte Risikoanalyse aus der SSP back-matter
-// (resource → attachment base64, filename "risk-analysis.json" bzw. decodiertes {risks:[...]}).
+// Liest die detaillierte Risikoanalyse aus der SSP back-matter.
+// Standard-OSCAL: base64 direkt auf der Resource; Altformat: attachments[].base64
+// (filename "risk-analysis.json" bzw. decodiertes {risks:[...]}).
 function extractSSPRisks(ssp){
     const out=[];
     (ssp['back-matter']?.resources||[]).forEach(r=>{
+        const cands=[];
+        if(r.base64?.value)cands.push(r.base64);
         (r.attachments||[]).forEach(att=>{
-            if(!att?.base64?.value)return;
-            const isRisk=att.base64.filename==='risk-analysis.json'||(att['media-type']||'').includes('json');
+            if(att?.base64?.value)cands.push({...att.base64,'media-type':att.base64['media-type']||att['media-type']});
+        });
+        cands.forEach(b64=>{
+            const isRisk=b64.filename==='risk-analysis.json'||(b64['media-type']||'').includes('json');
             if(!isRisk)return;
             try{
-                const json=JSON.parse(base64DecodeUnicode(att.base64.value)||'null');
+                const json=JSON.parse(base64DecodeUnicode(b64.value)||'null');
                 if(json&&Array.isArray(json.risks))out.push(...json.risks);
             }catch(e){}
         });

@@ -770,12 +770,12 @@
                 const pinHash = (rl.hashes || []).find(h => h.algorithm === 'SHA-256')?.value || null;
                 return loadReferencedResource(rl.href, rootDoc, pinHash);
             }
-            const b64 = res?.attachments?.[0]?.base64?.value;
+            const b64 = res?.base64?.value || res?.attachments?.[0]?.base64?.value;
             if (b64) {
                 const txt = base64DecodeUnicode(b64);
                 if (txt) { try { return JSON.parse(txt); } catch (e) { /* fällt durch zu missing */ } }
             }
-            resourceLoadStatus.push({ href, status: 'missing', source: 'back-matter', error: 'Resource nicht auflösbar (keine rlink-URL, kein Attachment)' });
+            resourceLoadStatus.push({ href, status: 'missing', source: 'back-matter', error: 'Resource nicht auflösbar (keine rlink-URL, kein eingebettetes base64)' });
             return null;
         }
 
@@ -893,10 +893,11 @@
 
     function extractRiskDataFromSSP(ssp) {
         (ssp["back-matter"]?.resources || []).forEach(r => {
-            const att = r.attachments?.[0];
-            if (att?.base64?.filename === "risk-analysis.json" && att.base64.value) {
+            // Standard-OSCAL: base64 direkt auf der Resource; Altformat: attachments[].base64
+            const b64 = r.base64 || r.attachments?.[0]?.base64;
+            if (b64?.filename === "risk-analysis.json" && b64.value) {
                 try {
-                    const json = JSON.parse(base64DecodeUnicode(att.base64.value));
+                    const json = JSON.parse(base64DecodeUnicode(b64.value));
                     if (json.risks) loadedRiskData.push({ sourceHref: "SSP", sourceTitle: "SSP Risikoanalyse", risks: json.risks });
                 } catch (e) {}
             }
@@ -906,10 +907,10 @@
     function extractRiskData(p, src) {
         const ref = p.metadata?.props?.find(pr => pr && pr.name === 'risk-analysis-details-ref')?.value?.replace('#', '');
         const res = p["back-matter"]?.resources?.find(r => r.uuid === ref);
-        const att = res?.attachments?.[0];
-        if (att?.base64?.value) {
+        const b64 = res?.base64 || res?.attachments?.[0]?.base64;
+        if (b64?.value) {
             try {
-                const json = JSON.parse(base64DecodeUnicode(att.base64.value));
+                const json = JSON.parse(base64DecodeUnicode(b64.value));
                 if (json.risks) loadedRiskData.push({ sourceHref: src, sourceTitle: p.metadata.title || src, risks: json.risks });
             } catch (e) {}
         }
@@ -918,10 +919,10 @@
     function extractEmbeddedCatalogs(p) {
         (p["back-matter"]?.resources || []).forEach(r => {
             if (r.rlinks?.some(rl => rl["media-type"] === "application/oscal.catalog+json")) {
-                const att = r.attachments?.[0];
-                if (att?.base64?.value) {
+                const b64 = r.base64 || r.attachments?.[0]?.base64;
+                if (b64?.value) {
                     try {
-                        const json = JSON.parse(base64DecodeUnicode(att.base64.value));
+                        const json = JSON.parse(base64DecodeUnicode(b64.value));
                         if (json.catalog) processCatalogData(json.catalog);
                     } catch (e) {}
                 }

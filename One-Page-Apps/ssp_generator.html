@@ -3802,19 +3802,21 @@ ${candidates.join('\n')}`;
                 const resources = ssp['back-matter']?.resources || [];
                 let importedAIAnalysis = null;
                 resources.forEach(r => {
-                    (r.attachments || []).forEach(a => {
-                        if (a['media-type'] === 'application/json' && a.base64?.value) {
-                            try {
-                                const decoded = base64DecodeUnicode(a.base64.value);
-                                const parsed = JSON.parse(decoded);
-                                const filename = a.base64?.filename || '';
-                                if (filename === 'ai-document-analysis.json' || (parsed.schemaVersion && Array.isArray(parsed.controls) && Array.isArray(parsed.assets))) {
-                                    importedAIAnalysis = parsed;
-                                } else if (Array.isArray(parsed.risks)) {
-                                    bpState.riskData = parsed.risks;
-                                }
-                            } catch (e) { console.warn('Risk-Attachment konnte nicht dekodiert werden', e); }
-                        }
+                    // Standard-OSCAL: base64 direkt auf der Resource; Altformat: attachments[].base64
+                    const embedded = [];
+                    if (r.base64?.value && (r.base64['media-type'] || 'application/json') === 'application/json') embedded.push(r.base64);
+                    (r.attachments || []).forEach(a => { if (a['media-type'] === 'application/json' && a.base64?.value) embedded.push(a.base64); });
+                    embedded.forEach(b => {
+                        try {
+                            const decoded = base64DecodeUnicode(b.value);
+                            const parsed = JSON.parse(decoded);
+                            const filename = b.filename || '';
+                            if (filename === 'ai-document-analysis.json' || (parsed.schemaVersion && Array.isArray(parsed.controls) && Array.isArray(parsed.assets))) {
+                                importedAIAnalysis = parsed;
+                            } else if (Array.isArray(parsed.risks)) {
+                                bpState.riskData = parsed.risks;
+                            }
+                        } catch (e) { console.warn('Risk-Attachment konnte nicht dekodiert werden', e); }
                     });
                 });
                 if (importedAIAnalysis) {
@@ -3904,14 +3906,15 @@ ${candidates.join('\n')}`;
                 if (bpState.riskData.length === 0) {
                     const resources = profile['back-matter']?.resources || [];
                     resources.forEach(r => {
-                        (r.attachments || []).forEach(a => {
-                            if (a['media-type'] === 'application/json' && a.base64?.value) {
-                                try {
-                                    const decoded = base64DecodeUnicode(a.base64.value);
-                                    const parsed = JSON.parse(decoded);
-                                    if (Array.isArray(parsed.risks)) bpState.riskData = parsed.risks;
-                                } catch (e) { }
-                            }
+                        const embedded = [];
+                        if (r.base64?.value && (r.base64['media-type'] || 'application/json') === 'application/json') embedded.push(r.base64);
+                        (r.attachments || []).forEach(a => { if (a['media-type'] === 'application/json' && a.base64?.value) embedded.push(a.base64); });
+                        embedded.forEach(b => {
+                            try {
+                                const decoded = base64DecodeUnicode(b.value);
+                                const parsed = JSON.parse(decoded);
+                                if (Array.isArray(parsed.risks)) bpState.riskData = parsed.risks;
+                            } catch (e) { }
                         });
                     });
                 }
@@ -4042,8 +4045,7 @@ ${candidates.join('\n')}`;
                 const riskUuid = crypto.randomUUID();
                 profile.profile["back-matter"].resources.push({
                     uuid: riskUuid, title: "Risikoanalyse", description: "Details der Risikoanalyse",
-                    rlinks: [{ href: `#${riskUuid}-data`, "media-type": "application/json" }],
-                    attachments: [{ uuid: `${riskUuid}-data`, "media-type": "application/json", base64: { filename: "risk-analysis.json", value: base64EncodeUnicode(JSON.stringify({ risks: bpState.riskData })) } }]
+                    base64: { filename: "risk-analysis.json", "media-type": "application/json", value: base64EncodeUnicode(JSON.stringify({ risks: bpState.riskData })) }
                 });
                 profileMetadataProps.push({ name: "risk-analysis-details-ref", value: `#${riskUuid}` });
             }
@@ -4411,7 +4413,7 @@ ${candidates.join('\n')}`;
                 const requirement = {
                     uuid: crypto.randomUUID(),
                     "control-id": cid,
-                    description: (aiControl?.aiNative && aiControl.description) || "Spezifische Zuweisung über Risikoanalyse, Tailoring, Prozesse oder zusätzliche Kataloge.",
+                    remarks: (aiControl?.aiNative && aiControl.description) || "Spezifische Zuweisung über Risikoanalyse, Tailoring, Prozesse oder zusätzliche Kataloge.",
                     "by-components": byComps
                 };
                 if (aiControl?.sourceDocument) {
@@ -4437,7 +4439,7 @@ ${candidates.join('\n')}`;
                         req = {
                             uuid: crypto.randomUUID(),
                             'control-id': impl.gppId,
-                            description: 'Umsetzung durch BSI-Komponente aus der Stand-der-Technik-Bibliothek (implementation_layer).',
+                            remarks: 'Umsetzung durch BSI-Komponente aus der Stand-der-Technik-Bibliothek (implementation_layer).',
                             'by-components': []
                         };
                         reqByControl.set(impl.gppId, req);
@@ -4484,7 +4486,8 @@ ${candidates.join('\n')}`;
                         description: "Im Geltungsbereich des Systems verarbeitete Informationen. Die fachliche Kategorisierung ist im weiteren SSP-Lebenszyklus zu konkretisieren."
                     }]
                 },
-                status: { state: "operational" }
+                status: { state: "operational" },
+                "authorization-boundary": { description: "Der Geltungsbereich umfasst die unter system-implementation aufgeführten Komponenten. Die Abgrenzung des Informationsverbunds ist im weiteren SSP-Lebenszyklus zu präzisieren (Netzplan, Schnittstellen)." }
             };
             const characteristicProps = bpState.catalogs.slice(1).map(catalog => ({
                 name: 'referenced-catalog',
@@ -4505,7 +4508,7 @@ ${candidates.join('\n')}`;
                     "import-profile": { href: `#${profileResUuid}` },
                     "system-characteristics": systemCharacteristics,
                     "system-implementation": { components: sspComponents },
-                    "control-implementation": { description: "Spezifische Risikomitigierung, manuelle Controls und Prozesse", "implemented-requirements": reqs.length > 0 ? reqs : [{ uuid: crypto.randomUUID(), "control-id": "PLACEHOLDER", description: "Empty" }] }
+                    "control-implementation": { description: "Spezifische Risikomitigierung, manuelle Controls und Prozesse", "implemented-requirements": reqs.length > 0 ? reqs : [{ uuid: crypto.randomUUID(), "control-id": "PLACEHOLDER", remarks: "Empty" }] }
                 }
             };
 
@@ -4522,8 +4525,7 @@ ${candidates.join('\n')}`;
                 const riskUuid = crypto.randomUUID();
                 backMatterResources.push({
                     uuid: riskUuid, title: "Detaillierte Risikoanalyse", description: "Vollständiges Risk-Log",
-                    rlinks: [{ href: `#${riskUuid}-data`, "media-type": "application/json" }],
-                    attachments: [{ uuid: `${riskUuid}-data`, "media-type": "application/json", base64: { filename: "risk-analysis.json", value: base64EncodeUnicode(JSON.stringify({ risks: bpState.riskData })) } }]
+                    base64: { filename: "risk-analysis.json", "media-type": "application/json", value: base64EncodeUnicode(JSON.stringify({ risks: bpState.riskData })) }
                 });
             }
             if (aiAnalysis && aiAnalysisResourceUuid) {
@@ -4536,15 +4538,11 @@ ${candidates.join('\n')}`;
                         ns: OSCAL_NAMESPACES.aiDocumentAnalysis,
                         value: aiAnalysis.analysisId
                     }],
-                    rlinks: [{ href: `#${aiAnalysisResourceUuid}-data`, "media-type": "application/json" }],
-                    attachments: [{
-                        uuid: `${aiAnalysisResourceUuid}-data`,
+                    base64: {
+                        filename: "ai-document-analysis.json",
                         "media-type": "application/json",
-                        base64: {
-                            filename: "ai-document-analysis.json",
-                            value: base64EncodeUnicode(JSON.stringify(aiAnalysis))
-                        }
-                    }]
+                        value: base64EncodeUnicode(JSON.stringify(aiAnalysis))
+                    }
                 });
             }
             if (backMatterResources.length) ssp["system-security-plan"]["back-matter"] = { resources: backMatterResources };
