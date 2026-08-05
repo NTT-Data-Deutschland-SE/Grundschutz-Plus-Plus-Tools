@@ -1064,12 +1064,24 @@
             throw new Error('gpp-core.js missing');
         }
         const GPP_TOOL_ID = 'ssp_generator_ed23';
+        /* Quellen für die Pin-Übersicht in config.html anmelden (Grundregel 8). */
+        gppRegisterSources(GPP_TOOL_ID, [
+            { id: 'ed23-basiskatalog', label: 'BSI IT-Grundschutz Ed. 2023 (benutzerdefiniert)', repo: 'NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL',
+              path: 'BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json',
+              default: 'https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json' },
+            { id: 'c5-katalog', label: 'BSI C5:2026 Katalog', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
+              path: 'kataloge/c5-2026-oscal-catalog.json',
+              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9dbb6c505c9de510d2c2b97b712cbd837314df5f/kataloge/c5-2026-oscal-catalog.json' },
+            { id: 'c3a-katalog', label: 'C3A Katalog', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
+              path: 'kataloge/c3a_oscal_catalog.json',
+              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/kataloge/c3a_oscal_catalog.json' },
+        ]);
 
         // --- CONFIG & STATE ---
         // Basis-Katalog: BSI IT-Grundschutz Edition 2023 als benutzerdefinierte OSCAL-Ausgabe
         // (NTT DATA DACH) — Bausteine als Gruppen, Anforderungen als Controls mit level-Prop
         // (1 = Basis, 3 = Standard, 5 = erhöhter Schutzbedarf) und Reifegrad-Beschreibungen.
-        const CATALOG_URL_BASE = 'https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/main/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json';
+        const CATALOG_URL_BASE = 'https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json';
 
         // Pin-Unterstützung (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8):
         // Für den ED23-Basiskatalog gibt es keinen festgeschriebenen Commit-Pin, daher
@@ -1101,11 +1113,11 @@
             },
             {
                 name: 'C5:2026 OSCAL Katalog',
-                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/refs/heads/main/kataloge/c5-2026-oscal-catalog.json'
+                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9dbb6c505c9de510d2c2b97b712cbd837314df5f/kataloge/c5-2026-oscal-catalog.json'
             },
             {
                 name: ' C3A - Criteria enabling Cloud Computing Autonomy',
-                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/refs/heads/main/kataloge/c3a_oscal_catalog.json'
+                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/kataloge/c3a_oscal_catalog.json'
             }
         ];
 

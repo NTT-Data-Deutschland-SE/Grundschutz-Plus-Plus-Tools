@@ -669,13 +669,13 @@
             <select id="quickSelect" class="filter-select" onchange="updateUrlFromSelect()" style="border-color: oklch(0.7 0.18 300 / 0.4);">
                 <option value="">-- Schnellauswahl --</option>
                 <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/47de2824a341812438ef3f044b3f65ce2cad6e32/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json">Anwenderkatalog (GS++, Pin 47de2824a341)</option>
-                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/refs/heads/main/control_layer/Grundschutz%2B%2B/sources/catalogs/Methodik-Grundschutz%2B%2B/BSI-Methodik-Grundschutz%2B%2B-catalog.json">Methodik (GS++)</option>
-                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/refs/heads/main/control_layer/Grundschutz%2B%2B/sources/catalogs/Kernel/BSI-Stand-der-Technik-Kernel-catalog.json">Kernel (SdT)</option>
-                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/refs/heads/main/control_layer/Risikomanagement/BSI-Anforderungen-zum-Risikomanagement-catalog.json">Risikomanagement</option>
-                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/refs/heads/main/kataloge/c5-2026-oscal-catalog.json">C5:2026</option>
-                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/refs/heads/main/kataloge/c3a_oscal_catalog.json">C3A - Criteria enabling Cloud Computing Autonomy</option>
-                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/refs/heads/main/beispiel-kataloge/kritis_oscal_catalog.json">KRITIS (Beispiel, Test-Katalog)</option>
-                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/refs/heads/main/beispiel-kataloge/dsgvo_oscal_catalog.json">DSGVO (Beispiel, Test-Katalog)</option>
+                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/d304c60c0ba37277a59fa40adf6e6be3d452878e/control_layer/Grundschutz%2B%2B/sources/catalogs/Methodik-Grundschutz%2B%2B/BSI-Methodik-Grundschutz%2B%2B-catalog.json">Methodik (GS++)</option>
+                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/d304c60c0ba37277a59fa40adf6e6be3d452878e/control_layer/Grundschutz%2B%2B/sources/catalogs/Kernel/BSI-Stand-der-Technik-Kernel-catalog.json">Kernel (SdT)</option>
+                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/d304c60c0ba37277a59fa40adf6e6be3d452878e/control_layer/Risikomanagement/BSI-Anforderungen-zum-Risikomanagement-catalog.json">Risikomanagement</option>
+                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9dbb6c505c9de510d2c2b97b712cbd837314df5f/kataloge/c5-2026-oscal-catalog.json">C5:2026</option>
+                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/kataloge/c3a_oscal_catalog.json">C3A - Criteria enabling Cloud Computing Autonomy</option>
+                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/beispiel-kataloge/kritis_oscal_catalog.json">KRITIS (Beispiel, Test-Katalog)</option>
+                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9dbb6c505c9de510d2c2b97b712cbd837314df5f/beispiel-kataloge/dsgvo_oscal_catalog.json">DSGVO (Beispiel, Test-Katalog)</option>
             </select>
 
             <input type="text" id="urlInput" class="filter-select" placeholder="URL zum OSCAL-Katalog..." value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/47de2824a341812438ef3f044b3f65ce2cad6e32/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json">
@@ -736,6 +736,24 @@
             throw new Error('gpp-core.js missing');
         }
         const GPP_TOOL_ID = 'GSpp-Viewer';
+        /* Quellen für die Pin-Übersicht in config.html anmelden. Gepinnt ist der
+           Normalfall (Grundregel 8); die Update-Prüfung sitzt in config.html. */
+        const STDT_PIN = 'd304c60c0ba37277a59fa40adf6e6be3d452878e';
+        const GPPT_PIN = '2ab904b0099f560a06a68950d2b47a8ad019571a';
+        gppRegisterSources(GPP_TOOL_ID, [
+            { id: 'methodik-katalog', label: 'G++ Methodik-Katalog', repo: 'BSI-Bund/Stand-der-Technik-Bibliothek',
+              path: 'control_layer/Grundschutz++/sources/catalogs/Methodik-Grundschutz++/BSI-Methodik-Grundschutz++-catalog.json',
+              default: `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${STDT_PIN}/control_layer/Grundschutz%2B%2B/sources/catalogs/Methodik-Grundschutz%2B%2B/BSI-Methodik-Grundschutz%2B%2B-catalog.json` },
+            { id: 'kernel-katalog', label: 'Stand-der-Technik Kernel', repo: 'BSI-Bund/Stand-der-Technik-Bibliothek',
+              path: 'control_layer/Grundschutz++/sources/catalogs/Kernel/BSI-Stand-der-Technik-Kernel-catalog.json',
+              default: `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${STDT_PIN}/control_layer/Grundschutz%2B%2B/sources/catalogs/Kernel/BSI-Stand-der-Technik-Kernel-catalog.json` },
+            { id: 'risiko-katalog', label: 'BSI Risikomanagement', repo: 'BSI-Bund/Stand-der-Technik-Bibliothek',
+              path: 'control_layer/Risikomanagement/BSI-Anforderungen-zum-Risikomanagement-catalog.json',
+              default: `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${STDT_PIN}/control_layer/Risikomanagement/BSI-Anforderungen-zum-Risikomanagement-catalog.json` },
+            { id: 'ed23-anforderungen', label: 'G++/ED23 Anforderungen (Hilfsdatei)', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
+              path: 'hilfsdateien/gpp_ed23_anforderungen.json',
+              default: `https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/${GPPT_PIN}/hilfsdateien/gpp_ed23_anforderungen.json` },
+        ]);
 
         // Spiegelt gpp:cfg:* in die ausgeblendeten Shim-Felder; dieses Tool schreibt nie zurück.
         window.applyGppConfig = function (verbose) {
@@ -954,7 +972,7 @@
         // Vorberechnetes Mapping G++-Control -> passende BSI ED2023-Anforderungen
         // (erzeugt von Gpp-ai-tool stage_ed23_anforderungen, statt zur Laufzeit per KI).
         let ED23_MAP = {};
-        const ED23_MAP_URL = "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/main/hilfsdateien/gpp_ed23_anforderungen.json";
+        const ED23_MAP_URL = "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/hilfsdateien/gpp_ed23_anforderungen.json";
         // Flatten an OSCAL 1.2.2 mapping-collection (or the legacy bespoke map) into
         // { controlId: [{id, name, begruendung}] } for the ED23 panel.
         function buildEd23MapFromOscal(doc) {

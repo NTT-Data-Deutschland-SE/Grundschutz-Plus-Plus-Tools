@@ -858,6 +858,10 @@
         throw new Error('gpp-core.js missing');
     }
     const GPP_TOOL_ID = 'ssp_ausfuellen';
+    /* Quelle für die Pin-Übersicht in config.html anmelden (Grundregel 8). */
+    gppRegisterSources(GPP_TOOL_ID, [{ id: 'ed23-anforderungen', label: 'G++/ED23 Anforderungen (Hilfsdatei)',
+        repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools', path: 'hilfsdateien/gpp_ed23_anforderungen.json',
+        default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/hilfsdateien/gpp_ed23_anforderungen.json' }]);
 
     // ============================================================
     // LOG-KONSOLE (fünf Level, Millisekunden-Timestamps, Autoscroll, Clear)
@@ -2652,7 +2656,7 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
 
     // --- BSI ED2023 Anforderungen (vorberechnet von Gpp-ai-tool, ohne Laufzeit-KI) ---
     let ED23_MAP = {};
-    const ED23_MAP_URL = "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/main/hilfsdateien/gpp_ed23_anforderungen.json";
+    const ED23_MAP_URL = "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/hilfsdateien/gpp_ed23_anforderungen.json";
     // Flatten an OSCAL 1.2.2 mapping-collection (or the legacy bespoke map) into
     // { controlId: [{id, name, begruendung}] } for the ED23 panel.
     function buildEd23MapFromOscal(doc) {
