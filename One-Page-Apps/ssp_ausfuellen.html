@@ -700,23 +700,30 @@
                 <span id="ai-badge" class="sb bg-slate-700 text-slate-500 border-slate-600 hidden ml-1">&mdash;</span>
                 <svg id="icon-sb-ai" class="chev w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
             </button>
+            <!-- Backend, Key und Modell liegen zentral in config.html (gpp:cfg:*);
+                 der ausgeblendete Block hält die alten IDs für den Bestandscode.
+                 Der Unternehmenskontext bleibt hier: er gehört zum Dokument, nicht
+                 zum Werkzeug. -->
             <div id="sb-ai-content" class="coll-content p-2 bg-slate-900/30 space-y-1.5">
-                <div class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">&#9678; Backend</div>
-                <select id="ai-provider" onchange="onProvChange()" class="inp text-[10px] w-full"><option value="">— Kein Backend —</option><option value="gemini">Google Gemini</option><option value="openrouter">OpenRouter</option></select>
-                <input type="password" id="ai-key" placeholder="API-Key" oninput="saveAICfg()" class="inp text-[10px] w-full">
-                <p id="ai-migrate-hint" class="hidden text-[10px] font-bold text-amber-300 bg-amber-900/30 border border-amber-700/50 rounded px-2 py-1 leading-snug"></p>
-                <p class="text-[9px] text-slate-500 leading-snug">Der Key bleibt lokal im Browser (localStorage), nie im Quelltext. <strong>OpenRouter</strong> erlaubt Browser-Aufrufe ausdrücklich und braucht einen eigenen <code class="text-slate-400">sk-or-…</code>-Key; die Anthropic-Modelle laufen darüber. Bei <strong>CORS-Fehlern</strong> unter <code class="text-slate-400">file://</code>: Ordner mit <code class="text-slate-400">python -m http.server</code> servieren und die Datei über <code class="text-slate-400">http://localhost:8000/</code> öffnen.</p>
-                <select id="ai-model" class="inp text-[10px] w-full" onchange="onModelSelect()"></select>
-                <div id="or-extra" class="hidden space-y-1.5">
-                    <input type="text" id="ai-model-free" placeholder="Eigener Slug, z. B. anthropic/claude-…" oninput="saveAICfg()" class="inp text-[10px] w-full font-mono">
-                    <div class="flex items-center gap-2">
-                        <button onclick="refreshORCatalog()" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-300 text-[10px] font-bold uppercase rounded flex-shrink-0">&#8634; Modelle</button>
-                        <span id="or-cat-status" class="text-[9px] text-slate-500 leading-snug truncate"></span>
-                    </div>
+                <div id="gpp-cfg-summary" class="text-[10px] text-slate-400 leading-snug">–</div>
+                <div class="flex items-center gap-2">
+                    <a href="config.html" target="_blank" rel="noopener" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-300 text-[10px] font-bold uppercase rounded">&#9881; Einstellungen</a>
+                    <button onclick="applyGppConfig(true)" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-300 text-[10px] font-bold rounded">&#8634;</button>
                 </div>
+                <p id="ai-migrate-hint" class="hidden text-[10px] font-bold text-amber-300 bg-amber-900/30 border border-amber-700/50 rounded px-2 py-1 leading-snug"></p>
                 <label class="block text-[10px] font-bold text-slate-400 mt-2">Unternehmenskontext</label>
                 <textarea id="ai-context" rows="2" class="inp text-[10px] w-full" placeholder="Wir sind KRITIS / NIS2..." oninput="saveAICfg()"></textarea>
-                <div class="flex gap-2 text-[8px] mt-1"><a href="https://aistudio.google.com/" target="_blank" class="text-blue-400 underline">Gemini Key</a><a href="https://openrouter.ai/keys" target="_blank" class="text-violet-400 underline">OpenRouter Key</a></div>
+
+                <div id="gpp-cfg-shim" hidden aria-hidden="true">
+                    <select id="ai-provider"><option value="">—</option><option value="gemini">Google Gemini</option><option value="openrouter">OpenRouter</option></select>
+                    <input type="password" id="ai-key">
+                    <select id="ai-model"></select>
+                    <div id="or-extra" class="hidden">
+                        <input type="text" id="ai-model-free">
+                        <button id="or-refresh-shim" onclick="refreshORCatalog()"></button>
+                        <span id="or-cat-status"></span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -774,37 +781,14 @@
                     <svg class="chevron-icon open w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                 </button>
                 <div class="collapsible-content open p-4 border-t border-slate-700 bg-slate-900 space-y-5">
-                    <p class="text-xs text-slate-400">Hier steht <strong>alles</strong>, was das Modell zu sehen bekommt. Änderungen werden sofort lokal gespeichert (localStorage) und beim nächsten Aufruf verwendet. Platzhalter in <code class="text-blue-400">{geschweiften Klammern}</code> werden zur Laufzeit ersetzt; fehlt ein Pflicht-Platzhalter, wird er beim Senden automatisch angehängt.</p>
-
-                    <div>
-                        <div class="flex justify-between items-center mb-1 gap-2">
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wide">System-Prompt (Rolle &amp; Stil)</label>
-                            <button onclick="resetPrompt('system')" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-300 text-[10px] font-bold uppercase rounded flex-shrink-0">&#8634; Zurücksetzen</button>
-                        </div>
-                        <textarea id="prompt-system" rows="10" class="inp w-full font-mono text-xs" style="min-height:200px;resize:vertical" oninput="onPromptInput('system')"></textarea>
-                        <p class="text-[9px] text-slate-500 mt-1">Pflicht-Platzhalter: <code class="text-blue-400">{heute}</code>. Der Unternehmenskontext aus der Seitenleiste wird zusätzlich angehängt.</p>
-                        <p id="warn-system" class="hidden mt-1 text-[10px] font-bold text-amber-300 bg-amber-900/30 border border-amber-700/50 rounded px-2 py-1"></p>
-                    </div>
-
-                    <div>
-                        <div class="flex justify-between items-center mb-1 gap-2">
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wide">Task-Prompt „Umsetzungsvorschlag“</label>
-                            <button onclick="resetPrompt('implementation')" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-300 text-[10px] font-bold uppercase rounded flex-shrink-0">&#8634; Zurücksetzen</button>
-                        </div>
-                        <textarea id="prompt-implementation" rows="8" class="inp w-full font-mono text-xs" style="min-height:180px;resize:vertical" oninput="onPromptInput('implementation')"></textarea>
-                        <p class="text-[9px] text-slate-500 mt-1">Pflicht-Platzhalter: <code class="text-blue-400">{title}</code>, <code class="text-blue-400">{prose}</code>. Optional: <code class="text-blue-400">{guidance}</code>, <code class="text-blue-400">{cid}</code>. Abgrenzung zu Nachbar-Controls wird automatisch angehängt.</p>
-                        <p id="warn-implementation" class="hidden mt-1 text-[10px] font-bold text-amber-300 bg-amber-900/30 border border-amber-700/50 rounded px-2 py-1"></p>
-                    </div>
-
-                    <div>
-                        <div class="flex justify-between items-center mb-1 gap-2">
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wide">Task-Prompt „Risiken“</label>
-                            <button onclick="resetPrompt('risk')" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-300 text-[10px] font-bold uppercase rounded flex-shrink-0">&#8634; Zurücksetzen</button>
-                        </div>
-                        <textarea id="prompt-risk" rows="8" class="inp w-full font-mono text-xs" style="min-height:180px;resize:vertical" oninput="onPromptInput('risk')"></textarea>
-                        <p class="text-[9px] text-slate-500 mt-1">Pflicht-Platzhalter: <code class="text-blue-400">{title}</code>, <code class="text-blue-400">{prose}</code>. Optional: <code class="text-blue-400">{guidance}</code>, <code class="text-blue-400">{cid}</code>.</p>
-                        <p id="warn-risk" class="hidden mt-1 text-[10px] font-bold text-amber-300 bg-amber-900/30 border border-amber-700/50 rounded px-2 py-1"></p>
-                    </div>
+                    <p class="text-xs text-slate-400">Die Prompts dieses Werkzeugs werden gesammelt in
+                        <a href="config.html" target="_blank" rel="noopener" class="text-emerald-400 font-bold">config.html</a>
+                        bearbeitet — zusammen mit denen der anderen Anwendungen und immer gegen den aktuellen Standardtext,
+                        den dieses Werkzeug beim Start anmeldet. Pflicht-Platzhalter werden zur Laufzeit defensiv angehängt,
+                        falls sie fehlen.</p>
+                    <div id="prompt-overview"></div>
+                    <a href="config.html" target="_blank" rel="noopener"
+                       class="inline-block px-3 py-1.5 bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded text-xs font-bold text-slate-200">&#9881; Prompts bearbeiten</a>
                 </div>
             </div>
 
@@ -864,7 +848,17 @@
     <div id="log-body" class="log-body cscroll"></div>
 </section>
 
+<script src="gpp-core.js"></script>
 <script>
+    if (typeof gppCfg === 'undefined') {
+        document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
+            '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
+            '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (gs_tools.zip) ' +
+            'statt einzelner Dateien.</p></div>';
+        throw new Error('gpp-core.js missing');
+    }
+    const GPP_TOOL_ID = 'ssp_ausfuellen';
+
     // ============================================================
     // LOG-KONSOLE (fünf Level, Millisekunden-Timestamps, Autoscroll, Clear)
     // Reine Darstellung — keine fachliche Logik hängt daran.
@@ -1638,17 +1632,47 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         }
     };
 
+    // Spiegelt gpp:cfg:* in die ausgeblendeten Shim-Felder; dieses Tool schreibt
+    // Backend/Key/Modell nie zurück — das macht ausschließlich config.html.
+    window.applyGppConfig = function (verbose) {
+        const backend = gppCfg.get('ai:backend') === 'openrouter' ? 'openrouter' : 'gemini';
+        const model = gppCfg.get('ai:model:' + backend);
+        const prov = document.getElementById('ai-provider');
+        const key = document.getElementById('ai-key');
+        const free = document.getElementById('ai-model-free');
+        if (prov) prov.value = backend;
+        if (key) key.value = gppCfg.get('ai:key:' + backend);
+        if (typeof applyBackendToDom === 'function') applyBackendToDom(backend);
+        const sel = document.getElementById('ai-model');
+        if (sel && model) {
+            if (![...sel.options].some(o => o.value === model)) sel.add(new Option(model, model));
+            sel.value = model;
+        }
+        if (free && backend === 'openrouter') free.value = model || '';
+        renderGppCfgSummary();
+        if (backend === 'openrouter' && typeof loadORCatalog === 'function') loadORCatalog(false);
+        if (verbose) L.info('Einstellungen aus config.html neu übernommen.');
+    };
+    function renderGppCfgSummary() {
+        const box = document.getElementById('gpp-cfg-summary');
+        if (!box) return;
+        const backend = gppCfg.get('ai:backend');
+        const t = gppCfg.target(backend);
+        const missing = [];
+        if (!t.key) missing.push('API-Key');
+        if (!t.model) missing.push('Modell');
+        box.innerHTML = missing.length
+            ? `<b class="text-amber-300">${missing.join(' und ')} fehlt</b> für „${backend}". Das Ausfüllen, Speichern und
+               Exportieren des SSP funktioniert ohne Schlüssel unverändert.`
+            : `<b>${backend}</b> · <span class="font-mono">${t.model}</span>`;
+    }
     function loadAICfg() {
         const res = readAiStore();
         aiStore = res.store;
         const ctxEl = document.getElementById('ai-context');
         if (ctxEl) ctxEl.value = aiStore.ctx || '';
-        if (aiStore.p) {
-            document.getElementById('ai-provider').value = aiStore.p;
-            applyBackendToDom(aiStore.p);
-            saveAICfg();
-            if (aiStore.p === 'openrouter') loadORCatalog(false);
-        }
+        applyGppConfig(false);
+        window.addEventListener('storage', e => { if (e.key && e.key.startsWith('gpp:cfg:')) applyGppConfig(false); });
         if (res.migrated) {
             const hint = document.getElementById('ai-migrate-hint');
             if (hint) {
@@ -1662,21 +1686,29 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
     // ============================================================
     // EDITIERBARE PROMPTS (Persistenz, Reset, Platzhalter-Prüfung)
     // ============================================================
+    // Prompts werden zentral in config.html bearbeitet; hier nur anmelden und anzeigen.
     function loadPrompts() {
-        let saved = {};
-        try { saved = JSON.parse(localStorage.getItem(PROMPT_STORE_KEY) || '{}'); } catch(e) {}
-        const custom = [];
-        Object.keys(PROMPT_DEFS).forEach(kind => {
-            const el = document.getElementById(PROMPT_DEFS[kind].el);
-            if (!el) return;
-            const isCustom = (typeof saved[kind] === 'string' && saved[kind].length);
-            el.value = isCustom ? saved[kind] : PROMPT_DEFS[kind].def;
-            if (isCustom) custom.push(PROMPT_DEFS[kind].label);
-            validatePrompt(kind);
-        });
+        gppRegisterPrompts(GPP_TOOL_ID, Object.entries(PROMPT_DEFS).map(([kind, cfg]) => ({
+            id: kind, label: cfg.label, placeholders: cfg.required || [], default: cfg.def,
+        })));
+        const custom = Object.entries(PROMPT_DEFS)
+            .filter(([kind]) => localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${kind}`) !== null)
+            .map(([, cfg]) => cfg.label);
+        renderPromptOverview();
+        window.addEventListener('storage', e => { if (e.key && e.key.startsWith('gpp:cfg:prompt')) renderPromptOverview(); });
         L.debug(custom.length
-            ? `Prompts geladen — eigene Fassung aktiv für: ${custom.join(', ')}`
-            : 'Prompts geladen — alle drei auf Default.');
+            ? `Prompts angemeldet — eigene Fassung aktiv für: ${custom.join(', ')}`
+            : 'Prompts angemeldet — alle drei auf Default (bearbeitbar in config.html).');
+    }
+    function renderPromptOverview() {
+        const box = document.getElementById('prompt-overview');
+        if (!box) return;
+        box.innerHTML = Object.entries(PROMPT_DEFS).map(([kind, cfg]) => {
+            const custom = localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${kind}`) !== null;
+            return `<div style="display:flex;gap:8px;align-items:baseline;padding:3px 0;font-size:11px">
+                <span style="font-family:monospace;font-size:9px;padding:1px 5px;border-radius:4px;border:1px solid ${custom ? '#e0a03a' : '#475569'};color:${custom ? '#e0a03a' : '#94a3b8'}">${custom ? 'angepasst' : 'standard'}</span>
+                <span>${cfg.label}</span></div>`;
+        }).join('');
     }
 
     function savePrompts() {
@@ -1719,8 +1751,8 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
     // fehlende Pflicht-Platzhalter defensiv anhängen, dann alle Werte einsetzen.
     function buildPrompt(kind, vars) {
         const cfg = PROMPT_DEFS[kind];
-        const el = document.getElementById(cfg.el);
-        let tpl = el ? el.value : '';
+        // Prompttext kommt zentral aus config.html; der Default bleibt hier im Tool.
+        let tpl = gppPrompt(GPP_TOOL_ID, kind, cfg.def);
         if (!tpl.trim()) tpl = cfg.def;
         cfg.required.forEach(ph => {
             if (!tpl.includes(ph)) tpl += `\n\n${PROMPT_FALLBACK_LINE[ph] || ph}`;
@@ -2777,6 +2809,12 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
         const reqs = sspData?.['system-security-plan']?.['control-implementation']?.['implemented-requirements'] || [];
         L.ok(`SSP exportiert: ${sspFileName} (${(dataStr.length / 1024).toFixed(1)} kB, ${reqs.length} implemented-requirement(s)).`);
+        // zusätzlich in den gemeinsamen Artefaktbestand (Übersicht in index.html)
+        gppArtefacts.save({
+            stage: 'implement', kind: 'ssp', tool: GPP_TOOL_ID,
+            title: `${sspData?.['system-security-plan']?.metadata?.title || sspFileName} — ausgefüllt`,
+            filename: sspFileName, data: sspData, meta: { requirements: reqs.length },
+        }).catch(e => L.warn('Artefakt nicht abgelegt: ' + e.message));
     };
 
 </script>
