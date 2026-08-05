@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL SSP Generator — BSI IT-Grundschutz Edition 2023 V1.2</title>
+    <title>OSCAL SSP Generator — BSI IT-Grundschutz Edition 2023 V1.3</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -763,7 +763,7 @@
         <div class="topbar-brand">
             <span class="brand-mark">◈</span>
             <span class="brand-name">OSCAL SSP Generator</span>
-            <span class="brand-sub">Edition 2023 · Build V1.2</span>
+            <span class="brand-sub">Edition 2023 · Build V1.3</span>
         </div>
         <div class="topbar-spacer"></div>
         <input type="file" id="ssp-file-input" accept=".json,application/json" multiple class="hidden"
@@ -873,7 +873,7 @@
                     class="glyph">⋯</span>Chunk-Cache leeren</button>
         </div>
 
-        <div class="rail-foot">Build ED23 V1.2</div>
+        <div class="rail-foot">Build ED23 V1.3</div>
     </aside>
     <div id="rail-splitter" class="rail-splitter" title="Breite der Rail ziehen"></div>
 
@@ -1130,6 +1130,107 @@
             sourceCatalog: 'https://csrc.nist.gov/ns/oscal/catalog',
             aiDocumentAnalysis: 'https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ai-document-analysis'
         };
+
+        // =====================================================================
+        // OSCAL-Vokabulare (Issue #29)
+        // Bis V1.2 bekam jede Komponente type:"service" und KI-Typen wurden mit
+        // /[^A-Za-z0-9_.:-]/ → '-' "bereinigt", was aus "Raum/Gebäude" das
+        // unlesbare "Raum-Geb-ude" machte. Beides wird hier abgelöst: Zielobjekt-
+        // kategorie bzw. KI-Freitext werden auf das OSCAL-Typvokabular abgebildet,
+        // die deutsche Originalbezeichnung bleibt als prop erhalten.
+        // =====================================================================
+        const OSCAL_COMPONENT_TYPES = new Set([
+            'this-system', 'system', 'subsystem', 'interconnection', 'software', 'hardware',
+            'service', 'physical', 'process-procedure', 'plan', 'guidance', 'standard',
+            'validation', 'network'
+        ]);
+        // Zielobjektkategorie (Profil-Dateiname) → OSCAL-Typ. Nicht abgebildete
+        // Kategorien (Personengruppen, Informationen, Dienstleistungen) bleiben
+        // bewusst 'service' — dafür hat OSCAL kein passendes Vokabular.
+        const ZIELOBJEKT_COMPONENT_TYPES = {
+            endgeraete: 'hardware', hostsysteme: 'hardware', 'it-systeme': 'hardware',
+            dateiserver: 'hardware', 'dns-server': 'hardware', webserver: 'hardware',
+            faxe: 'hardware', 'it-produkte': 'hardware',
+            anwendungen: 'software', 'office-anwendungen': 'software', webbrowser: 'software',
+            webanwendungen: 'software', verzeichnisdienste: 'software', 'vk-anwendungen': 'software',
+            'tk-anwendungen': 'software', virtualisierungsloesungen: 'software',
+            netze: 'network', 'interne_netzsegmente': 'network', 'externe_netzanschluesse': 'network',
+            wlans: 'network',
+            gebaeude: 'physical', raeume: 'physical', serverraeume: 'physical',
+            'raeume_fuer_technische_infrastruktur': 'physical', standorte: 'physical',
+            datentraegerarchiv: 'physical',
+            'cloud-dienste': 'service', outsourcing: 'service', dienstleistungen: 'service',
+        };
+        // Schlüsselwörter für KI-Freitexttypen ("Raum/Gebäude", "Netzkomponente (Firewall)", …)
+        const COMPONENT_TYPE_KEYWORDS = [
+            [/geb(ä|ae)ude|raum|r(ä|ae)ume|standort|archiv|gel(ä|ae)nde/i, 'physical'],
+            [/netz|firewall|router|switch|vpn|wlan|lan\b|leitung|standleitung/i, 'network'],
+            [/server|client|laptop|notebook|drucker|ger(ä|ae)t|hardware|maschine|sps|sensor|aktor|iot|mobil|it-system|endger(ä|ae)t/i, 'hardware'],
+            [/software|anwendung|applikation|programm|system\b|datenbank|dienst\b/i, 'software'],
+            [/prozess|verfahren|ablauf/i, 'process-procedure'],
+            [/richtlinie|policy|regelung/i, 'policy'],
+            [/dienstleist|service|cloud|outsourc/i, 'service'],
+        ];
+        function zielobjektKategorieFromSource(source) {
+            if (!source) return '';
+            const file = String(source).split('/').pop() || '';
+            return file.replace(/\.json$/i, '').replace(/_profile$/i, '').toLowerCase();
+        }
+        // Baustein-Schicht → OSCAL-Typ, wenn die Komponente über Ed2023-Bausteine
+        // statt über ein Zielobjekt-Profil modelliert wurde.
+        const BAUSTEIN_LAYER_TYPES = { SYS: 'hardware', IND: 'hardware', APP: 'software', NET: 'network', INF: 'physical' };
+        function mapZielobjektComponentType(source, bausteine) {
+            if (bausteine && bausteine.length) {
+                const layers = bausteine.map(b => String(b).split('.')[0].toUpperCase()).filter(l => BAUSTEIN_LAYER_TYPES[l]);
+                if (layers.length) return BAUSTEIN_LAYER_TYPES[layers[0]];
+                return 'process-procedure';   // OPS/ORP/CON/DER/ISMS sind Prozess-Schichten
+            }
+            const kat = zielobjektKategorieFromSource(source);
+            // ED23-Profilnamen tragen die Kategorie im ersten Segment: endgeraete_SYS.3.1_laptops
+            const head = kat.split('_')[0];
+            if (ZIELOBJEKT_COMPONENT_TYPES[kat]) return ZIELOBJEKT_COMPONENT_TYPES[kat];
+            if (ZIELOBJEKT_COMPONENT_TYPES[head]) return ZIELOBJEKT_COMPONENT_TYPES[head];
+            const hit = COMPONENT_TYPE_KEYWORDS.find(([re]) => re.test(kat));
+            return hit ? hit[1] : 'service';
+        }
+        function mapFreeTextComponentType(text, fallback) {
+            const raw = (text || '').trim();
+            if (!raw) return fallback || 'service';
+            const lower = raw.toLowerCase();
+            if (OSCAL_COMPONENT_TYPES.has(lower)) return lower;
+            const hit = COMPONENT_TYPE_KEYWORDS.find(([re]) => re.test(raw));
+            return hit ? hit[1] : (fallback || 'service');
+        }
+
+        // ISMS-Rollen als OSCAL-roles. Ohne sie lassen sich Verantwortlichkeiten
+        // nur als Freitext-prop ablegen und sind nicht auflösbar (SSP-5).
+        // Parteien werden bewusst NICHT erzeugt: konkrete Personen/Organisationen
+        // sind aus der Blaupause nicht bekannt und dürften nicht erfunden werden.
+        const SSP_ROLES = [
+            { id: 'institutionsleitung', title: 'Institutionsleitung', description: 'Gesamtverantwortung für die Informationssicherheit der Institution.' },
+            { id: 'isb', title: 'Informationssicherheitsbeauftragte Rolle (ISB)', description: 'Steuert das ISMS und verantwortet die Umsetzung der Sicherheitsanforderungen.' },
+            { id: 'is-management-team', title: 'IS-Management-Team', description: 'Unterstützt den ISB bei Konzeption, Steuerung und Überprüfung des ISMS.' },
+            { id: 'ics-isb', title: 'ICS-Informationssicherheitsbeauftragte Rolle', description: 'Verantwortet die Informationssicherheit der Produktions- und Steuerungstechnik.' },
+            { id: 'it-betrieb', title: 'IT-Betrieb', description: 'Betreibt die IT-Systeme und setzt technische Anforderungen um.' },
+            { id: 'fachverantwortung', title: 'Fachverantwortung', description: 'Verantwortet Geschäftsprozesse, Anwendungen und die zugehörigen Informationen.' },
+        ];
+        // Reihenfolge = Spezifität: "ISB / Geschäftsführung" ist eine Sicherheitsrolle,
+        // keine Leitungsrolle, deshalb greifen die ISB-Muster zuerst.
+        const ROLE_MATCHERS = [
+            [/ics[-\s]?isb|ot[-\s]?sicherheit|produktionssicherheit/i, 'ics-isb'],
+            [/\bisb\b|informationssicherheitsbeauftragt|sicherheitsbeauftragt/i, 'isb'],
+            [/is[-\s]?management[-\s]?team|sicherheitsmanagement/i, 'is-management-team'],
+            [/institutionsleitung|gesch(ä|ae)ftsf(ü|ue)hrung|vorstand|leitung/i, 'institutionsleitung'],
+            [/informationstechnik|it[-\s]?betrieb|it[-\s]?abteilung|administration|rechenzentrum/i, 'it-betrieb'],
+            [/fachbereich|fachverantwort|abteilung|einkauf|personal|vertrieb|produktion|entwicklung/i, 'fachverantwortung'],
+        ];
+        /* Freitext-Verantwortlichkeit → role-id der metadata/roles; null, wenn nichts passt */
+        function resolveRoleId(text) {
+            const raw = (text || '').trim();
+            if (!raw || /^nicht (angegeben|dokumentiert)/i.test(raw)) return null;
+            const hit = ROLE_MATCHERS.find(([re]) => re.test(raw));
+            return hit ? hit[1] : null;
+        }
 
         const AI_DOCUMENT_DB = 'ssp-generator-ed23-ai-documents';
         const AI_DOCUMENT_STORE = 'documents';
@@ -3640,6 +3741,11 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     bausteine,
                     state: asset.status || 'operational',
                     schutzbedarf: asset.schutzbedarf || 'normal-SdT',
+                    // Issue #29: Beschreibung und source-id mitnehmen — sonst trägt die
+                    // SSP-Komponente nur Generator-Boilerplate und das Asset erscheint
+                    // später ein zweites Mal als reine KI-Komponente.
+                    description: cleanAIString(asset.description) || '',
+                    sourceId: asset.sourceId || '',
                     controls,
                     aiGenerated: true
                 });
@@ -4165,7 +4271,10 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             const data = JSON.parse(new TextDecoder().decode(buf).replace(/^\uFEFF/, ''));
             if (!data || !data.catalog) throw new Error('Datei ist kein OSCAL Catalog');
             const title = data.catalog?.metadata?.title || data.catalog?.uuid || inferCatalogNameFromUrl(normalizedUrl);
-            const id = `catalog-${crypto.randomUUID()}`;
+            // Issue #29: Diese id landet als Komponenten-uuid im SSP und muss daher eine
+            // echte UUID v4 sein. Das frühere `catalog-<uuid>` verletzte das OSCAL-uuid-
+            // Pattern und erzeugte pro erzeugtem SSP dutzende Schema-Fehler.
+            const id = crypto.randomUUID();
             const controlEntries = extractCatalogControls(data, { href: normalizedUrl, name: title });
             return {
                 id,
@@ -5757,7 +5866,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 { uuid: sysUuid, type: "this-system", title: `System: ${t}`, status: { state: "operational" }, description: "Das übergeordnete System dieser Blaupause." },
                 {
                     uuid: riskCompUuid,
-                    type: "process",
+                    type: "process-procedure",
                     title: "Risikoanalyse Controls",
                     description: "Übergreifende mitigierende Controls aus der Risikoanalyse sowie global manuell hinzugefügte Maßnahmen.",
                     status: { state: "operational" }
@@ -5776,7 +5885,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             bpState.praktiken.forEach(p => {
                 sspComponents.push({
                     uuid: p.id,
-                    type: "process",
+                    type: "process-procedure",
                     title: `Prozess: ${p.name}`,
                     description: `Prozess-Baustein ${(p.bausteine || []).join(', ')} der Edition 2023.`,
                     status: { state: "operational" },
@@ -5795,23 +5904,49 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     }
                 ];
                 if (c.bausteine?.length) props.push({ name: "baustein-ids", ns: ED23_BAUSTEIN_NS, value: c.bausteine.join(',') });
+                props.push({
+                    name: "zielobjektkategorie",
+                    ns: OSCAL_NAMESPACES.sourceProfile,
+                    value: zielobjektKategorieFromSource(c.source) || 'unbekannt',
+                    remarks: `Zugeordnetes Zielobjekt-Profil: ${c.source.split('/').pop()}.`
+                });
+                // Issue #29: source-id der Dokumentanalyse mitführen — sonst erscheint
+                // dasselbe Asset später ein zweites Mal als KI-Komponente.
+                if (c.sourceId) props.push({
+                    name: 'source-id',
+                    ns: OSCAL_NAMESPACES.aiDocumentAnalysis,
+                    value: c.sourceId,
+                    remarks: 'Aus der KI-gestützten Dokumentanalyse übernommen.'
+                });
+                const bausteinHinweis = c.bausteine?.length ? ` Modelliert mit Baustein(en) ${c.bausteine.join(', ')} der Edition 2023.` : '';
                 sspComponents.push({
                     uuid: c.id,
-                    type: "service",
+                    type: mapZielobjektComponentType(c.source, c.bausteine),
                     title: c.name,
-                    description: c.bausteine?.length
-                        ? `Instanz '${c.name}', modelliert mit Baustein(en) ${c.bausteine.join(', ')} der Edition 2023.`
-                        : `Instanz '${c.name}', basierend auf Profil ${c.source.split('/').pop()}.`,
+                    // Substanzbeschreibung schlägt Generator-Boilerplate (SSP-7)
+                    description: c.description
+                        ? `${c.description}${bausteinHinweis}`
+                        : (c.bausteine?.length
+                            ? `Instanz '${c.name}', modelliert mit Baustein(en) ${c.bausteine.join(', ')} der Edition 2023.`
+                            : `Instanz '${c.name}', basierend auf Profil ${c.source.split('/').pop()}.`),
                     status: { state: c.state || "operational" },
                     props,
                     links: [{ href: c.source, rel: "profile" }]
                 });
             });
 
+            // Zusätzliche Kataloge: Umsetzungs-Komponente + gepinnte back-matter-Resource.
+            // Der Komponenten-Link zeigt auf das Fragment, damit Werkzeuge (z. B. der
+            // oscal-schema-validator) den Katalog über rlink + SHA-256 nachladen können;
+            // vor Issue #29 stand hier nur eine nackte URL ohne Pin und der Validator
+            // fand die Zusatzkataloge überhaupt nicht.
+            const catalogResourceUuids = new Map();
             additionalCatalogs.forEach(catalog => {
+                const resUuid = crypto.randomUUID();
+                catalogResourceUuids.set(catalog.id, resUuid);
                 sspComponents.push({
                     uuid: catalog.id,
-                    type: "service",
+                    type: "standard",
                     title: `Katalog-Umsetzung: ${catalog.name}`,
                     description: `Implementierungsscope für Controls aus dem zusätzlich importierten OSCAL-Katalog ${catalog.name}.`,
                     status: { state: "operational" },
@@ -5823,7 +5958,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                             remarks: `Diese Komponente bündelt die Umsetzung der aus ${catalog.name} übernommenen Controls.`
                         }
                     ],
-                    links: [{ href: catalog.href, rel: "catalog" }]
+                    links: [{ href: `#${resUuid}`, rel: "catalog" }]
                 });
             });
 
@@ -5833,9 +5968,24 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 registerAITarget(component.title?.replace(/^Prozess:\s*/i, ''), component.uuid);
             });
 
+            // Issue #29: dieselben Assets tauchten doppelt auf (einmal über die
+            // Baustein-Zuordnung, einmal aus der Dokumentanalyse), weil nur über den
+            // Namen abgeglichen wurde und die Extraktionspässe unterschiedlich lange
+            // Namen liefern ("Server für Produktionssteuerung und Betriebsdaten-
+            // erfassung" vs. "Server für Produktionssteuerung"). Der stabile
+            // Schlüssel ist die source-id.
+            const componentBySourceId = new Map();
+            sspComponents.forEach(component => {
+                (component.props || []).forEach(p => {
+                    if (p.ns === OSCAL_NAMESPACES.aiDocumentAnalysis && p.name === 'source-id' && p.value) {
+                        componentBySourceId.set(String(p.value).toLowerCase(), component);
+                    }
+                });
+            });
             const appendAIComponent = (item, type) => {
                 const normalizedName = cleanAIString(item.name).toLowerCase();
-                const existing = sspComponents.find(component =>
+                const sourceKey = cleanAIString(item.sourceId).toLowerCase();
+                const existing = (sourceKey && componentBySourceId.get(sourceKey)) || sspComponents.find(component =>
                     cleanAIString(component.title).replace(/^Prozess:\s*/i, '').toLowerCase() === normalizedName
                 );
                 const componentUuid = existing?.uuid || item.componentUuid || crypto.randomUUID();
@@ -5853,23 +6003,39 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                         ns: OSCAL_NAMESPACES.aiDocumentAnalysis,
                         value: item.sourceDocument
                     });
+                    // Schutzbedarf auf das SdT-Vokabular normalisieren, statt Freitext
+                    // ("Hoch", "hoch (Vertraulichkeit, Integrität, Verfügbarkeit)")
+                    // neben 'normal-SdT'/'erhöht' stehen zu lassen.
                     if (item.securityLevel) props.push({
-                        name: 'security-level',
-                        ns: OSCAL_NAMESPACES.aiDocumentAnalysis,
-                        value: item.securityLevel
+                        name: 'sicherheitsniveau',
+                        ns: "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/security_level.csv",
+                        value: normalizeSchutzbedarf(item.securityLevel),
+                        remarks: `Aus der Dokumentanalyse abgeleitet (Originalangabe: ${item.securityLevel}).`
                     });
+                    const roleId = resolveRoleId(item.owner);
                     if (item.owner) props.push({
                         name: 'owner',
                         ns: OSCAL_NAMESPACES.aiDocumentAnalysis,
-                        value: item.owner
+                        value: item.owner,
+                        remarks: roleId ? `Zugeordnete Rolle: ${roleId} (siehe metadata/roles).` : undefined
+                    });
+                    const originalType = cleanAIString(item.componentType);
+                    const mappedType = type === 'process' ? 'process-procedure' : mapFreeTextComponentType(originalType);
+                    // Originalbezeichnung erhalten, statt sie zu "Raum-Geb-ude" zu verstümmeln
+                    if (originalType && originalType.toLowerCase() !== mappedType) props.push({
+                        name: 'component-type-original',
+                        ns: OSCAL_NAMESPACES.aiDocumentAnalysis,
+                        value: originalType,
+                        remarks: `Typbezeichnung aus der Dokumentanalyse, abgebildet auf OSCAL-Typ "${mappedType}".`
                     });
                     sspComponents.push({
                         uuid: componentUuid,
-                        type: type === 'process' ? 'process' : (cleanAIString(item.componentType).replace(/[^A-Za-z0-9_.:-]/g, '-') || 'service'),
+                        type: mappedType,
                         title: item.name,
                         description: item.description,
                         status: { state: normalizeComponentStatus(item.status) },
                         props,
+                        ...(roleId ? { 'responsible-roles': [{ 'role-id': roleId, remarks: `Verantwortlich laut Dokumentanalyse: ${item.owner}.` }] } : {}),
                         links: aiAnalysisResourceUuid ? [{ href: `#${aiAnalysisResourceUuid}`, rel: 'source' }] : undefined
                     });
                 } else {
@@ -5899,6 +6065,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                         }
                     }
                 }
+                if (sourceKey) componentBySourceId.set(sourceKey, sspComponents.find(c => c.uuid === componentUuid) || existing);
                 registerAITarget(item.sourceId, componentUuid);
                 registerAITarget(item.name, componentUuid);
                 registerAITarget(item.componentUuid, componentUuid);
@@ -5971,6 +6138,14 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             const reqs = Array.from(sspReqIds).sort().map(cid => {
                 const byComps = [];
                 const byComponentUuid = new Map();
+                // Issue #29: beim Zusammenführen mehrerer Quellen wurden props und links
+                // ungeprüft angehängt — KONF.2.4 trug dieselbe responsible-party-prop und
+                // denselben Quell-Link dreifach. Deshalb hier über den Inhalt deduplizieren.
+                const mergeUnique = (target = [], additions = []) => {
+                    const seen = new Set(target.map(x => JSON.stringify(x)));
+                    additions.forEach(x => { const k = JSON.stringify(x); if (!seen.has(k)) { seen.add(k); target.push(x); } });
+                    return target;
+                };
                 const addByComp = (componentUuid, description, details = {}) => {
                     if (!componentUuid) return;
                     const existing = byComponentUuid.get(componentUuid);
@@ -5979,8 +6154,9 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                             existing.description = `${existing.description}\n\n${description}`;
                         }
                         if (details['implementation-status']) existing['implementation-status'] = details['implementation-status'];
-                        if (details.props?.length) existing.props = [...(existing.props || []), ...details.props];
-                        if (details.links?.length) existing.links = [...(existing.links || []), ...details.links];
+                        if (details.props?.length) existing.props = mergeUnique(existing.props || [], details.props);
+                        if (details.links?.length) existing.links = mergeUnique(existing.links || [], details.links);
+                        if (details['responsible-roles']?.length) existing['responsible-roles'] = mergeUnique(existing['responsible-roles'] || [], details['responsible-roles']);
                         return;
                     }
                     const entry = {
@@ -6002,16 +6178,24 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     addByComp(riskCompUuid, "Manuell hinzugefügte Maßnahme.");
                 }
 
+                // Issue #29: Diese beiden Pfade tragen nur die Herkunft ein, keine Umsetzung.
+                // Bisher fehlte dazu jeder Status, sodass nicht erkennbar war, ob das Control
+                // umgesetzt ist oder die Beschreibung schlicht noch aussteht (SSP-2/SSP-7).
+                const OFFEN = { state: 'planned', remarks: 'Noch keine Umsetzungsbeschreibung erfasst — im weiteren SSP-Lebenszyklus zu ergänzen.' };
                 bpState.praktiken.forEach(p => {
                     if (p.controls.has(cid)) {
-                        addByComp(p.id, "Control direkt aus dem referenzierten Prozess-Profil.");
+                        addByComp(p.id, `Control direkt aus dem referenzierten Prozess-Profil (${p.name}). Umsetzung noch nicht beschrieben.`, {
+                            'implementation-status': OFFEN
+                        });
                     }
                 });
 
                 if (catalogControlTargets.has(cid)) {
                     catalogControlTargets.get(cid).forEach(catalogUuid => {
                         const catalog = additionalCatalogs.find(entry => entry.id === catalogUuid);
-                        addByComp(catalogUuid, `Control aus zusätzlichem Katalog${catalog?.name ? ` ${catalog.name}` : ''}.`);
+                        addByComp(catalogUuid, `Control aus zusätzlichem Katalog${catalog?.name ? ` ${catalog.name}` : ''}. Umsetzung noch nicht beschrieben.`, {
+                            'implementation-status': OFFEN
+                        });
                     });
                 }
 
@@ -6019,10 +6203,18 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 if (aiControl) {
                     (aiControl.implementations || []).forEach(implementation => {
                         const props = [];
-                        if (implementation.responsibleParty) props.push({
+                        // Issue #29: Verantwortlichkeit als auflösbare responsible-role
+                        // führen, wenn sie sich einer der metadata/roles zuordnen lässt.
+                        // Der Freitext bleibt nur als Beleg (bzw. als Fallback) erhalten;
+                        // reine Platzhalter ("nicht angegeben") entfallen ganz.
+                        const roleId = resolveRoleId(implementation.responsibleParty);
+                        const partyText = (implementation.responsibleParty || '').trim();
+                        const isPlaceholder = /^nicht (angegeben|dokumentiert)/i.test(partyText);
+                        if (partyText && !isPlaceholder) props.push({
                             name: 'responsible-party',
                             ns: OSCAL_NAMESPACES.aiDocumentAnalysis,
-                            value: implementation.responsibleParty
+                            value: partyText,
+                            remarks: roleId ? `Zugeordnete Rolle: ${roleId} (siehe metadata/roles).` : 'Keiner definierten Rolle zuzuordnen — im Review zu klären.'
                         });
                         (implementation.evidence || []).forEach(evidence => props.push({
                             name: 'evidence',
@@ -6032,6 +6224,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                         addByComp(resolveAITarget(implementation.targetRef, sysUuid), implementation.description, {
                             'implementation-status': { state: normalizeImplementationStatus(implementation.status) },
                             props: props.length ? props : undefined,
+                            ...(roleId ? { 'responsible-roles': [{ 'role-id': roleId, remarks: `Verantwortlich laut Dokumentanalyse: ${partyText}.` }] } : {}),
                             links: aiAnalysisResourceUuid ? [{ href: `#${aiAnalysisResourceUuid}`, rel: 'source' }] : undefined
                         });
                     });
@@ -6065,19 +6258,26 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 return requirement;
             }).filter(req => req["by-components"].length > 0);
 
+            const nowIso = new Date().toISOString();
             const metadata = {
                 title: `${t} - Muster-SSP`,
+                // Issue #29: 'published' fehlte, damit war die Ordnungsprüfung
+                // last-modified >= published nicht durchführbar (SSP-8).
+                published: nowIso,
                 version: bpState.metadata.version,
-                "last-modified": new Date().toISOString(),
+                "last-modified": nowIso,
                 "oscal-version": "1.2.2",
+                // ISMS-Rollen als auflösbare OSCAL-roles; ohne sie lässt sich
+                // keine responsible-role referenzieren (SSP-5).
+                roles: SSP_ROLES.map(r => ({ id: r.id, title: r.title, description: r.description })),
                 remarks: bpState.metadata.description
             };
-            const metadataProps = bpState.catalogs.slice(1).map(catalog => ({
+            const metadataProps = bpState.catalogs.map((catalog, index) => ({
                 name: 'source-catalog',
                 ns: OSCAL_NAMESPACES.sourceProfile,
                 value: catalog.href,
-                remarks: catalog.name || 'Zusätzlicher OSCAL Katalog'
-            }));
+                remarks: `${index === 0 ? 'Basis-Katalog' : 'Zusätzlicher Katalog'}: ${catalog.name || 'OSCAL Katalog'}`
+            })).filter(p => p.value);
             if (aiAnalysisResourceUuid) metadataProps.push({
                 name: 'ai-document-analysis',
                 ns: OSCAL_NAMESPACES.aiDocumentAnalysis,
@@ -6086,16 +6286,37 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             });
             if (metadataProps.length) metadata.props = metadataProps;
 
+            // Issue #29: Schutzbedarf der Assets auf System-Ebene hochziehen (Maximumprinzip).
+            // Ohne security-sensitivity-level / security-impact-level und ohne Impacts am
+            // Informationstyp ist die Einstufung des Verbunds nicht prüfbar (SSP-4).
+            const hatErhoehten = bpState.components.some(c => (c.schutzbedarf || 'normal-SdT') !== 'normal-SdT');
+            const systemNiveau = hatErhoehten ? 'hoch' : 'normal';
+            const niveauBegruendung = hatErhoehten
+                ? `Maximumprinzip: mindestens ein Asset im Geltungsbereich ist mit Sicherheitsniveau 'erhöht' eingestuft (${bpState.components.filter(c => (c.schutzbedarf || 'normal-SdT') !== 'normal-SdT').length} von ${bpState.components.length}).`
+                : 'Alle Assets im Geltungsbereich sind auf dem Standard-Sicherheitsniveau (normal-SdT) eingestuft.';
+            const impact = { base: systemNiveau, 'adjustment-justification': niveauBegruendung };
+            const systemDescription = bpState.metadata.description
+                ? `${bpState.metadata.description}\n\nGeneriert aus Blaupause '${t}'.`
+                : `Informationsverbund '${t}', generiert aus der gleichnamigen Blaupause. Zweck, Umgebung und Abgrenzung sind im weiteren SSP-Lebenszyklus zu ergänzen.`;
             const systemCharacteristics = {
                 "system-ids": [{ id: crypto.randomUUID() }],
                 "system-name": `${t} Muster-Verbund`,
-                description: "Generiert aus Blaupause",
+                description: systemDescription,
+                "security-sensitivity-level": systemNiveau,
                 "system-information": {
                     "information-types": [{
                         uuid: crypto.randomUUID(),
                         title: "Allgemeine Systeminformationen",
-                        description: "Im Geltungsbereich des Systems verarbeitete Informationen. Die fachliche Kategorisierung ist im weiteren SSP-Lebenszyklus zu konkretisieren."
+                        description: "Im Geltungsbereich des Systems verarbeitete Informationen. Die fachliche Kategorisierung ist im weiteren SSP-Lebenszyklus zu konkretisieren.",
+                        "confidentiality-impact": impact,
+                        "integrity-impact": impact,
+                        "availability-impact": impact
                     }]
+                },
+                "security-impact-level": {
+                    "security-objective-confidentiality": systemNiveau,
+                    "security-objective-integrity": systemNiveau,
+                    "security-objective-availability": systemNiveau
                 },
                 status: { state: "operational" },
                 "authorization-boundary": { description: "Der Geltungsbereich umfasst die unter system-implementation aufgeführten Komponenten. Die Abgrenzung des Informationsverbunds ist im weiteren SSP-Lebenszyklus zu präzisieren (Netzplan, Schnittstellen)." }
@@ -6106,6 +6327,12 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 value: catalog.href,
                 remarks: catalog.name || 'Zusätzlicher OSCAL Katalog'
             }));
+            characteristicProps.push({
+                name: 'schutzbedarf-system',
+                ns: "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/security_level.csv",
+                value: systemNiveau,
+                remarks: niveauBegruendung
+            });
             if (characteristicProps.length) systemCharacteristics.props = characteristicProps;
 
             // Pin-Muster (Grundregel 8): import-profile als Fragment auf eine
@@ -6127,10 +6354,33 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             backMatterResources.push({
                 uuid: profileResUuid,
                 title: `OSCAL-Profil (${profileHref})`,
+                description: 'Schwester-Profildatei dieses SSP. Der rlink ist relativ: die Datei liegt neben dem SSP und muss beim Prüfen mitgeladen werden.',
                 rlinks: [{
                     href: profileHref,
                     ...(profileSha256 ? { hashes: [{ algorithm: 'SHA-256', value: profileSha256 }] } : {})
                 }]
+            });
+            // Issue #29: jeder Katalog, aus dem Controls stammen, bekommt eine eigene
+            // back-matter-Resource mit absoluter URL und SHA-256-Pin. Erst dadurch kann
+            // ein Prüfwerkzeug ALLE Quellen nachladen; vorher standen die Zusatzkataloge
+            // nur als props im Dokument und jede daraus übernommene Control-ID galt als
+            // unauflösbar.
+            bpState.catalogs.forEach((catalog, index) => {
+                if (!catalog.href) return;
+                const resUuid = index === 0 ? crypto.randomUUID() : catalogResourceUuids.get(catalog.id);
+                if (!resUuid) return;
+                backMatterResources.push({
+                    uuid: resUuid,
+                    title: `OSCAL-Katalog: ${catalog.name || 'Katalog'}${index === 0 ? ' (Basis)' : ''}`,
+                    description: index === 0
+                        ? 'Basis-Katalog dieser Blaupause. Alle Controls ohne eigenen Katalogbezug stammen hieraus.'
+                        : `Zusätzlich importierter Katalog. Die daraus übernommenen Controls sind über die Komponente "Katalog-Umsetzung: ${catalog.name}" zugeordnet.`,
+                    props: [{ name: 'catalog-role', ns: OSCAL_NAMESPACES.sourceCatalog, value: index === 0 ? 'base-catalog' : 'additional-catalog' }],
+                    rlinks: [{
+                        href: catalog.href,
+                        ...(catalog.sha256 ? { hashes: [{ algorithm: 'SHA-256', value: catalog.sha256 }] } : {})
+                    }]
+                });
             });
             if (bpState.riskData.length > 0) {
                 const riskUuid = crypto.randomUUID();
