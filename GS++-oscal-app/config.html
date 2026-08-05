@@ -257,9 +257,13 @@ const TOGGLES = [["grounding", "ai:grounding"], ["or-structuredonly", "ai:or:str
 FIELDS.forEach(([id, key]) => {
   const el = $(id);
   el.value = gppCfg.get(key);
-  const write = () => { gppCfg.set(key, el.value); flashSaved(); if (key === "ai:backend") applyBackend(); };
-  el.addEventListener("input", write);
-  el.addEventListener("change", write);
+  /* trim: Keys aus Passwortmanagern kommen gern mit Zeilenumbruch — der landet
+     sonst als ungültiger HTTP-Header in den Tools. Debounce, weil jeder Write
+     per storage-Event alle offenen Tabs neu rendern lässt. */
+  const write = () => { gppCfg.set(key, el.value.trim()); flashSaved(); if (key === "ai:backend") applyBackend(); };
+  let t;
+  el.addEventListener("input", () => { clearTimeout(t); t = setTimeout(write, 250); });
+  el.addEventListener("change", () => { clearTimeout(t); write(); });
 });
 TOGGLES.forEach(([id, key]) => {
   const el = $(id);
@@ -347,10 +351,17 @@ function renderPrompts() {
         : (p.placeholders || []).length ? `Platzhalter vollständig: ${p.placeholders.join(", ")}` : "";
     };
     check();
-    ta.addEventListener("input", () => {
-      localStorage.setItem("gpp:cfg:prompt:" + reg.tool + ":" + id, ta.value);
-      check(); flashSaved();
-    });
+    /* Debounced, und identisch-mit-Default löscht den Override wieder — sonst
+       friert ein Tipp-und-Undo den heutigen Standardtext dauerhaft ein und
+       spätere verbesserte Defaults kämen nie an. */
+    let t;
+    const persist = () => {
+      const p = reg.prompts.find(x => x.id === id);
+      if (p && ta.value === p.default) localStorage.removeItem("gpp:cfg:prompt:" + reg.tool + ":" + id);
+      else localStorage.setItem("gpp:cfg:prompt:" + reg.tool + ":" + id, ta.value);
+      flashSaved();
+    };
+    ta.addEventListener("input", () => { check(); clearTimeout(t); t = setTimeout(persist, 300); });
   });
   body.querySelectorAll("button[data-reset]").forEach(b => b.addEventListener("click", () => {
     localStorage.removeItem("gpp:cfg:prompt:" + reg.tool + ":" + b.dataset.reset);
@@ -370,7 +381,10 @@ function sourceRegistrations() {
     } catch (e) { /* kaputter Eintrag wird ignoriert */ }
   }
   const byId = new Map();
-  out.forEach(s => { if (!byId.has(s.id)) byId.set(s.id, { ...s, tools: [s.tool] }); else byId.get(s.id).tools.push(s.tool); });
+  out.forEach(s => {
+    if (!byId.has(s.id)) byId.set(s.id, { ...s, tools: [s.tool] });
+    else { const t = byId.get(s.id); t.tools.push(s.tool); t.fixed = t.fixed || s.fixed; }
+  });
   return [...byId.values()].sort((a, b) => a.id.localeCompare(b.id));
 }
 /* Pin-Zerlegung liegt im Core, damit Tools und diese Seite dieselbe Regel nutzen */
@@ -395,8 +409,9 @@ function renderSources() {
         <span class="nm">${s.label || s.id}</span>
         <span class="pill ${pinned ? "ok" : "bad"}">${pinned ? "gepinnt " + (commit || "").slice(0, 10) : "Branch — ungepinnt"}</span>
         ${overridden ? '<span class="pill warn">abweichend vom Tool-Standard</span>' : ""}
+        ${s.fixed ? '<span class="pill">inhaltsgepinnt (SHA-256)</span>' : ""}
         <span style="flex:1"></span>
-        <button class="btn" data-check="${s.id}">Nach Updates suchen</button>
+        ${s.fixed ? "" : `<button class="btn" data-check="${s.id}">Nach Updates suchen</button>`}
       </div>
       <div class="note" style="margin:0 0 4px">${s.repo || ""}${s.path ? " · " + s.path : ""} — genutzt von ${(s.tools || []).join(", ")}</div>
       <code>${url}</code>
@@ -408,6 +423,7 @@ function renderSources() {
 }
 async function checkSource(s) {
   const box = $("src-body").querySelector(`[data-result="${s.id}"]`);
+  if (s.fixed) { box.textContent = "Inhaltsgepinnt: das Tool prüft diese Quelle gegen einen festen SHA-256 — Umpinnen würde die Integritätsprüfung brechen."; return; }
   if (!s.repo || !s.path) { box.textContent = "Für diese Quelle ist kein Repository/Pfad hinterlegt — Update-Prüfung nicht möglich."; return; }
   box.textContent = "frage GitHub …";
   try {
@@ -436,8 +452,8 @@ async function checkSource(s) {
   }
 }
 $("btn-check-all").addEventListener("click", async () => {
-  const regs = sourceRegistrations();
-  for (const s of regs) { await checkSource(s); }
+  /* parallel — jede Quelle schreibt in ihre eigene Ergebnisbox */
+  await Promise.allSettled(sourceRegistrations().map(s => checkSource(s)));
 });
 $("btn-reset-src").addEventListener("click", () => {
   for (const k of Object.keys(localStorage)) if (k.startsWith("gpp:cfg:src:")) localStorage.removeItem(k);
@@ -470,6 +486,8 @@ async function renderStorage() {
 }
 renderStorage();
 window.addEventListener("gpp:artefacts-changed", renderStorage);
+/* Tools laufen in anderen Fenstern/Tabs — dort kommt nur das storage-Event an */
+window.addEventListener("storage", e => { if (e.key === "gpp:cfg:artefacts:touch") renderStorage(); });
 
 $("btn-reset-cfg").addEventListener("click", () => {
   if (!confirm("Alle Einstellungen dieser Sammlung zurücksetzen? API-Keys, Modelle, angepasste Prompts und Quellen-Overrides gehen verloren. Artefakte bleiben erhalten.")) return;

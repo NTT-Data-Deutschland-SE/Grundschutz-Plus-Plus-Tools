@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.8</title>
+    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.8.1</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -649,7 +649,7 @@
                 onchange="handleSSPFileLoad(event)">
             <button type="button" onclick="document.getElementById('ssp-file-input').click()" class="pill">⤓ Bestehenden SSP öffnen</button>
             <div id="catalog-status" class="pill"><span class="dot animate-pulse"></span>Lade Basis-Katalog…</div>
-            <div class="pill pill-quiet">BUILD V5.8</div>
+            <div class="pill pill-quiet">BUILD V5.8.1</div>
         </div>
 
         <div class="progress-track"><div id="ai-doc-progress-bar" class="progress-fill"></div></div>
@@ -716,7 +716,7 @@
             </div>
         </div>
 
-        <div class="rail-foot">BUILD V5.8</div>
+        <div class="rail-foot">BUILD V5.8.1</div>
     </aside>
 
     <div id="rail-splitter" class="splitter" title="Rail-Breite ziehen"></div>
@@ -909,7 +909,7 @@
         if (typeof gppCfg === 'undefined') {
             document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
                 '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
-                '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (gs_tools.zip) ' +
+                '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) ' +
                 'statt einzelner Dateien.</p></div>';
             throw new Error('gpp-core.js missing');
         }
@@ -936,6 +936,8 @@
         // Pfad "Anwenderkataloge/…" liefert 404.
         // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
         // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
+        // Bewusst NICHT über gppSource umleitbar: SHA-256 und resource-uuid (uuid5 der
+        // URL) sind hier fest verdrahtet — ein Repin würde Hash und Inhalt auseinanderziehen.
         const GPP_CATALOG_PIN_COMMIT = '47de2824a341812438ef3f044b3f65ce2cad6e32';
         const GPP_CATALOG_PIN_SHA256 = 'db3a1417d7e904315a0886f450129832e19c57324660358c830357349f552332';
         const CATALOG_URL_BASE = `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json`;
@@ -966,9 +968,16 @@
             DEV: "Entwicklung", METHODIK: "Methodik"
         };
 
+        /* Pin-Override aus config.html (gppSource) gilt für das registrierte
+           Standard-Profil; das Enhanced-Profil folgt demselben Commit. */
+        const METHODIK_URL_STANDARD_DEFAULT = 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/63dabf36c3074fba32120498cd418cbf3aa4520e/Zielobjektkategorien/profile/process/methodik_process_profile.json';
+        const METHODIK_URL_ENHANCED_DEFAULT = 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/63dabf36c3074fba32120498cd418cbf3aa4520e/Zielobjektkategorien/profile/process/methodik_process_profile_enhanced.json';
+        const METHODIK_URL_STANDARD = gppSource('methodik-profil', METHODIK_URL_STANDARD_DEFAULT);
         const METHODIK_URLS = {
-            standard: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/63dabf36c3074fba32120498cd418cbf3aa4520e/Zielobjektkategorien/profile/process/methodik_process_profile.json',
-            enhanced: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/63dabf36c3074fba32120498cd418cbf3aa4520e/Zielobjektkategorien/profile/process/methodik_process_profile_enhanced.json'
+            standard: METHODIK_URL_STANDARD,
+            enhanced: METHODIK_URL_STANDARD.includes('methodik_process_profile.json')
+                ? METHODIK_URL_STANDARD.replace('methodik_process_profile.json', 'methodik_process_profile_enhanced.json')
+                : METHODIK_URL_ENHANCED_DEFAULT
         };
 
         const PRESET_ADDITIONAL_CATALOGS = [
@@ -982,10 +991,12 @@
             },
             {
                 name: 'C5:2026 OSCAL Katalog',
+                sourceId: 'c5-katalog',
                 href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9dbb6c505c9de510d2c2b97b712cbd837314df5f/kataloge/c5-2026-oscal-catalog.json'
             },
             {
                 name: ' C3A - Criteria enabling Cloud Computing Autonomy',
+                sourceId: 'c3a-katalog',
                 href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/kataloge/c3a_oscal_catalog.json'
             }
         ];
@@ -1490,7 +1501,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
         // --- BSI ED2023 Anforderungen (vorberechnet von Gpp-ai-tool, ohne Laufzeit-KI) ---
         let ED23_MAP = {};
-        const ED23_MAP_URL = "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/hilfsdateien/gpp_ed23_anforderungen.json";
+        // Pin-Override aus config.html (gppSource); nur Anzeigedaten, kein Export-Pin.
+        const ED23_MAP_URL = gppSource('ed23-anforderungen', "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/hilfsdateien/gpp_ed23_anforderungen.json");
         // Flatten an OSCAL 1.2.2 mapping-collection (or the legacy bespoke map) into
         // { controlId: [{id, name, begruendung}] } for the ED23 panel.
         function buildEd23MapFromOscal(doc) {
@@ -3892,13 +3904,16 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         window.addPresetCatalog = async function (index) {
             const preset = PRESET_ADDITIONAL_CATALOGS[index];
             if (!preset) return;
-            if (catalogAlreadyPresent(normalizeGitHubCatalogUrl(preset.href))) {
+            /* Pin-Override aus config.html (gppSource); SHA-256 wird beim Laden über die
+               tatsächlich geholten Bytes berechnet, back-matter bleibt damit konsistent. */
+            const presetHref = preset.sourceId ? gppSource(preset.sourceId, preset.href) : preset.href;
+            if (catalogAlreadyPresent(normalizeGitHubCatalogUrl(presetHref))) {
                 alert('Dieser Katalog ist bereits vorhanden.');
                 return;
             }
             toggleLoader(true, `Lade Katalog: ${preset.name}...`);
             try {
-                const catalog = await validateCatalogUrl(preset.href);
+                const catalog = await validateCatalogUrl(presetHref);
                 catalog.name = preset.name;
                 mergeControlsIntoIndex(catalog.controlEntries || new Map());
                 bpState.catalogs.push(catalog);

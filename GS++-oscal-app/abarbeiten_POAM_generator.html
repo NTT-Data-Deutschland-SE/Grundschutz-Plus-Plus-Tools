@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL POA&M Generator v2.2</title>
+    <title>OSCAL POA&M Generator v2.2.1</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -654,12 +654,12 @@ input[type=date].inp{color-scheme:dark}
 if(typeof gppCfg==='undefined'){
     document.body.innerHTML='<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">'+
         '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek '+
-        '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (gs_tools.zip) '+
+        '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) '+
         'statt einzelner Dateien.</p></div>';
     throw new Error('gpp-core.js missing');
 }
 const GPP_TOOL_ID='abarbeiten_POAM_generator';
-const BUILD='v2.2';
+const BUILD='v2.2.1';
 const P={arFilename:'',sspHref:'',sysName:'',catalog:new Map(),findings:[],observations:[],risks:[],items:[],meta:{title:'',version:'1.0.0',desc:''},responsible:{name:'',role:'system-owner',email:''}};
 // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
 // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
@@ -684,9 +684,9 @@ const OR_MODELS_URL='https://openrouter.ai/api/v1/models';
 const OR_TITLE='OSCAL POA&M Generator';
 const OR_CAT_TTL=24*60*60*1000;           // Modellkatalog nach 24 h auffrischen
 // Migrationshilfe: alte Claude-Modell-ID → Vorschlag für den OpenRouter-Slug.
-const CLAUDE_SLUG_MAP={'claude-sonnet-5':'anthropic/claude-sonnet-5','claude-opus-5':'anthropic/claude-opus-5'};
 const LS_BACKEND='oscal_ai_backend',LS_GEMINI='oscal_ai_gemini',LS_OR='oscal_ai_openrouter',LS_OR_CAT='oscal_or_models',LS_AI_LEGACY='oscal_ai';
-const AI_RETRIES=2;                       // Retries pro LLM-Call (Backoff 500ms → 1s → 2s)
+// Retries pro LLM-Call aus der zentralen Konfiguration (Backoff 500ms → 1s → 2s)
+function aiRetries(){return (typeof gppCfg!=='undefined'?parseInt(gppCfg.get('run:retries'),10):2)||2}
 // Meilenstein-Antwort als Structured Output statt "NUR JSON"-Bettelei im Prompt.
 const MILESTONE_SCHEMA={type:'object',properties:{milestones:{type:'array',items:{type:'object',properties:{title:{type:'string',description:'Kurzer, prüfbarer Meilenstein-Titel auf Deutsch'},weeks:{type:'integer',description:'Kalenderwochen ab heute bis zur Fälligkeit'}},required:['title','weeks']}}},required:['milestones']};
 
@@ -942,9 +942,8 @@ function onOrModelPick(){saveAICfg();const s=(gid('or-slug')?.value||'').trim();
     if(s)l.warn(`Freitext-Slug "${s}" ist gesetzt und überschreibt die Katalog-Auswahl.`);else l.debug(`OpenRouter-Modell gewählt: ${gid('or-model')?.value||'(keins)'}`)}
 
 window.saveAICfg=()=>{
+    // Keys und Modelle liegen zentral (gpp:cfg:*) — nur die Backend-Wahl wird lokal gemerkt.
     try{localStorage.setItem(LS_BACKEND,AI.backend)}catch(e){}
-    try{localStorage.setItem(LS_GEMINI,JSON.stringify({k:gid('gm-key')?.value||'',m:gid('gm-model')?.value||''}))}catch(e){}
-    try{localStorage.setItem(LS_OR,JSON.stringify({k:gid('or-key')?.value||'',m:gid('or-model')?.value||AI.pendingOrModel||'',slug:(gid('or-slug')?.value||'').trim()}))}catch(e){}
     const ai=getAI(),b=gid('ai-badge');if(!b)return;
     if(ai){b.className='sb bg-violet-900 text-violet-300 border-violet-700';b.textContent=BACKENDS[ai.p].label}
     else b.classList.add('hidden');
@@ -953,16 +952,18 @@ window.saveAICfg=()=>{
 // Spiegelt gpp:cfg:* in die ausgeblendeten Shim-Felder; dieses Tool schreibt nie zurück.
 window.applyGppConfig=function(verbose){
     const backend=gppCfg.get('ai:backend')==='openrouter'?'openrouter':'gemini';
-    const model=gppCfg.get('ai:model:'+backend);
-    if(backend==='gemini'){
-        const gk=gid('gm-key'),gm=gid('gm-model');
-        if(gk)gk.value=gppCfg.get('ai:key:gemini');
-        if(gm&&model){if(![...gm.options].some(o=>o.value===model))gm.add(new Option(model,model));gm.value=model;}
-    }else{
-        const ok=gid('or-key'),os=gid('or-slug');
-        if(ok)ok.value=gppCfg.get('ai:key:openrouter');
-        if(os&&model)os.value=model;
-    }
+    // Beide Backends spiegeln, damit ein Umschalten im Tool nie auf alte Werte fällt;
+    // leeres zentrales Modell leert das Feld statt einen alten Stand zu behalten.
+    const gk=gid('gm-key'),gm=gid('gm-model');
+    if(gk)gk.value=gppCfg.get('ai:key:gemini')||'';
+    if(gm){const m=gppCfg.get('ai:model:gemini')||'';
+        if(m&&![...gm.options].some(o=>o.value===m))gm.add(new Option(m,m));
+        gm.value=m;}
+    const ok=gid('or-key'),os=gid('or-slug');
+    if(ok)ok.value=gppCfg.get('ai:key:openrouter')||'';
+    if(os)os.value=gppCfg.get('ai:model:openrouter')||'';
+    const oc=gid('or-only-schema');
+    if(oc){oc.checked=gppCfg.getBool('ai:or:structuredonly');renderOrModels();}
     setBackend(backend,true);
     renderGppCfgSummary();
     if(verbose)l.info('Einstellungen aus config.html neu übernommen.');
@@ -980,32 +981,20 @@ function renderGppCfgSummary(){
 }
 function loadAICfg(){
     fillGeminiModels();
+    // Alt-Stores mit Keys/Modellen ausleeren — Secrets liegen nur noch zentral.
+    let legacy=null;try{legacy=JSON.parse(localStorage.getItem(LS_AI_LEGACY)||'null')}catch(e){}
+    try{localStorage.removeItem(LS_GEMINI);localStorage.removeItem(LS_OR);localStorage.removeItem(LS_AI_LEGACY)}catch(e){}
     let backend='';try{backend=localStorage.getItem(LS_BACKEND)||''}catch(e){}
-    let g={},o={};
-    try{g=JSON.parse(localStorage.getItem(LS_GEMINI)||'{}')||{}}catch(e){}
-    try{o=JSON.parse(localStorage.getItem(LS_OR)||'{}')||{}}catch(e){}
     if(!BACKENDS[backend]){
-        // Sanfte Migration der alten {p,k,m}-Konfiguration (Provider "claude" | "gemini").
-        let legacy=null;try{legacy=JSON.parse(localStorage.getItem(LS_AI_LEGACY)||'null')}catch(e){}
-        if(legacy&&legacy.p==='gemini'){backend='gemini';g={k:legacy.k||'',m:legacy.m||''};
-            l.info('Alte Gemini-Konfiguration übernommen.')}
+        // Sanfte Migration der alten {p,k,m}-Konfiguration — nur noch die Backend-Wahl;
+        // Keys und Modelle kommen ausschliesslich aus der zentralen Konfiguration.
+        if(legacy&&legacy.p==='gemini'){backend='gemini';l.info('Alte Backend-Wahl (Gemini) übernommen — Key und Modell bitte zentral in config.html pflegen.')}
         else if(legacy&&legacy.p==='claude'){
             backend='openrouter';
-            const slug=CLAUDE_SLUG_MAP[legacy.m]||(legacy.m?`anthropic/${legacy.m}`:'');
-            o={k:'',m:'',slug};
             gid('or-migrate-hint')?.classList.remove('hidden');
-            l.warn(`Claude-Direktpfad entfällt (CORS ausserhalb einer Artifact-Umgebung) — Backend auf OpenRouter migriert, Slug-Vorschlag "${slug||'(keiner)'}". Der Anthropic-Key wurde NICHT übernommen: OpenRouter braucht einen eigenen Key im Format sk-or-….`);
+            l.warn('Claude-Direktpfad entfällt (CORS ausserhalb einer Artifact-Umgebung) — Backend auf OpenRouter migriert. Key und Modell bitte zentral in config.html pflegen (OpenRouter-Key im Format sk-or-…).');
         } else backend='gemini';
     }
-    const gk=gid('gm-key'),gm=gid('gm-model');
-    if(gk)gk.value=g.k||'';
-    if(gm){const known=GEMINI_MODELS.some(m=>m.id===g.m);gm.value=known?g.m:DEFAULT_GEMINI_MODEL;
-        // Migration: gespeicherte Modell-ID kann inzwischen abgeschaltet sein — dann zurück auf den Default.
-        if(g.m&&!known)l.warn(`Gespeichertes Gemini-Modell "${g.m}" existiert nicht mehr — zurückgesetzt auf ${gm.value}`)}
-    const ok=gid('or-key'),os=gid('or-slug');
-    if(ok)ok.value=o.k||'';
-    if(os)os.value=o.slug||'';
-    AI.pendingOrModel=o.m||'';
     renderOrModels();
     setBackend(backend,true);
     // Ab hier gilt die zentrale Konfiguration aus config.html.
@@ -1039,7 +1028,7 @@ function aiMissingReason(){
 function setOrCatStatus(t){const e=gid('or-cat-status');if(e)e.textContent=t}
 function renderOrModels(){
     const s=gid('or-model');if(!s)return;
-    const only=gid('or-struct-only')?.checked!==false;
+    const only=gid('or-only-schema')?.checked!==false;
     const cur=AI.pendingOrModel||s.value||'';
     const list=AI.orCatalog.filter(m=>only?m.st:true);
     s.innerHTML='';
@@ -1164,7 +1153,7 @@ async function callAIOnce(prompt,schema){
     return ai.p==='openrouter'?openrouterOnce(ai,prompt,schema):geminiOnce(ai,prompt,schema);
 }
 // Retry mit exponentiellem Backoff: 500ms → 1s → 2s.
-async function callAI(prompt,schema,retries=AI_RETRIES,label='KI-Call'){
+async function callAI(prompt,schema,retries=aiRetries(),label='KI-Call'){
     let attempt=0;
     const ai=getAI();
     l.info(`${label} → Backend ${ai?`${BACKENDS[ai.p]?.label||ai.p} · Modell ${ai.m}`:'(unkonfiguriert)'} · Prompt ${(prompt.length/1024).toFixed(1)} kB${schema?' · Structured Output':''}`);
@@ -1403,14 +1392,14 @@ window.flt=()=>{const t=(document.getElementById('flt-txt')?.value||'').toLowerC
 window.aiRem=async i=>{if(!getAI()){const w=aiMissingReason();l.err(`KI-Aufruf abgelehnt: ${w}`);return alert(`KI konfigurieren — ${w}.`)}
 const it=P.items[i];const c=ct(it.controlId);const btn=document.getElementById('air-'+i);if(btn){btn.disabled=true;btn.textContent='⋯ läuft'}
 const lbl=`Maßnahme ${it.controlId||'#'+(i+1)}`;startProgress(lbl);
-try{const txt=await callAI(buildPrompt('rem',itemContext(it,c,'rem')),null,AI_RETRIES,lbl);
+try{const txt=await callAI(buildPrompt('rem',itemContext(it,c,'rem')),null,aiRetries(),lbl);
 P.items[i].remediation=txt.trim();const ta=document.getElementById('rem-'+i);if(ta)ta.value=txt.trim();endProgress(true,'Maßnahme übernommen')}
 catch(e){endProgress(false,'Fehler');alert('KI: '+shortErr(e.message))}finally{if(btn){btn.disabled=false;btn.textContent='▶ Vorschlag'}}};
 
 window.aiMS=async i=>{if(!getAI()){const w=aiMissingReason();l.err(`KI-Aufruf abgelehnt: ${w}`);return alert(`KI konfigurieren — ${w}.`)}
 const it=P.items[i];const c=ct(it.controlId);const btn=document.getElementById('aim-'+i);if(btn){btn.disabled=true;btn.textContent='⋯ läuft'}
 const lbl=`Meilensteine ${it.controlId||'#'+(i+1)}`;startProgress(lbl);
-try{const txt=await callAI(buildPrompt('ms',itemContext(it,c,'ms')),MILESTONE_SCHEMA,AI_RETRIES,lbl);
+try{const txt=await callAI(buildPrompt('ms',itemContext(it,c,'ms')),MILESTONE_SCHEMA,aiRetries(),lbl);
 const parsed=extractJson(txt);
 const arr=Array.isArray(parsed)?parsed:(parsed?.milestones||[]);
 if(Array.isArray(arr)&&arr.length){const now=new Date();P.items[i].milestones=arr.map(m=>{const d=new Date(now);d.setDate(d.getDate()+((m.weeks||4)*7));return{uuid:crypto.randomUUID(),title:m.title||'Meilenstein',dueDate:d.toISOString().split('T')[0],done:false}});

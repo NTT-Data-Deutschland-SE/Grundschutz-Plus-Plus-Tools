@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Assessment Plan & Results Generator v9 (build 9.4 — Backends Gemini | OpenRouter, editierbare Prompts, Structured Outputs)</title>
+    <title>OSCAL Assessment Plan & Results Generator v9 (build 9.4.1 — Backends Gemini | OpenRouter, editierbare Prompts, Structured Outputs)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -424,7 +424,7 @@ textarea.inp{min-height:80px;line-height:1.55}
         <span class="sub">OSCAL AP &amp; AR — SSP → Prüfung → Assessment Plan + Results</span>
     </div>
     <div class="topbar-meta">
-        <span class="pill">build 9.4</span>
+        <span class="pill">build 9.4.1</span>
         <span id="cat-status" class="pill">Katalog wird geladen …</span>
         <span id="ssp-status" class="pill">Kein SSP</span>
         <span id="comp-status" class="pill hidden"></span>
@@ -461,7 +461,6 @@ textarea.inp{min-height:80px;line-height:1.55}
                     <a href="config.html" target="_blank" rel="noopener" class="btn">⚙ Einstellungen</a>
                     <button onclick="applyGppConfig(true)" class="btn" title="Einstellungen erneut übernehmen">↻</button>
                 </div>
-                <div id="ai-migrate-hint" class="hidden text-[8px] font-bold text-amber-300 bg-amber-950/40 border border-amber-800 rounded px-1.5 py-1 leading-snug"></div>
                 <p class="text-[8px] text-slate-500 leading-snug">CORS-Fehler? Die Datei nicht per <span class="font-mono text-slate-400">file://</span> öffnen, sondern den Ordner mit <span class="font-mono text-slate-400">python -m http.server</span> servieren.</p>
 
                 <div id="gpp-cfg-shim" hidden aria-hidden="true">
@@ -604,7 +603,7 @@ textarea.inp{min-height:80px;line-height:1.55}
 if(typeof gppCfg==='undefined'){
     document.body.innerHTML='<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">'+
         '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek '+
-        '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (gs_tools.zip) '+
+        '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) '+
         'statt einzelner Dateien.</p></div>';
     throw new Error('gpp-core.js missing');
 }
@@ -772,7 +771,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         fi.addEventListener('change',e=>{const fs=e.target.files;if(!fs.length)return;ty==='defs'?loadDefFiles(fs):loadFile(fs[0],ty);e.target.value=''});
     });
     initSplitter();
-    L.info('OSCAL AP & AR — build 9.4 gestartet');
+    L.info('OSCAL AP & AR — build 9.4.1 gestartet');
     L.debug('Bei CORS-Fehlern: Ordner mit `python -m http.server` bedienen und über http://localhost:8000/ öffnen.');
     initPrompts();
     loadAICfg();
@@ -1127,10 +1126,9 @@ window.retryFailedDefs=async()=>{
 // ============================================================
 // AI CONFIG
 // ============================================================
-// Keys und Modelle liegen je Backend GETRENNT im localStorage: ein Gemini-Key ist
-// für OpenRouter wertlos und umgekehrt. Speicherform ab 9.4:
-//   {p:'gemini'|'openrouter', keys:{gemini,openrouter}, models:{gemini,openrouter}, r}
-const AI_CFG_LS='oscal_ai';
+// Keys, Modelle und Backend kommen seit 9.4.1 ausschließlich zentral aus
+// config.html (gpp:cfg:*). Der alte 'oscal_ai'-Store wird weder gelesen noch
+// geschrieben; AI_KEYS/AI_MODELS sind reine In-Memory-Spiegel je Backend.
 const AI_KEYS={gemini:'',openrouter:''};
 const AI_MODELS={gemini:'',openrouter:''};
 
@@ -1139,18 +1137,10 @@ const OR_MODELS_URL='https://openrouter.ai/api/v1/models';
 const OR_CHAT_URL='https://openrouter.ai/api/v1/chat/completions';
 const OR_CAT_LS='oscal_or_catalog';
 const OR_CAT_TTL_MS=24*60*60*1000;
-const OR_DEFAULT_SLUG='anthropic/claude-sonnet-4.6';
 const OR_TITLE='OSCAL AP & AR Generator';
 let OR_CATALOG=[];      // [{id,name,so}] — so = supported_parameters enthält structured_outputs
 let OR_CAT_TS=0;
 function orReferer(){return /^https?:$/.test(location.protocol)?location.origin:'https://localhost'}
-
-// Migration alter Anthropic-Modell-IDs auf OpenRouter-Slugs, deterministisch:
-// "claude-opus-4-6-20250514" → "anthropic/claude-opus-4.6".
-function claudeIdToORSlug(id){
-    const m=/^claude-([a-z]+)-(\d+)-(\d+)/.exec(String(id||''));
-    return m?`anthropic/claude-${m[1]}-${m[2]}.${m[3]}`:OR_DEFAULT_SLUG;
-}
 
 window.onProvChange=()=>{
     const p=document.getElementById('ai-provider').value;
@@ -1161,7 +1151,11 @@ window.onProvChange=()=>{
     const kf=document.getElementById('ai-key');
     kf.placeholder=p==='openrouter'?'OpenRouter-Key (sk-or-…)':(p==='gemini'?'Gemini API-Key':'API-Key');
     kf.value=AI_KEYS[p]||'';
-    if(p==='gemini'&&AI_MODELS.gemini)s.value=AI_MODELS.gemini;
+    if(p==='gemini'&&AI_MODELS.gemini){
+        // Zentral konfigurierte Modelle außerhalb der Festliste als Option ergänzen.
+        if(![...s.options].some(o=>o.value===AI_MODELS.gemini))s.add(new Option(AI_MODELS.gemini,AI_MODELS.gemini));
+        s.value=AI_MODELS.gemini;
+    }
     if(p==='openrouter'){
         document.getElementById('or-slug').value=AI_MODELS.openrouter||'';
         ensureORCatalog();
@@ -1169,6 +1163,8 @@ window.onProvChange=()=>{
     saveAICfg();
 };
 
+// Spiegelt die Shim-Felder in den Arbeitszustand und pflegt das Badge —
+// persistiert wird nichts mehr (Konfiguration liegt zentral in config.html).
 window.saveAICfg=()=>{
     const p=document.getElementById('ai-provider').value;
     if(p){
@@ -1177,46 +1173,14 @@ window.saveAICfg=()=>{
             ? document.getElementById('or-slug').value.trim()
             : document.getElementById('ai-model').value;
     }
-    const c={p,keys:AI_KEYS,models:AI_MODELS,r:document.getElementById('ai-retries')?.value};
-    try{localStorage.setItem(AI_CFG_LS,JSON.stringify(c))}catch(e){}
     const b=document.getElementById('ai-badge');
     if(p&&AI_KEYS[p]){b.classList.remove('hidden');b.className='sb bg-violet-900 text-violet-300 border-violet-700';b.textContent=BACKEND_LABEL[p]||p}
     else b.classList.add('hidden');
 };
 
 function loadAICfg(){
-    let c={};
-    try{c=JSON.parse(localStorage.getItem(AI_CFG_LS)||'{}')}catch(e){}
-    const ri=document.getElementById('ai-retries');if(ri&&c.r!=null&&c.r!=='')ri.value=c.r;
-    if(c.keys)Object.assign(AI_KEYS,c.keys);
-    if(c.models)Object.assign(AI_MODELS,c.models);
-    let p=c.p||'';
-    let migrated=false;
-    if(!c.keys&&c.p){
-        // Altformat {p,k,m} aus 9.3 und früher.
-        if(c.p==='claude'){
-            // Der Claude-Direktpfad entfällt (CORS im Browser). Backend auf OpenRouter,
-            // Modell als anthropic/…-Slug vorschlagen. Den alten sk-ant-Key NICHT übernehmen:
-            // OpenRouter braucht ein anderes Key-Format (sk-or-…).
-            p='openrouter';
-            AI_MODELS.openrouter=claudeIdToORSlug(c.m);
-            migrated=true;
-        }else{
-            AI_KEYS[c.p]=c.k||'';
-            AI_MODELS[c.p]=c.m||'';
-        }
-    }
-    // Gemini-Modell-Migration: abgeschaltete/umbenannte IDs auf den aktuellen Default.
-    if(AI_MODELS.gemini&&!MODELS.gemini.some(x=>x.id===AI_MODELS.gemini)){
-        console.warn(`Gespeichertes Modell "${AI_MODELS.gemini}" existiert nicht mehr — zurückgesetzt auf "${GEMINI_DEFAULT_MODEL}".`);
-        AI_MODELS.gemini='';
-    }
+    // Kein Lesen aus dem alten 'oscal_ai'-Store mehr — es gilt allein config.html.
     if(!AI_MODELS.gemini)AI_MODELS.gemini=GEMINI_DEFAULT_MODEL;
-    if(migrated){
-        document.getElementById('ai-migrate-hint').classList.remove('hidden');
-        L.warn(`Migration: Claude-Direktpfad entfällt (CORS im Browser) — Backend auf OpenRouter umgestellt, Modellvorschlag "${AI_MODELS.openrouter}". Der alte Claude-Key wurde nicht übernommen, bitte einen sk-or-…-Key eintragen.`);
-    }
-    // Ab hier gilt die zentrale Konfiguration aus config.html.
     applyGppConfig(false);
     window.addEventListener('storage',e=>{if(e.key&&e.key.startsWith('gpp:cfg:'))applyGppConfig(false)});
 }
@@ -1226,14 +1190,16 @@ window.applyGppConfig=function(verbose){
     const backend=gppCfg.get('ai:backend')==='openrouter'?'openrouter':'gemini';
     const model=gppCfg.get('ai:model:'+backend);
     AI_KEYS[backend]=gppCfg.get('ai:key:'+backend);
-    if(model)AI_MODELS[backend]=model;
+    // Leeres zentrales Modell löscht bewusst den Spiegel — onProvChange fällt dann
+    // auf den Kopf der Festliste zurück statt einen alten Slug weiterzuschleppen.
+    AI_MODELS[backend]=model||'';
     const prov=document.getElementById('ai-provider');
     const key=document.getElementById('ai-key');
     const retries=document.getElementById('ai-retries');
     if(prov)prov.value=backend;
     if(key)key.value=AI_KEYS[backend]||'';
     if(retries)retries.value=gppCfg.get('run:retries');
-    if(backend==='openrouter'){const slug=document.getElementById('or-slug');if(slug&&model)slug.value=model;}
+    if(backend==='openrouter'){const slug=document.getElementById('or-slug');if(slug)slug.value=model||'';}
     if(typeof onProvChange==='function')onProvChange();
     renderGppCfgSummary();
     if(verbose)L.info('Einstellungen aus config.html neu übernommen.');
@@ -2030,7 +1996,7 @@ function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace
 let ED23_MAP={};
 const ED23_MAP_URL="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/hilfsdateien/gpp_ed23_anforderungen.json";
 function buildEd23MapFromOscal(doc){if(doc&&doc.gpp_ed23_anforderungen_map)return doc.gpp_ed23_anforderungen_map;const out={},mc=doc&&doc["mapping-collection"];if(!mc)return out;(mc.mappings||[]).forEach(mp=>(mp.maps||[]).forEach(m=>{const src=(m.sources||[])[0];if(!src)return;const cid=src["id-ref"];(m.targets||[]).forEach(t=>{const label=(t.props||[]).find(p=>p.name==="label"||p.name==="title");(out[cid]=out[cid]||[]).push({id:t["id-ref"],name:(label&&label.value)||"",begruendung:m.remarks||""})})}));return out}
-async function loadED23Map(){try{const r=await fetch(ED23_MAP_URL);if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();ED23_MAP=buildEd23MapFromOscal(d);L.ok(`BSI-ED23-Zuordnungen geladen: ${Object.keys(ED23_MAP).length} Controls`)}catch(e){console.warn('BSI ED23-Anforderungen nicht geladen:',e);L.warn('BSI-ED23-Anforderungen nicht geladen: '+shortErr(e.message));ED23_MAP={}}}
+async function loadED23Map(){try{const r=await fetch(gppSource('ed23-anforderungen',ED23_MAP_URL));if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();ED23_MAP=buildEd23MapFromOscal(d);L.ok(`BSI-ED23-Zuordnungen geladen: ${Object.keys(ED23_MAP).length} Controls`)}catch(e){console.warn('BSI ED23-Anforderungen nicht geladen:',e);L.warn('BSI-ED23-Anforderungen nicht geladen: '+shortErr(e.message));ED23_MAP={}}}
 function renderED23Table(list){
     if(!list||!list.length)return '<p class="text-xs text-slate-500 italic">Keine passenden BSI ED23-Anforderungen hinterlegt.</p>';
     const rows=list.map(a=>`<tr class="border-b border-slate-700/50 align-top"><td class="py-1 pr-2 font-mono font-bold text-cyan-300 whitespace-nowrap">${esc(a.id)}</td><td class="py-1 pr-2 text-slate-200">${esc(a.name)}</td><td class="py-1 text-slate-400">${esc(a.begruendung||'')}</td></tr>`).join('');

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.1</title>
+    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.1.1</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
@@ -661,7 +661,7 @@
             <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>Kein SSP geladen
         </div>
         <div id="resource-status-ind" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 items-center hidden"></div>
-        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.1</span></span>
+        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.1.1</span></span>
     </div>
 </header>
 
@@ -853,7 +853,7 @@
     if (typeof gppCfg === 'undefined') {
         document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
             '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
-            '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (gs_tools.zip) ' +
+            '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) ' +
             'statt einzelner Dateien.</p></div>';
         throw new Error('gpp-core.js missing');
     }
@@ -972,7 +972,7 @@
     // CONFIG & STATE
     // ============================================================
     // Build-Version der App (nicht zu verwechseln mit dem Session-Format `_v`).
-    const BUILD_VERSION = 'v1.1';
+    const BUILD_VERSION = 'v1.1.1';
 
     // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
     // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
@@ -1783,7 +1783,8 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         return s.length > MAX_ERR_LEN ? s.slice(0, MAX_ERR_LEN) + '…' : s;
     };
     const sleep = (ms) => new Promise(res => setTimeout(res, ms));
-    const AI_RETRIES = 2; // Wiederholungen pro Call (zusätzlich zum ersten Versuch)
+    // Wiederholungen pro Call (zusätzlich zum ersten Versuch) — zentral aus gppCfg ("run:retries").
+    function aiRetries(){ return (typeof gppCfg!=="undefined" ? parseInt(gppCfg.get("run:retries"),10) : 2) || 2; }
     // Antwort kann bei CORS-/Proxy-Fehlern HTML statt JSON sein — dann nicht am
     // JSON-Parser scheitern, sondern den HTTP-Status als Fehler durchreichen.
     async function safeJson(r) {
@@ -1861,6 +1862,7 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         // Konfigurationsfehler sind nicht retry-fähig — sofort abbrechen statt 3x zu scheitern.
         if (!ai.m) throw new Error(`Kein Modell gewählt für Backend "${BACKEND_LABEL[ai.p] || ai.p}".`);
         let attempt = 0;
+        const maxRetries = aiRetries();
         L.info(`${label} → ${BACKEND_LABEL[ai.p] || ai.p} · ${ai.m || '(kein Modell)'} · Prompt ${(prompt.length / 1024).toFixed(1)} kB, System ${(systemPrompt.length / 1024).toFixed(1)} kB.`);
         while (true) {
             const t0 = performance.now();
@@ -1870,13 +1872,13 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
                 return txt;
             } catch (e) {
                 attempt++;
-                if (attempt > AI_RETRIES) {
+                if (attempt > maxRetries) {
                     L.err(`${label} endgültig fehlgeschlagen nach ${attempt} Versuch(en): ${truncErr(e.message)}`);
                     throw e;
                 }
                 const wait = 500 * Math.pow(2, attempt - 1);
-                console.warn(`${label} fehlgeschlagen (${e.message}) — Retry ${attempt}/${AI_RETRIES} in ${wait}ms`);
-                L.warn(`${label} fehlgeschlagen (${truncErr(e.message)}) — Retry ${attempt}/${AI_RETRIES} in ${wait}ms.`);
+                console.warn(`${label} fehlgeschlagen (${e.message}) — Retry ${attempt}/${maxRetries} in ${wait}ms`);
+                L.warn(`${label} fehlgeschlagen (${truncErr(e.message)}) — Retry ${attempt}/${maxRetries} in ${wait}ms.`);
                 await sleep(wait);
             }
         }
@@ -2678,7 +2680,8 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         const t0 = performance.now();
         try {
             L.debug('Lade BSI-ED23-Mapping (vorberechnet, ohne Laufzeit-KI)…');
-            const r = await fetch(ED23_MAP_URL);
+            // Repin-Override aus config.html berücksichtigen (Grundregel 8).
+            const r = await fetch(gppSource('ed23-anforderungen', ED23_MAP_URL));
             if (!r.ok) throw new Error("HTTP " + r.status);
             const d = await r.json();
             ED23_MAP = buildEd23MapFromOscal(d);

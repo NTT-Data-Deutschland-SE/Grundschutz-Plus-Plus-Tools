@@ -22,7 +22,7 @@ In meinem Buch gibt es umfangreiche Analysen und Einen Ausblick auf die Zukunft:
 Das Repository umfasst insbesondere folgende Bereiche:
 
 - [`Gpp-ai-tool`](./Gpp-ai-tool) – Python-basiertes KI-Werkzeug zur automatisierten Erstellung und Anreicherung von OSCAL-Komponentendefinitionen
-- [`One-Page-Apps`](./One-Page-Apps) – browserbasierte HTML/JS-Werkzeuge für Modellierung, SSP-Bearbeitung, Audit und Maßnahmenplanung
+- [`GS++-oscal-app`](./GS++-oscal-app) – browserbasierte HTML/JS-Werkzeuge für Modellierung, SSP-Bearbeitung, Audit und Maßnahmenplanung
 - [`kataloge`](./kataloge) – produktive OSCAL-Kataloge zu anderen Themen
 - [`ED23-Baustein-komponenten`](./ED23-Baustein-komponenten) – produktive OSCAL-Kataloge (Komponentendefinitionen) auf Basis des IT-Grundschutz Edition 2023
 - [`zielobjektkategorien`](./zielobjektkategorien) – strukturierte OSCAL-Profile und OSCAL-Komponenten auf Basis von Zielobjektkategorien
@@ -34,7 +34,7 @@ Das Repository umfasst insbesondere folgende Bereiche:
 ```text
 Grundschutz-Plus-Plus-Tools/
 ├── Gpp-ai-tool/
-├── One-Page-Apps/
+├── GS++-oscal-app/
 ├── ED23-Baustein-komponenten/
 ├── zielobjektkategorien/
 │   ├── profile/
@@ -124,13 +124,13 @@ Das Verzeichnis dokumentiert, dass das Werkzeug nicht nur experimentell gedacht 
 
 ---
 
-### `One-Page-Apps`
+### `GS++-oscal-app`
 
 Dieses Verzeichnis enthält browserbasierte Anwendungen als eigenständige HTML/JS-Werkzeuge. Sie sind auf direkte Nutzung ohne komplexes Setup ausgelegt und bilden einen praktischen Workflow von der Modellierung über die Dokumentation bis hin zu Audit und Maßnahmenverfolgung ab.
 
 #### Zweck
 
-`One-Page-Apps` bündelt Werkzeuge für:
+`GS++-oscal-app` bündelt Werkzeuge für:
 
 - Modellierung eines Informationsverbunds,
 - Erstellung von Profilen und Muster-SSPs,
@@ -140,7 +140,7 @@ Dieses Verzeichnis enthält browserbasierte Anwendungen als eigenständige HTML/
 - Überführung offener Feststellungen in einen POA&M,
 - Sichtung von Kataloginhalten.
 
-#### Inhalt von `One-Page-Apps`
+#### Inhalt von `GS++-oscal-app`
 
 ##### `blaupausen_generator.html`
 Werkzeug zur Modellierung und Erstellung einer Blaupause.
@@ -197,7 +197,7 @@ Archivierte oder ältere Anwendungsstände.
 
 Dieses Unterverzeichnis enthält historische oder abgelöste Varianten einzelner Werkzeuge, zum Beispiel frühere Generatoren oder Viewer. Es ist hilfreich, wenn ältere Arbeitsstände nachvollzogen oder Konzepte verglichen werden sollen, gehört aber nicht zum primären empfohlenen Standard-Workflow.
 
-#### Typischer Workflow mit den One-Page-Apps
+#### Typischer Workflow mit den GS++-oscal-app
 
 1. Mit `blaupausen_generator.html` ein Profil und optional einen Muster-SSP erzeugen.
 2. Mit `ssp_ausfuellen.html` die reale Umsetzung dokumentieren und anreichern.
@@ -360,7 +360,7 @@ Die Verzeichnisse sind bewusst so angelegt, dass sie zusammen einen nachvollzieh
 1. **Katalog wählen** – Basiskatalog in `kataloge/` identifizieren.
 2. **Inhalte auswählen** – passende Zielobjektkategorie in `zielobjektkategorien/` identifizieren.
 3. **Umsetzung festlegen** – produktive Implementierungsbausteine aus `ED23-Baustein-komponenten/` wählen.
-4. **Grundlage modellieren** – mit den Apps in `One-Page-Apps/` Profile und SSPs erzeugen bzw. bearbeiten.
+4. **Grundlage modellieren** – mit den Apps in `GS++-oscal-app/` Profile und SSPs erzeugen bzw. bearbeiten.
 5. **Hilfsdaten einbinden** – Referenz- und Mapping-Dateien aus `hilfsdateien/` zur Unterstützung von Zuordnung, Parsing oder Kontextualisierung nutzen.
 6. **Automatisieren und anreichern** – mit `Gpp-ai-tool/` Komponenten, Zuordnungen oder ergänzende Beschreibungen programmatisch erzeugen.
 7. **Beispiele und Tests durchführen** – mit den Dateien in `beispiel-kataloge/` Workflows demonstrieren und validieren.
@@ -379,7 +379,7 @@ Dieses Repository richtet sich insbesondere an:
 ## Nutzungshinweise
 
 - Die Verzeichnisse sind bewusst fachlich getrennt, damit Werkzeuge, Inhalte und Hilfsdaten unabhängig voneinander nutzbar bleiben.
-- Die One-Page-Apps eignen sich für direkte interaktive Nutzung im Browser.
+- Die GS++-oscal-app eignen sich für direkte interaktive Nutzung im Browser.
 - Die Artefakte unter `zielobjektkategorien/`, `hilfsdateien/` und `beispiel-kataloge/` eignen sich für Import, Weiterverarbeitung, Analyse und Referenzierung.
 - `Gpp-ai-tool/` ist der technische Bereich für reproduzierbare, skript- und pipelinegestützte Verarbeitung.
 

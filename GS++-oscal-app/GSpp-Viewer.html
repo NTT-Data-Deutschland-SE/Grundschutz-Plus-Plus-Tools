@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GS++ Explorer v9.5.1 · Multi-Katalog &amp; Profile</title>
+    <title>GS++ Explorer v9.5.2 · Multi-Katalog &amp; Profile</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
@@ -561,7 +561,7 @@
         <div class="topbar-meta">
             <span class="pill progress-pill" id="progressLabel"></span>
             <span class="pill" id="catalogPill">0 Kataloge</span>
-            <span class="pill build-version" id="buildVersion">v9.5.1</span>
+            <span class="pill build-version" id="buildVersion">v9.5.2</span>
         </div>
         <div class="progress-track" id="progressTrack"><div class="progress-fill" id="progressFill"></div></div>
     </header>
@@ -731,7 +731,7 @@
         if (typeof gppCfg === 'undefined') {
             document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
                 '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
-                '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (gs_tools.zip) ' +
+                '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) ' +
                 'statt einzelner Dateien.</p></div>';
             throw new Error('gpp-core.js missing');
         }
@@ -740,7 +740,7 @@
            Normalfall (Grundregel 8); die Update-Prüfung sitzt in config.html. */
         const STDT_PIN = 'd304c60c0ba37277a59fa40adf6e6be3d452878e';
         const GPPT_PIN = '2ab904b0099f560a06a68950d2b47a8ad019571a';
-        gppRegisterSources(GPP_TOOL_ID, [
+        const GPP_SOURCES = [
             { id: 'methodik-katalog', label: 'G++ Methodik-Katalog', repo: 'BSI-Bund/Stand-der-Technik-Bibliothek',
               path: 'control_layer/Grundschutz++/sources/catalogs/Methodik-Grundschutz++/BSI-Methodik-Grundschutz++-catalog.json',
               default: `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${STDT_PIN}/control_layer/Grundschutz%2B%2B/sources/catalogs/Methodik-Grundschutz%2B%2B/BSI-Methodik-Grundschutz%2B%2B-catalog.json` },
@@ -753,7 +753,11 @@
             { id: 'ed23-anforderungen', label: 'G++/ED23 Anforderungen (Hilfsdatei)', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
               path: 'hilfsdateien/gpp_ed23_anforderungen.json',
               default: `https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/${GPPT_PIN}/hilfsdateien/gpp_ed23_anforderungen.json` },
-        ]);
+        ];
+        gppRegisterSources(GPP_TOOL_ID, GPP_SOURCES);
+        // Default-URL → Quell-ID, damit Repins aus config.html beim Laden greifen
+        // (Schnellauswahl und URL-Feld tragen die Default-URLs im Klartext).
+        const GPP_SOURCE_ID_BY_URL = Object.fromEntries(GPP_SOURCES.map(s => [s.default, s.id]));
 
         // Spiegelt gpp:cfg:* in die ausgeblendeten Shim-Felder; dieses Tool schreibt nie zurück.
         window.applyGppConfig = function (verbose) {
@@ -789,7 +793,7 @@
         }
 
         // Einzige Quelle der Build-Version. Titel und Topbar-Badge werden daraus gesetzt.
-        const BUILD_VERSION = "v9.5.1";
+        const BUILD_VERSION = "v9.5.2";
 
         const byId = id => document.getElementById(id);
 
@@ -994,7 +998,7 @@
             const t0 = performance.now();
             L.info("ED23-Mapping wird geladen …");
             try {
-                const res = await fetch(ED23_MAP_URL);
+                const res = await fetch(gppSource("ed23-anforderungen", ED23_MAP_URL));
                 if (!res.ok) throw new Error("HTTP " + res.status);
                 const data = await res.json();
                 ED23_MAP = buildEd23MapFromOscal(data);
@@ -1152,7 +1156,9 @@
         function currentModel() {
             const sel = document.getElementById('modelSelect');
             const v = sel && sel.value;
-            return GEMINI_MODELS.some(m => m.id === v) ? v : DEFAULT_GEMINI_MODEL;
+            // Zentral konfigurierte Modelle stehen nicht in GEMINI_MODELS (applyGppConfig
+            // ergänzt die Option) — der Wert gilt verbatim, kein stiller Fallback.
+            return v || DEFAULT_GEMINI_MODEL;
         }
 
         // --- OpenRouter: Modellkatalog live, nie hartkodiert -----------------
@@ -1393,12 +1399,18 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präßise und du nutzt kei
             const model = currentModel();
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
             const t0 = performance.now();
-            L.info(`${label} → [Gemini] ${model} · Prompt ${(prompt.length / 1024).toFixed(1)}kb · System ${(systemPrompt.length / 1024).toFixed(1)}kb · Grounding an`);
+            const grounding = (typeof gppCfg !== "undefined" && gppCfg.get("ai:grounding") === "1");
+            L.info(`${label} → [Gemini] ${model} · Prompt ${(prompt.length / 1024).toFixed(1)}kb · System ${(systemPrompt.length / 1024).toFixed(1)}kb · Grounding ${grounding ? "an" : "aus"}`);
 
             const payload = {
-                contents: [{ role: "user", parts: [{ text: prompt }] }],
-                tools: [{ googleSearch: {} }]
+                contents: [{ role: "user", parts: [{ text: prompt }] }]
             };
+            if (grounding) payload.tools = [{ googleSearch: {} }];
+            // Thinking-Level aus der zentralen Konfiguration; "off"/Unbekanntes → kein thinkingConfig.
+            const thinking = (typeof gppCfg !== "undefined" ? gppCfg.get("ai:thinking") : "medium");
+            if (["minimal", "low", "medium", "high"].includes(thinking)) {
+                payload.generationConfig = { thinkingConfig: { thinkingLevel: thinking } };
+            }
 
             if (systemPrompt) {
                 payload.system_instruction = { parts: [{ text: systemPrompt }] };
@@ -1454,7 +1466,8 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präßise und du nutzt kei
             }
 
             const t0 = performance.now();
-            L.info(`${label} → [OpenRouter] ${model} · Prompt ${(prompt.length / 1024).toFixed(1)}kb · System ${(systemPrompt.length / 1024).toFixed(1)}kb · Web-Plugin an`);
+            const grounding = (typeof gppCfg !== "undefined" && gppCfg.get("ai:grounding") === "1");
+            L.info(`${label} → [OpenRouter] ${model} · Prompt ${(prompt.length / 1024).toFixed(1)}kb · System ${(systemPrompt.length / 1024).toFixed(1)}kb · Web-Plugin ${grounding ? "an" : "aus"}`);
 
             const messages = [];
             if (systemPrompt) messages.push({ role: "system", content: systemPrompt });
@@ -1462,9 +1475,9 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präßise und du nutzt kei
 
             const payload = {
                 model,
-                messages,
-                plugins: [{ id: "web" }]
+                messages
             };
+            if (grounding) payload.plugins = [{ id: "web" }];
             if (schema) {
                 payload.response_format = { type: "json_schema", json_schema: { name: "result", strict: true, schema } };
                 payload.provider = { require_parameters: true };
@@ -1511,6 +1524,11 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präßise und du nutzt kei
             return state.backend === "openrouter"
                 ? openrouterOnce(prompt, systemPrompt, label)
                 : callGeminiOnce(prompt, systemPrompt, label);
+        }
+
+        // Retries aus der zentralen Konfiguration (config.html), Fallback 2.
+        function cfgRetries() {
+            return (typeof gppCfg !== "undefined" ? parseInt(gppCfg.get("run:retries"), 10) : 2) || 2;
         }
 
         // Retry-Wrapper mit exponentiellem Backoff: 500ms → 1s → 2s.
@@ -1595,7 +1613,7 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präßise und du nutzt kei
             prompt += relatedControlsText;
 
             try {
-                const response = await callLLM(prompt, system, 2, label);
+                const response = await callLLM(prompt, system, cfgRetries(), label);
 
                 if (!aiCache[controlId]) aiCache[controlId] = {};
                 aiCache[controlId][type] = response;
@@ -1809,7 +1827,16 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präßise und du nutzt kei
 
         async function loadFromURL() {
             const t0 = performance.now();
-            const url = document.getElementById('urlInput').value;
+            let url = document.getElementById('urlInput').value;
+            // Registrierte Quelle? Dann greift ein evtl. Repin aus config.html.
+            const srcId = GPP_SOURCE_ID_BY_URL[url];
+            if (srcId) {
+                const resolved = gppSource(srcId, url);
+                if (resolved !== url) {
+                    L.info(`Quelle „${srcId}" ist in config.html umgepinnt — lade ${resolved}`);
+                    url = resolved;
+                }
+            }
             try {
                 L.info(`Katalog wird geladen: ${url}`);
                 taskBegin("Katalog");

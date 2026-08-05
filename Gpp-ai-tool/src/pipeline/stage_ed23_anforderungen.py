@@ -4,7 +4,7 @@ Pipeline Stage: G++ control → BSI Edition-2023 Anforderungen mapping.
 For every G++ control this stage asks the AI which BSI ED2023 Anforderungen match it, and
 writes the result as an OSCAL 1.2.2 Control Mapping document
 (`hilfsdateien/gpp_ed23_anforderungen.json`, root `mapping-collection`) consumed by the
-One-Page-Apps to show a "Zeige BSI ED23 Anforderungen" panel per control — replacing the old
+GS++-oscal-app to show a "Zeige BSI ED23 Anforderungen" panel per control — replacing the old
 runtime, web-search-grounded AI call in GSpp-Viewer that frequently hallucinated IDs. The
 internal per-control match map is serialized via `utils.oscal_mapping`.
 

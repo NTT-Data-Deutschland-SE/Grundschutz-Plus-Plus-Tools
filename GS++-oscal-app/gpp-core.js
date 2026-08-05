@@ -1,12 +1,12 @@
 /* ==GPP-CORE-START== v1  ————————————————————————————————————————————————
-   Gemeinsamer Kern aller One-Page-Apps: Konfiguration, Prompt-Registrierung,
+   Gemeinsamer Kern aller GS++-oscal-app: Konfiguration, Prompt-Registrierung,
    Quellen-Pins und der Artefaktspeicher.
 
-   WICHTIG — dieser Block wird in JEDE Tool-Datei hineinkopiert, nicht per
-   <script src> eingebunden. Die Tools sollen einzeln per Doppelklick und
-   offline laufen; eine externe Datei würde genau das brechen. Diese Datei
-   (_gpp-core.js) ist die Quelle der Wahrheit, `node _gpp-core-check.js`
-   vergleicht die eingebetteten Kopien damit.
+   WICHTIG — alle Apps binden diese Datei per <script src="gpp-core.js"> ein;
+   sie muss neben den HTML-Dateien liegen (Weitergabe nur als kompletter
+   Ordner bzw. GS++-oscal-app.zip). Fehlt sie, zeigt jede App beim Start eine
+   deutliche Fehlermeldung statt still zu scheitern. Einzeldatei-Portabilität
+   ist ab Version 3 bewusst aufgegeben.
 
    Ablage:
      localStorage  gpp:cfg:*   Konfiguration (klein, synchron beim Start lesbar)
@@ -74,7 +74,6 @@ const gppCfg = {
 function gppRegisterPrompts(toolId, prompts) {
   const reg = {
     tool: toolId,
-    registeredAt: new Date().toISOString(),
     prompts: prompts.map(p => ({
       id: p.id,
       label: p.label,
@@ -82,7 +81,14 @@ function gppRegisterPrompts(toolId, prompts) {
       default: p.default,
     })),
   };
-  localStorage.setItem(GPP_CFG_PREFIX + "promptdefaults:" + toolId, JSON.stringify(reg));
+  gppWriteIfChanged("promptdefaults:" + toolId, reg);
+}
+/* Nur bei tatsächlicher Änderung schreiben — jeder localStorage-Write feuert
+   storage-Events in allen offenen Tabs und ließe sie grundlos neu rendern. */
+function gppWriteIfChanged(subKey, obj) {
+  const key = GPP_CFG_PREFIX + subKey;
+  const json = JSON.stringify(obj);
+  if (localStorage.getItem(key) !== json) localStorage.setItem(key, json);
 }
 /* aktiver Prompttext: Nutzerfassung, sonst der registrierte Default */
 function gppPrompt(toolId, promptId, fallbackDefault) {
@@ -101,11 +107,12 @@ function gppSource(sourceId, pinnedDefaultUrl) {
 }
 /* meldet eine Quelle für die Übersicht in config.html an */
 function gppRegisterSources(toolId, sources) {
-  localStorage.setItem(GPP_CFG_PREFIX + "srcdefaults:" + toolId, JSON.stringify({
+  gppWriteIfChanged("srcdefaults:" + toolId, {
     tool: toolId,
-    registeredAt: new Date().toISOString(),
-    sources: sources.map(s => ({ id: s.id, label: s.label, repo: s.repo, path: s.path, default: s.default })),
-  }));
+    /* fixed: Quelle ist zusätzlich inhaltsgepinnt (SHA-256 im Tool) —
+       config.html zeigt sie an, bietet aber kein Umpinnen an. */
+    sources: sources.map(s => ({ id: s.id, label: s.label, repo: s.repo, path: s.path, default: s.default, fixed: !!s.fixed })),
+  });
 }
 function gppIsUnpinned(url) { return /\/(refs\/heads\/[^/]+|main|master)\//.test(String(url || "")); }
 
@@ -187,7 +194,9 @@ const gppArtefacts = {
      Gleiche id ⇒ Update statt Dublette; ohne id wird über tool+filename
      zusammengeführt, damit wiederholte Exporte nicht den Speicher fluten. */
   async save({ id, stage, kind, title, filename, tool, data, meta }) {
-    const json = JSON.stringify(data);
+    /* Dieselbe Serialisierung wie beim Export (index.html: stringify(…, null, 2)) —
+       sonst passen sha256/size im Manifest nicht zu den ausgelieferten Dateien. */
+    const json = JSON.stringify(data, null, 2);
     const now = new Date().toISOString();
     const key = id || `${tool}:${filename}`;
     const existing = await this.get(key);

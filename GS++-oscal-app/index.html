@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Grundschutz++ OSCAL Tools · v1.0</title>
+  <title>Grundschutz++ OSCAL Tools · v1.1</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
   <style>
     :root {
@@ -69,13 +69,14 @@
       color: var(--text-quiet); border: 1px solid var(--border-1);
       border-radius: 6px; padding: 2px 7px; white-space: nowrap;
     }
-    header a.btn {
-      color: var(--text-secondary); text-decoration: none;
+    header .btn {
+      color: var(--text-secondary); text-decoration: none; cursor: pointer;
+      background: transparent;
       font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em;
       padding: 6px 11px; border: 1px solid var(--border-2); border-radius: 8px;
       white-space: nowrap; transition: all .15s ease;
     }
-    header a.btn:hover {
+    header .btn:hover {
       color: var(--text-primary); border-color: var(--accent);
       background: var(--bg-elev-2);
     }
@@ -172,6 +173,33 @@
       0%   { transform: translateX(-100%); }
       100% { transform: translateX(430%); }
     }
+
+    /* ---- Doku-Panel (Hilfe / Handbuch) ---- */
+    #doc-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+    #doc-nav:empty { display: none; }
+    #doc-nav button {
+      background: transparent; color: var(--text-secondary); cursor: pointer;
+      border: 1px solid var(--border-2); border-radius: 7px;
+      padding: 4px 10px; font-size: .72rem; font-family: var(--mono);
+    }
+    #doc-nav button:hover { color: var(--text-primary); border-color: var(--accent); }
+    #doc-nav button.active { color: var(--text-primary); background: var(--accent-soft); border-color: var(--accent); }
+    .md { max-width: 86ch; line-height: 1.65; font-size: .88rem; color: var(--text-secondary); padding-bottom: 40px; }
+    .md h1, .md h2, .md h3, .md h4 { color: var(--text-primary); line-height: 1.3; margin: 1.6em 0 .5em; }
+    .md h1 { font-size: 1.3rem; } .md h2 { font-size: 1.08rem; } .md h3 { font-size: .95rem; } .md h4 { font-size: .88rem; }
+    .md h1:first-child { margin-top: 0; }
+    .md a { color: var(--accent); }
+    .md code { font-family: var(--mono); font-size: .82em; background: var(--bg-elev-2); border: 1px solid var(--border-1); border-radius: 4px; padding: 1px 4px; }
+    .md pre { background: var(--bg-elev-1); border: 1px solid var(--border-1); border-radius: 8px; padding: 12px 14px; overflow-x: auto; }
+    .md pre code { background: none; border: 0; padding: 0; font-size: .78rem; }
+    .md blockquote { margin: 1em 0; padding: 6px 14px; border-left: 2px solid var(--accent); background: var(--bg-elev-1); border-radius: 0 8px 8px 0; }
+    .md table { border-collapse: collapse; margin: 1em 0; font-size: .8rem; display: block; overflow-x: auto; }
+    .md th, .md td { border: 1px solid var(--border-2); padding: 5px 10px; text-align: left; vertical-align: top; }
+    .md th { color: var(--text-primary); background: var(--bg-elev-2); }
+    .md ul, .md ol { padding-left: 1.4em; }
+    .md li { margin: .25em 0; }
+    .md hr { border: 0; border-top: 1px solid var(--border-2); margin: 1.6em 0; }
+    .doc-err { padding: 22px; border: 1px dashed var(--border-2); border-radius: 10px; color: var(--text-quiet); font-size: .82rem; line-height: 1.6; }
   </style>
 </head>
 <body>
@@ -184,6 +212,8 @@
     <span class="build-pill" id="build-pill"></span>
     <div class="spacer"></div>
     <button class="btn" id="btn-artefacts" title="Alle erzeugten Artefakte ansehen und exportieren">◱ ARTEFAKTE <span id="art-total"></span></button>
+    <button class="btn" id="btn-help" title="Anleitung der Sammlung (readme), formatiert">? HILFE</button>
+    <button class="btn" id="btn-handbuch" title="Grundschutz++ Handbuch mit Kapitelnavigation">▤ HANDBUCH</button>
     <a class="btn" href="config.html" title="Zentrale Einstellungen: KI-Zugang, Prompts, Quellen-Pins">⚙ EINSTELLUNGEN</a>
     <a class="btn" id="open-standalone" href="#" target="_blank" rel="noopener" title="Aktuelle App in neuem Tab öffnen">↗ STANDALONE</a>
     <a class="btn" href="https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools" target="_blank" rel="noopener">GitHub</a>
@@ -212,6 +242,13 @@
       <div id="export-note" class="sub" style="margin-bottom:14px"></div>
       <div id="art-list"></div>
     </section>
+
+    <section class="sheet" id="doc-sheet" aria-label="Dokumentation">
+      <h2 id="doc-title">Hilfe</h2>
+      <p class="sub" id="doc-sub"></p>
+      <div id="doc-nav"></div>
+      <article id="doc-body" class="md"></article>
+    </section>
   </div>
 
   <script src="gpp-core.js"></script>
@@ -231,7 +268,7 @@
     ];
     const CORE_OK = typeof gppArtefacts !== "undefined";
 
-    const APP_VERSION = "1.0";
+    const APP_VERSION = "1.1";
     document.getElementById("build-pill").textContent = `build ${APP_VERSION}`;
 
     const nav = document.getElementById("tabs");
@@ -415,11 +452,145 @@
       refreshArtefacts();
     });
 
-    function openSheet() { sheet.classList.add("open"); refreshArtefacts(); }
+    function openSheet() { closeDoc(); sheet.classList.add("open"); refreshArtefacts(); }
     function closeSheet() { sheet.classList.remove("open"); }
     document.getElementById("btn-artefacts").addEventListener("click", () => {
       sheet.classList.contains("open") ? closeSheet() : openSheet();
     });
+
+    /* ================= Hilfe & Handbuch =================
+       Markdown wird mit einem kleinen eigenen Renderer dargestellt — die
+       Sammlung bindet keine externen Bibliotheken ein. Geladen wird zuerst
+       relativ (Repo/entpacktes ZIP über http://); scheitert das (typisch
+       file:// wegen CORS oder ZIP ohne Repo drumherum), kommt der Text von
+       GitHub (main — Dokumentation, kein ergebnisrelevanter Katalog). */
+    const docSheet = document.getElementById("doc-sheet");
+    const RAW_DOCS = "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/refs/heads/main/";
+    const HANDBUCH = [
+      "01_einleitung.md", "02_ueberblick.md", "03_oscal.md", "04_gc.md", "05_stm.md",
+      "06_ums.md", "07_vrb.md", "08_perf.md", "09_audit_zert.md", "10_vergleich.md",
+      "anhang_a_control_register.md", "anhang_b_dokumentenlandkarte.md",
+      "anhang_c_glossar.md", "anhang_d_offene_fragen.md",
+    ];
+    const chapterLabel = f => f.replace(/\.md$/, "").replace(/_/g, " ")
+      .replace(/^(\d+) /, "$1 · ").replace(/^anhang (\w) /, (m, c) => "Anhang " + c.toUpperCase() + " · ")
+      .replace(/(^|· )(\w)/g, (m, p, c) => p + c.toUpperCase());
+
+    function md2html(md) {
+      const fences = [];
+      md = md.replace(/```[^\n]*\n([\s\S]*?)```/g, (m, code) => {
+        fences.push(code);
+        return "\u0000FENCE" + (fences.length - 1) + "\u0000";
+      });
+      const inline = s => escapeHtml(s)
+        .replace(/`([^`]+)`/g, "<code>$1</code>")
+        .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+        .replace(/(^|[\s(])\*([^*\n]+)\*/g, "$1<em>$2</em>")
+        .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, t, href) => {
+          const h = href.replace(/&amp;/g, "&");
+          if (/^[\w./-]+\.md(#[\w-]*)?$/.test(h)) {
+            const file = h.split("/").pop().split("#")[0];
+            if (HANDBUCH.includes(file)) return `<a href="#" data-chapter="${file}">${t}</a>`;
+          }
+          if (/^(https?:)/.test(h)) return `<a href="${escapeAttr(h)}" target="_blank" rel="noopener">${t}</a>`;
+          return t;
+        });
+      const out = [];
+      const lines = md.split(/\r?\n/);
+      let para = [], list = null, table = null, quote = [];
+      const flushPara = () => { if (para.length) { out.push("<p>" + inline(para.join(" ")) + "</p>"); para = []; } };
+      const flushList = () => { if (list) { out.push(`<${list.tag}>` + list.items.map(i => "<li>" + inline(i) + "</li>").join("") + `</${list.tag}>`); list = null; } };
+      const flushTable = () => {
+        if (!table) return;
+        const rows = table.filter(r => !/^[\s|:-]+$/.test(r));
+        const cells = r => r.replace(/^\||\|$/g, "").split("|").map(c => inline(c.trim()));
+        let html = "<table>";
+        rows.forEach((r, i) => {
+          const tag = i === 0 ? "th" : "td";
+          html += "<tr>" + cells(r).map(c => `<${tag}>${c}</${tag}>`).join("") + "</tr>";
+        });
+        out.push(html + "</table>"); table = null;
+      };
+      const flushQuote = () => { if (quote.length) { out.push("<blockquote>" + inline(quote.join(" ")) + "</blockquote>"); quote = []; } };
+      const flushAll = () => { flushPara(); flushList(); flushTable(); flushQuote(); };
+      for (const raw of lines) {
+        const line = raw.replace(/\s+$/, "");
+        const fence = line.match(/^\u0000FENCE(\d+)\u0000$/);
+        if (fence) { flushAll(); out.push("<pre><code>" + escapeHtml(fences[+fence[1]]) + "</code></pre>"); continue; }
+        if (!line.trim()) { flushAll(); continue; }
+        const h = line.match(/^(#{1,4})\s+(.*)/);
+        if (h) { flushAll(); out.push(`<h${h[1].length}>` + inline(h[2]) + `</h${h[1].length}>`); continue; }
+        if (/^(---+|\*\*\*+)$/.test(line.trim())) { flushAll(); out.push("<hr>"); continue; }
+        if (/^\s*\|/.test(line)) { flushPara(); flushList(); flushQuote(); (table = table || []).push(line.trim()); continue; }
+        const li = line.match(/^\s*([-*]|\d+\.)\s+(.*)/);
+        if (li) {
+          flushPara(); flushTable(); flushQuote();
+          const tag = /\d/.test(li[1]) ? "ol" : "ul";
+          if (!list || list.tag !== tag) { flushList(); list = { tag, items: [] }; }
+          list.items.push(li[2]); continue;
+        }
+        const q = line.match(/^>\s?(.*)/);
+        if (q) { flushPara(); flushList(); flushTable(); quote.push(q[1]); continue; }
+        if (list) { list.items[list.items.length - 1] += " " + line.trim(); continue; }
+        flushTable(); flushQuote(); para.push(line.trim());
+      }
+      flushAll();
+      return out.join("\n");
+    }
+
+    async function fetchDoc(localPath, repoPath) {
+      try {
+        const r = await fetch(localPath, { cache: "no-store" });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return await r.text();
+      } catch (e) {
+        const r2 = await fetch(RAW_DOCS + repoPath);
+        if (!r2.ok) throw new Error("lokal nicht lesbar, GitHub-Fallback HTTP " + r2.status);
+        return await r2.text();
+      }
+    }
+
+    let docMode = null;
+    async function openDoc(mode, chapter) {
+      closeSheet();
+      docMode = mode;
+      docSheet.classList.add("open");
+      const title = document.getElementById("doc-title");
+      const sub = document.getElementById("doc-sub");
+      const navBox = document.getElementById("doc-nav");
+      const body = document.getElementById("doc-body");
+      if (mode === "help") {
+        title.textContent = "Hilfe";
+        sub.textContent = "Die Anleitung der Sammlung (readme.md), direkt hier gerendert.";
+        navBox.innerHTML = "";
+      } else {
+        title.textContent = "Grundschutz++ Handbuch";
+        sub.textContent = "Kapitel aus dem Repository-Ordner handbuch/.";
+        navBox.innerHTML = HANDBUCH.map(f =>
+          `<button data-ch="${f}" class="${f === chapter ? "active" : ""}">${escapeHtml(chapterLabel(f))}</button>`).join("");
+        navBox.querySelectorAll("button").forEach(b => b.addEventListener("click", () => openDoc("handbuch", b.dataset.ch)));
+      }
+      body.innerHTML = '<div class="doc-err">Lade …</div>';
+      try {
+        const text = mode === "help"
+          ? await fetchDoc("readme.md", "GS++-oscal-app/readme.md")
+          : await fetchDoc("../handbuch/" + chapter, "handbuch/" + chapter);
+        body.innerHTML = md2html(text);
+        body.querySelectorAll("a[data-chapter]").forEach(a =>
+          a.addEventListener("click", ev => { ev.preventDefault(); openDoc("handbuch", a.dataset.chapter); }));
+        docSheet.scrollTop = 0;
+      } catch (e) {
+        body.innerHTML = `<div class="doc-err">Dokument nicht ladbar: ${escapeHtml(e.message)}.<br>
+          Offline und per <code>file://</code> geöffnet? Dann hilft ein lokaler Server
+          (<code>python -m http.server</code> im entpackten Ordner) — oder online gehen,
+          dann kommt der Text von GitHub.</div>`;
+      }
+    }
+    function closeDoc() { docSheet.classList.remove("open"); docMode = null; }
+    document.getElementById("btn-help").addEventListener("click", () =>
+      (docMode === "help") ? closeDoc() : openDoc("help"));
+    document.getElementById("btn-handbuch").addEventListener("click", () =>
+      (docMode === "handbuch") ? closeDoc() : openDoc("handbuch", HANDBUCH[0]));
     if (!CORE_OK) {
       document.getElementById("btn-artefacts").disabled = true;
       document.getElementById("btn-artefacts").title = "gpp-core.js fehlt — bitte die komplette Sammlung entpacken";

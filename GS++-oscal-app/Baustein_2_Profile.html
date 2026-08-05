@@ -384,14 +384,13 @@ body{
             <input id="retries" type="number" value="2">
             <input id="chunk-size" type="number" value="8">
             <input id="ctrl-chunk" type="number" value="100">
-            <input type="checkbox" id="maker-checker">
+            <!-- maker-checker und testdrive sind sichtbare Run-Optionen (Run-Bar),
+                 keine Shim-Felder — doppelte IDs machen die sichtbaren tot -->
             <input type="checkbox" id="grounding">
-            <input type="checkbox" id="testdrive">
             <select id="checker-backend">
               <option value="same" selected>same</option><option value="gemini">Gemini</option><option value="openrouter">OpenRouter</option>
             </select>
             <input id="checker-model" type="text">
-            <div id="checker-route-section" class="hidden"></div>
             <span id="backend-pill"></span>
           </div>
         </div>
@@ -493,6 +492,10 @@ body{
               <input type="checkbox" id="testdrive">
               <span>Test drive (5%)</span>
             </label>
+            <label class="testdrive" title="Vier-Augen-Prüfung: zweiter LLM-Pass validiert das Control-Mapping">
+              <input type="checkbox" id="maker-checker">
+              <span>Checker</span>
+            </label>
             <span class="grow"></span>
             <button class="btn sm ghost" id="btn-clear">⌕ clear results</button>
           </div>
@@ -592,7 +595,7 @@ body{
 if (typeof gppCfg === "undefined") {
   document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#111">' +
     '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
-    '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (gs_tools.zip) ' +
+    '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) ' +
     'statt einzelner Dateien.</p></div>';
   throw new Error("gpp-core.js missing");
 }
@@ -604,23 +607,17 @@ const GPP_TOOL_ID = "Baustein_2_Profile";
    Konstante; keine handgepflegten Versionsstrings mehr im File.
    ════════════════════════════════════════════════════════════════════════ */
 
-const APP_VERSION  = "0.8.4";
+const APP_VERSION  = "0.8.5";
 const APP_NAME     = "Baustein_2_Profile";
 
-// Das Dropdown listet ausschließlich lebende Gemini-3.x-Text-Modelle
-// (Stand August 2026). Abgeschaltete Preview-IDs liefern HTTP 404 und dürfen
-// weder als Option noch als gespeicherte Präferenz überleben (siehe loadPrefs).
+// Fallback, wenn zentral kein Gemini-Modell gesetzt ist (config.html).
 const DEFAULT_MODEL = "gemini-3.6-flash";
 
 /* ── OpenRouter (zweites Backend) ─────────────────────────────────────────
    Ein Key, ein Endpoint, Modelle mehrerer Anbieter hinter einer
-   OpenAI-kompatiblen Chat-Completions-Fläche. Bewusst KEINE fest verdrahtete
-   Modell-Liste und KEIN Default-Slug: der Katalog wird live geladen, weil er
-   sich wöchentlich ändert — ein einkompilierter Slug wäre schnell tot.       */
+   OpenAI-kompatiblen Chat-Completions-Fläche. Modellwahl (inkl. Katalog-
+   Browser) liegt zentral in config.html; hier kommt nur der Slug an.        */
 const OR_CHAT_URL      = "https://openrouter.ai/api/v1/chat/completions";
-const OR_MODELS_URL    = "https://openrouter.ai/api/v1/models";   // ohne Auth abrufbar
-const OR_CACHE_KEY     = "gpp.or.catalog";
-const OR_CACHE_MAX_AGE = 24 * 60 * 60 * 1000;                     // 24 h
 // Optionale Attributions-Header. file:// liefert origin "null" — dann der
 // dokumentierte Platzhalter.
 const OR_REFERER = (location.origin && location.origin !== "null")
@@ -776,8 +773,11 @@ const ZOK_CSV_URL     = gppSource("zok-csv", `https://raw.githubusercontent.com/
 const ZO_CONTROLS_URL = gppSource("zielobjekt-controls", `https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/${GPP_TOOLS_PIN_COMMIT}/hilfsdateien/zielobjekt_controls.json`);
 // Quellen für die Pin-Übersicht in config.html anmelden (Update-Prüfung dort).
 gppRegisterSources(GPP_TOOL_ID, [
+  /* fixed: der Katalog ist gegen GPP_CATALOG_PIN_SHA256 inhaltsgepinnt und die
+     Resource-UUID aus der URL abgeleitet — Umpinnen über config.html würde die
+     Integritätsprüfung brechen, daher wird dort keins angeboten. */
   { id: "gpp-catalog", label: "G++ resolved catalog", repo: "BSI-Bund/Stand-der-Technik-Bibliothek",
-    path: "control_layer/Grundschutz++/Grundschutz++-resolved_catalog.json",
+    path: "control_layer/Grundschutz++/Grundschutz++-resolved_catalog.json", fixed: true,
     default: `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json` },
   { id: "zok-csv", label: "Zielobjektkategorien (CSV)", repo: "BSI-Bund/Stand-der-Technik-Bibliothek",
     path: "documentation/namespaces/target_object_categories.csv", default: ZOK_CSV_URL },
@@ -831,10 +831,9 @@ const state = {
   // token accounting (Gemini usageMetadata / OpenRouter usage, accumulated per run)
   tokens: { prompt: 0, cached: 0, candidates: 0, thoughts: 0, total: 0, calls: 0 },
 
-  // backend ("gemini" | "openrouter"), OpenRouter-Modellkatalog und die
-  // tatsächlich verwendeten Engines pro Pass (Log + Export-Nachweis).
+  // backend ("gemini" | "openrouter") und die tatsächlich verwendeten
+  // Engines pro Pass (Log + Export-Nachweis).
   backend: "gemini",
-  orModels: [],
   engines: { maker: null, checker: null },
 
   // pipeline outputs
@@ -945,42 +944,16 @@ function loadPrefs() {
   }
   for (const [key, label] of [["gpp.caturl", "Katalog"], ["gpp.piurl", "Zielobjektkategorien-CSV"]]) {
     const v = localStorage.getItem(key);
-    if (v && /\/(refs\/heads\/[^/]+|main|master)\//.test(v)) {
+    if (v && gppIsUnpinned(v)) {
       localStorage.removeItem(key);
       l.warn(`Gespeicherte ${label}-URL zeigte auf einen Branch statt auf einen Commit — verworfen, gepinnter Default aktiv (Grundregel 8).`);
     }
   }
 
-  // Migration: ein gespeichertes Modell, das nicht mehr im Dropdown steht (typisch
-  // eine abgeschaltete Preview-ID → HTTP 404), würde ein <select> stumm auf ""
-  // setzen und jeden Call scheitern lassen. Explizit auf DEFAULT_MODEL
-  // zurücksetzen und im Log vermerken.
-  const liveModels  = [...$("model").options].map(o => o.value);
-  const storedModel = localStorage.getItem("gpp.model");
-  if (storedModel && !liveModels.includes(storedModel)) {
-    l.warn(`gespeichertes Modell "${storedModel}" existiert nicht mehr (abgeschaltete ID) → zurückgesetzt auf ${DEFAULT_MODEL}`);
-    localStorage.setItem("gpp.model", DEFAULT_MODEL);
-  }
-
-  // Gemini-Konfiguration
-  $("api-key").value         = localStorage.getItem("gpp.apikey")    || "";
-  $("model").value           = localStorage.getItem("gpp.model")     || DEFAULT_MODEL;
-  $("thinking").value        = localStorage.getItem("gpp.thinking")  || "medium";
-  // OpenRouter-Konfiguration — Key UND Modell getrennt vom Gemini-Pfad
-  $("or-key").value          = localStorage.getItem("gpp.or.key")      || "";
-  $("or-model-free").value   = localStorage.getItem("gpp.or.modelfree")|| "";
-  $("or-effort").value       = localStorage.getItem("gpp.or.effort")   || "off";
-  $("or-only-structured").checked = localStorage.getItem("gpp.or.structonly") !== "0";
-  // Checker-Route (Default: identisch zum Maker)
-  $("checker-backend").value = localStorage.getItem("gpp.checker.backend") || "same";
-  $("checker-model").value   = localStorage.getItem("gpp.checker.model")   || "";
-
-  $("concurrency").value     = localStorage.getItem("gpp.conc")      || "4";
-  $("retries").value         = localStorage.getItem("gpp.retries")   || "2";
-  $("chunk-size").value      = localStorage.getItem("gpp.chunk")     || "8";
+  // KI-Zugang, Modelle und Laufzeit kommen zentral aus config.html (applyGppConfig
+  // unten überschreibt die Shim-Felder). Hier bleiben nur die tool-eigenen Prefs.
   $("ctrl-chunk").value      = localStorage.getItem("gpp.ctrlchunk") || "100";
   $("maker-checker").checked = localStorage.getItem("gpp.mc")        === "1";
-  $("grounding").checked     = localStorage.getItem("gpp.ground")    === "1";
   $("testdrive").checked     = localStorage.getItem("gpp.td")        === "1";
   $("cat-url").value         = localStorage.getItem("gpp.caturl")    || $("cat-url").value;
   $("pi-url").value          = localStorage.getItem("gpp.piurl")     || $("pi-url").value;
@@ -994,12 +967,20 @@ function loadPrefs() {
 window.applyGppConfig = function (verbose) {
   const backend = gppCfg.get("ai:backend") === "openrouter" ? "openrouter" : "gemini";
   const set = (id, v) => { const el = $(id); if (el && v != null) el.value = v; };
+  /* Selects im Shim haben keine vordefinierten Optionen — Wert erst als Option
+     anlegen, sonst bleibt value "" und jeder Gemini-Call liefe gegen models/: */
+  const setSel = (id, v) => {
+    const el = $(id); if (!el || !v) return;
+    if (![...el.options].some(o => o.value === v)) el.add(new Option(v, v));
+    el.value = v;
+  };
   set("api-key", gppCfg.get("ai:key:gemini"));
   set("or-key", gppCfg.get("ai:key:openrouter"));
-  set("model", gppCfg.get("ai:model:gemini") || DEFAULT_MODEL);
+  setSel("model", gppCfg.get("ai:model:gemini") || DEFAULT_MODEL);
   set("or-model-free", gppCfg.get("ai:model:openrouter"));
   set("thinking", gppCfg.get("ai:thinking"));
-  set("or-effort", gppCfg.get("ai:thinking"));
+  /* or-effort kennt kein "minimal" — auf "low" abbilden statt stumm zu scheitern */
+  set("or-effort", ({ minimal: "low" })[gppCfg.get("ai:thinking")] || gppCfg.get("ai:thinking"));
   set("checker-backend", gppCfg.get("ai:checker:backend"));
   set("checker-model", gppCfg.get("ai:checker:model"));
   set("concurrency", gppCfg.get("run:concurrency"));
@@ -1029,18 +1010,8 @@ function bindPersist(id, key) {
   $(id).addEventListener("change", () => localStorage.setItem(key, $(id).value));
 }
 
-bindPersist("api-key", "gpp.apikey");
-bindPersist("model", "gpp.model");
-bindPersist("thinking", "gpp.thinking");
-bindPersist("or-key", "gpp.or.key");
-bindPersist("or-model", "gpp.or.model");
-bindPersist("or-model-free", "gpp.or.modelfree");
-bindPersist("or-effort", "gpp.or.effort");
-bindPersist("checker-backend", "gpp.checker.backend");
-bindPersist("checker-model", "gpp.checker.model");
-bindPersist("concurrency", "gpp.conc");
-bindPersist("retries", "gpp.retries");
-bindPersist("chunk-size", "gpp.chunk");
+/* Nur tool-eigene Prefs persistieren — KI-Zugang/Laufzeit kommen aus config.html
+   und werden von diesem Tool nie zurückgeschrieben. */
 bindPersist("ctrl-chunk", "gpp.ctrlchunk");
 bindPersist("cat-url", "gpp.caturl");
 bindPersist("pi-url", "gpp.piurl");
@@ -1048,9 +1019,6 @@ bindPersist("pi-url", "gpp.piurl");
 $("maker-checker").addEventListener("change", e => {
   localStorage.setItem("gpp.mc", e.target.checked ? "1" : "0");
   toggleCheckerUI();
-});
-$("grounding").addEventListener("change", e => {
-  localStorage.setItem("gpp.ground", e.target.checked ? "1" : "0");
 });
 $("testdrive").addEventListener("change", e => {
   localStorage.setItem("gpp.td", e.target.checked ? "1" : "0");
@@ -1060,9 +1028,11 @@ $("testdrive").addEventListener("change", e => {
 /* Prompts werden zentral in config.html bearbeitet; die Defaults bleiben hier
    und werden beim Start angemeldet. */
 const PROMPT_LABELS = { s1: "Stufe 1 — Baustein-Analyse", s2: "Stufe 2 — Control-Mapping", check: "Checker — Vier-Augen-Prüfung" };
+/* Muss zu den vars der buildPrompt-Aufrufe passen — config.html warnt anhand
+   dieser Liste, wenn ein Platzhalter im bearbeiteten Prompt fehlt. */
 const PROMPT_PLACEHOLDERS = {
-  s1: ["{baustein_id}", "{baustein_text}"],
-  s2: ["{controls}"],
+  s1: ["{baustein_id}", "{baustein_title}", "{baustein_summary}", "{categories}"],
+  s2: ["{baustein_id}", "{baustein_title}", "{anforderungen_with_sentences}", "{controls}"],
   check: ["{pairs}"],
 };
 gppRegisterPrompts(GPP_TOOL_ID, ["s1", "s2", "check"].map(k => ({
@@ -1082,110 +1052,21 @@ renderPromptOverview();
 window.addEventListener("storage", e => { if (e.key && e.key.startsWith("gpp:cfg:prompt")) renderPromptOverview(); });
 
 function toggleCheckerUI() {
-  const on = $("maker-checker").checked;
-  $("checker-block").style.display = on ? "block" : "none";
-  $("pip-s4").classList.toggle("hidden", !on);
-  $("checker-route-section").classList.toggle("hidden", !on);
+  $("pip-s4").classList.toggle("hidden", !$("maker-checker").checked);
 }
 
 /* ════════════════════════════════════════════════════════════════════════
-   Backend-Umschaltung — tauscht ausschließlich die Config-Felder in der Rail.
-   Key und Modell liegen je Backend unter eigenen localStorage-Schlüsseln, die
-   Auswahl selbst unter gpp.backend.
+   Backend-Umschaltung — die Wahl kommt zentral aus gpp:cfg (config.html).
    ════════════════════════════════════════════════════════════════════════ */
 
-function setBackend(b, persist = true) {
+function setBackend(b) {
   state.backend = (b === "openrouter") ? "openrouter" : "gemini";
-  for (const btn of document.querySelectorAll("#backend-seg .seg-btn")) {
-    btn.classList.toggle("active", btn.dataset.backend === state.backend);
-  }
-  $("cfg-gemini").classList.toggle("hidden", state.backend !== "gemini");
-  $("cfg-openrouter").classList.toggle("hidden", state.backend !== "openrouter");
-  $("backend-pill").textContent = state.backend === "openrouter" ? "● OpenRouter" : "● Gemini 3";
-  if (persist) localStorage.setItem("gpp.backend", state.backend);
-  if (state.backend === "openrouter") loadOrModels(false);
+  const pill = $("backend-pill");
+  if (pill) pill.textContent = state.backend === "openrouter" ? "● OpenRouter" : "● Gemini 3";
 }
-
-document.querySelectorAll("#backend-seg .seg-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    if (btn.dataset.backend === state.backend) return;
-    setBackend(btn.dataset.backend);
-    l.info(`backend → ${state.backend}`);
-  });
-});
-
-/* ── OpenRouter-Modellkatalog: live laden, 24 h cachen ──────────────────── */
-
-function orCatalogCache() {
-  try {
-    const obj = JSON.parse(localStorage.getItem(OR_CACHE_KEY) || "null");
-    return (obj && Array.isArray(obj.models) && obj.ts) ? obj : null;
-  } catch { return null; }
-}
-
-function renderOrModels(src) {
-  const sel  = $("or-model");
-  const only = $("or-only-structured").checked;
-  const all  = state.orModels || [];
-  const prev = sel.value || localStorage.getItem("gpp.or.model") || "";
-  const list = only ? all.filter(m => m.structured) : all;
-  sel.innerHTML = `<option value="">— Modell wählen —</option>` + list.map(m =>
-    `<option value="${escapeHtml(m.id)}">${m.structured ? "◇" : "·"} ${escapeHtml(m.id)}` +
-    `${m.ctx ? ` · ${Math.round(m.ctx / 1000)}k` : ""}</option>`).join("");
-  if (prev && list.some(m => m.id === prev)) sel.value = prev;
-  $("or-cat-info").textContent = all.length
-    ? `${list.length}/${all.length} Modelle · ${src} · ◇ = structured_outputs`
-    : `Katalog leer · ${src}`;
-}
-
-async function loadOrModels(force = false) {
-  const cached = orCatalogCache();
-  const age    = cached ? Date.now() - cached.ts : Infinity;
-  if (!force && cached && age < OR_CACHE_MAX_AGE) {
-    state.orModels = cached.models;
-    renderOrModels(`cache · ${Math.round(age / 3600000)}h alt`);
-    return;
-  }
-  try {
-    const t0  = performance.now();
-    const res = await fetch(OR_MODELS_URL);           // keine Auth nötig
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    const models = (data?.data || [])
-      .map(m => {
-        const sp = m.supported_parameters || [];
-        return {
-          id: m.id,
-          ctx: m.context_length || 0,
-          // Diese App hängt an responseJsonSchema/response_format — Modelle ohne
-          // structured_outputs sind hier praktisch unbrauchbar und werden gefiltert
-          // bzw. deutlich markiert.
-          structured: sp.includes("structured_outputs") || sp.includes("response_format"),
-        };
-      })
-      .filter(m => m.id)
-      .sort((a, b) => a.id.localeCompare(b.id));
-    state.orModels = models;
-    try { localStorage.setItem(OR_CACHE_KEY, JSON.stringify({ ts: Date.now(), models })); } catch {}
-    renderOrModels(`live · ${Math.round(performance.now() - t0)}ms`);
-    l.ok(`OpenRouter-Katalog · ${models.length} Modelle (${models.filter(m => m.structured).length} mit structured_outputs)`);
-  } catch (e) {
-    l.err(`OpenRouter-Katalog fehlgeschlagen: ${e.message}`);
-    if (cached) {
-      state.orModels = cached.models;
-      renderOrModels(`cache (stale, ${Math.round(age / 3600000)}h)`);
-      l.warn("OpenRouter-Katalog aus abgelaufenem Cache verwendet");
-    } else {
-      $("or-cat-info").textContent = `Fehler: ${e.message} — Slug bitte manuell eingeben`;
-    }
-  }
-}
-
-$("btn-or-refresh").addEventListener("click", () => { l.info("OpenRouter-Katalog wird neu geladen…"); loadOrModels(true); });
-$("or-only-structured").addEventListener("change", e => {
-  localStorage.setItem("gpp.or.structonly", e.target.checked ? "1" : "0");
-  renderOrModels("Filter geändert");
-});
+/* Der frühere OpenRouter-Modellkatalog (Fetch + 24h-Cache + Dropdown) ist mit
+   der Konfiguration nach config.html gewandert; das Modell kommt als Slug aus
+   gpp:cfg und steht in #or-model-free. */
 
 /* ════════════════════════════════════════════════════════════════════════
    Splitter

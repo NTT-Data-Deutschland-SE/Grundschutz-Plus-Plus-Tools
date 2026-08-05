@@ -328,7 +328,7 @@ select.inline-sel option { background: oklch(0.18 0.02 280); }
 <div id="app">
   <div id="topbar">
     <div class="brand">OSCAL <span>Schema Validator</span></div>
-    <div class="pill" id="pill-version">v1.10.0</div>
+    <div class="pill" id="pill-version">v1.10.1</div>
     <div class="pill" id="pill-schema">SCHEMA: <b>–</b></div>
     <div class="pill" id="pill-doc">DOC: <b>–</b></div>
     <div class="pill" id="pill-errors">ERRORS: <b>–</b></div>
@@ -552,11 +552,11 @@ select.inline-sel option { background: oklch(0.18 0.02 280); }
 if (typeof gppCfg === "undefined") {
   document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#111">' +
     '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
-    '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (gs_tools.zip) ' +
+    '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) ' +
     'statt einzelner Dateien.</p></div>';
   throw new Error("gpp-core.js missing");
 }
-const APP_VERSION = "1.10.0";
+const APP_VERSION = "1.10.1";
 const GPP_TOOL_ID = "oscal-schema-validator";
 const OSCAL_SCHEMA_VERSION = "1.2.2";
 const $ = id => document.getElementById(id);
@@ -1164,9 +1164,9 @@ function runDeterministicRules(doc, model, refIndex) {
           const hashes = rlinks[0].hashes || [];
           const sha = hashes.filter(h => h && h.algorithm === "SHA-256");
           if (hashes.length !== 1 || sha.length !== 1) add("D8-IMPORT-PIN", "warning", ref.loc, `Pinned import resource "${res.uuid}" should carry exactly one SHA-256 hash (found ${hashes.length})`, "Carry exactly one hash entry with algorithm \"SHA-256\" on the rlink (Grundregel 8).");
-          if (typeof rlinks[0].href === "string" && /\/refs\/heads\//.test(rlinks[0].href)) add("D8-IMPORT-PIN", "warning", ref.loc, `Pinned resource rlink still points at a moving branch URL (${rlinks[0].href})`, "Replace the branch reference with a commit-pinned URL.");
+          if (typeof rlinks[0].href === "string" && gppIsUnpinned(rlinks[0].href)) add("D8-IMPORT-PIN", "warning", ref.loc, `Pinned resource rlink still points at a moving branch URL (${rlinks[0].href})`, "Replace the branch reference with a commit-pinned URL.");
         }
-      } else if (/^https?:/.test(ref.href) && /\/(refs\/heads\/[^/]+|main|master)\//.test(ref.href)) {
+      } else if (/^https?:/.test(ref.href) && gppIsUnpinned(ref.href)) {
         add("D8-IMPORT-PIN", "warning", ref.loc, `Import href is an unpinned branch URL (${ref.href})`, "Migrate to the pin pattern: fragment href onto a back-matter resource whose rlink carries a commit-pinned URL plus a SHA-256 hash (Handbuch 3.14 / Grundregel 8).");
       }
     }
@@ -1487,8 +1487,9 @@ function applyGppConfig() {
   chk("grounding", gppCfg.getBool("ai:grounding"));
   chk("or-structured-only", gppCfg.getBool("ai:or:structuredonly"));
   chk("or-reasoning", gppCfg.get("ai:thinking") !== "off");
-  const be = gppCfg.get("ai:backend");
-  if (typeof setBackend === "function") setBackend(be, false); else state.backend = be;
+  /* applyBackend statt nacktem state.backend — sonst bleiben Modellkatalog,
+     Thinking-Disable und Run-Labels auf dem Stand des vorherigen Backends */
+  applyBackend(gppCfg.get("ai:backend"), true);
   renderCfgSummary();
 }
 function renderCfgSummary() {
@@ -1507,7 +1508,8 @@ function renderCfgSummary() {
       `${gppCfg.get("run:concurrency")} parallel, Chunk ${gppCfg.get("run:chunk")}, ${gppCfg.get("run:retries")} Retries` +
       (gppCfg.getBool("ai:grounding") ? " · Grounding an" : "");
 }
-applyGppConfig();
+/* Erstaufruf von applyGppConfig() erst im Boot-Block ganz unten — applyBackend
+   greift auf orCatalog/orLoadCatalog zu, die hier noch nicht initialisiert sind */
 $("btn-cfg-reload").addEventListener("click", () => { applyGppConfig(); l.ok("Einstellungen aus config.html neu übernommen."); });
 /* config.html läuft in einem anderen Fenster/Tab — dessen Änderungen kommen als storage-Event an */
 window.addEventListener("storage", e => { if (e.key && e.key.startsWith("gpp:cfg:")) applyGppConfig(); });
@@ -1903,8 +1905,11 @@ for (const id of ["model", "or-model-custom", "checker-backend", "checker-model"
 $("checker-backend").addEventListener("change", updateRunMeta);
 {
   const cachedBoot = orReadCache();
-  if (cachedBoot) { orCatalog = cachedBoot.models; orRenderCatalog(); }
-  applyBackend(localStorage.getItem("osv:cfg:backend") || "gemini", true);
+  if (cachedBoot) orCatalog = cachedBoot.models;
+  /* Zentrale Einstellungen anwenden (inkl. applyBackend) — der frühere Read des
+     Legacy-Keys osv:cfg:backend hätte die Wahl aus config.html überschrieben */
+  applyGppConfig();
+  if (cachedBoot) orRenderCatalog();
 }
 
 /* ---- the one switch ---- */

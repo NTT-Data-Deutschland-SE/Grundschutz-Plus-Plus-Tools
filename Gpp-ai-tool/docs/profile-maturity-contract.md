@@ -1,7 +1,7 @@
 # Enhanced Profile ↔ One-Page-App contract
 
 This document is the single source of truth for the structure that the `Gpp-ai-tool`
-enhancement stages emit and that the `One-Page-Apps` consume. It exists because that
+enhancement stages emit and that the `GS++-oscal-app` consume. It exists because that
 structure is an **implicit contract**: a rename on either side silently breaks consumption
 (issue 3.9). Keep this file in sync with `build_oscal_maturity_statements` in
 `src/pipeline/stage_ED23_profiles_enhanced.py` and `…/stage_base_process_enhanced.py`.
@@ -74,8 +74,8 @@ const cls        = props.control_class;
 // from the catalog control's own props, NOT from the maturity statement.
 ```
 
-Reference implementations: `parseProfileEntry` in `One-Page-Apps/pruefung_ap_ar.html` and the
-`modify.alters` loop in `One-Page-Apps/ssp_ausfuellen.html`.
+Reference implementations: `parseProfileEntry` in `GS++-oscal-app/pruefung_ap_ar.html` and the
+`modify.alters` loop in `GS++-oscal-app/ssp_ausfuellen.html`.
 
 ## Legacy shape (pre issue 3.1) — fallback only
 
