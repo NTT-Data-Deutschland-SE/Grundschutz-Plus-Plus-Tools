@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Grundschutz++ OSCAL Tools · v1.1</title>
+  <title>Grundschutz++ OSCAL Tools · v1.2</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
   <style>
     :root {
@@ -229,15 +229,26 @@
     <iframe id="app-frame" title="App" src="about:blank"></iframe>
 
     <section class="sheet" id="art-sheet" aria-label="Artefakte">
-      <h2>Artefakte</h2>
-      <p class="sub">Alles, was die Tools dieser Sammlung erzeugt haben — im Browser dieses Rechners gespeichert (IndexedDB <code>gpp-artefacts</code>), nicht auf einem Server. Die Download-Buttons in den einzelnen Tools bleiben davon unberührt; hier geht es um den Gesamtbestand.</p>
+      <h2 id="art-h2">Artefakte</h2>
+      <p class="sub">Ein <b>Set</b> ist ein zusammengehöriger Arbeitsstand — Profil, SSP, Prüfung, POA&M. Alle Werkzeuge
+        lesen und schreiben immer das aktive Set (IndexedDB <code>gpp-artefacts</code>, im Browser dieses Rechners,
+        nicht auf einem Server). Hier wechselst du Sets, lädst sie als ZIP herunter oder ein exportiertes Set wieder hoch.</p>
+      <div class="btn-row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
+        <label for="set-select" style="font-size:.74rem;color:var(--text-quiet)">Aktives Set</label>
+        <select id="set-select" style="background:var(--bg-elev-2);color:var(--text-primary);border:1px solid var(--border-2);border-radius:8px;padding:6px 10px;font-size:.78rem"></select>
+        <button class="btn" id="btn-set-new">+ Neues Set</button>
+        <button class="btn" id="btn-set-upload" title="JSON-Dateien oder ein exportiertes Set-ZIP in ein Set laden">⤒ Hochladen</button>
+        <input type="file" id="set-upload-input" accept=".json,.zip" multiple hidden>
+        <span style="flex:1"></span>
+        <button class="btn" id="btn-set-delete">Set löschen</button>
+      </div>
       <div class="stage-grid" id="stage-grid"></div>
       <div class="btn-row" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
         <button class="btn" id="btn-export-files">⤓ Einzeldateien herunterladen</button>
-        <button class="btn" id="btn-export-zip">⤓ Als ZIP</button>
+        <button class="btn" id="btn-export-zip">⤓ Set als ZIP</button>
         <button class="btn" id="btn-refresh-art">⟳ Aktualisieren</button>
         <span style="flex:1"></span>
-        <button class="btn" id="btn-clear-art">Alle löschen</button>
+        <button class="btn" id="btn-clear-art">Set leeren</button>
       </div>
       <div id="export-note" class="sub" style="margin-bottom:14px"></div>
       <div id="art-list"></div>
@@ -268,7 +279,7 @@
     ];
     const CORE_OK = typeof gppArtefacts !== "undefined";
 
-    const APP_VERSION = "1.1";
+    const APP_VERSION = "1.2";
     document.getElementById("build-pill").textContent = `build ${APP_VERSION}`;
 
     const nav = document.getElementById("tabs");
@@ -332,6 +343,8 @@
       if (!CORE_OK) return;
       try { artefacts = await gppArtefacts.list(); }
       catch (e) { artefacts = []; console.warn("Artefaktspeicher nicht lesbar", e); }
+      document.getElementById("art-h2").textContent = `Artefakte · Set „${gppArtefacts.activeSet()}"`;
+      await renderSets();
       // Zähler an den Reitern
       const byTool = {};
       artefacts.forEach(a => { byTool[a.tool] = (byTool[a.tool] || 0) + 1; });
@@ -429,6 +442,7 @@
       const named = exportNames(all);
       const manifest = {
         tool: "Grundschutz++ OSCAL Tools",
+        set: gppArtefacts.activeSet(),
         exportedAt: new Date().toISOString(),
         count: named.length,
         artefacts: named.map(({ rec, name }) => ({
@@ -440,16 +454,115 @@
       const files = named.map(({ rec, name }) => ({ name, text: JSON.stringify(rec.data, null, 2), date: rec.updatedAt }));
       files.unshift({ name: "manifest.json", text: JSON.stringify(manifest, null, 2) });
       const stamp = new Date().toISOString().slice(0, 10);
-      gppDownloadBlob(`gpp-artefakte_${stamp}.zip`, gppZip(files));
+      gppDownloadBlob(`gpp-set_${safeName(gppArtefacts.activeSet())}_${stamp}.zip`, gppZip(files));
       document.getElementById("export-note").textContent =
         `ZIP mit ${named.length} Artefakten und manifest.json erzeugt (Prüfsummen im Manifest).`;
     });
     document.getElementById("btn-refresh-art").addEventListener("click", refreshArtefacts);
     document.getElementById("btn-clear-art").addEventListener("click", async () => {
       if (!artefacts.length) return;
-      if (!confirm(`Alle ${artefacts.length} Artefakte aus dem Browserspeicher löschen? Heruntergeladene Dateien bleiben erhalten. Vorher exportieren?`)) return;
-      await gppArtefacts.clear();
+      const set = gppArtefacts.activeSet();
+      if (!confirm(`Alle ${artefacts.length} Artefakte des Sets „${set}" löschen? Heruntergeladene Dateien bleiben erhalten. Vorher exportieren?`)) return;
+      await gppArtefacts.removeSet(set);
       refreshArtefacts();
+    });
+
+    /* ================= Sets ================= */
+    async function renderSets() {
+      const sel = document.getElementById("set-select");
+      const active = gppArtefacts.activeSet();
+      let sets = [];
+      try { sets = await gppArtefacts.sets(); } catch (e) { /* Store nicht lesbar */ }
+      if (!sets.some(s => s.name === active)) sets.push({ name: active, count: 0, bytes: 0 });
+      if (!sets.some(s => s.name === "standard")) sets.push({ name: "standard", count: 0, bytes: 0 });
+      sets.sort((a, b) => a.name.localeCompare(b.name));
+      sel.innerHTML = sets.map(s =>
+        `<option value="${escapeAttr(s.name)}" ${s.name === active ? "selected" : ""}>${escapeHtml(s.name)} (${s.count})</option>`).join("");
+    }
+    document.getElementById("set-select").addEventListener("change", e => {
+      gppArtefacts.setActiveSet(e.target.value);
+      refreshArtefacts();
+    });
+    document.getElementById("btn-set-new").addEventListener("click", () => {
+      const name = (prompt("Name des neuen Sets:", "") || "").trim();
+      if (!name) return;
+      gppArtefacts.setActiveSet(name);
+      refreshArtefacts();
+    });
+    document.getElementById("btn-set-delete").addEventListener("click", async () => {
+      const set = gppArtefacts.activeSet();
+      const n = artefacts.length;
+      if (!confirm(`Set „${set}" mit ${n} Artefakt(en) komplett löschen?`)) return;
+      await gppArtefacts.removeSet(set);
+      gppArtefacts.setActiveSet("standard");
+      refreshArtefacts();
+    });
+
+    /* Hochladen: JSON-Dateien einzeln oder ein exportiertes Set-ZIP (manifest.json
+       liefert dann Stage/Kind/Tool zurück; fremde JSONs werden am Wurzelschlüssel
+       erkannt). */
+    function guessMeta(doc) {
+      if (doc && doc.catalog) return { stage: "author", kind: "catalog" };
+      if (doc && doc.profile) return { stage: "author", kind: "profile" };
+      if (doc && doc["system-security-plan"]) return { stage: "model", kind: "ssp" };
+      if (doc && doc["assessment-plan"]) return { stage: "assess", kind: "ap" };
+      if (doc && doc["assessment-results"]) return { stage: "assess", kind: "ar" };
+      if (doc && doc["plan-of-action-and-milestones"]) return { stage: "remediate", kind: "poam" };
+      if (doc && doc["component-definition"]) return { stage: "author", kind: "component" };
+      return { stage: "model", kind: "workspace" };
+    }
+    document.getElementById("btn-set-upload").addEventListener("click", () =>
+      document.getElementById("set-upload-input").click());
+    document.getElementById("set-upload-input").addEventListener("change", async e => {
+      const files = [...e.target.files];
+      e.target.value = "";
+      if (!files.length) return;
+      const note = document.getElementById("export-note");
+      try {
+        // Zielset abfragen — Vorschlag: ZIP-Name ohne Endung, sonst aktives Set
+        const zipFile = files.find(f => /\.zip$/i.test(f.name));
+        const suggestion = zipFile
+          ? zipFile.name.replace(/\.zip$/i, "").replace(/^gpp-set_/, "").replace(/_\d{4}-\d{2}-\d{2}$/, "")
+          : gppArtefacts.activeSet();
+        const target = (prompt("In welches Set laden?", suggestion) || "").trim();
+        if (!target) return;
+        let imported = 0;
+        for (const f of files) {
+          if (/\.zip$/i.test(f.name)) {
+            const entries = await gppUnzip(f);
+            const manifest = (() => {
+              const m = entries.find(x => x.name === "manifest.json");
+              try { return m ? JSON.parse(m.text) : null; } catch { return null; }
+            })();
+            for (const ent of entries) {
+              if (ent.name === "manifest.json") continue;
+              let doc; try { doc = JSON.parse(ent.text); } catch { note.textContent = `Übersprungen (kein JSON): ${ent.name}`; continue; }
+              const m = manifest && (manifest.artefacts || []).find(a => a.file === ent.name);
+              const g = guessMeta(doc);
+              await gppArtefacts.save({
+                set: target,
+                stage: (m && m.stage) || g.stage, kind: (m && m.kind) || g.kind,
+                title: (m && m.title) || ent.name.replace(/\.json$/i, ""),
+                filename: ent.name, tool: (m && m.tool) || "import", data: doc,
+              });
+              imported++;
+            }
+          } else {
+            let doc; try { doc = JSON.parse(await f.text()); } catch { note.textContent = `Übersprungen (kein JSON): ${f.name}`; continue; }
+            const g = guessMeta(doc);
+            await gppArtefacts.save({
+              set: target, stage: g.stage, kind: g.kind,
+              title: f.name.replace(/\.json$/i, ""), filename: f.name, tool: "import", data: doc,
+            });
+            imported++;
+          }
+        }
+        gppArtefacts.setActiveSet(target);
+        await refreshArtefacts();
+        note.textContent = `${imported} Artefakt(e) in Set „${target}" geladen — es ist jetzt das aktive Set.`;
+      } catch (err) {
+        note.textContent = `Hochladen fehlgeschlagen: ${err.message}`;
+      }
     });
 
     function openSheet() { closeDoc(); sheet.classList.add("open"); refreshArtefacts(); }

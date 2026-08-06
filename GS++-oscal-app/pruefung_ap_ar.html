@@ -441,43 +441,21 @@ textarea.inp{min-height:80px;line-height:1.55}
     <!-- LINKE RAIL -->
     <aside id="sidebar" class="sidebar cscroll">
 
-        <!-- Import -->
-        <div class="lbl mb-0">⬡ Daten</div>
-        <div class="space-y-1.5">
-            <div id="dz-ssp" class="dz border border-dashed border-slate-600 rounded p-2 text-center cursor-pointer hover:border-emerald-500 bg-slate-900/40 text-[10px]" data-type="ssp">▣ SSP laden<input type="file" accept=".json" class="hidden fip" data-type="ssp"></div>
-            <div id="dz-state" class="dz border border-dashed border-slate-600 rounded p-2 text-center cursor-pointer hover:border-purple-500 bg-slate-900/40 text-[10px]" data-type="state">◇ Session laden<input type="file" accept=".json" class="hidden fip" data-type="state"></div>
-            <div id="dz-defs" class="dz border border-dashed border-slate-600 rounded p-2 text-center cursor-pointer hover:border-cyan-500 bg-slate-900/40 text-[10px]" data-type="defs">⬡ Profile/Defs laden<span class="block text-[8px] text-slate-500">für local:// Referenzen — mehrere möglich</span><input type="file" accept=".json" multiple class="hidden fip" data-type="defs"></div>
-        </div>
-        <!-- AI -->
-        <div class="lbl mb-0 mt-1">◈ Konfiguration</div>
-        <div class="border border-slate-700 rounded overflow-hidden">
-            <button onclick="tog('sb-ai')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300">◈ KI<span id="ai-badge" class="sb bg-slate-700 text-slate-500 border-slate-600 hidden ml-1">—</span><svg id="icon-sb-ai" class="chev w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg></button>
-            <!-- Backend, Key, Modell und Retries liegen zentral in config.html
-                 (gpp:cfg:*); der ausgeblendete Block hält die alten IDs für den
-                 Bestandscode und wird nur von dort gefüllt. -->
-            <div id="sb-ai-content" class="coll-content p-2 bg-slate-900/30 space-y-1.5">
-                <div id="gpp-cfg-summary" class="text-[10px] text-slate-400 leading-snug">–</div>
-                <div class="flex items-center gap-1.5">
-                    <a href="config.html" target="_blank" rel="noopener" class="btn">⚙ Einstellungen</a>
-                    <button onclick="applyGppConfig(true)" class="btn" title="Einstellungen erneut übernehmen">↻</button>
-                </div>
-                <p class="text-[8px] text-slate-500 leading-snug">CORS-Fehler? Die Datei nicht per <span class="font-mono text-slate-400">file://</span> öffnen, sondern den Ordner mit <span class="font-mono text-slate-400">python -m http.server</span> servieren.</p>
-
-                <div id="gpp-cfg-shim" hidden aria-hidden="true">
-                    <select id="ai-provider"><option value="">—</option><option value="gemini">Gemini</option><option value="openrouter">OpenRouter</option></select>
-                    <input type="password" id="ai-key">
-                    <div id="gm-model-wrap" class="hidden"><select id="ai-model"></select></div>
-                    <div id="or-model-wrap" class="hidden">
-                        <select id="or-model"></select>
-                        <input type="text" id="or-slug">
-                        <span id="or-cat-status"></span>
-                        <button id="or-refresh-shim" onclick="refreshORModels()"></button>
-                        <input type="checkbox" id="or-only-schema">
-                    </div>
-                    <input type="number" id="ai-retries" min="0" max="5" value="2">
-                </div>
+        <!-- Backend, Key, Modell und Retries liegen zentral in config.html
+             (gpp:cfg:*); der ausgeblendete Shim hält die alten IDs für den
+             Bestandscode und wird nur von dort gefüllt. -->
+        <div id="gpp-cfg-shim" hidden aria-hidden="true">
+            <select id="ai-provider"><option value="">—</option><option value="gemini">Gemini</option><option value="openrouter">OpenRouter</option></select>
+            <input type="password" id="ai-key">
+            <div id="gm-model-wrap" class="hidden"><select id="ai-model"></select></div>
+            <div id="or-model-wrap" class="hidden">
+                <select id="or-model"></select>
+                <input type="text" id="or-slug">
+                <span id="or-cat-status"></span>
+                <button id="or-refresh-shim" onclick="refreshORModels()"></button>
+                <input type="checkbox" id="or-only-schema">
             </div>
-            </div>
+            <input type="number" id="ai-retries" min="0" max="5" value="2">
         </div>
         <!-- Navigation -->
         <div class="lbl mb-0 mt-1">◉ Navigation</div>
@@ -488,10 +466,6 @@ textarea.inp{min-height:80px;line-height:1.55}
         <!-- Meta Navigation -->
         <div class="border border-slate-700 rounded overflow-hidden">
             <button onclick="scrollToSec('sec-meta')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300 hover:text-emerald-400 transition-colors">◇ Metadaten &amp; Assessor</button>
-        </div>
-        <!-- Prompts Navigation -->
-        <div class="border border-slate-700 rounded overflow-hidden">
-            <button onclick="scrollToSec('sec-prompts')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300 hover:text-emerald-400 transition-colors">◉ KI-Prompts</button>
         </div>
         <!-- Filters -->
         <div class="border border-slate-700 rounded overflow-hidden">
@@ -566,18 +540,6 @@ textarea.inp{min-height:80px;line-height:1.55}
                 <div><label class="lbl">Typ</label><select id="sb-atype" onchange="S.assessor.type=this.value" class="inp text-xs"><option value="organization">Organisation</option><option value="person">Person</option></select></div>
                 <div><label class="lbl">E-Mail</label><input type="email" id="sb-aemail" onchange="S.assessor.email=this.value" class="inp text-xs"></div>
             </div>
-        </div>
-
-        <!-- KI-Prompts Section -->
-        <div id="sec-prompts" class="mb-4 bg-slate-800 border border-slate-700 rounded-xl p-4 transition-all duration-300">
-            <h2 class="text-sm font-bold text-white mb-1">◉ KI-Prompts</h2>
-            <p class="text-[10px] text-slate-400 mb-3 leading-relaxed">Alle Prompts, die dieses Tool an das Modell sendet, sind hier editierbar — Änderungen werden im Browser gespeichert. Der Platzhalter <span class="font-mono text-cyan-300">{kontext}</span> wird zur Laufzeit durch die deterministisch aufgebauten Control-Daten (Katalogtext, SSP-Eintrag, Reifegrade, bisherige Beobachtung) ersetzt.</p>
-            <p class="text-[10px] text-slate-400 mb-3 leading-relaxed">Die Prompts dieses Werkzeugs werden gesammelt in
-                <a href="config.html" target="_blank" rel="noopener" class="text-emerald-400 font-bold">config.html</a>
-                bearbeitet — immer gegen den aktuellen Standardtext, den dieses Werkzeug beim Start anmeldet.
-                Fehlt der Platzhalter <span class="font-mono">{kontext}</span>, wird er zur Laufzeit angehängt.</p>
-            <div id="prompt-overview"></div>
-            <a href="config.html" target="_blank" rel="noopener" class="btn mt-3 inline-block">⚙ Prompts bearbeiten</a>
         </div>
 
         <div id="stats-dash" class="hidden mb-4"></div>
@@ -762,22 +724,14 @@ const METHOD_COL={EXAMINE:'oklch(0.70 0.15 240)',INTERVIEW:'oklch(0.80 0.15 80)'
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded',()=>{
-    document.querySelectorAll('.dz').forEach(dz=>{
-        const fi=dz.querySelector('.fip'),ty=dz.dataset.type;
-        dz.addEventListener('click',()=>fi.click());
-        dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over')});
-        dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
-        dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');const fs=e.dataTransfer.files;if(!fs.length)return;ty==='defs'?loadDefFiles(fs):loadFile(fs[0],ty)});
-        fi.addEventListener('change',e=>{const fs=e.target.files;if(!fs.length)return;ty==='defs'?loadDefFiles(fs):loadFile(fs[0],ty);e.target.value=''});
-    });
     initSplitter();
-    L.info('OSCAL AP & AR — build 9.4.1 gestartet');
+    L.info('OSCAL AP & AR — build 9.5 gestartet');
     L.debug('Bei CORS-Fehlern: Ordner mit `python -m http.server` bedienen und über http://localhost:8000/ öffnen.');
     initPrompts();
     loadAICfg();
-    loadCatalog();
     loadED23Map();
-    tryAutoRestore();
+    // Katalog zuerst — die Set-Übernahme (initSSP) braucht den Control-Index.
+    loadCatalog().then(bootFromSet);
 });
 
 // ============================================================
@@ -1482,22 +1436,7 @@ function initPrompts(){
     gppRegisterPrompts(GPP_TOOL_ID,Object.entries(PROMPT_DEFS).map(([k,c])=>({
         id:k,label:PROMPT_LABELS[k]||k,placeholders:[PROMPT_PH],default:c.def
     })));
-    renderPromptOverview();
-    window.addEventListener('storage',e=>{if(e.key&&e.key.startsWith('gpp:cfg:prompt'))renderPromptOverview()});
 }
-function renderPromptOverview(){
-    const box=document.getElementById('prompt-overview');if(!box)return;
-    box.innerHTML=Object.keys(PROMPT_DEFS).map(k=>{
-        const custom=localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${k}`)!==null;
-        return `<div style="display:flex;gap:8px;align-items:baseline;padding:3px 0;font-size:11px">
-            <span style="font-family:monospace;font-size:9px;padding:1px 5px;border-radius:4px;border:1px solid ${custom?'#e0a03a':'#475569'};color:${custom?'#e0a03a':'#94a3b8'}">${custom?'angepasst':'standard'}</span>
-            <span>${PROMPT_LABELS[k]||k}</span></div>`;
-    }).join('');
-}
-window.resetPrompt=k=>{
-    localStorage.removeItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${k}`);
-    renderPromptOverview();
-};
 // Baut den fertigen Prompt: Template zentral aus config.html, Default als Fallback,
 // fehlender Platzhalter wird defensiv angehängt statt den Kontext zu verlieren.
 function buildPrompt(k,ctx){

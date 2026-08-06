@@ -188,20 +188,44 @@ async function gppSha256(text) {
   return Array.from(new Uint8Array(d)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
+/* Ein "Set" ist ein zusammengehöriger Arbeitsstand (Profil + SSP + AP/AR + POA&M …).
+   Alle Tools arbeiten immer auf dem AKTIVEN Set; index.html verwaltet die Sets
+   (anlegen, wechseln, hoch-/herunterladen). Alt-Datensätze ohne set-Feld
+   gehören zum Set "standard". */
+const GPP_DEFAULT_SET = "standard";
+function gppSetOf(rec) { return (rec && rec.set) || GPP_DEFAULT_SET; }
+
 const gppArtefacts = {
+  activeSet() {
+    return (localStorage.getItem(GPP_CFG_PREFIX + "artefacts:set") || GPP_DEFAULT_SET).trim() || GPP_DEFAULT_SET;
+  },
+  setActiveSet(name) {
+    const n = String(name || GPP_DEFAULT_SET).trim() || GPP_DEFAULT_SET;
+    localStorage.setItem(GPP_CFG_PREFIX + "artefacts:set", n);
+    window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { setChanged: n } }));
+    try { localStorage.setItem(GPP_CFG_PREFIX + "artefacts:touch", new Date().toISOString()); } catch (e) { /* Quota egal */ }
+    return n;
+  },
   /* Legt ein Artefakt ab. `data` ist das fertige OSCAL-Objekt (oder ein
      beliebiges JSON-fähiges Objekt bei kind "workspace"/"analysis").
-     Gleiche id ⇒ Update statt Dublette; ohne id wird über tool+filename
+     Gleiche id ⇒ Update statt Dublette; ohne id wird über set+tool+filename
      zusammengeführt, damit wiederholte Exporte nicht den Speicher fluten. */
-  async save({ id, stage, kind, title, filename, tool, data, meta }) {
+  async save({ id, stage, kind, title, filename, tool, data, meta, set }) {
     /* Dieselbe Serialisierung wie beim Export (index.html: stringify(…, null, 2)) —
        sonst passen sha256/size im Manifest nicht zu den ausgelieferten Dateien. */
     const json = JSON.stringify(data, null, 2);
     const now = new Date().toISOString();
-    const key = id || `${tool}:${filename}`;
-    const existing = await this.get(key);
+    const st = (set || this.activeSet()).trim() || GPP_DEFAULT_SET;
+    let key = id || `${st}:${tool}:${filename}`;
+    let existing = await this.get(key);
+    if (!existing && !id) {
+      // Datensätze aus der Zeit vor den Sets tragen die id tool:filename
+      const legacy = await this.get(`${tool}:${filename}`);
+      if (legacy && gppSetOf(legacy) === st) { key = legacy.id; existing = legacy; }
+    }
     const rec = {
       id: key,
+      set: st,
       stage: stage || "model",
       kind: kind || "ssp",
       title: title || filename || key,
@@ -215,26 +239,58 @@ const gppArtefacts = {
       data,
     };
     await gppTx("readwrite", store => store.put(rec));
-    window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { id: rec.id } }));
+    window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { id: rec.id, set: st } }));
     try { localStorage.setItem(GPP_CFG_PREFIX + "artefacts:touch", now); } catch (e) { /* Quota egal */ }
     return rec;
   },
   async get(id) {
     return (await gppTx("readonly", store => store.get(id))) || null;
   },
-  /* Liste ohne die schweren data-Felder — für Dashboards */
-  async list() {
+  /* Liste ohne die schweren data-Felder — für Dashboards.
+     Ohne Argument: nur das aktive Set; "*" = alle Sets. */
+  async list(set) {
+    const want = set === undefined ? this.activeSet() : set;
     const all = (await gppTx("readonly", store => store.getAll())) || [];
     return all
-      .map(({ data, ...rest }) => rest)
+      .filter(r => want === "*" || gppSetOf(r) === want)
+      .map(({ data, ...rest }) => ({ ...rest, set: gppSetOf(rest) }))
       .sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
   },
-  async all() {
-    return (await gppTx("readonly", store => store.getAll())) || [];
+  async all(set) {
+    const want = set === undefined ? this.activeSet() : set;
+    const all = (await gppTx("readonly", store => store.getAll())) || [];
+    return all.filter(r => want === "*" || gppSetOf(r) === want);
+  },
+  /* Neuestes Artefakt einer Sorte im aktiven Set — für die Tool-Übergabe
+     (Generator erzeugt SSP, der Editor bietet ihn automatisch an). */
+  async latest(kind, set) {
+    const rows = await this.list(set);
+    const hit = rows.find(r => r.kind === kind);
+    return hit ? await this.get(hit.id) : null;
+  },
+  /* Übersicht aller Sets mit Bestand */
+  async sets() {
+    const all = (await gppTx("readonly", store => store.getAll())) || [];
+    const by = new Map();
+    for (const r of all) {
+      const s = gppSetOf(r);
+      const e = by.get(s) || { name: s, count: 0, bytes: 0, updatedAt: "" };
+      e.count++; e.bytes += r.size || 0;
+      if ((r.updatedAt || "") > e.updatedAt) e.updatedAt = r.updatedAt;
+      by.set(s, e);
+    }
+    return [...by.values()].sort((a, b) => a.name.localeCompare(b.name));
   },
   async remove(id) {
     await gppTx("readwrite", store => store.delete(id));
     window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { id, removed: true } }));
+  },
+  async removeSet(name) {
+    const doomed = (await this.all("*")).filter(r => gppSetOf(r) === name);
+    for (const r of doomed) await gppTx("readwrite", store => store.delete(r.id));
+    window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { setRemoved: name } }));
+    try { localStorage.setItem(GPP_CFG_PREFIX + "artefacts:touch", new Date().toISOString()); } catch (e) { /* Quota egal */ }
+    return doomed.length;
   },
   async clear() {
     await gppTx("readwrite", store => store.clear());
@@ -308,6 +364,46 @@ function gppZip(files) {
   ];
   chunks.push(new Uint8Array(eocd));
   return new Blob(chunks, { type: "application/zip" });
+}
+/* ZIP-Reader fürs Hochladen von Sets: versteht "store" (eigene Exporte) und
+   "deflate" (fremde Zipper) über DecompressionStream — keine externe Bibliothek.
+   Liefert [{ name, text }] für alle Nicht-Verzeichnis-Einträge. */
+async function gppUnzip(blobOrBuffer) {
+  const buf = blobOrBuffer instanceof Blob
+    ? new Uint8Array(await blobOrBuffer.arrayBuffer())
+    : new Uint8Array(blobOrBuffer);
+  const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+  let eocd = -1;
+  for (let i = buf.length - 22; i >= Math.max(0, buf.length - 22 - 65535); i--) {
+    if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  }
+  if (eocd < 0) throw new Error("Kein ZIP-Endverzeichnis gefunden — ist das ein ZIP?");
+  const count = dv.getUint16(eocd + 10, true);
+  let off = dv.getUint32(eocd + 16, true);
+  const dec = new TextDecoder();
+  const out = [];
+  for (let n = 0; n < count; n++) {
+    if (dv.getUint32(off, true) !== 0x02014b50) throw new Error("ZIP-Zentralverzeichnis beschädigt");
+    const method = dv.getUint16(off + 10, true);
+    const csize = dv.getUint32(off + 20, true);
+    const nameLen = dv.getUint16(off + 28, true);
+    const extraLen = dv.getUint16(off + 30, true);
+    const commentLen = dv.getUint16(off + 32, true);
+    const lho = dv.getUint32(off + 42, true);
+    const name = dec.decode(buf.subarray(off + 46, off + 46 + nameLen));
+    const lnl = dv.getUint16(lho + 26, true), lel = dv.getUint16(lho + 28, true);
+    const dataStart = lho + 30 + lnl + lel;
+    const raw = buf.slice(dataStart, dataStart + csize);
+    let bytes;
+    if (method === 0) bytes = raw;
+    else if (method === 8) {
+      const ds = new DecompressionStream("deflate-raw");
+      bytes = new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(ds)).arrayBuffer());
+    } else throw new Error(`Nicht unterstützte Kompressionsmethode ${method} in ${name}`);
+    if (!name.endsWith("/")) out.push({ name, text: dec.decode(bytes) });
+    off += 46 + nameLen + extraLen + commentLen;
+  }
+  return out;
 }
 function gppDownloadBlob(name, blob) {
   const a = document.createElement("a");

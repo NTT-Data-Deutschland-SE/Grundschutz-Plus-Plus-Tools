@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GS++ Explorer v9.5.2 · Multi-Katalog &amp; Profile</title>
+    <title>GS++ Explorer v9.6 · Multi-Katalog &amp; Profile</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
@@ -284,35 +284,6 @@
         .model-status.warn { color: var(--amber); }
         .model-status.err  { color: var(--red); }
 
-        /* ---------- Editierbare Prompts ---------- */
-        .prompt-block { margin-bottom: 16px; }
-        .prompt-label {
-            display: block; margin-bottom: 5px;
-            font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.16em;
-            text-transform: uppercase; color: var(--text-tertiary);
-        }
-        .prompt-area {
-            min-height: 180px; resize: vertical;
-            font-family: var(--font-mono); font-size: 0.7rem; line-height: 1.5;
-            background: var(--bg-elev-1); border: 1px solid var(--border-2); color: var(--text-primary);
-            border-radius: 8px; padding: 10px;
-        }
-        .prompt-area:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-        .prompt-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 6px; }
-        .prompt-hint { font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-quiet); }
-        .prompt-reset {
-            padding: 4px 10px; border-radius: 6px; white-space: nowrap;
-            background: var(--bg-elev-2); border: 1px solid var(--border-2); color: var(--text-secondary);
-            font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.06em;
-        }
-        .prompt-reset:hover { background: var(--bg-elev-3); color: var(--text-primary); border-color: var(--accent); }
-        .prompt-warn {
-            display: none; margin-top: 6px; padding: 6px 9px; border-radius: 6px;
-            background: oklch(0.80 0.15 80 / 0.12); border: 1px solid oklch(0.80 0.15 80 / 0.3);
-            color: var(--amber); font-family: var(--font-mono); font-size: 0.65rem; line-height: 1.45;
-        }
-        .prompt-warn.active { display: block; }
-
         /* ---------- Willkommen ---------- */
         .welcome { text-align: center; margin-top: 90px; color: var(--text-quiet); }
         .welcome-glyph { font-size: 3.4rem; line-height: 1; color: var(--accent); opacity: 0.65; }
@@ -561,7 +532,7 @@
         <div class="topbar-meta">
             <span class="pill progress-pill" id="progressLabel"></span>
             <span class="pill" id="catalogPill">0 Kataloge</span>
-            <span class="pill build-version" id="buildVersion">v9.5.2</span>
+            <span class="pill build-version" id="buildVersion">v9.6</span>
         </div>
         <div class="progress-track" id="progressTrack"><div class="progress-fill" id="progressFill"></div></div>
     </header>
@@ -574,8 +545,6 @@
             <button type="button" class="nav-item active" data-target="sec-catalogs"><span class="nav-glyph">◉</span>Kataloge</button>
             <button type="button" class="nav-item" data-target="sec-profile"><span class="nav-glyph">⬡</span>Profile</button>
             <button type="button" class="nav-item" data-target="sec-search"><span class="nav-glyph">⌕</span>Suche &amp; Filter</button>
-            <button type="button" class="nav-item" data-target="sec-api"><span class="nav-glyph">◈</span>KI-Konfiguration</button>
-            <button type="button" class="nav-item ai-dependent" data-target="sec-prompts"><span class="nav-glyph">▣</span>Prompts</button>
             <button type="button" class="nav-item" data-target="sec-load"><span class="nav-glyph">⤓</span>Katalog laden</button>
         </nav>
 
@@ -611,37 +580,6 @@
             </div>
         </section>
 
-        <section class="rail-sec" id="sec-api">
-            <span class="section-label"><span class="g">◈</span>KI-Zugang</span>
-            <div id="gpp-cfg-summary" class="rail-note">–</div>
-            <div style="display:flex;gap:6px;margin-top:8px">
-                <a class="reset-btn" href="config.html" target="_blank" rel="noopener">⚙ Einstellungen</a>
-                <button class="reset-btn" onclick="applyGppConfig(true)" title="Einstellungen erneut übernehmen">↻</button>
-            </div>
-            <small class="rail-note top-sep">
-                Backend, API-Key und Modell gelten für alle Werkzeuge der Sammlung und werden in
-                <a href="config.html" target="_blank" rel="noopener">config.html</a> gesetzt.
-                ◇ Beim Öffnen per <code>file://</code> kann der Browser die API-Anfrage mit einem CORS-Fehler abweisen.
-                Dann die Datei lokal ausliefern: <code>python -m http.server</code> im Ordner starten und
-                <code>http://localhost:8000/GSpp-Viewer.html</code> aufrufen.
-            </small>
-
-            <div id="gpp-cfg-shim" hidden aria-hidden="true">
-                <div id="backendSwitch">
-                    <button type="button" id="backendGemini" data-backend="gemini"></button>
-                    <button type="button" id="backendOpenrouter" data-backend="openrouter"></button>
-                </div>
-                <div id="cfg-gemini"><input type="password" id="apiKeyInput"><select id="modelSelect"></select></div>
-                <div id="cfg-openrouter" class="hidden">
-                    <input type="password" id="orKeyInput">
-                    <select id="orModelSelect"></select>
-                    <input type="text" id="orModelCustom">
-                    <button type="button" id="orModelsRefresh"></button>
-                    <span id="orModelsStatus"></span>
-                </div>
-            </div>
-        </section>
-
         <section class="rail-sec ai-dependent" id="sec-context">
             <span class="section-label"><span class="g">◬</span>KI-Kontext (Unternehmen)</span>
             <textarea id="aiContextInput" class="search-input" style="min-height: 90px;" placeholder="z.B. Wir sind ein mittelständisches Unternehmen und NIS2 / KRITIS relevant... oder Wir sind eine Stadtverwaltung"></textarea>
@@ -649,18 +587,6 @@
             <button class="reset-btn" onclick="exportAiCache()">⤓ KI-Antworten exportieren</button>
             <button class="reset-btn" onclick="document.getElementById('aiCacheInput').click()">↗ KI-Antworten importieren</button>
             <input type="file" id="aiCacheInput" accept=".json" style="display: none;" onchange="importAiCache(event)">
-        </section>
-
-        <section class="rail-sec ai-dependent" id="sec-prompts">
-            <span class="section-label"><span class="g">▣</span>Prompts</span>
-            <small class="rail-note" style="margin-bottom: 12px;">
-                Die Prompts dieses Werkzeugs werden gesammelt in
-                <a href="config.html" target="_blank" rel="noopener">config.html</a> bearbeitet — immer gegen
-                den aktuellen Standardtext, den dieses Werkzeug beim Start anmeldet. Fehlende Pflicht-Platzhalter
-                werden zur Laufzeit angehängt.
-            </small>
-            <div id="prompt-overview"></div>
-            <a class="reset-btn" href="config.html" target="_blank" rel="noopener" style="margin-top:8px">⚙ Prompts bearbeiten</a>
         </section>
 
         <section class="rail-sec" id="sec-load">
@@ -685,6 +611,22 @@
             <div style="text-align:center; padding: 12px 0 8px; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.16em; color: var(--text-quiet);">ODER DATEI WÄHLEN</div>
             <input type="file" id="fileInput" accept=".json" onchange="loadFromFile()">
         </section>
+
+        <!-- Unsichtbarer Shim: applyGppConfig spiegelt gpp:cfg:* (config.html) in diese Alt-ID-Felder. -->
+        <div id="gpp-cfg-shim" hidden aria-hidden="true">
+            <div id="backendSwitch">
+                <button type="button" id="backendGemini" data-backend="gemini"></button>
+                <button type="button" id="backendOpenrouter" data-backend="openrouter"></button>
+            </div>
+            <div id="cfg-gemini"><input type="password" id="apiKeyInput"><select id="modelSelect"></select></div>
+            <div id="cfg-openrouter" class="hidden">
+                <input type="password" id="orKeyInput">
+                <select id="orModelSelect"></select>
+                <input type="text" id="orModelCustom">
+                <button type="button" id="orModelsRefresh"></button>
+                <span id="orModelsStatus"></span>
+            </div>
+        </div>
 
         <div class="rail-foot">&copy; 2026 NTT DATA DEUTSCHLAND SE</div>
 
@@ -776,24 +718,11 @@
             if (typeof setBackend === 'function') setBackend(backend, { silent: true });
             else if (typeof state === 'object') state.backend = backend;
             if (typeof toggleAiButtons === 'function') toggleAiButtons();
-            renderGppCfgSummary();
             if (verbose && typeof L === 'object') L.info('Einstellungen aus config.html neu übernommen.');
         };
-        function renderGppCfgSummary() {
-            const box = document.getElementById('gpp-cfg-summary');
-            if (!box) return;
-            const backend = gppCfg.get('ai:backend');
-            const t = gppCfg.target(backend);
-            const missing = [];
-            if (!t.key) missing.push('API-Key');
-            if (!t.model) missing.push('Modell');
-            box.innerHTML = missing.length
-                ? `<b style="color:#e0a03a">${missing.join(' und ')} fehlt</b> für „${backend}". Katalog laden, suchen und filtern geht ohne Schlüssel.`
-                : `<b>${backend}</b> · <code>${t.model}</code>`;
-        }
 
         // Einzige Quelle der Build-Version. Titel und Topbar-Badge werden daraus gesetzt.
-        const BUILD_VERSION = "v9.5.2";
+        const BUILD_VERSION = "v9.6";
 
         const byId = id => document.getElementById(id);
 
@@ -1337,25 +1266,8 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präßise und du nutzt kei
             gppRegisterPrompts(GPP_TOOL_ID, PROMPT_DEFS.map(p => ({
                 id: p.id, label: PROMPT_LABELS[p.id] || p.id, placeholders: p.required || [], default: p.def,
             })));
-            renderPromptOverview();
-            window.addEventListener('storage', e => { if (e.key && e.key.startsWith('gpp:cfg:prompt')) renderPromptOverview(); });
             const custom = PROMPT_DEFS.filter(p => localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${p.id}`) !== null).length;
             L.debug(`Prompts angemeldet (${custom} von ${PROMPT_DEFS.length} angepasst, bearbeitbar in config.html).`);
-        }
-        function renderPromptOverview() {
-            const box = document.getElementById('prompt-overview');
-            if (!box) return;
-            box.innerHTML = PROMPT_DEFS.map(p => {
-                const custom = localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${p.id}`) !== null;
-                return `<div style="display:flex;gap:8px;align-items:baseline;padding:3px 0;font-size:11px">
-                    <span style="font-family:monospace;font-size:9px;padding:1px 5px;border-radius:4px;border:1px solid ${custom ? '#e0a03a' : '#475569'};color:${custom ? '#e0a03a' : '#94a3b8'}">${custom ? 'angepasst' : 'standard'}</span>
-                    <span>${PROMPT_LABELS[p.id] || p.id}</span></div>`;
-            }).join('');
-        }
-        function resetPrompt(id) {
-            localStorage.removeItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${id}`);
-            renderPromptOverview();
-            L.info(`Prompt "${PROMPT_LABELS[id] || id}" auf Standard zurückgesetzt.`);
         }
 
         // Baut den finalen Prompt aus der Textarea. Fehlende Pflicht-Platzhalter

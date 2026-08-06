@@ -347,17 +347,8 @@ body{
     <div class="rail">
       <div class="rail-scroll">
 
-        <div class="rail-section">
-          <div class="rail-label"><span><span class="glyph">◇</span> KI-Zugang</span></div>
-          <div id="gpp-cfg-summary" class="hint">–</div>
-          <div class="btn-row" style="margin-top:8px">
-            <a class="btn small" href="config.html" target="_blank" rel="noopener">⚙ Einstellungen</a>
-            <button type="button" class="btn small" onclick="applyGppConfig(true)" title="Einstellungen erneut übernehmen">↻</button>
-          </div>
-          <div class="hint" style="margin-top:8px">Backend, Schlüssel, Modelle, Laufzeit und Checker-Route gelten für alle
-            Werkzeuge der Sammlung und werden in <a href="config.html" target="_blank" rel="noopener">config.html</a> gesetzt.</div>
-
-          <div id="gpp-cfg-shim" hidden aria-hidden="true">
+        <!-- KI-Konfiguration lebt zentral in config.html — hier nur der versteckte Shim -->
+        <div id="gpp-cfg-shim" hidden aria-hidden="true">
             <div class="seg" id="backend-seg">
               <button type="button" class="seg-btn active" data-backend="gemini">Gemini</button>
               <button type="button" class="seg-btn" data-backend="openrouter">OpenRouter</button>
@@ -391,8 +382,7 @@ body{
               <option value="same" selected>same</option><option value="gemini">Gemini</option><option value="openrouter">OpenRouter</option>
             </select>
             <input id="checker-model" type="text">
-            <span id="backend-pill"></span>
-          </div>
+          <span id="backend-pill"></span>
         </div>
 
         <div class="rail-section">
@@ -422,9 +412,8 @@ body{
           </div>
 
           <div style="margin-top:14px">
-            <label style="display:block;font-size:11px;color:var(--text-tertiary);margin-bottom:4px;font-weight:500">G++ Anwenderkatalog (raw JSON-URL · Prose-Quelle für beide Pfade)</label>
+            <label style="display:block;font-size:11px;color:var(--text-tertiary);margin-bottom:4px;font-weight:500">G++ Anwenderkatalog (gepinnte Quelle · Prose-Quelle für beide Pfade)</label>
             <div class="url-row">
-              <input id="cat-url" type="text" value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/47de2824a341812438ef3f044b3f65ce2cad6e32/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json">
               <button class="btn sm" id="btn-load-cat">⤓ laden</button>
               <button class="btn sm ghost" id="btn-upload-cat">⤴ upload</button>
               <input id="cat-file" type="file" accept="application/json" style="display:none">
@@ -437,7 +426,6 @@ body{
           <div style="margin-top:14px">
             <label style="display:block;font-size:11px;color:var(--text-tertiary);margin-bottom:4px;font-weight:500">Zielobjektkategorien (CSV) + Pools werden automatisch geladen</label>
             <div class="url-row">
-              <input id="pi-url" type="text" value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/47de2824a341812438ef3f044b3f65ce2cad6e32/documentation/namespaces/target_object_categories.csv">
               <button class="btn sm" id="btn-load-pi">⤓ laden</button>
               <button class="btn sm ghost" id="btn-upload-pi">⤴ upload</button>
               <input id="pi-file" type="file" accept=".csv,text/csv" style="display:none">
@@ -455,26 +443,10 @@ body{
           </div>
         </div>
 
-        <!-- PROMPTS CARD -->
-        <div class="card">
-          <div class="card-head">
-            <div class="card-title"><span class="num">02 · prompts</span> Prompts pro Stufe</div>
-            <div class="muted" style="font-size:10.5px">zentral in config.html</div>
-          </div>
-          <div class="card-desc">Die Prompts dieses Werkzeugs werden gesammelt in
-            <a href="config.html" target="_blank" rel="noopener">config.html</a> bearbeitet — immer gegen den
-            aktuellen Standardtext, den dieses Werkzeug beim Start anmeldet. Fehlende Platzhalter werden zur
-            Laufzeit defensiv ergänzt.</div>
-          <div id="prompt-overview" style="margin-top:10px"></div>
-          <div class="btn-row" style="margin-top:12px">
-            <a class="btn small" href="config.html" target="_blank" rel="noopener">⚙ Prompts bearbeiten</a>
-          </div>
-        </div>
-
         <!-- RUN CARD -->
         <div class="card">
           <div class="card-head">
-            <div class="card-title"><span class="num">03 · run</span> Pipeline starten</div>
+            <div class="card-title"><span class="num">02 · run</span> Pipeline starten</div>
           </div>
 
           <div class="stage-line">
@@ -607,7 +579,7 @@ const GPP_TOOL_ID = "Baustein_2_Profile";
    Konstante; keine handgepflegten Versionsstrings mehr im File.
    ════════════════════════════════════════════════════════════════════════ */
 
-const APP_VERSION  = "0.8.5";
+const APP_VERSION  = "0.9.0";
 const APP_NAME     = "Baustein_2_Profile";
 
 // Fallback, wenn zentral kein Gemini-Modell gesetzt ist (config.html).
@@ -924,31 +896,13 @@ function loadPrefs() {
     for (const k of ["s1","s2","check"]) {
       localStorage.removeItem(`gpp.prompt.${k}`);
     }
-    // v4-gpp also retargets the data sources — drop stale Kernel/GitHub-API URLs
-    localStorage.removeItem("gpp.caturl");
-    localStorage.removeItem("gpp.piurl");
     localStorage.setItem("gpp.prompt.version", PROMPT_VERSION);
-    if (storedVer) l.info(`prompt-version migration ${storedVer} → ${PROMPT_VERSION} · stored prompts + URLs gelöscht, defaults aktiv`);
+    if (storedVer) l.info(`prompt-version migration ${storedVer} → ${PROMPT_VERSION} · stored prompts gelöscht, defaults aktiv`);
   }
 
-  // Quellen-Pin-Migration: ein früher gespeicherter Branch-URL (refs/heads/main)
-  // würde den gepinnten Default überschreiben und das Pinning stillschweigend
-  // aushebeln. Beim Wechsel der Pin-Version werden die gespeicherten URLs verworfen;
-  // zusätzlich fliegt jede gespeicherte Branch-URL unabhängig davon raus.
-  const storedSrcVer = localStorage.getItem("gpp.sources.version");
-  if (storedSrcVer !== SOURCES_PIN_VERSION) {
-    localStorage.removeItem("gpp.caturl");
-    localStorage.removeItem("gpp.piurl");
-    localStorage.setItem("gpp.sources.version", SOURCES_PIN_VERSION);
-    if (storedSrcVer) l.info(`Quellen-Pin ${storedSrcVer} → ${SOURCES_PIN_VERSION} · gespeicherte Katalog-/CSV-URLs verworfen, gepinnte Defaults aktiv`);
-  }
-  for (const [key, label] of [["gpp.caturl", "Katalog"], ["gpp.piurl", "Zielobjektkategorien-CSV"]]) {
-    const v = localStorage.getItem(key);
-    if (v && gppIsUnpinned(v)) {
-      localStorage.removeItem(key);
-      l.warn(`Gespeicherte ${label}-URL zeigte auf einen Branch statt auf einen Commit — verworfen, gepinnter Default aktiv (Grundregel 8).`);
-    }
-  }
+  // Quellen sind fest gepinnt (config.html verwaltet Overrides); die früheren
+  // gpp.caturl/gpp.piurl-Keys werden nicht mehr gelesen.
+  localStorage.setItem("gpp.sources.version", SOURCES_PIN_VERSION);
 
   // KI-Zugang, Modelle und Laufzeit kommen zentral aus config.html (applyGppConfig
   // unten überschreibt die Shim-Felder). Hier bleiben nur die tool-eigenen Prefs.

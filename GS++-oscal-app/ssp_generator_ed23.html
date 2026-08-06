@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL SSP Generator — BSI IT-Grundschutz Edition 2023 V1.3.1</title>
+    <title>OSCAL SSP Generator — BSI IT-Grundschutz Edition 2023 V1.4</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -763,13 +763,9 @@
         <div class="topbar-brand">
             <span class="brand-mark">◈</span>
             <span class="brand-name">OSCAL SSP Generator</span>
-            <span class="brand-sub">Edition 2023 · Build V1.3.1</span>
+            <span class="brand-sub">Edition 2023 · Build V1.4</span>
         </div>
         <div class="topbar-spacer"></div>
-        <input type="file" id="ssp-file-input" accept=".json,application/json" multiple class="hidden"
-            onchange="handleSSPFileLoad(event)">
-        <button type="button" onclick="document.getElementById('ssp-file-input').click()"
-            class="meta-pill meta-pill-action" title="Bestehenden SSP (OSCAL JSON) laden">↗ SSP öffnen</button>
         <div id="catalog-status" class="meta-pill">
             <span class="status-dot animate-pulse"></span>Lade Basis-Katalog…
         </div>
@@ -787,8 +783,6 @@
                     class="glyph">◇</span>1 · Metadaten</button>
             <button type="button" onclick="navigateToSection('sec-ai-documents')" data-nav="sec-ai-documents" class="rail-nav-item"><span
                     class="glyph">◉</span>2 · KI-Dokumentanalyse</button>
-            <button type="button" onclick="navigateToSection('sec-ai-settings')" data-nav="sec-ai-settings" class="rail-nav-item"><span
-                    class="glyph">✎</span>2b · Prompts</button>
             <button type="button" onclick="navigateToSection('sec-components')" data-nav="sec-components" class="rail-nav-item"><span
                     class="glyph">▣</span>3 · Bausteine &amp; Assets</button>
             <button type="button" onclick="navigateToSection('sec-tailoring')" data-nav="sec-tailoring" class="rail-nav-item"><span
@@ -848,7 +842,7 @@
                     class="glyph">⋯</span>Chunk-Cache leeren</button>
         </div>
 
-        <div class="rail-foot">Build ED23 V1.3.1</div>
+        <div class="rail-foot">Build ED23 V1.4</div>
     </aside>
     <div id="rail-splitter" class="rail-splitter" title="Breite der Rail ziehen"></div>
 

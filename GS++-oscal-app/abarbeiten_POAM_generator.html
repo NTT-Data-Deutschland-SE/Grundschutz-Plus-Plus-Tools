@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL POA&M Generator v2.2.1</title>
+    <title>OSCAL POA&M Generator v2.3</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -195,11 +195,6 @@ input[type=date].inp{color-scheme:dark}
 }
 .ai-btn:hover{background:oklch(0.7 0.18 300 / 0.28);color:var(--text-primary)}
 .ai-btn:disabled{opacity:.45;cursor:wait}
-
-/* --- Drop-Zones ---------------------------------------------------------- */
-.dz{transition:border-color .15s ease,background .15s ease}
-.drag-over{border-color:var(--accent)!important;background:var(--accent-soft)!important}
-.fip{display:none}
 
 /* --- Collapsibles -------------------------------------------------------- */
 .coll-content{transition:max-height .2s ease-out,opacity .2s ease;overflow:hidden;max-height:0;opacity:0}
@@ -515,53 +510,22 @@ input[type=date].inp{color-scheme:dark}
             <div class="rail-label">Navigation</div>
             <div class="space-y-1">
                 <button class="nav-item" data-nav="sec-meta" onclick="navTo(this,'sec-meta')"><span class="gly">▣</span>Metadaten</button>
-                <button class="nav-item" data-nav="sec-prompts" onclick="navTo(this,'sec-prompts')"><span class="gly">✎</span>KI-Prompts</button>
                 <button class="nav-item" data-nav="items-area" onclick="navTo(this,'items-area')"><span class="gly">◈</span>POA&amp;M Items</button>
             </div>
         </div>
 
-        <!-- Import -->
-        <div class="rail-group">
-            <div class="rail-label">Import</div>
-            <div class="space-y-2">
-                <div id="dz-ar" class="dz border border-dashed border-slate-600 rounded-lg p-3 text-center cursor-pointer hover:border-amber-500 bg-slate-900/40 text-xs" data-type="ar">
-                    <span class="text-slate-400 mr-1.5">⬡</span>AR laden (.json)<input type="file" accept=".json" class="hidden fip" data-type="ar">
-                </div>
-                <div id="dz-state" class="dz border border-dashed border-slate-600 rounded-lg p-3 text-center cursor-pointer hover:border-purple-500 bg-slate-900/40 text-xs" data-type="state">
-                    <span class="text-slate-400 mr-1.5">⤓</span>Session laden<input type="file" accept=".json" class="hidden fip" data-type="state">
-                </div>
-            </div>
-        </div>
-
-        <!-- KI -->
-        <div class="border border-slate-700 rounded-lg overflow-hidden">
-            <button onclick="tog('sb-ai')" class="w-full flex justify-between items-center p-2 bg-slate-900/60 text-xs font-bold text-slate-300">
-                <span class="flex items-center gap-2"><span class="text-slate-500">◉</span>KI-Backend <span id="ai-badge" class="sb bg-slate-700 text-slate-500 border-slate-600 hidden ml-1">—</span></span>
-                <svg id="icon-sb-ai" class="chev w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
-            </button>
-            <!-- Backend, Keys und Modelle liegen zentral in config.html (gpp:cfg:*);
-                 der ausgeblendete Block hält die alten IDs für den Bestandscode. -->
-            <div id="sb-ai-content" class="coll-content p-2 bg-slate-900/30 space-y-2">
-                <div id="gpp-cfg-summary" class="text-[10px] text-slate-400 leading-snug">–</div>
-                <div class="flex items-center gap-2">
-                    <a href="config.html" target="_blank" rel="noopener" class="ai-btn">⚙ Einstellungen</a>
-                    <button type="button" class="ai-btn" onclick="applyGppConfig(true)" title="Einstellungen erneut übernehmen">↺</button>
-                </div>
-                <div id="or-migrate-hint" class="hidden text-[9px] font-bold text-amber-300 bg-amber-900/30 border border-amber-700/50 rounded px-2 py-1 leading-snug"></div>
-
-                <div id="gpp-cfg-shim" hidden aria-hidden="true">
-                    <div class="seg"><button type="button" id="be-gemini" onclick="setBackend('gemini')"></button><button type="button" id="be-openrouter" onclick="setBackend('openrouter')"></button></div>
-                    <div id="cfg-gemini"><input type="password" id="gm-key"><select id="gm-model"></select></div>
-                    <div id="cfg-openrouter" class="hidden">
-                        <input type="password" id="or-key">
-                        <button type="button" id="or-refresh" onclick="refreshOrModels()"></button>
-                        <select id="or-model"></select>
-                        <input type="checkbox" id="or-only-schema">
-                        <input type="text" id="or-slug">
-                        <div id="or-cat-status"></div>
-                    </div>
-                </div>
-            </div>
+        <!-- Backend, Keys und Modelle liegen zentral in config.html (gpp:cfg:*);
+             der ausgeblendete Shim hält die alten IDs für den Bestandscode. -->
+        <div id="gpp-cfg-shim" hidden aria-hidden="true">
+            <div class="seg"><button type="button" id="be-gemini" onclick="setBackend('gemini')"></button><button type="button" id="be-openrouter" onclick="setBackend('openrouter')"></button></div>
+            <div id="cfg-gemini"><input type="password" id="gm-key"><select id="gm-model"></select></div>
+            <div id="cfg-openrouter" class="hidden">
+                <input type="password" id="or-key">
+                <button type="button" id="or-refresh" onclick="refreshOrModels()"></button>
+                <select id="or-model"></select>
+                <input type="checkbox" id="or-only-schema">
+                <input type="text" id="or-slug">
+                <div id="or-cat-status"></div>
             </div>
         </div>
 
@@ -608,19 +572,6 @@ input[type=date].inp{color-scheme:dark}
             </div>
         </div>
 
-        <!-- KI-Prompts Section -->
-        <div id="sec-prompts" class="card p-4 transition-all duration-300">
-            <div class="sec-head"><span class="gly">✎</span><h2 class="sec-title">KI-Prompts</h2>
-                <span class="text-[10px] text-slate-500 ml-auto">zentral in config.html</span>
-            </div>
-            <p class="text-[10px] text-slate-500 mb-3">Der Kontextblock (System, Komponente, Control-ID, Anforderung, Status)
-                wird deterministisch aus den Item-Feldern gebaut und über <span class="font-mono">{kontext}</span> eingesetzt —
-                fehlt der Platzhalter, wird er zur Laufzeit angehängt. Die Prompttexte selbst werden gesammelt in
-                <a href="config.html" target="_blank" rel="noopener" class="text-emerald-400 font-bold">config.html</a> bearbeitet.</p>
-            <div id="prompt-overview"></div>
-            <a href="config.html" target="_blank" rel="noopener" class="ai-btn mt-3 inline-block">⚙ Prompts bearbeiten</a>
-        </div>
-
         <div id="stats-dash"></div>
 
         <div id="items-area">
@@ -659,7 +610,7 @@ if(typeof gppCfg==='undefined'){
     throw new Error('gpp-core.js missing');
 }
 const GPP_TOOL_ID='abarbeiten_POAM_generator';
-const BUILD='v2.2.1';
+const BUILD='v2.3';
 const P={arFilename:'',sspHref:'',sysName:'',catalog:new Map(),findings:[],observations:[],risks:[],items:[],meta:{title:'',version:'1.0.0',desc:''},responsible:{name:'',role:'system-owner',email:''}};
 // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
 // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
@@ -796,17 +747,13 @@ function initSplitter(){
 
 // INIT
 document.addEventListener('DOMContentLoaded',()=>{
-    document.querySelectorAll('.dz').forEach(dz=>{const fi=dz.querySelector('.fip'),ty=dz.dataset.type;
-        dz.addEventListener('click',()=>fi.click());dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over')});dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
-        dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');if(e.dataTransfer.files.length)loadF(e.dataTransfer.files[0],ty)});
-        fi.addEventListener('change',e=>{if(e.target.files.length)loadF(e.target.files[0],ty)})});
     const bv=document.getElementById('build-ver');if(bv)bv.textContent=BUILD;
     document.title=`OSCAL POA&M Generator ${BUILD}`;
     initSplitter();
     l.info(`OSCAL POA&M Generator ${BUILD} gestartet`);
     l.debug(`Katalog-Pin: commit ${GPP_CATALOG_PIN_COMMIT.slice(0,12)}… · SHA-256 ${GPP_CATALOG_PIN_SHA256.slice(0,12)}…`);
     if(location.protocol==='file:')l.warn('Aufruf über file:// — bei CORS-Fehlern das Verzeichnis mit "python -m http.server" ausliefern.');
-    initPrompts();loadAICfg();loadCatalog();tryAR()});
+    initPrompts();loadAICfg();loadCatalog().then(()=>adoptFromSet())});
 
 // CATALOG
 async function loadCatalog(){const cs=document.getElementById('cat-status');const t0=performance.now();
@@ -912,9 +859,33 @@ function restoreS(d){
     setSt('ar-status',true,`Session: ${P.items.length} Items`);render()
 }
 window.saveSession=()=>{const n=`${sn()}_poam_session.json`;dl(JSON.parse(ser()),n);l.ok(`Session exportiert: ${n} (${P.items.length} Items)`)};
-function autoSave(){try{localStorage.setItem('oscal_poam_v2',ser())}catch(e){}}
-function tryAR(){try{const s=localStorage.getItem('oscal_poam_v2');if(!s)return;const d=JSON.parse(s);if(d._t==='poam'&&d.items?.length){l.info(`Autosave gefunden: ${d.items.length} Items`);if(confirm(`POA&M Autosave (${d.items.length} Items). Laden?`))restoreS(d);else l.debug('Autosave verworfen')}}catch(e){}}
-setInterval(()=>{if(P.items.length){autoSave();l.debug(`Autosave: ${P.items.length} Items in localStorage gesichert`)}},30000);
+// Arbeitsstand liegt ausschliesslich im gemeinsamen Artefaktbestand (aktives Set).
+function autoSave(){gppArtefacts.save({stage:'remediate',kind:'workspace',title:'POA&M Arbeitsstand',filename:'poam-workspace.json',tool:GPP_TOOL_ID,data:JSON.parse(ser())}).catch(e=>l.warn('Arbeitsstand nicht ins Set gesichert: '+e.message))}
+// Boot-Übernahme: eigener Arbeitsstand aus dem Set, sonst neuestes AR als Input.
+async function adoptFromSet(){
+    // Einmalige Migration: alter localStorage-Autosave → Workspace-Artefakt.
+    try{const s=localStorage.getItem('oscal_poam_v2');
+        if(s){const d=JSON.parse(s);
+            if(d._t==='poam'&&d.items?.length){await gppArtefacts.save({stage:'remediate',kind:'workspace',title:'POA&M Arbeitsstand',filename:'poam-workspace.json',tool:GPP_TOOL_ID,data:d});l.info('Alter Autosave (oscal_poam_v2) als Workspace-Artefakt ins Set migriert')}
+            localStorage.removeItem('oscal_poam_v2')}
+    }catch(e){}
+    try{
+        const rows=await gppArtefacts.list();
+        const ws=rows.find(r=>r.kind==='workspace'&&r.tool===GPP_TOOL_ID);
+        if(ws){const rec=await gppArtefacts.get(ws.id);
+            if(rec?.data?._t==='poam'){restoreS(rec.data);l.info(`Arbeitsstand aus Set übernommen (${rec.updatedAt||''})`);return}}
+        const ar=await gppArtefacts.latest('ar');
+        if(ar?.data?.['assessment-results']){importAR(ar.data,ar.filename||'AR aus Set');l.info('AR aus Set übernommen');return}
+        l.debug('Kein Arbeitsstand und kein AR im aktiven Set — leer gestartet');
+    }catch(e){l.warn('Übernahme aus dem Set fehlgeschlagen: '+shortErr(e.message))}
+}
+// Set-Wechsel/Fremd-Schreiber in anderen Fenstern: leeres Tool zieht nach, volles loggt nur.
+window.addEventListener('storage',e=>{
+    if(e.key!=='gpp:cfg:artefacts:touch')return;
+    if(!P.items.length)adoptFromSet();
+    else l.debug('Artefaktbestand geändert — aktueller Arbeitsstand bleibt geladen');
+});
+setInterval(()=>{if(P.items.length){autoSave();l.debug(`Autosave: ${P.items.length} Items ins Set gesichert`)}},30000);
 
 // ============================ KI-KONFIGURATION ============================
 // Zwei Backends, getrennt persistiert: Key, Modell und die Backend-Auswahl selbst.

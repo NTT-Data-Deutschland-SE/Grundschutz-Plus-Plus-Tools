@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.8.1</title>
+    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.9</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -645,11 +645,8 @@
         </div>
 
         <div class="topbar-actions">
-            <input type="file" id="ssp-file-input" accept=".json,application/json" multiple class="hidden"
-                onchange="handleSSPFileLoad(event)">
-            <button type="button" onclick="document.getElementById('ssp-file-input').click()" class="pill">⤓ Bestehenden SSP öffnen</button>
             <div id="catalog-status" class="pill"><span class="dot animate-pulse"></span>Lade Basis-Katalog…</div>
-            <div class="pill pill-quiet">BUILD V5.8.1</div>
+            <div class="pill pill-quiet">BUILD V5.9</div>
         </div>
 
         <div class="progress-track"><div id="ai-doc-progress-bar" class="progress-fill"></div></div>
@@ -666,7 +663,6 @@
             <button type="button" class="nav-item" onclick="navigateToSection('sec-components')"><span class="nav-ico">▣</span>3 · Methodik &amp; Assets</button>
             <button type="button" class="nav-item" onclick="navigateToSection('sec-tailoring')"><span class="nav-ico">◈</span>4 · Tailoring</button>
             <button type="button" class="nav-item" onclick="navigateToSection('sec-risks')"><span class="nav-ico">◬</span>5 · Risikoanalyse</button>
-            <button type="button" class="nav-item" onclick="navigateToSection('sec-ai-prompts')"><span class="nav-ico">✎</span>6 · KI-Prompts</button>
             <button type="button" class="nav-item" onclick="navigateToSection('sec-stats')"><span class="nav-ico">◐</span>Auswertung</button>
         </div>
 
@@ -677,19 +673,9 @@
         </div>
 
         <!-- KI-Zugang und Laufzeit liegen zentral in config.html (gpp:cfg:*).
-             Hier steht nur noch, was gerade gilt; die Felder im ausgeblendeten
-             Block darunter sind ein Kompatibilitäts-Layer für den Bestandscode
-             und werden ausschließlich aus der zentralen Konfiguration gefüllt. -->
-        <div class="rail-group">
-            <div class="rail-label">KI-Zugang</div>
-            <div id="gpp-cfg-summary" class="rail-hint">–</div>
-            <div class="rail-hintrow" style="margin-top:8px">
-                <a class="rail-mini-btn" href="config.html" target="_blank" rel="noopener">⚙ Einstellungen</a>
-                <button type="button" class="rail-mini-btn" onclick="applyGppConfig(true)" title="Einstellungen erneut übernehmen">↻</button>
-            </div>
-            <p class="rail-note">Bei einem CORS-Fehler die Datei nicht per <code>file://</code> öffnen, sondern im
-                Verzeichnis <code>python -m http.server</code> starten und über <code>http://localhost:8000/…</code> aufrufen.</p>
-
+             Die Felder im ausgeblendeten Shim sind ein Kompatibilitäts-Layer für den
+             Bestandscode und werden von applyGppConfig aus der zentralen Konfiguration gefüllt. -->
+        <div hidden aria-hidden="true">
             <div id="gpp-cfg-shim" hidden aria-hidden="true">
                 <select id="ai-doc-provider">
                     <option value="gemini">Google Gemini</option>
@@ -716,7 +702,7 @@
             </div>
         </div>
 
-        <div class="rail-foot">BUILD V5.8.1</div>
+        <div class="rail-foot">BUILD V5.9</div>
     </aside>
 
     <div id="rail-splitter" class="splitter" title="Rail-Breite ziehen"></div>
@@ -1557,7 +1543,6 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 ${createCollapsibleSection('sec-components', '▣ &nbsp;3. Methodik, Prozesse & Assets', renderComponentsHTML(), true)}
                 ${createCollapsibleSection('sec-tailoring', '◈ &nbsp;4. Tailoring pro Asset & Profil', renderTailoringHTML(), false)}
                 ${createCollapsibleSection('sec-risks', '◬ &nbsp;5. Risikoanalyse (Optional)', renderRiskAnalysisHTML(), false)}
-                ${createCollapsibleSection('sec-ai-prompts', '✎ &nbsp;6. KI-Prompts (bearbeitbar)', renderAIPromptsHTML(), true)}
             `;
             attachCollapsibleListeners();
         }
@@ -1673,26 +1658,6 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             `;
         }
 
-        // --- SECTION 6: PROMPTS (zentral in config.html) ---
-        function renderAIPromptsHTML() {
-            return `
-                <div class="space-y-4">
-                    <p class="text-xs text-slate-400 leading-relaxed">Die Prompts dieses Tools werden gesammelt in
-                        <a href="config.html" target="_blank" rel="noopener" class="text-cyan-400 font-semibold">config.html</a>
-                        bearbeitet — zusammen mit denen der anderen Anwendungen und immer gegen den aktuellen Standardtext,
-                        den dieses Tool beim Start anmeldet. Platzhalter in geschweiften Klammern werden zur Laufzeit ersetzt;
-                        fehlt einer, wird er defensiv angehängt. Der Chunk-Cache der Extraktion berücksichtigt den Prompt-Text —
-                        nach einer Änderung werden die betroffenen Chunks neu abgerufen.</p>
-                    <div class="p-4 bg-slate-900 border border-slate-700 rounded-lg">
-                        <div class="text-xs font-bold text-cyan-300 uppercase tracking-wider font-mono mb-2">Prompts dieses Tools</div>
-                        <div id="ai-prompt-overview"></div>
-                        <a href="config.html" target="_blank" rel="noopener"
-                           class="inline-block mt-3 px-3 py-1.5 border border-slate-600 rounded text-xs font-semibold text-slate-200 hover:bg-slate-700">⚙ Prompts bearbeiten</a>
-                    </div>
-                </div>
-            `;
-        }
-
         // Prompttexte kommen zentral aus config.html; der Standardtext bleibt hier
         // im Tool, damit es ohne fremde Datei erklärbar und lauffähig ist.
         function getAIPromptTemplate(name) {
@@ -1720,50 +1685,12 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             return template;
         }
 
-        function validateAIPrompt(name) {
-            const def = AI_PROMPTS[name];
-            const warnBox = document.getElementById(`${def.id}-warn`);
-            if (!warnBox) return;
-            const template = document.getElementById(def.id)?.value || '';
-            const missing = (def.placeholders || []).filter(placeholder => !template.includes(placeholder));
-            if (missing.length === 0 || !template.trim()) {
-                warnBox.classList.add('hidden');
-                warnBox.textContent = '';
-                return;
-            }
-            warnBox.textContent = `◬ Fehlende Platzhalter: ${missing.join(' · ')} — sie werden beim Aufruf automatisch ans Ende angehängt.`;
-            warnBox.classList.remove('hidden');
-        }
-
-        // Bearbeiten und Zurücksetzen passiert in config.html — hier bleibt nur die
-        // Anzeige. Die Funktionen bleiben als no-ops erhalten, falls noch ein
-        // Handler aus einer alten Ansicht darauf zeigt.
-        window.onAIPromptInput = function () { renderPromptOverview(); };
-        window.resetAIPrompt = function (name) {
-            localStorage.removeItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${name}`);
-            renderPromptOverview();
-            aiLog('info', `Prompt auf Standard zurückgesetzt: ${AI_PROMPTS[name]?.label || name}`);
-        };
-
-        // Meldet die Prompts zur zentralen Bearbeitung an und zeigt in der
-        // Prompt-Karte nur noch, welche vom Standard abweichen.
+        // Meldet die Prompts zur zentralen Bearbeitung in config.html an;
+        // bearbeitet wird ausschließlich dort.
         function initAIPrompts() {
             gppRegisterPrompts(GPP_TOOL_ID, Object.entries(AI_PROMPTS).map(([name, def]) => ({
                 id: name, label: def.label, placeholders: def.placeholders || [], default: def.def,
             })));
-            renderPromptOverview();
-            window.addEventListener('storage', e => { if (e.key && e.key.startsWith('gpp:cfg:prompt')) renderPromptOverview(); });
-        }
-        function renderPromptOverview() {
-            const box = document.getElementById('ai-prompt-overview');
-            if (!box) return;
-            box.innerHTML = Object.entries(AI_PROMPTS).map(([name, def]) => {
-                const custom = localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${name}`) !== null;
-                return `<div style="display:flex;gap:8px;align-items:baseline;padding:3px 0;font-size:12px">
-                    <span style="font-family:monospace;font-size:10px;padding:1px 5px;border-radius:4px;border:1px solid ${custom ? '#e0a03a' : '#475569'};color:${custom ? '#e0a03a' : '#94a3b8'}">${custom ? 'angepasst' : 'standard'}</span>
-                    <span>${def.label}</span>
-                </div>`;
-            }).join('');
         }
 
         // --- KI-LAUFZEITEINSTELLUNGEN ---

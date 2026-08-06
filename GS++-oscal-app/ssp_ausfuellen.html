@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.1.1</title>
+    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.2.0</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
@@ -661,7 +661,7 @@
             <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>Kein SSP geladen
         </div>
         <div id="resource-status-ind" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 items-center hidden"></div>
-        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.1.1</span></span>
+        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.2.0</span></span>
     </div>
 </header>
 
@@ -676,42 +676,27 @@
     <!-- ===================== LINKE RAIL ===================== -->
     <aside id="sidebar" class="sidebar cscroll p-3 flex flex-col gap-2 relative z-30">
 
-        <!-- Import / Drag & Drop -->
+        <!-- Import: SSP und assoziierte OSCAL-Dateien kommen aus dem aktiven
+             Arbeitsstand (Set, siehe index.html) — hier lädt man nur noch eine
+             zuvor exportierte Session-Datei (Tool-eigenes Format, kein OSCAL). -->
         <div class="space-y-1.5">
             <div class="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">&#9673; Workspace</div>
-            <div id="dz-ssp" class="dz border border-dashed border-slate-600 rounded p-2 text-center cursor-pointer hover:border-blue-500 bg-slate-900/40 text-[10px]" data-type="ssp">
-                &#9671; 1. SSP laden (Main)
-                <input type="file" accept=".json" class="fip" data-type="ssp" id="ssp-uploader">
-            </div>
-            <div id="dz-assoc" class="dz border border-dashed border-slate-600 rounded p-2 text-center cursor-pointer hover:border-emerald-500 bg-slate-900/40 text-[10px]" data-type="assoc">
-                &#9672; 2. Assoziierte laden
-                <input type="file" accept=".json" multiple class="fip" data-type="assoc" id="associated-uploader">
-            </div>
             <div id="dz-state" class="dz border border-dashed border-slate-600 rounded p-2 text-center cursor-pointer hover:border-purple-500 bg-slate-900/40 text-[10px]" data-type="state">
                 &#9635; Session (.json) laden
                 <input type="file" accept=".json" class="fip" data-type="state">
             </div>
         </div>
 
-        <!-- AI Config -->
+        <!-- Unternehmenskontext: gehört zum Dokument, nicht zum Werkzeug.
+             Backend, Key und Modell liegen zentral in config.html (gpp:cfg:*);
+             der ausgeblendete Shim-Block hält die alten IDs für den Bestandscode. -->
         <div class="border border-slate-700 rounded overflow-hidden">
             <button onclick="tog('sb-ai')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300">
-                &#9673; KI Backend
-                <span id="ai-badge" class="sb bg-slate-700 text-slate-500 border-slate-600 hidden ml-1">&mdash;</span>
+                &#9673; Unternehmenskontext
                 <svg id="icon-sb-ai" class="chev w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
             </button>
-            <!-- Backend, Key und Modell liegen zentral in config.html (gpp:cfg:*);
-                 der ausgeblendete Block hält die alten IDs für den Bestandscode.
-                 Der Unternehmenskontext bleibt hier: er gehört zum Dokument, nicht
-                 zum Werkzeug. -->
             <div id="sb-ai-content" class="coll-content p-2 bg-slate-900/30 space-y-1.5">
-                <div id="gpp-cfg-summary" class="text-[10px] text-slate-400 leading-snug">–</div>
-                <div class="flex items-center gap-2">
-                    <a href="config.html" target="_blank" rel="noopener" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-300 text-[10px] font-bold uppercase rounded">&#9881; Einstellungen</a>
-                    <button onclick="applyGppConfig(true)" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-300 text-[10px] font-bold rounded">&#8634;</button>
-                </div>
-                <p id="ai-migrate-hint" class="hidden text-[10px] font-bold text-amber-300 bg-amber-900/30 border border-amber-700/50 rounded px-2 py-1 leading-snug"></p>
-                <label class="block text-[10px] font-bold text-slate-400 mt-2">Unternehmenskontext</label>
+                <label class="block text-[10px] font-bold text-slate-400">Unternehmenskontext</label>
                 <textarea id="ai-context" rows="2" class="inp text-[10px] w-full" placeholder="Wir sind KRITIS / NIS2..." oninput="saveAICfg()"></textarea>
 
                 <div id="gpp-cfg-shim" hidden aria-hidden="true">
@@ -730,7 +715,6 @@
         <!-- Navigation Links -->
         <div class="space-y-1 border-t border-slate-700 pt-2">
             <div class="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">&#9678; Navigation</div>
-            <button onclick="scrollToSec('sec-prompts')" class="w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400">&#9680; KI-Prompts</button>
             <button onclick="scrollToSec('sec-meta')" class="w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400">&#11041; Metadaten &amp; Status</button>
             <button onclick="scrollToSec('sec-chars')" class="w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400">&#9635; Charakteristika</button>
             <button onclick="scrollToSec('sec-risk')" class="w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400" id="nav-risk" style="display:none">&#9708; Risikoanalyse</button>
@@ -771,25 +755,7 @@
 
             <div id="welcome-msg" class="text-center py-12">
                 <h2 class="text-2xl font-bold text-slate-300 mb-4">Willkommen im OSCAL SSP Editor</h2>
-                <p class="text-slate-400 mb-6 max-w-lg mx-auto">Ziehen Sie Ihr <code>system-security-plan.json</code> in die Seitenleiste oder laden Sie eine bestehende Session, um fortzufahren.</p>
-            </div>
-
-            <!-- KI-Prompts (editierbar) — jeder Prompt, den das Modell sieht, steht hier -->
-            <div id="sec-prompts" class="border border-slate-700 rounded-lg overflow-hidden">
-                <button class="collapsible-header w-full flex justify-between items-center p-4 bg-slate-800 hover:bg-slate-700 text-left">
-                    <h2 class="text-lg font-bold text-white">&#9680; KI-Prompts (editierbar)</h2>
-                    <svg class="chevron-icon open w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-                </button>
-                <div class="collapsible-content open p-4 border-t border-slate-700 bg-slate-900 space-y-5">
-                    <p class="text-xs text-slate-400">Die Prompts dieses Werkzeugs werden gesammelt in
-                        <a href="config.html" target="_blank" rel="noopener" class="text-emerald-400 font-bold">config.html</a>
-                        bearbeitet — zusammen mit denen der anderen Anwendungen und immer gegen den aktuellen Standardtext,
-                        den dieses Werkzeug beim Start anmeldet. Pflicht-Platzhalter werden zur Laufzeit defensiv angehängt,
-                        falls sie fehlen.</p>
-                    <div id="prompt-overview"></div>
-                    <a href="config.html" target="_blank" rel="noopener"
-                       class="inline-block px-3 py-1.5 bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded text-xs font-bold text-slate-200">&#9881; Prompts bearbeiten</a>
-                </div>
+                <p class="text-slate-400 mb-6 max-w-lg mx-auto">Der Editor arbeitet auf dem aktiven Arbeitsstand (Set): sobald dort ein SSP liegt, wird es hier automatisch &uuml;bernommen. Sets verwalten Sie in <code>index.html</code>.</p>
             </div>
 
             <div id="ssp-editor" class="hidden space-y-6">
@@ -972,7 +938,7 @@
     // CONFIG & STATE
     // ============================================================
     // Build-Version der App (nicht zu verwechseln mit dem Session-Format `_v`).
-    const BUILD_VERSION = 'v1.1.1';
+    const BUILD_VERSION = 'v1.2.0';
 
     // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
     // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
