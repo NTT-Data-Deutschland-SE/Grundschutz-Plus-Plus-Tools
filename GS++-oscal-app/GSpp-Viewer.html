@@ -677,7 +677,7 @@
         </div>
     </div>
 
-<script src="gpp-core.js?v=3.1"></script>
+<script src="gpp-core.js?v=3.2"></script>
     <script>
         if (typeof gppCfg === 'undefined') {
             document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
@@ -1560,22 +1560,16 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präßise und du nutzt kei
 
         // --- NEU: Profil-Handling ---
 
-        // Listet eine GitHub-"contents"-Antwort. Enthält sie Unterverzeichnisse
-        // (z.B. .../profile → regular + process), wird eine Ebene tiefer gegangen
-        // und die Dateien zusammengeführt.
-        async function fetchGithubContentsRecursive(url, depth = 0) {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error("API Limit erreicht oder Repo nicht gefunden.");
-            const json = await res.json();
-            if (!Array.isArray(json) || depth >= 2) return json;
-            const dirs = json.filter(e => e && e.type === 'dir' && e.url);
-            if (dirs.length === 0) return json;
-            const files = json.filter(e => !(e && e.type === 'dir'));
-            const nested = await Promise.all(dirs.map(d =>
-                fetchGithubContentsRecursive(d.url, depth + 1).catch(() => [])
-            ));
-            return files.concat(...nested.map(n => Array.isArray(n) ? n : []));
-        }
+        /* Profilliste über EINEN Trees-Aufruf statt vieler contents-Aufrufe.
+           Die contents-API brauchte pro Unterverzeichnis eine eigene Anfrage; bei
+           60 Anfragen pro Stunde ohne Anmeldung war das Limit nach wenigen
+           Seitenaufrufen erschöpft (HTTP 403). Das Ergebnis wird 24 h im Browser
+           gehalten und bei Limit auch abgelaufen weiterverwendet. */
+        // Auflistung liegt im Core (ein trees-Aufruf je Repo, 24 h Cache).
+        const fetchProfileFiles = () => gppRepoList({
+            owner: 'NTT-Data-Deutschland-SE', repo: 'Grundschutz-Plus-Plus-Tools',
+            ref: GPPT_PIN, dir: 'Zielobjektkategorien/profile', ext: '.json', recursive: true,
+        });
 
         // Praktik-Kürzel → Begriff. Quelle (in sync halten):
         // https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/blob/main/documentation/namespaces/practices.csv
@@ -1610,23 +1604,19 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präßise und du nutzt kei
             const t0 = performance.now();
             L.info("Profil-Liste wird von GitHub geladen …");
             try {
-                const apiURL = 'https://api.github.com/repos/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/contents/Zielobjektkategorien/profile';
-                const files = await fetchGithubContentsRecursive(apiURL);
-
+                const { files, from, stale } = await fetchProfileFiles();
                 select.innerHTML = '<option value="">-- Kein Profil-Filter --</option>';
-                let n = 0;
-                files.filter(f => f.name.endsWith('.json')).forEach(f => {
+                files.forEach(f => {
                     const opt = document.createElement('option');
-                    opt.value = f.download_url; // Nutzt die direkte Raw-URL der Datei
+                    opt.value = f.url;              // gepinnte Raw-URL
                     opt.textContent = prettifyProfileName(f.name);
                     select.appendChild(opt);
-                    n++;
                 });
-                L.ok(`${n} Zielobjekt-Profile verfügbar (${Math.round(performance.now() - t0)}ms)`);
+                L[stale ? 'warn' : 'ok'](`${files.length} Zielobjekt-Profile verfügbar · ${from} (${Math.round(performance.now() - t0)}ms)`);
             } catch (e) {
-                select.innerHTML = '<option value="">Fehler beim Laden der Profilliste</option>';
-                console.error("Profil-Liste konnte nicht geladen werden:", e);
-                L.err(`Profil-Liste konnte nicht geladen werden: ${truncateError(e.message)}`);
+                select.innerHTML = '<option value="">Profilliste nicht abrufbar</option>';
+                L.warn(`Profil-Liste nicht geladen: ${truncateError(e.message)}. `
+                     + `Der Katalog und alle übrigen Funktionen laufen davon unberührt weiter.`);
             }
         }
 

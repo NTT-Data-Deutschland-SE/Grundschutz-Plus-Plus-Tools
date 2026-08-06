@@ -805,7 +805,7 @@
     <div id="log-body" class="log-body cscroll"></div>
 </section>
 
-<script src="gpp-core.js?v=3.1"></script>
+<script src="gpp-core.js?v=3.2"></script>
 <script>
     if (typeof gppCfg === 'undefined') {
         document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
@@ -1300,7 +1300,10 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
                 return;
             }
             const ssp = await gppArtefacts.latest('ssp');
-            if (ssp && ssp.data && ssp.data['system-security-plan']) {
+            // Ein SSP ohne metadata bringt processWorkspace zu Fall — im Set kann
+            // per Hochladen beliebiges JSON landen, also hier prüfen statt vertrauen.
+            if (ssp && ssp.data && ssp.data['system-security-plan'] &&
+                ssp.data['system-security-plan'].metadata) {
                 workspaceFiles.clear();
                 workspaceFiles.set(ssp.filename || 'ssp.json', ssp.data);
                 sspData = ssp.data;
@@ -1309,6 +1312,8 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
                 refs.forEach(r => workspaceFiles.set(r.filename, r.data));
                 L.ok(`SSP aus Set „${set}" übernommen: ${ssp.title}${refs.length ? ` (+ ${refs.length} Katalog/Profil)` : ''}`);
                 await processWorkspace();
+            } else if (ssp) {
+                L.warn(`SSP „${ssp.title}" im Set „${set}" hat keine metadata und wurde nicht geladen.`);
             } else {
                 L.info(`Set „${set}" enthält noch keinen SSP — im SSP-Generator erzeugen, er erscheint hier automatisch.`);
             }

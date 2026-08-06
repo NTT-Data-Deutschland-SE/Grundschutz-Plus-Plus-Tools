@@ -34,6 +34,10 @@ const GPP_CFG_DEFAULTS = {
   // Beschreibt die Institution (KRITIS, NIS2, Branche …) und geht als
   // Hintergrund in die KI-Aufrufe aller Werkzeuge ein.
   "ai:context": "",
+  // Optionaler GitHub-Token nur fürs Auflisten von Verzeichnissen (read-only
+  // genügt). Ohne ihn gelten 60 Anfragen/Stunde; die Browser-Anmeldung an
+  // github.com zählt dabei nicht, api.github.com wertet keine Cookies aus.
+  "gh:token": "",
   "run:concurrency": "4",
   // Zwei Chunk-Begriffe, bewusst getrennt: der Validator zerlegt nach ANZAHL
   // (Befunde je Aufruf), die Generatoren nach ZEICHEN (Dokumenttext je Aufruf).
@@ -162,6 +166,65 @@ function gppRepinUrl(url, sha) {
   const p = gppParseRawUrl(url);
   if (!p || !sha) return url;
   return `https://raw.githubusercontent.com/${p.owner}/${p.repo}/${sha}/${p.path}`;
+}
+
+/* ---------- Verzeichnisse aus GitHub auflisten ----------
+   Die contents-API braucht eine Anfrage JE Verzeichnis. Mehrere Werkzeuge
+   listeten damit beim Start vier bis fünf Verzeichnisse — bei 60 Anfragen pro
+   Stunde ohne Anmeldung war das Limit nach wenigen Seitenaufrufen erschöpft
+   (HTTP 403). Ein trees-Aufruf mit ?recursive=1 liefert stattdessen den ganzen
+   Baum eines Repos auf einmal; er wird 24 h gehalten und bei erschöpftem Limit
+   auch abgelaufen weiterverwendet. Gelistet wird gegen einen festen Commit,
+   die erzeugten Roh-URLs sind damit gepinnt (Grundregel 8). */
+const GPP_TREE_TTL = 24 * 60 * 60 * 1000;
+
+async function gppRepoTree(owner, repo, ref) {
+  const key = GPP_CFG_PREFIX + `tree:${owner}/${repo}@${ref}`;
+  let cached = null;
+  try { cached = JSON.parse(localStorage.getItem(key) || "null"); } catch (e) { /* kaputt */ }
+  if (cached && Array.isArray(cached.paths) && Date.now() - cached.ts < GPP_TREE_TTL) {
+    return { paths: cached.paths, from: "Cache" };
+  }
+  try {
+    /* Die Anmeldung im Browser hilft hier NICHT: api.github.com wertet keine
+       Session-Cookies aus. Nur ein Token im Authorization-Header hebt das
+       Limit (60 → 5000 Anfragen/Stunde); optional in config.html hinterlegbar. */
+    const token = gppCfg.get("gh:token");
+    const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${ref}?recursive=1`,
+      token ? { headers: { Authorization: "Bearer " + token } } : undefined);
+    if (!r.ok) {
+      throw new Error(r.status === 403
+        ? (token ? "GitHub lehnt den hinterlegten Token ab oder das Limit ist erschöpft"
+                 : "GitHub-Limit erreicht (60 Anfragen/Stunde ohne Anmeldung) — in config.html lässt sich ein Token hinterlegen")
+        : `HTTP ${r.status}`);
+    }
+    const json = await r.json();
+    const paths = (json.tree || []).filter(e => e.type === "blob").map(e => e.path);
+    try { localStorage.setItem(key, JSON.stringify({ ts: Date.now(), paths })); } catch (e) { /* Quota */ }
+    return { paths, from: "GitHub" };
+  } catch (e) {
+    if (cached && Array.isArray(cached.paths)) {
+      return { paths: cached.paths, from: `abgelaufener Cache — ${e.message}`, stale: true };
+    }
+    throw e;
+  }
+}
+
+/* Listet Dateien eines Verzeichnisses. `dir` ohne führenden Schrägstrich,
+   `ext` optional (z. B. ".json"). Liefert [{name, path, url}] mit gepinnter URL. */
+async function gppRepoList({ owner, repo, ref, dir, ext = "", recursive = false }) {
+  const { paths, from, stale } = await gppRepoTree(owner, repo, ref);
+  const prefix = dir.replace(/^\/+|\/+$/g, "") + "/";
+  const files = paths.filter(p => {
+    if (!p.startsWith(prefix)) return false;
+    if (ext && !p.endsWith(ext)) return false;
+    return recursive || !p.slice(prefix.length).includes("/");
+  }).map(p => ({
+    name: p.slice(p.lastIndexOf("/") + 1),
+    path: p,
+    url: `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${p}`,
+  }));
+  return { files, from, stale };
 }
 
 /* ---------- Artefaktspeicher (IndexedDB) ---------- */

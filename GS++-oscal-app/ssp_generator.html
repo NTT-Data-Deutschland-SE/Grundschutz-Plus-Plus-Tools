@@ -893,7 +893,7 @@
         </div>
     </div>
 
-<script src="gpp-core.js?v=3.1"></script>
+<script src="gpp-core.js?v=3.2"></script>
     <script>
         if (typeof gppCfg === 'undefined') {
             document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
@@ -943,11 +943,15 @@
             const d = await crypto.subtle.digest('SHA-256', buf);
             return Array.from(new Uint8Array(d)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
-        const API_URL_NUTZERGEN = 'https://api.github.com/repos/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/contents/ED23-Baustein-profile/DE';
-        const API_URL_GPLUS = 'https://api.github.com/repos/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/contents/Zielobjektkategorien/profile/regular';
-        const API_URL_PRAKTIKEN = 'https://api.github.com/repos/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/contents/Zielobjektkategorien/profile/process';
+        /* Verzeichnisse werden über gppRepoList (Core) gelistet: ein trees-Aufruf je
+           Repo mit 24-h-Cache statt einer contents-Anfrage je Verzeichnis. */
+        const GPP_REPO_OWNER = 'NTT-Data-Deutschland-SE';
+        const GPP_REPO_NAME = 'Grundschutz-Plus-Plus-Tools';
+        const GPP_TOOLS_PIN_COMMIT = '2ab904b0099f560a06a68950d2b47a8ad019571a';
+        const SDT_REPO_OWNER = 'BSI-Bund';
+        const SDT_REPO_NAME = 'Stand-der-Technik-Bibliothek';
         // BSI implementation_layer: fertige Component-Definitions (Keycloak, Netzarchitektur, ...)
-        const API_URL_SDT_COMPONENTS = 'https://api.github.com/repos/BSI-Bund/Stand-der-Technik-Bibliothek/contents/implementation_layer';
+        const SDT_PIN_COMMIT = 'd304c60c0ba37277a59fa40adf6e6be3d452878e';
         const PRAKTIKEN_FILE_SUFFIX = '_process_profile.json';
 
         // Praktik-Kürzel → Begriff. Fallback für die Anzeige, falls der Basis-Katalog (mit
@@ -4080,8 +4084,9 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
         async function fetchPraktikenProfiles() {
             try {
-                const res = await fetch(API_URL_PRAKTIKEN);
-                const data = await res.json();
+                const listed = await gppRepoList({ owner: GPP_REPO_OWNER, repo: GPP_REPO_NAME,
+                    ref: GPP_TOOLS_PIN_COMMIT, dir: 'Zielobjektkategorien/profile/process', ext: '.json' });
+                const data = listed.files.map(f => ({ name: f.name, download_url: f.url }));
                 const container = document.getElementById('praktiken-container');
 
                 const suffix = praktikenSuffix();
@@ -4169,16 +4174,14 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             const dd = document.getElementById('dd-sdt-comp');
             if (!dd) return;
             try {
-                const dirs = await (await fetch(API_URL_SDT_COMPONENTS)).json();
+                // Ein Aufruf über den ganzen Baum statt einer Anfrage je Unterordner.
+                const { files } = await gppRepoList({ owner: SDT_REPO_OWNER, repo: SDT_REPO_NAME,
+                    ref: SDT_PIN_COMMIT, dir: 'implementation_layer',
+                    ext: '-component_definition.json', recursive: true });
                 dd.innerHTML = '<option value="" disabled selected>BSI-Komponente wählen...</option>';
-                for (const d of (Array.isArray(dirs) ? dirs : []).filter(i => i.type === 'dir')) {
-                    try {
-                        const files = await (await fetch(d.url)).json();
-                        (Array.isArray(files) ? files : [])
-                            .filter(f => f.name.endsWith('-component_definition.json'))
-                            .forEach(f => dd.appendChild(new Option(f.name.replace('-component_definition.json', ''), f.download_url)));
-                    } catch (e) { console.warn('SdT-Komponenten-Ordner nicht lesbar:', d.name, e); }
-                }
+                files.forEach(f => dd.appendChild(new Option(
+                    f.name.replace('-component_definition.json', ''), f.url)));
+                if (!files.length) dd.innerHTML = '<option value="">Keine BSI-Komponenten gefunden</option>';
             } catch (e) {
                 console.warn('SdT implementation_layer nicht erreichbar', e);
                 dd.innerHTML = '<option value="">BSI-Komponenten nicht erreichbar</option>';
@@ -4238,8 +4241,17 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
         async function fetchGitHubComponents() {
             try {
-                const [r1, r2] = await Promise.all([fetch(API_URL_NUTZERGEN), fetch(API_URL_GPLUS)]);
-                const d1 = await r1.json(); const d2 = await r2.json();
+                /* Auflistung über den Core: ein trees-Aufruf je Repo mit 24-h-Cache.
+                   Vorher lief pro Verzeichnis eine contents-Anfrage — das Limit von
+                   60 Anfragen/Stunde war nach wenigen Seitenaufrufen erschöpft. */
+                const [l1, l2] = await Promise.all([
+                    gppRepoList({ owner: GPP_REPO_OWNER, repo: GPP_REPO_NAME, ref: GPP_TOOLS_PIN_COMMIT,
+                                  dir: 'ED23-Baustein-profile/DE', ext: '.json' }),
+                    gppRepoList({ owner: GPP_REPO_OWNER, repo: GPP_REPO_NAME, ref: GPP_TOOLS_PIN_COMMIT,
+                                  dir: 'Zielobjektkategorien/profile/regular', ext: '.json' }),
+                ]);
+                const d1 = l1.files.map(f => ({ name: f.name, download_url: f.url }));
+                const d2 = l2.files.map(f => ({ name: f.name, download_url: f.url }));
 
                 const ddN = document.getElementById('dd-nutzer');
                 const ddG = document.getElementById('dd-gplus');

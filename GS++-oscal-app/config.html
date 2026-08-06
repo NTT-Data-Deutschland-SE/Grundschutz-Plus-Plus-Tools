@@ -243,6 +243,15 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
       <button class="btn" id="btn-reset-src">Alle auf Tool-Standard zurücksetzen</button>
       <span class="note" id="src-summary" style="margin:0"></span>
     </div>
+    <div style="margin-bottom:14px">
+      <label class="f" for="gh-token">GitHub-Token (optional)</label>
+      <input type="password" id="gh-token" placeholder="github_pat_… oder ghp_…" autocomplete="off">
+      <div class="note">Nur zum <b>Auflisten</b> von Verzeichnissen und zur Update-Prüfung — ein Token ohne Rechte
+        („public repo, read-only") genügt. Ohne Token erlaubt GitHub 60 Anfragen pro Stunde und meldet danach
+        <code>403</code>; mit Token sind es 5000. <b>Die Anmeldung im Browser hilft dabei nicht:</b>
+        <code>api.github.com</code> wertet keine Session-Cookies aus. Der Token bleibt im
+        <code>localStorage</code> dieses Browsers.</div>
+    </div>
     <div id="src-body"></div>
   </div>
 
@@ -258,7 +267,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
   </div>
 </main>
 
-<script src="gpp-core.js?v=3.1"></script>
+<script src="gpp-core.js?v=3.2"></script>
 <script>
 if (typeof gppCfg === "undefined") {
   document.querySelector("main").innerHTML =
@@ -286,7 +295,7 @@ const FIELDS = [
   ["thinking", "ai:thinking"], ["checker-backend", "ai:checker:backend"], ["checker-model", "ai:checker:model"],
   ["run-concurrency", "run:concurrency"], ["run-chunk", "run:chunk"],
   ["run-chunkchars", "run:chunkchars"], ["run-retries", "run:retries"],
-  ["ai-context", "ai:context"],
+  ["ai-context", "ai:context"], ["gh-token", "gh:token"],
 ];
 const TOGGLES = [["grounding", "ai:grounding"], ["or-structuredonly", "ai:or:structuredonly"]];
 
@@ -510,8 +519,11 @@ async function checkSource(s) {
   box.textContent = "frage GitHub …";
   try {
     const api = `https://api.github.com/repos/${s.repo}/commits?path=${encodeURIComponent(s.path)}&per_page=1`;
-    const r = await fetch(api);
-    if (!r.ok) throw new Error("HTTP " + r.status + (r.status === 403 ? " (API-Limit — später erneut)" : ""));
+    const tok = gppCfg.get("gh:token");
+    const r = await fetch(api, tok ? { headers: { Authorization: "Bearer " + tok } } : undefined);
+    if (!r.ok) throw new Error("HTTP " + r.status + (r.status === 403
+      ? (tok ? " (Token abgelehnt oder Limit erschöpft)" : " (API-Limit — oben einen GitHub-Token hinterlegen oder später erneut)")
+      : ""));
     const [latest] = await r.json();
     if (!latest) { box.textContent = "Keine Commits gefunden."; return; }
     const cur = commitOf(gppSource(s.id, s.default));
