@@ -353,9 +353,6 @@ select{color-scheme:dark}
 
   <div class="main">
 
-    <div class="rail">
-      <div class="rail-scroll">
-
         <!-- KI-Konfiguration lebt zentral in config.html — hier nur der versteckte Shim -->
         <div id="gpp-cfg-shim" hidden aria-hidden="true">
             <div class="seg" id="backend-seg">
@@ -391,17 +388,10 @@ select{color-scheme:dark}
               <option value="same" selected>same</option><option value="gemini">Gemini</option><option value="openrouter">OpenRouter</option>
             </select>
             <input id="checker-model" type="text">
-          <span id="backend-pill"></span>
         </div>
 
-        <div class="rail-section">
-          <div class="rail-label"><span><span class="glyph">▣</span> Output</span></div>
-        </div>
-
-      </div>
-    </div>
-
-    <div class="splitter" id="splitter"></div>
+    <!-- Die Seitenleiste ist entfallen: Konfiguration liegt in config.html,
+         die Quell-URLs sind gepinnt — es blieb nichts zu bedienen. -->
 
     <div class="work">
       <div class="work-scroll">
@@ -536,6 +526,7 @@ select{color-scheme:dark}
             <div class="card-title"><span class="num">▸ stage 3</span> OSCAL Profile</div>
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
               <span class="chip accent" id="s3-chip">—</span>
+              <button class="btn sm" id="btn-save-set" title="Profil unter einem Namen im aktiven Arbeitsstand ablegen">⌸ Im Set speichern…</button>
               <button class="btn sm" id="btn-download">⤓ Profile</button>
               <button class="btn sm hidden" id="btn-download-cat">⤓ Custom-Catalog (C.2)</button>
               <button class="btn sm ghost" id="btn-copy">⌕ copy</button>
@@ -1008,20 +999,8 @@ function setBackend(b) {
    Splitter
    ════════════════════════════════════════════════════════════════════════ */
 
-(() => {
-  const sp = $("splitter");
-  let drag = false;
-  const saved = parseInt(localStorage.getItem("gpp.rail") || "260");
-  document.documentElement.style.setProperty("--rail-w", saved + "px");
-  sp.addEventListener("mousedown", () => { drag = true; sp.classList.add("dragging"); document.body.style.cursor = "col-resize"; });
-  window.addEventListener("mouseup", () => { if (drag) { drag = false; sp.classList.remove("dragging"); document.body.style.cursor = ""; } });
-  window.addEventListener("mousemove", e => {
-    if (!drag) return;
-    const w = Math.max(200, Math.min(420, e.clientX));
-    document.documentElement.style.setProperty("--rail-w", w + "px");
-    localStorage.setItem("gpp.rail", String(w));
-  });
-})();
+/* Splitter entfallen — es gibt keine Seitenleiste mehr zum Verbreitern. */
+try { localStorage.removeItem("gpp.rail"); } catch (e) { }
 
 /* ════════════════════════════════════════════════════════════════════════
    PDF.js setup
@@ -2566,7 +2545,40 @@ function renderStage3() {
   const a = state.profileDef?.["profile"]?.["modify"]?.["alters"]?.length || 0;
   $("s3-chip").textContent = `${state.pipelineMode} · ${n} Controls · ${a} alters`;
   $("btn-download-cat").classList.toggle("hidden", state.pipelineMode !== "C2" || !state.customCatalog);
+  // Fertiges Profil sofort in den Arbeitsstand legen — nicht erst beim Download.
+  saveProfileToSet({ ask: false });
 }
+
+/* Legt das erzeugte Profil (und einen etwaigen eigenen Katalog) im aktiven Set ab.
+   `ask` fragt vorher nach einem Namen; ohne Rückfrage gilt die Baustein-ID. */
+async function saveProfileToSet({ ask } = { ask: true }) {
+  if (!state.profileDef) return;
+  const bId = state.baustein?.id || "baustein";
+  const vorschlag = state.profileName || `${bId} — G++ Profil (${state.pipelineMode || "?"})`;
+  let name = vorschlag;
+  if (ask) {
+    const eingabe = prompt("Name des Profils im Arbeitsstand:", vorschlag);
+    if (eingabe === null) return;
+    name = eingabe.trim() || vorschlag;
+  }
+  state.profileName = name;
+  const safe = name.replace(/[^A-Za-z0-9._-]+/g, "_").replace(/^_+|_+$/g, "") || "profil";
+  try {
+    await gppArtefacts.save({
+      stage: "author", kind: "profile", tool: GPP_TOOL_ID,
+      title: name, filename: `${safe}.json`, data: state.profileDef,
+    });
+    if (state.customCatalog) {
+      await gppArtefacts.save({
+        stage: "author", kind: "catalog", tool: GPP_TOOL_ID,
+        title: `${name} — eigener Katalog`, filename: `${safe}_catalog.json`, data: state.customCatalog,
+      });
+    }
+    l.ok(`Profil „${name}" im Set „${gppArtefacts.activeSet()}" gespeichert.`);
+  } catch (e) { l.warn("Profil nicht ins Set gelegt: " + e.message); }
+}
+
+$("btn-save-set").addEventListener("click", () => saveProfileToSet({ ask: true }));
 
 $("btn-download").addEventListener("click", () => {
   if (!state.profileDef) return;

@@ -903,6 +903,12 @@
             throw new Error('gpp-core.js missing');
         }
         const GPP_TOOL_ID = 'ssp_generator';
+        // Auswahlliste aus dem Arbeitsstand füllen und bei Änderungen nachziehen
+        window.addEventListener('DOMContentLoaded', () => { if (typeof refreshSetSourceOptions === 'function') refreshSetSourceOptions(); });
+        window.addEventListener('gpp:artefacts-changed', () => { if (typeof refreshSetSourceOptions === 'function') refreshSetSourceOptions(); });
+        window.addEventListener('storage', e => {
+            if (e.key === 'gpp:cfg:artefacts:touch' && typeof refreshSetSourceOptions === 'function') refreshSetSourceOptions();
+        });
         /* Quellen für die Pin-Übersicht in config.html anmelden (Grundregel 8);
            die Update-Prüfung sitzt dort. */
         gppRegisterSources(GPP_TOOL_ID, [
@@ -3757,6 +3763,68 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             };
         }
 
+        /* ---- Kataloge und Profile aus dem aktiven Arbeitsstand ----
+           Sie liegen bereits geparst im Artefaktspeicher; es wird also nichts
+           geholt. Der Pin entfällt entsprechend: als href steht die Herkunft
+           „set://<id>", der SHA-256 wird über die abgelegten Bytes gebildet. */
+        async function refreshSetSourceOptions() {
+            const sel = document.getElementById('set-source-select');
+            if (!sel || typeof gppArtefacts === 'undefined') return;
+            let rows = [];
+            try { rows = await gppArtefacts.list(); } catch (e) { return; }
+            const usable = rows.filter(r => r.kind === 'catalog' || r.kind === 'profile');
+            const prev = sel.value;
+            sel.innerHTML = '<option value="">— aus dem Arbeitsstand wählen —</option>' +
+                usable.map(r => `<option value="${escapeHTML(r.id)}">${escapeHTML(r.title)} · ${r.kind}</option>`).join('');
+            if (prev) sel.value = prev;
+            if (!usable.length) sel.options[0].textContent = '— Arbeitsstand enthält keine Kataloge/Profile —';
+        }
+
+        window.addCatalogFromSet = async function () {
+            const sel = document.getElementById('set-source-select');
+            const id = sel && sel.value;
+            if (!id) { alert('Bitte einen Eintrag aus dem Arbeitsstand wählen.'); return; }
+            toggleLoader(true, 'Übernehme aus dem Arbeitsstand …');
+            try {
+                const rec = await gppArtefacts.get(id);
+                if (!rec) throw new Error('Eintrag nicht mehr im Set');
+                const doc = rec.data;
+                const isCatalog = !!doc.catalog;
+                if (!isCatalog && !doc.profile) throw new Error('Weder Catalog noch Profile');
+                const href = `set://${rec.id}`;
+                if (catalogAlreadyPresent(href)) { alert('Dieser Eintrag ist bereits vorhanden.'); return; }
+                const title = rec.title ||
+                    doc.catalog?.metadata?.title || doc.profile?.metadata?.title || rec.filename;
+                const json = JSON.stringify(doc);
+                const sha256 = await sha256Hex(new TextEncoder().encode(json));
+                const controlEntries = isCatalog
+                    ? extractCatalogControls(doc, { href, name: title })
+                    : new Map();
+                if (!isCatalog) {
+                    // Profile bringen Control-IDs über include-controls mit
+                    const ids = (doc.profile?.imports || [])
+                        .flatMap(i => (i['include-controls'] || []).flatMap(c => c['with-ids'] || []));
+                    ids.forEach(cid => controlEntries.set(cid, { id: cid, title: cid, source: { href, name: title } }));
+                }
+                const entry = {
+                    id: crypto.randomUUID(), href, originalHref: href, name: title,
+                    kind: isCatalog ? 'catalog' : 'profile', imported: true, fromSet: true,
+                    uuid: doc.catalog?.uuid || doc.profile?.uuid || crypto.randomUUID(),
+                    controls: new Set(controlEntries.keys()), controlEntries, sha256,
+                };
+                mergeControlsIntoIndex(controlEntries);
+                bpState.catalogs.push(entry);
+                renderCatalogsList();
+                renderTailoredList(document.getElementById('tailoring-search-input')?.value || '');
+                refreshRiskUI();
+                aiLog('ok', `„${title}" aus dem Arbeitsstand übernommen (${controlEntries.size} Controls).`);
+            } catch (e) {
+                alert('Übernahme fehlgeschlagen: ' + e.message);
+            } finally {
+                toggleLoader(false);
+            }
+        };
+
         function renderCatalogsList() {
             const list = document.getElementById('catalogs-list');
             if (!list) return;
@@ -3875,6 +3943,14 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                         <button onclick="addPresetCatalog(2)" class="px-4 py-2 bg-slate-700 text-cyan-300 border border-cyan-700 rounded-lg hover:bg-slate-600 transition-colors text-sm font-semibold">+ C5:2026</button>
                         <button onclick="addPresetCatalog(3)" class="px-4 py-2 bg-slate-700 text-cyan-300 border border-cyan-700 rounded-lg hover:bg-slate-600 transition-colors text-sm font-semibold">+ C3A </button>
                     </div>
+                    <!-- Dritte Herkunft: was im aktiven Arbeitsstand liegt (z. B. Profile
+                         aus „BSI → G++ Profil") — ohne Umweg über Download und URL. -->
+                    <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 mb-4">
+                        <select id="set-source-select" class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white outline-none">
+                            <option value="">— aus dem Arbeitsstand wählen —</option>
+                        </select>
+                        <button onclick="addCatalogFromSet()" class="px-5 py-2 bg-slate-700 text-cyan-300 border border-cyan-700 rounded-lg hover:bg-slate-600 transition-colors text-sm font-semibold">Aus Set übernehmen</button>
+                    </div>
                     <ul id="catalogs-list" class="space-y-2"></ul>
                 </div>
 
@@ -3897,7 +3973,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 </div>
 
                 <div class="pt-2">
-                    <h3 class="text-sm font-bold text-slate-300 uppercase mb-2">4. Optionale Muster-Assets</h3>
+                    <h3 class="text-sm font-bold text-slate-300 uppercase mb-2">4. Zielobjekte anlegen</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Nutzergeneriert</label>

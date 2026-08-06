@@ -324,17 +324,23 @@
         }
         .control-card:hover { background: var(--bg-elev-2); }
 
+        /* Verschachtelte Ebenen dürfen die Aufhellung NICHT stapeln — sonst wird
+           jede Ebene heller als die vorige. Innen wird abgedunkelt, die Gliederung
+           tragen Rahmen und Akzentkante. */
         .control-nested-container {
             margin: 20px -22px -22px -22px; padding: 14px 18px 6px;
             border-top: 1px solid var(--border-1);
-            background: oklch(0.95 0.005 280 / 0.02);
+            background: oklch(0.13 0.02 280 / 0.35);
             border-radius: 0 0 12px 12px;
         }
         .nested-label { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 10px; }
         .control-card.nested-card {
             margin: 10px 0 14px; padding: 18px; font-size: 0.96em;
+            background: transparent;
+            backdrop-filter: none;
             border-left: 3px solid oklch(0.70 0.15 240 / 0.55);
         }
+        .control-card.nested-card:hover { background: oklch(0.95 0.005 280 / 0.03); }
 
         .highlight-target { animation: highlight-pulse 2s ease-out; }
         @keyframes highlight-pulse {

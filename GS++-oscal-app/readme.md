@@ -59,14 +59,14 @@ Ein vollständig im Browser laufender Validator für OSCAL-1.2.2-Dateien (Catalo
 **Zwei getrennte KI-Durchgänge.** „AI rules check" prüft das gesamte Dokument semantisch (Beschreibungsqualität, Konventionen, Props-Konsistenz) über einen editierbaren Prompt je Dateityp — unabhängig davon, was die deterministische Prüfung gefunden hat. „AI audit of deterministic findings" ist ein davon getrennter zweiter Durchgang: Er legt dem Modell jeden deterministischen Fund samt Quelltextausschnitt und Referenz-Digest vor und lässt ihn bestätigen oder widerlegen (`confirmed` / `refuted` / `setup_artefact` / `uncertain`). So werden Artefakte einer unvollständigen Prüfumgebung — etwa nicht geladene Kataloge — als solche sichtbar, statt als Dokumentfehler zu gelten. Wie bei allen Tools dieser Sammlung gilt: KI-Vorschläge sind Entwürfe und vor produktiver Nutzung fachlich zu prüfen.
 
 ---
-## [C5 zu OSCAL Konverter](./c5-oscal-converter.html)
+## Nicht mehr Teil dieser Sammlung
 
-Wandelt die YAML-Kriteriendateien des BSI C5:2026 in einen NIST-OSCAL-1.2.2-Katalog um. Das Tool ist **vollständig deterministisch**: Parsing, Gruppierung, Joins zwischen Kriterium und Guidance, UUID-Vergabe und der Aufbau der OSCAL-Hülle passieren komplett in JavaScript. Es gibt deshalb kein API-Key-Feld, keine Modellauswahl und keine Prompts — dieselbe Eingabe erzeugt bei jedem Lauf byteweise dasselbe Ergebnis. Die YAML-Bibliothek ist in die Datei eingebettet, das Tool läuft daher auch offline.
+Zwei Werkzeuge lösen abgegrenzte Sonderaufgaben und stehen deshalb außerhalb des durchgängigen Ablaufs, in [`../one-page-apps/`](../one-page-apps/readme.md):
 
----
-## [SSP-Generator Edition 2023](./ssp_generator_ed23.html)
+* **SSP-Generator Edition 2023** — derselbe Ablauf wie der [SSP-Generator](./ssp_generator.html), aber gegen den BSI IT-Grundschutz Edition 2023 statt gegen den G++-Anwenderkatalog.
+* **YAML → OSCAL Konverter (C5:2026)** — deterministische Umwandlung von YAML-Kriteriendateien in einen OSCAL-Katalog, ohne KI.
 
-Die Schwester-Anwendung zum [SSP-Generator](./ssp_generator.html), aber für den **BSI IT-Grundschutz Edition 2023** statt für den G++-Anwenderkatalog. Gleicher Ablauf — Metadaten, ISMS- und Asset-Auswahl, Tailoring, Risikoanalyse, OSCAL-Export — nur gegen den ED23-Katalog und dessen Bausteinstruktur.
+Beide arbeiten nicht auf dem gemeinsamen Artefakt-Set, nutzen aber dieselben zentralen Einstellungen.
 
 ---
 

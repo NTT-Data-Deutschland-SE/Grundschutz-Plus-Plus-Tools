@@ -118,6 +118,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
         <select id="backend">
           <option value="gemini">Google Gemini</option>
           <option value="openrouter">OpenRouter</option>
+          <option value="openai">OpenAI-kompatibel (eigener Endpoint)</option>
         </select>
       </div>
       <div id="wrap-gemini">
@@ -127,6 +128,27 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
       <div id="wrap-or">
         <label class="f" for="key-openrouter">OpenRouter API Key</label>
         <input type="password" id="key-openrouter" placeholder="sk-or-…" autocomplete="off">
+      </div>
+      <div id="wrap-openai">
+        <label class="f" for="key-openai">API-Key des Endpoints</label>
+        <input type="password" id="key-openai" placeholder="sk-…" autocomplete="off">
+      </div>
+    </div>
+    <div class="grid" id="wrap-openai-url" style="margin-top:14px">
+      <div>
+        <label class="f" for="openai-base">Basis-URL (OpenAI-kompatibel)</label>
+        <input type="url" id="openai-base" placeholder="https://mein-host/v1" spellcheck="false">
+        <div class="note">Erwartet <code>POST &lt;Basis-URL&gt;/chat/completions</code> — also die übliche OpenAI-Schnittstelle,
+          wie sie etwa vLLM, LM Studio, Ollama, LiteLLM oder Azure-Proxys anbieten. Ohne abschließenden Schrägstrich.
+          Der Host muss CORS für diese Seite erlauben.</div>
+      </div>
+      <div>
+        <label class="f" for="model-openai">Modell</label>
+        <input type="text" id="model-openai" placeholder="z. B. llama-3.3-70b" spellcheck="false">
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="btn-openai-models">⟳ Modelle abfragen</button>
+          <span class="note" id="openai-note" style="margin:0">Nicht abgefragt.</span>
+        </div>
       </div>
     </div>
     <div class="grid" style="margin-top:14px">
@@ -149,7 +171,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
           <button class="btn" id="btn-or-refresh">⟳ Katalog laden</button>
           <span class="note" id="or-note" style="margin:0">Katalog nicht geladen.</span>
         </div>
-        <select id="or-catalog" style="margin-top:8px;display:none"></select>
+        <!-- Der Katalog hat weit über tausend Einträge — ohne Suche unbenutzbar. -->
+        <input type="search" id="or-search" placeholder="Modelle durchsuchen (Anbieter, Name, Teilwort) …"
+               spellcheck="false" style="margin-top:8px;display:none">
+        <select id="or-catalog" size="8" style="margin-top:8px;display:none"></select>
+        <div class="note" id="or-filter-note" style="display:none"></div>
       </div>
       <div>
         <label class="f" for="thinking">Thinking / Reasoning</label>
@@ -249,6 +275,7 @@ function flashSaved() {
 /* ---------- KI-Zugang ---------- */
 const FIELDS = [
   ["backend", "ai:backend"], ["key-gemini", "ai:key:gemini"], ["key-openrouter", "ai:key:openrouter"],
+  ["key-openai", "ai:key:openai"], ["model-openai", "ai:model:openai"], ["openai-base", "ai:base:openai"],
   ["model-gemini", "ai:model:gemini"], ["model-openrouter", "ai:model:openrouter"],
   ["thinking", "ai:thinking"], ["checker-backend", "ai:checker:backend"], ["checker-model", "ai:checker:model"],
   ["run-concurrency", "run:concurrency"], ["run-chunk", "run:chunk"],
@@ -274,16 +301,40 @@ TOGGLES.forEach(([id, key]) => {
 });
 function applyBackend() {
   const be = gppCfg.get("ai:backend");
-  const gem = be === "gemini";
-  $("wrap-gemini").style.opacity = gem ? "1" : ".45";
-  $("wrap-or").style.opacity = gem ? ".45" : "1";
-  $("wrap-gemini-model").style.opacity = gem ? "1" : ".45";
-  $("wrap-or-model").style.opacity = gem ? ".45" : "1";
+  const dim = (id, aktiv) => { const el = $(id); if (el) el.style.opacity = aktiv ? "1" : ".45"; };
+  dim("wrap-gemini", be === "gemini");
+  dim("wrap-gemini-model", be === "gemini");
+  dim("wrap-or", be === "openrouter");
+  dim("wrap-or-model", be === "openrouter");
+  dim("wrap-openai", be === "openai");
+  dim("wrap-openai-url", be === "openai");
 }
 applyBackend();
 
+/* OpenRouter-Katalog mit Suche — die Liste ist zu lang zum Durchscrollen. */
+let orModels = [];
+function renderOrCatalog() {
+  const sel = $("or-catalog"), note = $("or-filter-note"), search = $("or-search");
+  const q = (search.value || "").trim().toLowerCase();
+  const hits = q ? orModels.filter(m => m.id.toLowerCase().includes(q) ||
+                                        (m.name || "").toLowerCase().includes(q)) : orModels;
+  sel.innerHTML = hits.slice(0, 300).map(m => `<option value="${m.id}">${m.id}</option>`).join("");
+  sel.style.display = hits.length ? "" : "none";
+  note.style.display = "";
+  note.textContent = q
+    ? `${hits.length} von ${orModels.length} Modellen passen${hits.length > 300 ? " — die ersten 300 werden gezeigt" : ""}.`
+    : `${orModels.length} Modelle${orModels.length > 300 ? " — die ersten 300 werden gezeigt; nutze die Suche" : ""}.`;
+}
+$("or-search").addEventListener("input", renderOrCatalog);
+$("or-catalog").addEventListener("change", () => {
+  const v = $("or-catalog").value;
+  if (!v) return;
+  $("model-openrouter").value = v;
+  gppCfg.set("ai:model:openrouter", v);
+  flashSaved();
+});
 $("btn-or-refresh").addEventListener("click", async () => {
-  const note = $("or-note"), sel = $("or-catalog");
+  const note = $("or-note");
   note.textContent = "lade …";
   try {
     const r = await fetch("https://openrouter.ai/api/v1/models");
@@ -293,13 +344,35 @@ $("btn-or-refresh").addEventListener("click", async () => {
     if (gppCfg.getBool("ai:or:structuredonly")) {
       models = models.filter(m => (m.supported_parameters || []).includes("structured_outputs"));
     }
-    models.sort((a, b) => a.id.localeCompare(b.id));
-    sel.innerHTML = models.map(m => `<option value="${m.id}">${m.id}</option>`).join("");
-    sel.style.display = models.length ? "" : "none";
-    note.textContent = `${models.length} Modelle${gppCfg.getBool("ai:or:structuredonly") ? " mit structured outputs" : ""}.`;
-    sel.onchange = () => { $("model-openrouter").value = sel.value; gppCfg.set("ai:model:openrouter", sel.value); flashSaved(); };
+    orModels = models.sort((a, b) => a.id.localeCompare(b.id));
+    $("or-search").style.display = "";
+    renderOrCatalog();
+    note.textContent = `${orModels.length} Modelle${gppCfg.getBool("ai:or:structuredonly") ? " mit structured outputs" : ""}.`;
   } catch (e) {
     note.textContent = "Katalog nicht abrufbar: " + e.message;
+  }
+});
+
+/* Eigener OpenAI-kompatibler Endpoint: Modelle über /models abfragen. */
+$("btn-openai-models").addEventListener("click", async () => {
+  const note = $("openai-note");
+  const base = ($("openai-base").value || "").trim().replace(/\/+$/, "");
+  if (!base) { note.textContent = "Erst die Basis-URL eintragen."; return; }
+  note.textContent = "frage ab …";
+  try {
+    const key = gppCfg.get("ai:key:openai");
+    const r = await fetch(base + "/models", key ? { headers: { Authorization: "Bearer " + key } } : undefined);
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const data = await r.json();
+    const ids = (data.data || data.models || []).map(m => m.id || m.name).filter(Boolean).sort();
+    if (!ids.length) { note.textContent = "Antwort enthielt keine Modelle."; return; }
+    let list = document.getElementById("openai-models-list");
+    if (!list) { list = document.createElement("datalist"); list.id = "openai-models-list"; document.body.appendChild(list); }
+    list.innerHTML = ids.map(id => `<option value="${id}">`).join("");
+    $("model-openai").setAttribute("list", "openai-models-list");
+    note.textContent = `${ids.length} Modelle — im Feld tippen zum Filtern.`;
+  } catch (e) {
+    note.textContent = "Abfrage fehlgeschlagen: " + e.message + " (CORS des Hosts prüfen)";
   }
 });
 

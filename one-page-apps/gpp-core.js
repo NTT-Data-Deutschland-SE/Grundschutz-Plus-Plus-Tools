@@ -21,10 +21,6 @@ const GPP_CFG_DEFAULTS = {
   "ai:backend": "gemini",
   "ai:model:gemini": "gemini-3.6-flash",
   "ai:model:openrouter": "",
-  // Dritter Weg: ein selbst betriebener OpenAI-kompatibler Endpoint
-  // (vLLM, LM Studio, Ollama, LiteLLM, Azure-Proxy …).
-  "ai:model:openai": "",
-  "ai:base:openai": "",
   "ai:thinking": "medium",
   "ai:effort": "medium",
   "ai:grounding": "0",
@@ -54,28 +50,10 @@ const gppCfg = {
   getBool(key) { return this.get(key) === "1"; },
   set(key, value) { localStorage.setItem(GPP_CFG_PREFIX + key, String(value)); },
   remove(key) { localStorage.removeItem(GPP_CFG_PREFIX + key); },
-  /* Backend + Key + Modell in einem Rutsch — was jeder AI-Aufruf braucht.
-     Beim eigenen OpenAI-kompatiblen Endpoint kommt die Basis-URL dazu. */
+  /* Backend + Key + Modell in einem Rutsch — was jeder AI-Aufruf braucht */
   target(backend) {
     const be = backend || this.get("ai:backend");
-    const t = { backend: be, key: this.get("ai:key:" + be), model: this.get("ai:model:" + be) };
-    if (be === "openai") t.baseUrl = (this.get("ai:base:openai") || "").replace(/\/+$/, "");
-    return t;
-  },
-  /* true, wenn das Backend die OpenAI-Chat-Completions-Form spricht */
-  isOpenAiStyle(backend) {
-    const be = backend || this.get("ai:backend");
-    return be === "openrouter" || be === "openai";
-  },
-  /* Endpunkt für Chat-Completions je Backend */
-  chatUrl(backend) {
-    const be = backend || this.get("ai:backend");
-    if (be === "openrouter") return "https://openrouter.ai/api/v1/chat/completions";
-    if (be === "openai") {
-      const base = (this.get("ai:base:openai") || "").replace(/\/+$/, "");
-      return base ? base + "/chat/completions" : "";
-    }
-    return "";
+    return { backend: be, key: this.get("ai:key:" + be), model: this.get("ai:model:" + be) };
   },
   /* true, wenn für das aktive Backend ein Key hinterlegt ist */
   ready(backend) { return !!this.target(backend).key; },
@@ -217,12 +195,6 @@ async function gppSha256(text) {
 const GPP_DEFAULT_SET = "standard";
 function gppSetOf(rec) { return (rec && rec.set) || GPP_DEFAULT_SET; }
 
-/* Von diesen Sorten trägt ein Set genau EIN Exemplar: ein Arbeitsstand hat
-   einen SSP, eine Prüfung und eine Maßnahmenliste. Wird ein neues abgelegt,
-   ersetzt es das vorherige — sonst wüsste kein Werkzeug, welches gilt.
-   Kataloge, Profile und Berichte dürfen dagegen mehrfach vorkommen. */
-const GPP_SINGLETON_KINDS = new Set(["ssp", "ap", "ar", "poam"]);
-
 const gppArtefacts = {
   activeSet() {
     return (localStorage.getItem(GPP_CFG_PREFIX + "artefacts:set") || GPP_DEFAULT_SET).trim() || GPP_DEFAULT_SET;
@@ -267,11 +239,6 @@ const gppArtefacts = {
       data,
     };
     await gppTx("readwrite", store => store.put(rec));
-    /* Einzelstück-Sorten: ältere Exemplare derselben Sorte im Set weichen. */
-    if (GPP_SINGLETON_KINDS.has(rec.kind)) {
-      const stale = (await this.all(st)).filter(r => r.kind === rec.kind && r.id !== rec.id);
-      for (const r of stale) await gppTx("readwrite", store => store.delete(r.id));
-    }
     window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { id: rec.id, set: st } }));
     try { localStorage.setItem(GPP_CFG_PREFIX + "artefacts:touch", now); } catch (e) { /* Quota egal */ }
     return rec;

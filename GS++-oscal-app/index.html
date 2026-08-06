@@ -223,6 +223,7 @@
     <button class="btn" id="btn-handbuch" title="Grundschutz++ Handbuch mit Kapitelnavigation">▤ HANDBUCH</button>
     <a class="btn" href="config.html" title="Zentrale Einstellungen: KI-Zugang, Prompts, Quellen-Pins">⚙ EINSTELLUNGEN</a>
     <a class="btn" id="open-standalone" href="#" target="_blank" rel="noopener" title="Aktuelle App in neuem Tab öffnen">↗ STANDALONE</a>
+    <a class="btn" href="../one-page-apps/readme.md" target="_blank" rel="noopener" title="Einzelwerkzeuge außerhalb des Arbeitsablaufs: SSP-Generator Edition 2023, YAML→OSCAL">↗ EINZELWERKZEUGE</a>
     <a class="btn" href="https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools" target="_blank" rel="noopener">GitHub</a>
   </header>
 
@@ -273,16 +274,17 @@
   <script>
     // Workflow order: Explorer → Katalog/Profil-Erstellung → Modellierung → Umsetzung → Prüfung → Abarbeiten → Validierung.
     // `stage` und `tool` verbinden die Kachel mit den Artefakten, die das Tool ablegt.
+    // `kinds` sind die Dokumentsorten, an denen das Werkzeug arbeitet — danach wird
+    // der Zähler gebildet, damit der SSP-Editor aufleuchtet, sobald ein SSP im Set
+    // liegt, gleich welches Werkzeug ihn erzeugt hat.
     const APPS = [
-      { id: "explorer",  icon: "⌕", label: "Explorer",         file: "GSpp-Viewer.html",               stage: "explore",   tool: "GSpp-Viewer",              desc: "BSI Grundschutz++ Katalog-Explorer" },
-      { id: "bsi2gpp",   icon: "◈", label: "BSI → G++ Profil",  file: "Baustein_2_Profile.html",        stage: "author",    tool: "Baustein_2_Profile",       desc: "BSI-Baustein (PDF) → OSCAL G++ Profil" },
-      { id: "c5oscal",   icon: "◇", label: "C5 → OSCAL",        file: "c5-oscal-converter.html",        stage: "author",    tool: "c5-oscal-converter",       desc: "BSI C5:2026 YAML → OSCAL Katalog (deterministisch, ohne KI)" },
-      { id: "sspgen",    icon: "▣", label: "SSP-Generator",     file: "ssp_generator.html",             stage: "model",     tool: "ssp_generator",            desc: "OSCAL Blaupausen & Risk Generator (G++)" },
-      { id: "sspgened23",icon: "⬡", label: "SSP-Gen. ED23",     file: "ssp_generator_ed23.html",        stage: "model",     tool: "ssp_generator_ed23",       desc: "OSCAL Blaupausen & Risk Generator (BSI Edition 2023)" },
-      { id: "sspedit",   icon: "✎", label: "SSP-Editor",        file: "ssp_ausfuellen.html",            stage: "implement", tool: "ssp_ausfuellen",           desc: "OSCAL SSP ausfüllen / Workspace" },
-      { id: "pruefung",  icon: "◉", label: "Prüfung (AP/AR)",   file: "pruefung_ap_ar.html",            stage: "assess",    tool: "pruefung_ap_ar",           desc: "Assessment Plan & Results Generator" },
-      { id: "poam",      icon: "◬", label: "POA&M",             file: "abarbeiten_POAM_generator.html", stage: "remediate", tool: "abarbeiten_POAM_generator", desc: "POA&M Generator – Feststellungen abarbeiten" },
-      { id: "validator", icon: "◐", label: "OSCAL-Validator",   file: "oscal-schema-validator.html",    stage: "validate",  tool: "oscal-schema-validator",   desc: "OSCAL-Artefakte gegen Schema & Regeln prüfen" },
+      { id: "explorer",  icon: "⌕", label: "Explorer",         file: "GSpp-Viewer.html",               stage: "explore",   tool: "GSpp-Viewer",              kinds: ["catalog"],            desc: "BSI Grundschutz++ Katalog-Explorer" },
+      { id: "bsi2gpp",   icon: "◈", label: "BSI → G++ Profil",  file: "Baustein_2_Profile.html",        stage: "author",    tool: "Baustein_2_Profile",       kinds: ["profile"],            desc: "BSI-Baustein (PDF) → OSCAL G++ Profil" },
+      { id: "sspgen",    icon: "▣", label: "SSP-Generator",     file: "ssp_generator.html",             stage: "model",     tool: "ssp_generator",            kinds: ["ssp"],                desc: "OSCAL Blaupausen & Risk Generator (G++)" },
+      { id: "sspedit",   icon: "✎", label: "SSP-Editor",        file: "ssp_ausfuellen.html",            stage: "implement", tool: "ssp_ausfuellen",           kinds: ["ssp"],                desc: "OSCAL SSP ausfüllen / Workspace" },
+      { id: "pruefung",  icon: "◉", label: "Prüfung (AP/AR)",   file: "pruefung_ap_ar.html",            stage: "assess",    tool: "pruefung_ap_ar",           kinds: ["ap", "ar"],           desc: "Assessment Plan & Results Generator" },
+      { id: "poam",      icon: "◬", label: "POA&M",             file: "abarbeiten_POAM_generator.html", stage: "remediate", tool: "abarbeiten_POAM_generator", kinds: ["poam"],               desc: "POA&M Generator – Feststellungen abarbeiten" },
+      { id: "validator", icon: "◐", label: "OSCAL-Validator",   file: "oscal-schema-validator.html",    stage: "validate",  tool: "oscal-schema-validator",   kinds: ["report"],             desc: "OSCAL-Artefakte gegen Schema & Regeln prüfen" },
     ];
     const CORE_OK = typeof gppArtefacts !== "undefined";
 
@@ -299,7 +301,7 @@
       b.type = "button";
       b.dataset.id = app.id;
       b.title = app.desc;
-      b.innerHTML = `<span class="ico">${app.icon}</span>${app.label}<span class="cnt zero" data-cnt="${app.tool}">0</span>`;
+      b.innerHTML = `<span class="ico">${app.icon}</span>${app.label}<span class="cnt zero" data-cnt="${app.id}">0</span>`;
       b.addEventListener("click", () => select(app.id, true));
       nav.appendChild(b);
     });
@@ -352,11 +354,12 @@
       catch (e) { artefacts = []; console.warn("Artefaktspeicher nicht lesbar", e); }
       document.getElementById("art-h2").textContent = `Artefakte · Set „${gppArtefacts.activeSet()}"`;
       await renderSets();
-      // Zähler an den Reitern
-      const byTool = {};
-      artefacts.forEach(a => { byTool[a.tool] = (byTool[a.tool] || 0) + 1; });
+      // Zähler an den Reitern — nach Dokumentsorte, nicht nach erzeugendem Werkzeug
+      const byKind = {};
+      artefacts.forEach(a => { byKind[a.kind] = (byKind[a.kind] || 0) + 1; });
       document.querySelectorAll("[data-cnt]").forEach(el => {
-        const n = byTool[el.dataset.cnt] || 0;
+        const app = APPS.find(a => a.id === el.dataset.cnt);
+        const n = (app ? app.kinds : []).reduce((s, k) => s + (byKind[k] || 0), 0);
         el.textContent = n;
         el.classList.toggle("zero", n === 0);
       });
