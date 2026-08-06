@@ -685,13 +685,10 @@
              Backend, Key und Modell liegen zentral in config.html (gpp:cfg:*);
              der ausgeblendete Shim-Block hält die alten IDs für den Bestandscode. -->
         <div class="border border-slate-700 rounded overflow-hidden">
-            <button onclick="tog('sb-ai')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300">
-                &#9673; Unternehmenskontext
-                <svg id="icon-sb-ai" class="chev w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
-            </button>
             <div id="sb-ai-content" class="coll-content p-2 bg-slate-900/30 space-y-1.5">
-                <label class="block text-[10px] font-bold text-slate-400">Unternehmenskontext</label>
-                <textarea id="ai-context" rows="2" class="inp text-[10px] w-full" placeholder="Wir sind KRITIS / NIS2..." oninput="saveAICfg()"></textarea>
+                <!-- Unternehmenskontext liegt zentral in config.html (ai:context);
+                     das Feld hier ist nur noch der unsichtbare Spiegel. -->
+                <textarea id="ai-context" hidden aria-hidden="true"></textarea>
 
                 <div id="gpp-cfg-shim" hidden aria-hidden="true">
                     <select id="ai-provider"><option value="">—</option><option value="gemini">Google Gemini</option><option value="openrouter">OpenRouter</option></select>
@@ -1658,8 +1655,9 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
     function loadAICfg() {
         const res = readAiStore();
         aiStore = res.store;
+        // Unternehmenskontext kommt zentral aus config.html
         const ctxEl = document.getElementById('ai-context');
-        if (ctxEl) ctxEl.value = aiStore.ctx || '';
+        if (ctxEl) ctxEl.value = gppCfg.get('ai:context') || aiStore.ctx || '';
         applyGppConfig(false);
         window.addEventListener('storage', e => { if (e.key && e.key.startsWith('gpp:cfg:')) applyGppConfig(false); });
         if (res.migrated) {
@@ -1745,7 +1743,7 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         const k = document.getElementById('ai-key').value;
         // currentModelValue(): bei OpenRouter gewinnt das Freitextfeld über das Dropdown.
         const m = currentModelValue(p);
-        const ctx = document.getElementById('ai-context').value;
+        const ctx = gppCfg.get('ai:context') || '';
         return (p && k) ? { p, k, m, ctx } : null;
     }
 

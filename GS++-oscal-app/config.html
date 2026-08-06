@@ -188,6 +188,12 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
       </div>
     </div>
     <div style="margin-top:16px">
+      <label class="f" for="ai-context">Unternehmenskontext</label>
+      <textarea id="ai-context" rows="3" placeholder="z. B. Wir sind KRITIS-Betreiber nach BSIG §8a, NIS2-pflichtig, Branche Energie …"
+                style="width:100%;background:var(--bg-elev-2);color:var(--text-primary);border:1px solid var(--border-2);border-radius:8px;padding:8px 10px;font-size:.82rem"></textarea>
+      <div class="note">Geht als Hintergrund in die KI-Aufrufe der Werkzeuge ein — beschreibt die Institution, nicht ein einzelnes Dokument.</div>
+    </div>
+    <div style="margin-top:16px">
       <div class="toggle">
         <span>Google-Search-Grounding <span class="note" style="display:block;margin:2px 0 0">Schaltet strukturierte Ausgaben ab — nur einschalten, wenn Belege wichtiger sind als Schema-Treue.</span></span>
         <input type="checkbox" id="grounding">
@@ -280,6 +286,7 @@ const FIELDS = [
   ["thinking", "ai:thinking"], ["checker-backend", "ai:checker:backend"], ["checker-model", "ai:checker:model"],
   ["run-concurrency", "run:concurrency"], ["run-chunk", "run:chunk"],
   ["run-chunkchars", "run:chunkchars"], ["run-retries", "run:retries"],
+  ["ai-context", "ai:context"],
 ];
 const TOGGLES = [["grounding", "ai:grounding"], ["or-structuredonly", "ai:or:structuredonly"]];
 

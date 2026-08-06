@@ -31,6 +31,9 @@ const GPP_CFG_DEFAULTS = {
   "ai:checker:backend": "same",
   "ai:checker:model": "",
   "ai:or:structuredonly": "1",
+  // Beschreibt die Institution (KRITIS, NIS2, Branche …) und geht als
+  // Hintergrund in die KI-Aufrufe aller Werkzeuge ein.
+  "ai:context": "",
   "run:concurrency": "4",
   // Zwei Chunk-Begriffe, bewusst getrennt: der Validator zerlegt nach ANZAHL
   // (Befunde je Aufruf), die Generatoren nach ZEICHEN (Dokumenttext je Aufruf).
