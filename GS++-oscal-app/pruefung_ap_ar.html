@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Assessment Plan & Results Generator v9 (build 9.4.1 — Backends Gemini | OpenRouter, editierbare Prompts, Structured Outputs)</title>
+    <title>OSCAL Assessment Plan & Results Generator v9 (build 9.5 — Backends Gemini | OpenRouter, editierbare Prompts, Structured Outputs)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -424,7 +424,7 @@ textarea.inp{min-height:80px;line-height:1.55}
         <span class="sub">OSCAL AP &amp; AR — SSP → Prüfung → Assessment Plan + Results</span>
     </div>
     <div class="topbar-meta">
-        <span class="pill">build 9.4.1</span>
+        <span class="pill">build 9.5</span>
         <span id="cat-status" class="pill">Katalog wird geladen …</span>
         <span id="ssp-status" class="pill">Kein SSP</span>
         <span id="comp-status" class="pill hidden"></span>
@@ -832,43 +832,10 @@ function parseProfileEntry(d){
 }
 
 // ============================================================
-// FILE HANDLING
+// REFERENZEN
+// SSP, Kataloge und Profile kommen aus dem aktiven Artefakt-Set
+// (bootFromSet); eigene Datei-Lader gibt es hier nicht mehr.
 // ============================================================
-function loadFile(file,type){
-    if(!file.name.endsWith('.json')){L.err(`${file.name}: keine JSON-Datei`);return alert('Bitte JSON.')}
-    L.info(`${type==='ssp'?'SSP':'Session'}-Datei "${file.name}" (${(file.size/1024).toFixed(1)} kB) wird gelesen`);
-    const r=new FileReader();
-    r.onload=e=>{
-        try{
-            const d=JSON.parse(e.target.result.replace(/^\uFEFF/,''));
-            if(type==='ssp'){if(!d['system-security-plan'])throw new Error('Kein SSP.');S.ssp=d['system-security-plan'];S.sspFilename=file.name;initSSP()}
-            else if(type==='state'){restoreSession(d)}
-        }catch(err){L.err(`${file.name}: ${shortErr(err.message)}`);alert('Fehler: '+err.message)}
-    };
-    r.readAsText(file);
-}
-
-// Lädt eine oder mehrere Profil-/Definitions-Dateien für local://-Referenzen.
-// Gespeichert nach Dateiname; danach werden offene Component-Defs neu aufgelöst.
-function loadDefFiles(files){
-    let pending=files.length,loaded=0,errs=[];
-    L.info(`${files.length} Profil-/Definitions-Datei(en) werden gelesen`);
-    const done=()=>{
-        if(pending)return;
-        L.ok(`${loaded} Profil-Datei(en) im Speicher${errs.length?`, ${errs.length} fehlerhaft`:''}`);
-        errs.forEach(x=>L.err('Profil-Datei: '+x));
-        if(errs.length)alert('Einige Dateien nicht geladen:\n'+errs.join('\n'));
-        if(S.ssp){loadCompDefs()} // erneut auflösen — local:// greift jetzt auf S.localDefs zu
-        else setPill('comp-status','info',`⬡ ${loaded} Profil(e) bereit — jetzt SSP laden`);
-    };
-    [...files].forEach(file=>{
-        if(!file.name.endsWith('.json')){errs.push(file.name+' (kein JSON)');pending--;done();return}
-        const r=new FileReader();
-        r.onload=e=>{try{S.localDefs.set(file.name,JSON.parse(e.target.result.replace(/^﻿/,'')));loaded++;L.debug(`Profil "${file.name}" (${(file.size/1024).toFixed(1)} kB) geladen`)}catch(err){errs.push(file.name+': '+err.message)}pending--;done()};
-        r.onerror=()=>{errs.push(file.name);pending--;done()};
-        r.readAsText(file);
-    });
-}
 
 // Wandelt eine local://-Referenz in einen Dateinamen um (sonst null).
 function localName(u){return /^local:\/\//i.test(u)?u.replace(/^local:\/\//i,'').split(/[\\/]/).pop():null}
@@ -952,9 +919,67 @@ function restoreSession(d){
 }
 
 window.saveSession=()=>{const j=ser();L.ok(`Session exportiert: ${S.allCids.size} Controls, ${(j.length/1024).toFixed(1)} kB`);dl(JSON.parse(j),`${sn()}_session.json`)};
-function autoSave(){try{localStorage.setItem('oscal_ap_v9',ser())}catch(e){}}
-function tryAutoRestore(){try{const s=localStorage.getItem('oscal_ap_v9');if(!s)return;const d=JSON.parse(s);if(d._v>=9&&d.allCids?.length>0){L.info(`Autosave gefunden: ${d.allCids.length} Controls (${d.sspFilename||'ohne SSP-Name'})`);if(confirm(`Autosave: ${d.allCids.length} Controls (${d.sspFilename}). Wiederherstellen?`))restoreSession(d);else L.debug('Autosave verworfen')}}catch(e){}}
+// Der Arbeitsstand liegt im gemeinsamen Artefakt-Set, nicht mehr in einem
+// tool-eigenen localStorage-Schlüssel — so sieht jedes Werkzeug denselben Stand.
+function autoSave(){
+    if(typeof gppArtefacts==='undefined')return;
+    gppArtefacts.save({stage:'assess',kind:'workspace',title:'Prüfung Arbeitsstand',
+        filename:'pruefung-workspace.json',tool:GPP_TOOL_ID,data:JSON.parse(ser())})
+        .catch(e=>L.warn(`Arbeitsstand nicht gesichert: ${e.message}`));
+}
 setInterval(()=>{if(S.allCids.size>0)autoSave()},30000);
+
+// Übernimmt beim Start, was im aktiven Set liegt: eigener Arbeitsstand vor SSP.
+// Kataloge und Profile des Sets landen als local://-Referenzen im Speicher.
+async function bootFromSet(){
+    if(typeof gppArtefacts==='undefined')return;
+    try{
+        migrateLegacyAutosave();
+        const set=gppArtefacts.activeSet();
+        const ws=await gppArtefacts.latest('workspace');
+        if(ws&&ws.tool===GPP_TOOL_ID&&ws.data&&(ws.data.allCids||[]).length){
+            L.info(`Arbeitsstand aus Set „${set}" übernommen`);
+            restoreSession(ws.data);
+            await adoptDefsFromSet();
+            return;
+        }
+        await adoptDefsFromSet();
+        const ssp=await gppArtefacts.latest('ssp');
+        if(ssp&&ssp.data&&ssp.data['system-security-plan']){
+            S.ssp=ssp.data['system-security-plan'];S.sspFilename=ssp.filename||'ssp.json';
+            L.ok(`SSP aus Set „${set}" übernommen: ${ssp.title}`);
+            await initSSP();
+        }else{
+            L.info(`Set „${set}" enthält noch keinen SSP — im SSP-Generator erzeugen, er erscheint hier automatisch.`);
+        }
+    }catch(e){L.err(`Set-Übernahme fehlgeschlagen: ${e.message}`)}
+}
+// Kataloge/Profile des Sets als local://-Auflösung bereitstellen
+async function adoptDefsFromSet(){
+    const defs=(await gppArtefacts.all()).filter(r=>r.kind==='catalog'||r.kind==='profile');
+    defs.forEach(r=>S.localDefs.set(r.filename,r.data));
+    if(defs.length)L.debug(`${defs.length} Katalog/Profil-Artefakt(e) aus dem Set als Referenz bereit`);
+}
+// Einmalige Übernahme des alten tool-eigenen Autosaves
+function migrateLegacyAutosave(){
+    try{
+        const s=localStorage.getItem('oscal_ap_v9');
+        if(!s)return;
+        const d=JSON.parse(s);
+        if(d&&d._v>=9&&(d.allCids||[]).length){
+            gppArtefacts.save({stage:'assess',kind:'workspace',title:'Prüfung Arbeitsstand (übernommen)',
+                filename:'pruefung-workspace.json',tool:GPP_TOOL_ID,data:d});
+            L.info('Früherer Autosave in das Set übernommen.');
+        }
+        localStorage.removeItem('oscal_ap_v9');
+    }catch(e){}
+}
+// Ein anderes Fenster hat etwas abgelegt oder das Set gewechselt
+window.addEventListener('storage',e=>{
+    if(e.key!=='gpp:cfg:artefacts:touch')return;
+    if(S.allCids.size===0)bootFromSet();
+    else L.debug('Set-Änderung erkannt — laufender Stand bleibt unberührt.');
+});
 
 // ============================================================
 // INIT FROM SSP
@@ -1127,9 +1152,6 @@ window.saveAICfg=()=>{
             ? document.getElementById('or-slug').value.trim()
             : document.getElementById('ai-model').value;
     }
-    const b=document.getElementById('ai-badge');
-    if(p&&AI_KEYS[p]){b.classList.remove('hidden');b.className='sb bg-violet-900 text-violet-300 border-violet-700';b.textContent=BACKEND_LABEL[p]||p}
-    else b.classList.add('hidden');
 };
 
 function loadAICfg(){
@@ -1155,20 +1177,8 @@ window.applyGppConfig=function(verbose){
     if(retries)retries.value=gppCfg.get('run:retries');
     if(backend==='openrouter'){const slug=document.getElementById('or-slug');if(slug)slug.value=model||'';}
     if(typeof onProvChange==='function')onProvChange();
-    renderGppCfgSummary();
     if(verbose)L.info('Einstellungen aus config.html neu übernommen.');
 };
-function renderGppCfgSummary(){
-    const box=document.getElementById('gpp-cfg-summary');if(!box)return;
-    const backend=gppCfg.get('ai:backend');
-    const t=gppCfg.target(backend);
-    const missing=[];
-    if(!t.key)missing.push('API-Key');
-    if(!t.model)missing.push('Modell');
-    box.innerHTML=missing.length
-        ?`<b class="text-amber-300">${missing.join(' und ')} fehlt</b> für „${backend}". Assessment Plan und Results lassen sich ohne Schlüssel unverändert erstellen und exportieren.`
-        :`<b>${backend}</b> · <span class="font-mono">${t.model}</span> · ${gppCfg.get('run:retries')} Retries`;
-}
 
 // Freitext-Slug hat Vorrang; die Katalogauswahl trägt lediglich dort ein.
 window.onORPick=()=>{

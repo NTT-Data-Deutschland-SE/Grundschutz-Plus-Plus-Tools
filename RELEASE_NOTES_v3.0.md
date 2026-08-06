@@ -32,6 +32,16 @@ Bewusst nicht geändert: das Wertepaar `normal-SdT` / `erhöht`. Das ist das BSI
 
 **Artefaktbestand und Übersicht.** Jedes erzeugte OSCAL-Dokument landet zusätzlich zum gewohnten Download in einem gemeinsamen Bestand (IndexedDB, im Browser dieses Rechners, nicht auf einem Server). Die Übersicht zeigt je Workflow-Stufe, was vorliegt, und exportiert den Gesamtbestand als Einzeldateien oder als ZIP mit `manifest.json` samt Prüfsummen. Die Download-Buttons in den Werkzeugen bleiben unverändert.
 
+## Neu: ein gemeinsamer Arbeitsstand statt neun Inseln
+
+Bis Version 2 hatte jedes Werkzeug seinen eigenen Zwischenspeicher und eigene „Datei laden"-Knöpfe: Wer einen SSP erzeugt hatte, lud ihn herunter und im nächsten Werkzeug wieder hoch. Ab Version 3 arbeiten **alle Werkzeuge auf demselben Artefaktbestand**. Was der SSP-Generator erzeugt, liegt beim Öffnen des Editors schon bereit; die Prüfung übernimmt SSP und Kataloge von selbst, der POA&M-Generator die Assessment Results. Die tool-eigenen Autosaves entfallen — vorhandene Stände werden beim ersten Start einmalig übernommen.
+
+Ein **Set** ist ein zusammengehöriger Arbeitsstand. In der Übersicht lassen sich mehrere Sets führen: anlegen, wechseln, als ZIP herunterladen und wieder hochladen (auch einzelne JSON-Dateien). Alle Werkzeuge folgen dem aktiven Set.
+
+Damit verschwinden die „SSP laden"/„Session laden"-Knöpfe aus den Werkzeugen. **Ausnahme ist der OSCAL-Validator:** Er behält seine Datei-Funktionen, weil er beliebige Dokumente von außen prüfen können muss — und bekommt zusätzlich **„Alle Artefakte prüfen"**, das den gesamten Bestand deterministisch durchprüft (Schema und Regeln, Kataloge des Sets als Referenz-Vereinigungsmenge) und den Bericht wieder als Artefakt ablegt.
+
+Ebenfalls konsequent umgesetzt: Was in `config.html` steht, steht **nur noch dort**. KI-Zugang und Prompt-Ansichten sind aus allen Werkzeugen verschwunden; sie melden ihre Prompts weiterhin an, bearbeitet werden sie zentral.
+
 ## Neu: Ordnername, Hilfe und Handbuch
 
 Der App-Ordner heißt ab dieser Version **`GS++-oscal-app`** (vorher `One-Page-Apps`), das Auslieferungsarchiv entsprechend **`GS++-oscal-app.zip`**. Die Übersicht (`index.html`) hat zwei neue Schaltflächen: **Hilfe** rendert das readme der Sammlung direkt im Browser (eigener Markdown-Renderer, keine externen Bibliotheken), **Handbuch** zeigt die Kapitel des Grundschutz++-Handbuchs aus `handbuch/` mit Kapitelnavigation. Geladen wird zuerst lokal, mit GitHub als Fallback für den Betrieb aus dem ZIP.
@@ -50,15 +60,15 @@ Vor dem Release lief ein mehrstufiger Review über den gesamten Umbau; alle best
 
 | Anwendung | Version |
 |---|---|
-| Übersicht (index.html) | 1.1 |
-| OSCAL Schema Validator | 1.10.1 |
-| SSP-Generator (G++) | V5.8.1 |
-| SSP-Generator Edition 2023 | ED23 V1.3.1 |
-| GS++ Explorer (GSpp-Viewer) | v9.5.2 |
-| BSI → G++ Profil (Baustein_2_Profile) | 0.8.5 |
-| SSP-Editor (ssp_ausfuellen) | v1.1.1 |
-| Prüfung AP/AR (pruefung_ap_ar) | build 9.4.1 |
-| POA&M-Generator | v2.2.1 |
+| Übersicht (index.html) | 1.2 |
+| OSCAL Schema Validator | 1.11.0 |
+| SSP-Generator (G++) | V5.9 |
+| SSP-Generator Edition 2023 | ED23 V1.4 |
+| GS++ Explorer (GSpp-Viewer) | v9.6 |
+| BSI → G++ Profil (Baustein_2_Profile) | 0.9.0 |
+| SSP-Editor (ssp_ausfuellen) | v1.2.0 |
+| Prüfung AP/AR (pruefung_ap_ar) | build 9.5 |
+| POA&M-Generator | v2.3 |
 | C5 → OSCAL Konverter | unverändert (deterministisch) |
 
 ## Hinweise zum Umstieg

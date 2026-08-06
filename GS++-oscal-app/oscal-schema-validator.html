@@ -328,7 +328,7 @@ select.inline-sel option { background: oklch(0.18 0.02 280); }
 <div id="app">
   <div id="topbar">
     <div class="brand">OSCAL <span>Schema Validator</span></div>
-    <div class="pill" id="pill-version">v1.10.1</div>
+    <div class="pill" id="pill-version">v1.11.0</div>
     <div class="pill" id="pill-schema">SCHEMA: <b>–</b></div>
     <div class="pill" id="pill-doc">DOC: <b>–</b></div>
     <div class="pill" id="pill-errors">ERRORS: <b>–</b></div>
@@ -352,13 +352,6 @@ select.inline-sel option { background: oklch(0.18 0.02 280); }
            $("api-key") & Co. lesen kann. Geschrieben wird ausschließlich in
            config.html. -->
       <div class="cfg">
-        <div class="nano">KI-Zugang</div>
-        <div class="hint" id="cfg-summary" style="margin-top:8px;margin-bottom:10px">–</div>
-        <div class="btn-row" style="margin-bottom:12px">
-          <a class="btn small" href="config.html" target="_blank" rel="noopener">⚙ Einstellungen</a>
-          <button class="btn small" id="btn-cfg-reload" title="Einstellungen erneut aus config.html übernehmen">⟳</button>
-        </div>
-
         <div id="cfg-shim" hidden aria-hidden="true">
           <div class="seg" id="backend-seg">
             <button type="button" id="backend-gemini" data-backend="gemini">Gemini</button>
@@ -437,19 +430,6 @@ select.inline-sel option { background: oklch(0.18 0.02 280); }
         </div>
       </div>
 
-      <!-- PROMPTS — bearbeitet werden sie zentral in config.html; hier steht nur,
-           welche dieses Werkzeug benutzt und ob sie vom Standard abweichen. -->
-      <div class="card glass" id="card-prompts">
-        <div class="card-head"><h2>Prompts</h2><span class="nano">zentral in config.html</span></div>
-        <div class="hint" style="margin-top:0">Dieses Werkzeug meldet seine Prompts beim Start an; bearbeitet werden sie
-          gesammelt in <a href="config.html" target="_blank" rel="noopener">config.html</a> — zusammen mit denen der anderen
-          Anwendungen und immer gegen den aktuellen Standardtext.</div>
-        <div id="prompt-overview" style="margin-top:12px"></div>
-        <div class="btn-row" style="margin-top:12px">
-          <a class="btn small" href="config.html" target="_blank" rel="noopener">⚙ Prompts bearbeiten</a>
-        </div>
-      </div>
-
       <!-- RUN -->
       <div class="card glass" id="card-run">
         <div class="card-head"><h2>AI Analysis</h2><span class="nano" id="run-meta">fix suggestions per error</span></div>
@@ -496,6 +476,10 @@ select.inline-sel option { background: oklch(0.18 0.02 280); }
           <button class="btn" id="btn-rules-audit" title="Second, separate pass: the model audits each deterministic finding against the document and the loaded references and confirms or refutes it">⚖ AI audit of deterministic findings</button>
           <button class="btn small" id="btn-rules-export" style="display:none">⤓ Findings JSON</button>
         </div>
+        <div class="btn-row" style="margin-top:8px">
+          <button class="btn" id="btn-batch" title="Prüft jedes OSCAL-Artefakt des aktiven Sets deterministisch (Schema + Regeln) und legt den Bericht als Artefakt ab">▦ Alle Artefakte prüfen</button>
+        </div>
+        <div id="batch-summary" style="margin-top:10px"></div>
         <div id="rules-progress-wrap" style="display:none;margin-top:14px">
           <div style="display:flex;justify-content:space-between;margin-bottom:6px">
             <span class="nano" id="rules-progress-phase">–</span>
@@ -556,7 +540,7 @@ if (typeof gppCfg === "undefined") {
     'statt einzelner Dateien.</p></div>';
   throw new Error("gpp-core.js missing");
 }
-const APP_VERSION = "1.10.1";
+const APP_VERSION = "1.11.0";
 const GPP_TOOL_ID = "oscal-schema-validator";
 const OSCAL_SCHEMA_VERSION = "1.2.2";
 const $ = id => document.getElementById(id);
@@ -1490,27 +1474,9 @@ function applyGppConfig() {
   /* applyBackend statt nacktem state.backend — sonst bleiben Modellkatalog,
      Thinking-Disable und Run-Labels auf dem Stand des vorherigen Backends */
   applyBackend(gppCfg.get("ai:backend"), true);
-  renderCfgSummary();
-}
-function renderCfgSummary() {
-  const be = gppCfg.get("ai:backend");
-  const t = gppCfg.target(be);
-  const box = $("cfg-summary");
-  if (!box) return;
-  const missing = [];
-  if (!t.key) missing.push("API-Key");
-  if (!t.model) missing.push("Modell");
-  box.innerHTML = missing.length
-    ? `<b style="color:var(--amber,#e0a03a)">${missing.join(" und ")} fehlt</b> für Backend „${be}". ` +
-      `Schema-Validierung und die deterministischen Regeln laufen ohne KI weiter; ` +
-      `Fix-Vorschläge, Rules-Check und Audit brauchen einen Schlüssel.`
-    : `Backend <b>${be}</b> · <code>${t.model}</code> · Thinking ${gppCfg.get("ai:thinking")} · ` +
-      `${gppCfg.get("run:concurrency")} parallel, Chunk ${gppCfg.get("run:chunk")}, ${gppCfg.get("run:retries")} Retries` +
-      (gppCfg.getBool("ai:grounding") ? " · Grounding an" : "");
 }
 /* Erstaufruf von applyGppConfig() erst im Boot-Block ganz unten — applyBackend
    greift auf orCatalog/orLoadCatalog zu, die hier noch nicht initialisiert sind */
-$("btn-cfg-reload").addEventListener("click", () => { applyGppConfig(); l.ok("Einstellungen aus config.html neu übernommen."); });
 /* config.html läuft in einem anderen Fenster/Tab — dessen Änderungen kommen als storage-Event an */
 window.addEventListener("storage", e => { if (e.key && e.key.startsWith("gpp:cfg:")) applyGppConfig(); });
 $("checker-toggle").checked = localStorage.getItem("osv:run:checker-toggle") === "1";
@@ -3042,6 +3008,107 @@ function runDetChecks() {
 }
 $("btn-rules-det").addEventListener("click", runDetChecks);
 
+/* ================= Batch: alle Artefakte des aktiven Sets =================
+   Prüft jedes OSCAL-Artefakt des Sets deterministisch (Schema + Regeln), ohne
+   das gerade geladene Dokument im Editor anzufassen. Die Kataloge und Profile
+   des Sets bilden zusammen mit den bereits geladenen Referenzen die
+   Vereinigungsmenge, gegen die Control-IDs aufgelöst werden. */
+const BATCH_SKIP_KINDS = new Set(["workspace", "analysis", "report"]);
+async function runSetBatch() {
+  if (typeof gppArtefacts === "undefined") { l.err("gpp-core.js fehlt — der Artefaktspeicher ist nicht verfügbar."); return; }
+  const btn = $("btn-batch");
+  btn.disabled = true;
+  const set = gppArtefacts.activeSet();
+  try {
+    const all = await gppArtefacts.all();
+    const recs = all.filter(r => !BATCH_SKIP_KINDS.has(r.kind));
+    if (!recs.length) {
+      l.warn(`Set „${set}" enthält keine prüfbaren OSCAL-Artefakte.`);
+      $("batch-summary").innerHTML = `<div class="hint">Set „${escapeHtml(set)}" enthält keine prüfbaren Artefakte.</div>`;
+      return;
+    }
+    // Referenzen: geladene Referenzdokumente + alle Kataloge/Profile des Sets
+    const refList = state.refDocs.map(d => ({ label: d.label, index: d.index }));
+    recs.filter(r => r.kind === "catalog" || r.kind === "profile")
+        .forEach(r => refList.push({ label: r.filename, index: extractSourceIndex(r.data) }));
+    const refIndex = mergeSourceIndexes(refList);
+    l.info(`Batch-Prüfung im Set „${set}": ${recs.length} Artefakt(e), ${refList.length} Referenzdokument(e) in der Vereinigungsmenge.`);
+
+    const rows = [];
+    const t0 = performance.now();
+    for (const rec of recs) {
+      const rootKey = Object.keys(rec.data || {})[0] || "";
+      const model = OSCAL_MODELS.find(x => x.root === rootKey);
+      if (!model || !EMBEDDED[model.id]) {
+        rows.push({ title: rec.title, filename: rec.filename, kind: rec.kind, model: rootKey || "?",
+                    schemaErrors: null, ruleErrors: null, ruleWarnings: null,
+                    note: "Kein OSCAL-Modell erkannt — übersprungen.", findings: [] });
+        l.warn(`${rec.filename}: Wurzel „${rootKey || "?"}" ist kein OSCAL-Modell — übersprungen.`);
+        continue;
+      }
+      const schema = EMBEDDED[model.id];
+      const { errors, truncated } = validateSchema(rec.data, schema, schema, { maxErrors: 500 });
+      const findings = runDeterministicRules(rec.data, model.id, refIndex);
+      const ruleErrors = findings.filter(f => f.severity === "error").length;
+      const ruleWarnings = findings.filter(f => f.severity === "warning").length;
+      rows.push({
+        title: rec.title, filename: rec.filename, kind: rec.kind, model: model.id,
+        schemaErrors: errors.length, truncated, ruleErrors, ruleWarnings,
+        findings: findings.map(f => ({ rule_id: f.rule_id, severity: f.severity, location: f.location, finding: f.finding })),
+        schemaFindings: errors.slice(0, 100).map(e => ({ path: e.path, keyword: e.keyword, message: e.message })),
+      });
+      const bad = errors.length + ruleErrors;
+      l[bad ? "err" : "ok"](`${rec.filename} (${model.label}): ${errors.length} Schema-Fehler, ${ruleErrors} Regel-Fehler, ${ruleWarnings} Warnungen`);
+    }
+
+    const totals = rows.reduce((a, r) => ({
+      schema: a.schema + (r.schemaErrors || 0),
+      errors: a.errors + (r.ruleErrors || 0),
+      warnings: a.warnings + (r.ruleWarnings || 0),
+    }), { schema: 0, errors: 0, warnings: 0 });
+    renderBatchSummary(set, rows, totals);
+    l[(totals.schema + totals.errors) ? "err" : "ok"](
+      `Batch fertig in ${Math.round(performance.now() - t0)} ms — ${totals.schema} Schema-Fehler, ${totals.errors} Regel-Fehler, ${totals.warnings} Warnungen über ${rows.length} Artefakt(e).`);
+
+    const report = {
+      tool: "oscal-schema-validator", version: APP_VERSION, set,
+      checkedAt: new Date().toISOString(),
+      references: refList.map(r => r.label),
+      totals, artefacts: rows,
+    };
+    await gppArtefacts.save({
+      stage: "validate", kind: "report", title: `Prüfbericht Set „${set}"`,
+      filename: "set-pruefbericht.json", tool: "oscal-schema-validator", data: report,
+    });
+    l.ok("Prüfbericht als Artefakt im Set abgelegt (set-pruefbericht.json).");
+  } catch (e) {
+    l.err(`Batch-Prüfung fehlgeschlagen: ${e.message}`);
+  } finally {
+    btn.disabled = false;
+  }
+}
+function renderBatchSummary(set, rows, totals) {
+  const box = $("batch-summary");
+  const cell = (n, warn) => n === null ? "–" : `<b style="color:${n ? (warn ? "var(--amber,#e0a03a)" : "var(--red,#e06c75)") : "var(--green,#98c379)"}">${n}</b>`;
+  box.innerHTML = `
+    <div class="hint" style="margin-bottom:6px">Set <b>${escapeHtml(set)}</b> · ${rows.length} Artefakt(e) ·
+      ${totals.schema} Schema-Fehler · ${totals.errors} Regel-Fehler · ${totals.warnings} Warnungen</div>
+    <table style="width:100%;border-collapse:collapse;font-size:.74rem">
+      <tr style="text-align:left;color:var(--text-quiet,#94a3b8)">
+        <th style="padding:3px 6px">Artefakt</th><th style="padding:3px 6px">Typ</th>
+        <th style="padding:3px 6px">Schema</th><th style="padding:3px 6px">Regeln</th><th style="padding:3px 6px">Warn.</th>
+      </tr>
+      ${rows.map(r => `<tr style="border-top:1px solid var(--border-2,#33384a)">
+        <td style="padding:3px 6px">${escapeHtml(r.title || r.filename)}${r.note ? `<br><span class="hint">${escapeHtml(r.note)}</span>` : ""}</td>
+        <td style="padding:3px 6px"><code>${escapeHtml(r.model)}</code></td>
+        <td style="padding:3px 6px">${cell(r.schemaErrors)}${r.truncated ? "+" : ""}</td>
+        <td style="padding:3px 6px">${cell(r.ruleErrors)}</td>
+        <td style="padding:3px 6px">${cell(r.ruleWarnings, true)}</td>
+      </tr>`).join("")}
+    </table>`;
+}
+$("btn-batch").addEventListener("click", runSetBatch);
+
 /* AI rules run — reference digested to referenced controls, document auto-chunked along its large arrays */
 $("btn-rules-ai").addEventListener("click", async () => {
   if (state.running) return;
@@ -3372,24 +3439,6 @@ document.querySelectorAll(".nav-item").forEach(ni => ni.addEventListener("click"
 /* Prompts erst hier anmelden — DEFAULT_RULES_PROMPTS steht weiter oben im Code,
    aber nach der Stelle, an der registerToolPrompts() definiert wurde. */
 registerToolPrompts();
-(function renderPromptOverview() {
-  const box = $("prompt-overview");
-  if (!box) return;
-  const draw = () => {
-    let reg;
-    try { reg = JSON.parse(localStorage.getItem("gpp:cfg:promptdefaults:" + GPP_TOOL_ID) || "null"); } catch (e) { reg = null; }
-    if (!reg) { box.innerHTML = ""; return; }
-    box.innerHTML = reg.prompts.map(p => {
-      const custom = localStorage.getItem("gpp:cfg:prompt:" + GPP_TOOL_ID + ":" + p.id) !== null;
-      return `<div style="display:flex;gap:8px;align-items:baseline;padding:3px 0">
-        <span class="badge" style="${custom ? "color:var(--amber,#e0a03a);border-color:var(--amber,#e0a03a)" : ""}">${custom ? "angepasst" : "standard"}</span>
-        <span>${escapeHtml(p.label)}</span>
-      </div>`;
-    }).join("");
-  };
-  draw();
-  window.addEventListener("storage", e => { if (e.key && e.key.startsWith("gpp:cfg:prompt")) draw(); });
-})();
 
 const loadedModels = OSCAL_MODELS.filter(m => EMBEDDED[m.id]).length;
 document.title = `OSCAL Schema Validator v${APP_VERSION}`;

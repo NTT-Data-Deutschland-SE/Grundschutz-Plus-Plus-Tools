@@ -909,8 +909,7 @@ function loadPrefs() {
   $("ctrl-chunk").value      = localStorage.getItem("gpp.ctrlchunk") || "100";
   $("maker-checker").checked = localStorage.getItem("gpp.mc")        === "1";
   $("testdrive").checked     = localStorage.getItem("gpp.td")        === "1";
-  $("cat-url").value         = localStorage.getItem("gpp.caturl")    || $("cat-url").value;
-  $("pi-url").value          = localStorage.getItem("gpp.piurl")     || $("pi-url").value;
+  // Katalog- und CSV-Quelle sind gepinnt und werden in config.html gepflegt.
   toggleCheckerUI();
   // Ab hier gilt die zentrale Konfiguration aus config.html.
   applyGppConfig(false);
@@ -943,21 +942,8 @@ window.applyGppConfig = function (verbose) {
   const g = $("grounding"); if (g) g.checked = gppCfg.getBool("ai:grounding");
   const os = $("or-only-structured"); if (os) os.checked = gppCfg.getBool("ai:or:structuredonly");
   setBackend(backend, false);
-  renderGppCfgSummary();
   if (verbose) l.ok("Einstellungen aus config.html neu übernommen.");
 };
-function renderGppCfgSummary() {
-  const box = $("gpp-cfg-summary");
-  if (!box) return;
-  const backend = gppCfg.get("ai:backend");
-  const t = gppCfg.target(backend);
-  const missing = [];
-  if (!t.key) missing.push("API-Key");
-  if (!t.model) missing.push("Modell");
-  box.innerHTML = missing.length
-    ? `<b style="color:#e0a03a">${missing.join(" und ")} fehlt</b> für „${backend}". Der Katalog lässt sich ohne Schlüssel laden und durchsuchen; die Baustein-Analyse braucht einen.`
-    : `<b>${backend}</b> · <code>${t.model}</code> · ${gppCfg.get("run:concurrency")} parallel, ${gppCfg.get("run:retries")} Retries`;
-}
 
 function bindPersist(id, key) {
   $(id).addEventListener("input",  () => localStorage.setItem(key, $(id).value));
@@ -967,8 +953,6 @@ function bindPersist(id, key) {
 /* Nur tool-eigene Prefs persistieren — KI-Zugang/Laufzeit kommen aus config.html
    und werden von diesem Tool nie zurückgeschrieben. */
 bindPersist("ctrl-chunk", "gpp.ctrlchunk");
-bindPersist("cat-url", "gpp.caturl");
-bindPersist("pi-url", "gpp.piurl");
 
 $("maker-checker").addEventListener("change", e => {
   localStorage.setItem("gpp.mc", e.target.checked ? "1" : "0");
@@ -992,19 +976,6 @@ const PROMPT_PLACEHOLDERS = {
 gppRegisterPrompts(GPP_TOOL_ID, ["s1", "s2", "check"].map(k => ({
   id: k, label: PROMPT_LABELS[k], placeholders: PROMPT_PLACEHOLDERS[k] || [], default: DEFAULTS[k],
 })));
-function renderPromptOverview() {
-  const box = $("prompt-overview");
-  if (!box) return;
-  box.innerHTML = ["s1", "s2", "check"].map(k => {
-    const custom = localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${k}`) !== null;
-    return `<div style="display:flex;gap:8px;align-items:baseline;padding:3px 0;font-size:12px">
-      <span style="font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:4px;border:1px solid ${custom ? "#e0a03a" : "#475569"};color:${custom ? "#e0a03a" : "#94a3b8"}">${custom ? "angepasst" : "standard"}</span>
-      <span>${PROMPT_LABELS[k]}</span></div>`;
-  }).join("");
-}
-renderPromptOverview();
-window.addEventListener("storage", e => { if (e.key && e.key.startsWith("gpp:cfg:prompt")) renderPromptOverview(); });
-
 function toggleCheckerUI() {
   $("pip-s4").classList.toggle("hidden", !$("maker-checker").checked);
 }
@@ -1302,8 +1273,8 @@ $("cat-file").addEventListener("change", async e => {
 });
 
 $("btn-load-cat").addEventListener("click", async () => {
-  const url = $("cat-url").value.trim();
-  if (!url) return l.warn("keine Katalog-URL angegeben");
+  // Inhaltsgepinnt (SHA-256, Grundregel 8) — keine freie URL-Eingabe mehr.
+  const url = GPP_CATALOG_PINNED_URL;
   l.info(`fetch catalog · ${url}`);
   try {
     const t0 = performance.now();
@@ -1405,7 +1376,7 @@ $("pi-file").addEventListener("change", async e => {
 });
 
 $("btn-load-pi").addEventListener("click", async () => {
-  const url = $("pi-url").value.trim() || ZOK_CSV_URL;
+  const url = ZOK_CSV_URL;   // gepinnt, Pflege in config.html
   l.info(`fetch Zielobjektkategorien · ${url}`);
   try {
     const t0 = performance.now();
@@ -3080,14 +3051,10 @@ l.info(`backend · ${state.backend} aktiv · Maker-Route ${resolveRoute("maker")
 
 // Auto-load G++ Anwenderkatalog + Zielobjektkategorien + Pools on startup
 window.addEventListener("load", () => {
-  if ($("cat-url").value.trim()) {
-    l.info("auto-loading G++ Anwenderkatalog…");
-    $("btn-load-cat").click();
-  }
-  if ($("pi-url").value.trim()) {
-    l.info("auto-loading Zielobjektkategorien…");
-    setTimeout(() => $("btn-load-pi").click(), 200);  // stagger to not collide
-  }
+  l.info("auto-loading G++ Anwenderkatalog…");
+  $("btn-load-cat").click();
+  l.info("auto-loading Zielobjektkategorien…");
+  setTimeout(() => $("btn-load-pi").click(), 200);  // stagger to not collide
   l.info("auto-loading Control-Pools…");
   setTimeout(loadPools, 400);
 });

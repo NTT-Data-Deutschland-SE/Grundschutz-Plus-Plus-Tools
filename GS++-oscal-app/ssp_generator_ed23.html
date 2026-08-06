@@ -796,12 +796,6 @@
              Layer für den Bestandscode; gefüllt wird er nur aus der zentralen
              Konfiguration, geschrieben wird ausschließlich in config.html. -->
         <div class="rail-group">
-            <div class="rail-label">KI-Zugang</div>
-            <div id="gpp-cfg-summary" class="rail-hint">–</div>
-            <div class="rail-inline" style="margin-top:8px">
-                <a class="rail-mini-btn" href="config.html" target="_blank" rel="noopener">⚙ Einstellungen</a>
-                <button type="button" class="rail-mini-btn" onclick="applyGppConfig(true)" title="Einstellungen erneut übernehmen">↺</button>
-            </div>
             <p class="rail-hint hidden rail-hint-warn" id="ai-doc-migration-hint"></p>
 
             <div id="gpp-cfg-shim" hidden aria-hidden="true">
@@ -1825,16 +1819,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
         // --- SECTION 2b: KI-EINSTELLUNGEN & EDITIERBARE PROMPTS ---
         function renderAISettingsHTML() {
-            const promptCards = `
-                <div class="p-4 bg-slate-900/80 border border-slate-700 rounded-xl">
-                    <h4 class="text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">Prompts dieses Tools</h4>
-                    <p class="text-[11px] text-slate-500 mb-3">Bearbeitet werden sie gesammelt in
-                        <a href="config.html" target="_blank" rel="noopener" class="text-cyan-400 font-semibold">config.html</a> —
-                        immer gegen den aktuellen Standardtext, den dieses Tool beim Start anmeldet.</p>
-                    <div id="ai-prompt-overview"></div>
-                    <a href="config.html" target="_blank" rel="noopener"
-                       class="inline-block mt-3 px-3 py-1.5 border border-slate-600 rounded text-xs font-semibold text-slate-200 hover:bg-slate-700">⚙ Prompts bearbeiten</a>
-                </div>`;
+            const promptCards = '';   // Prompts werden ausschließlich in config.html gezeigt und bearbeitet
             return `
                 <div class="space-y-5">
                     <p class="text-xs text-slate-400 leading-relaxed">
@@ -2583,24 +2568,9 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             if (typeof onAIDocumentProviderChange === 'function') onAIDocumentProviderChange({ silent: true });
             if (typeof loadAISettings === 'function') loadAISettings();
             if (typeof updateAIModelNote === 'function') updateAIModelNote();
-            renderGppCfgSummary();
             if (backend === 'openrouter' && typeof refreshOpenRouterModels === 'function') refreshOpenRouterModels(false);
             if (verbose) aiLog('ok', 'Einstellungen aus config.html neu übernommen.');
         };
-        function renderGppCfgSummary() {
-            const box = document.getElementById('gpp-cfg-summary');
-            if (!box) return;
-            const backend = gppCfg.get('ai:backend');
-            const t = gppCfg.target(backend);
-            const missing = [];
-            if (!t.key) missing.push('API-Key');
-            if (!t.model) missing.push('Modell');
-            box.innerHTML = missing.length
-                ? `<b style="color:#e0a03a">${missing.join(' und ')} fehlt</b> für „${backend}". Ohne Schlüssel laufen
-                   Bausteinauswahl, Tailoring und der OSCAL-Export unverändert weiter.`
-                : `<b>${backend}</b> · <code>${t.model}</code> · Thinking ${gppCfg.get('ai:thinking')} ·
-                   ${gppCfg.get('run:concurrency')} parallel, ${gppCfg.get('run:retries')} Retries`;
-        }
 
         // --- KI-EINSTELLUNGEN ---
         function clampInt(value, min, max, fallback) {
@@ -2694,36 +2664,12 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             warn.classList.remove('hidden');
         }
 
-        // Bearbeiten und Zurücksetzen passiert in config.html — hier bleibt die Anzeige.
-        window.onAIPromptInput = function () { renderPromptOverview(); };
-        window.resetAIPrompt = function (key) {
-            const definition = aiPromptDefinition(key);
-            localStorage.removeItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${key}`);
-            renderPromptOverview();
-            aiLog('info', `Prompt auf Standard zurückgesetzt: ${definition ? definition.label : key}`);
-        };
-
-        // Meldet die Prompts zur zentralen Bearbeitung an; die Karte zeigt nur noch,
-        // welche vom Standard abweichen.
+        // Bearbeitet werden die Prompts ausschließlich in config.html; hier nur anmelden.
         function initAIPrompts() {
             gppRegisterPrompts(GPP_TOOL_ID, AI_PROMPTS.map(d => ({
                 id: d.key, label: d.label, placeholders: d.placeholders || [], default: d.seed,
             })));
-            renderPromptOverview();
-            window.addEventListener('storage', e => { if (e.key && e.key.startsWith('gpp:cfg:prompt')) renderPromptOverview(); });
         }
-        function renderPromptOverview() {
-            const box = document.getElementById('ai-prompt-overview');
-            if (!box) return;
-            box.innerHTML = AI_PROMPTS.map(d => {
-                const custom = localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${d.key}`) !== null;
-                return `<div style="display:flex;gap:8px;align-items:baseline;padding:3px 0;font-size:12px">
-                    <span style="font-family:monospace;font-size:10px;padding:1px 5px;border-radius:4px;border:1px solid ${custom ? '#e0a03a' : '#475569'};color:${custom ? '#e0a03a' : '#94a3b8'}">${custom ? 'angepasst' : 'standard'}</span>
-                    <span>${d.label}</span>
-                </div>`;
-            }).join('');
-        }
-
         function getAIDocumentConfig() {
             const provider = document.getElementById('ai-doc-provider')?.value || '';
             const model = document.getElementById('ai-doc-model')?.value.trim() || '';

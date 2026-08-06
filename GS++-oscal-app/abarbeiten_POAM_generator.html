@@ -768,7 +768,7 @@ async function loadCatalog(){const cs=document.getElementById('cat-status');cons
 function ct(cid){return P.catalog.get(cid)||{title:'',prose:''}}
 
 // FILES
-function loadF(f,ty){if(!f.name.endsWith('.json'))return alert('JSON.');l.info(`Datei gewählt: ${f.name} (${(f.size/1024).toFixed(1)} kB, Typ ${ty})`);const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result.replace(/^\uFEFF/,''));if(ty==='ar')importAR(d,f.name);else restoreS(d)}catch(e){l.err(`Datei konnte nicht gelesen werden: ${shortErr(e.message)}`);alert(e.message)}};r.readAsText(f)}
+// Datei-Lader entfallen: AR und Arbeitsstand kommen aus dem aktiven Artefakt-Set.
 
 // IMPORT AR
 function importAR(d,fn){
@@ -936,20 +936,8 @@ window.applyGppConfig=function(verbose){
     const oc=gid('or-only-schema');
     if(oc){oc.checked=gppCfg.getBool('ai:or:structuredonly');renderOrModels();}
     setBackend(backend,true);
-    renderGppCfgSummary();
     if(verbose)l.info('Einstellungen aus config.html neu übernommen.');
 };
-function renderGppCfgSummary(){
-    const box=gid('gpp-cfg-summary');if(!box)return;
-    const backend=gppCfg.get('ai:backend');
-    const t=gppCfg.target(backend);
-    const missing=[];
-    if(!t.key)missing.push('API-Key');
-    if(!t.model)missing.push('Modell');
-    box.innerHTML=missing.length
-        ?`<b class="text-amber-300">${missing.join(' und ')} fehlt</b> für „${backend}". Feststellungen erfassen, abarbeiten und als POA&amp;M exportieren geht ohne Schlüssel.`
-        :`<b>${backend}</b> · <span class="font-mono">${t.model}</span>`;
-}
 function loadAICfg(){
     fillGeminiModels();
     // Alt-Stores mit Keys/Modellen ausleeren — Secrets liegen nur noch zentral.
@@ -1152,23 +1140,11 @@ const PROMPT_DEFS={
 };
 const PROMPT_LABELS={rem:'Maßnahmenvorschlag (Remediation)',ms:'Meilensteine (Milestones)'};
 // Prompts werden zentral in config.html bearbeitet; die Defaults bleiben hier.
+// Nur die Anmeldung — bearbeitet werden die Prompts in config.html.
 function initPrompts(){
     gppRegisterPrompts(GPP_TOOL_ID,Object.entries(PROMPT_DEFS).map(([k,d])=>({
         id:k,label:PROMPT_LABELS[k]||k,placeholders:['{kontext}'],default:d.def})));
-    renderPromptOverview();
-    window.addEventListener('storage',e=>{if(e.key&&e.key.startsWith('gpp:cfg:prompt'))renderPromptOverview()});
 }
-function renderPromptOverview(){
-    const box=document.getElementById('prompt-overview');if(!box)return;
-    box.innerHTML=Object.keys(PROMPT_DEFS).map(k=>{
-        const custom=localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${k}`)!==null;
-        return `<div style="display:flex;gap:8px;align-items:baseline;padding:3px 0;font-size:11px">
-            <span style="font-family:monospace;font-size:9px;padding:1px 5px;border-radius:4px;border:1px solid ${custom?'#e0a03a':'#475569'};color:${custom?'#e0a03a':'#94a3b8'}">${custom?'angepasst':'standard'}</span>
-            <span>${PROMPT_LABELS[k]||k}</span></div>`;
-    }).join('');
-}
-function chkPlaceholder(k){const d=PROMPT_DEFS[k];const ta=document.getElementById(d.el),w=document.getElementById(d.warn);if(!ta||!w)return;w.classList.toggle('hidden',ta.value.includes('{kontext}'))}
-window.resetPrompt=k=>{localStorage.removeItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${k}`);renderPromptOverview();l.info(`Prompt "${PROMPT_LABELS[k]||k}" auf Standard zurückgesetzt.`)};
 // Platzhalter defensiv anhängen, falls der Nutzer ihn gelöscht hat.
 function buildPrompt(k,kontext){const d=PROMPT_DEFS[k];let tpl=(gppPrompt(GPP_TOOL_ID,k,d.def)||'').trim()||d.def;if(!tpl.includes('{kontext}')){tpl+='\n\n{kontext}';l.warn(`Prompt "${k}": Platzhalter {kontext} fehlte — wurde zur Laufzeit angehängt`)}return tpl.replace('{kontext}',()=>kontext)}
 // Kontextblock deterministisch aus den Item-Feldern zusammensetzen — kein LLM-Job.

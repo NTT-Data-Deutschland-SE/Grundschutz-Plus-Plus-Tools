@@ -676,16 +676,8 @@
     <!-- ===================== LINKE RAIL ===================== -->
     <aside id="sidebar" class="sidebar cscroll p-3 flex flex-col gap-2 relative z-30">
 
-        <!-- Import: SSP und assoziierte OSCAL-Dateien kommen aus dem aktiven
-             Arbeitsstand (Set, siehe index.html) — hier lädt man nur noch eine
-             zuvor exportierte Session-Datei (Tool-eigenes Format, kein OSCAL). -->
-        <div class="space-y-1.5">
-            <div class="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">&#9673; Workspace</div>
-            <div id="dz-state" class="dz border border-dashed border-slate-600 rounded p-2 text-center cursor-pointer hover:border-purple-500 bg-slate-900/40 text-[10px]" data-type="state">
-                &#9635; Session (.json) laden
-                <input type="file" accept=".json" class="fip" data-type="state">
-            </div>
-        </div>
+        <!-- Kein Datei-Import mehr: SSP, Kataloge und der Arbeitsstand kommen
+             aus dem aktiven Artefakt-Set (Verwaltung in index.html). -->
 
         <!-- Unternehmenskontext: gehört zum Dokument, nicht zum Werkzeug.
              Backend, Key und Modell liegen zentral in config.html (gpp:cfg:*);
@@ -1067,7 +1059,7 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         loadAICfg();
         loadPrompts();
         loadED23Map();
-        tryAutoRestore();
+        bootFromSet();
 
         // Header Toggles
         document.querySelectorAll('.collapsible-header').forEach(header => {
@@ -1282,31 +1274,68 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         });
     }
 
+    // Der Arbeitsstand liegt im gemeinsamen Artefakt-Set — kein tool-eigener
+    // Speicher mehr, damit alle Werkzeuge denselben Stand sehen.
     function autoSave() {
-        if(!sspData) return;
-        try {
-            const dataStr = ser();
-            localStorage.setItem('oscal_ssp_editor_v2', dataStr);
-            L.debug(`Autosave: ${(dataStr.length / 1024).toFixed(1)} kB in localStorage.`);
-        } catch (e) {
-            console.warn("AutoSave fehlgeschlagen (evtl. Quota exceeded)", e);
-            L.warn(`Autosave fehlgeschlagen (evtl. Speicherkontingent erschöpft): ${e.message}`);
-        }
+        if(!sspData || typeof gppArtefacts === 'undefined') return;
+        gppArtefacts.save({
+            stage: 'implement', kind: 'workspace', title: 'SSP-Editor Arbeitsstand',
+            filename: 'ssp-editor-workspace.json', tool: GPP_TOOL_ID, data: JSON.parse(ser())
+        }).then(r => L.debug(`Arbeitsstand im Set „${gppArtefacts.activeSet()}" gesichert (${(r.size/1024).toFixed(1)} kB).`))
+          .catch(e => L.warn(`Arbeitsstand nicht gesichert: ${e.message}`));
     }
 
-    async function tryAutoRestore() {
+    // Beim Start übernehmen, was im aktiven Set liegt: eigener Arbeitsstand vor
+    // SSP; Kataloge und Profile wandern als Workspace-Dateien mit.
+    async function bootFromSet() {
+        if (typeof gppArtefacts === 'undefined') return;
+        try {
+            await migrateLegacyAutosave();
+            const set = gppArtefacts.activeSet();
+            const ws = await gppArtefacts.latest('workspace');
+            if (ws && ws.tool === GPP_TOOL_ID && ws.data && ws.data.sspData) {
+                L.info(`Arbeitsstand aus Set „${set}" übernommen.`);
+                await restoreSession(ws.data);
+                return;
+            }
+            const ssp = await gppArtefacts.latest('ssp');
+            if (ssp && ssp.data && ssp.data['system-security-plan']) {
+                workspaceFiles.clear();
+                workspaceFiles.set(ssp.filename || 'ssp.json', ssp.data);
+                sspData = ssp.data;
+                sspFileName = (ssp.filename || 'ssp.json').replace(/\.json$/i, '-edited.json');
+                const refs = (await gppArtefacts.all()).filter(r => r.kind === 'catalog' || r.kind === 'profile');
+                refs.forEach(r => workspaceFiles.set(r.filename, r.data));
+                L.ok(`SSP aus Set „${set}" übernommen: ${ssp.title}${refs.length ? ` (+ ${refs.length} Katalog/Profil)` : ''}`);
+                await processWorkspace();
+            } else {
+                L.info(`Set „${set}" enthält noch keinen SSP — im SSP-Generator erzeugen, er erscheint hier automatisch.`);
+            }
+        } catch (e) { L.err(`Set-Übernahme fehlgeschlagen: ${e.message}`); }
+    }
+
+    // Einmalige Übernahme des früheren tool-eigenen Autosaves
+    async function migrateLegacyAutosave() {
         try {
             const s = localStorage.getItem('oscal_ssp_editor_v2');
-            if(!s) return;
+            if (!s) return;
             const d = JSON.parse(s);
-            L.info(`Autosave gefunden: ${d.sspFileName} (${(s.length / 1024).toFixed(1)} kB, Format _v=${d._v}).`);
-            if(d._v >= 2 && d.sspData && confirm(`Autosave gefunden: ${d.sspFileName}. Wiederherstellen?`)) {
-                await restoreSession(d);
-            } else {
-                L.debug('Autosave nicht wiederhergestellt (abgelehnt oder inkompatibles Format).');
+            if (d && d._v >= 2 && d.sspData) {
+                await gppArtefacts.save({
+                    stage: 'implement', kind: 'workspace', title: 'SSP-Editor Arbeitsstand (übernommen)',
+                    filename: 'ssp-editor-workspace.json', tool: GPP_TOOL_ID, data: d });
+                L.info('Früherer Autosave in das Set übernommen.');
             }
-        } catch(e) { console.error("Restore Error:", e); L.err(`Autosave-Wiederherstellung fehlgeschlagen: ${e.message}`); }
+            localStorage.removeItem('oscal_ssp_editor_v2');
+        } catch (e) { /* Altbestand unlesbar — dann eben nicht */ }
     }
+
+    // Ein anderes Fenster hat etwas abgelegt oder das Set gewechselt
+    window.addEventListener('storage', e => {
+        if (e.key !== 'gpp:cfg:artefacts:touch') return;
+        if (!sspData) bootFromSet();
+        else L.debug('Set-Änderung erkannt — laufende Bearbeitung bleibt unberührt.');
+    });
 
     async function restoreSession(d) {
         sspFileName = d.sspFileName || 'edited-ssp.json';
@@ -1619,23 +1648,9 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
             sel.value = model;
         }
         if (free && backend === 'openrouter') free.value = model || '';
-        renderGppCfgSummary();
         if (backend === 'openrouter' && typeof loadORCatalog === 'function') loadORCatalog(false);
         if (verbose) L.info('Einstellungen aus config.html neu übernommen.');
     };
-    function renderGppCfgSummary() {
-        const box = document.getElementById('gpp-cfg-summary');
-        if (!box) return;
-        const backend = gppCfg.get('ai:backend');
-        const t = gppCfg.target(backend);
-        const missing = [];
-        if (!t.key) missing.push('API-Key');
-        if (!t.model) missing.push('Modell');
-        box.innerHTML = missing.length
-            ? `<b class="text-amber-300">${missing.join(' und ')} fehlt</b> für „${backend}". Das Ausfüllen, Speichern und
-               Exportieren des SSP funktioniert ohne Schlüssel unverändert.`
-            : `<b>${backend}</b> · <span class="font-mono">${t.model}</span>`;
-    }
     function loadAICfg() {
         const res = readAiStore();
         aiStore = res.store;
@@ -1664,21 +1679,9 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         const custom = Object.entries(PROMPT_DEFS)
             .filter(([kind]) => localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${kind}`) !== null)
             .map(([, cfg]) => cfg.label);
-        renderPromptOverview();
-        window.addEventListener('storage', e => { if (e.key && e.key.startsWith('gpp:cfg:prompt')) renderPromptOverview(); });
         L.debug(custom.length
             ? `Prompts angemeldet — eigene Fassung aktiv für: ${custom.join(', ')}`
             : 'Prompts angemeldet — alle drei auf Default (bearbeitbar in config.html).');
-    }
-    function renderPromptOverview() {
-        const box = document.getElementById('prompt-overview');
-        if (!box) return;
-        box.innerHTML = Object.entries(PROMPT_DEFS).map(([kind, cfg]) => {
-            const custom = localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${kind}`) !== null;
-            return `<div style="display:flex;gap:8px;align-items:baseline;padding:3px 0;font-size:11px">
-                <span style="font-family:monospace;font-size:9px;padding:1px 5px;border-radius:4px;border:1px solid ${custom ? '#e0a03a' : '#475569'};color:${custom ? '#e0a03a' : '#94a3b8'}">${custom ? 'angepasst' : 'standard'}</span>
-                <span>${cfg.label}</span></div>`;
-        }).join('');
     }
 
     function savePrompts() {

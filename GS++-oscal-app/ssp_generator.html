@@ -2089,23 +2089,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             set('ai-doc-chunksize', gppCfg.get('run:chunkchars'));   // Zeichen, nicht Anzahl
             set('ai-doc-retries', gppCfg.get('run:retries'));
             if (typeof onAIDocumentProviderChange === 'function') onAIDocumentProviderChange();
-            renderGppCfgSummary();
             if (verbose) aiLog('ok', 'Einstellungen aus config.html neu übernommen.');
         };
-        function renderGppCfgSummary() {
-            const box = document.getElementById('gpp-cfg-summary');
-            if (!box) return;
-            const backend = gppCfg.get('ai:backend');
-            const t = gppCfg.target(backend);
-            const missing = [];
-            if (!t.key) missing.push('API-Key');
-            if (!t.model) missing.push('Modell');
-            box.innerHTML = missing.length
-                ? `<b style="color:#e0a03a">${missing.join(' und ')} fehlt</b> für „${backend}". Ohne Schlüssel laufen alle
-                   nicht-KI-Funktionen weiter — Katalog, Tailoring, Risikoanalyse von Hand und der OSCAL-Export.`
-                : `<b>${backend}</b> · <code>${t.model}</code> · Thinking ${gppCfg.get('ai:thinking')} ·
-                   ${gppCfg.get('run:concurrency')} parallel, ${gppCfg.get('run:retries')} Retries`;
-        }
         function loadAIDocumentConfig() {
             aiBackendMigrationNotice = migrateLegacyAIDocumentConfig();
             applyGppConfig(false);
