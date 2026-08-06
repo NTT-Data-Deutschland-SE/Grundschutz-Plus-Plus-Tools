@@ -5,11 +5,15 @@ Hier liegen Werkzeuge, die **nicht** Teil des durchgängigen Arbeitsablaufs in
 Aufgabe, arbeiten nicht auf dem gemeinsamen Artefakt-Set und lassen sich
 einzeln benutzen.
 
-Beide Dateien brauchen die Bibliothek `gpp-core.js`, die hier daneben liegt —
-für zentrale Einstellungen (KI-Zugang, Prompts) greifen sie auf dieselben
-Browser-Schlüssel zu wie die Hauptsammlung. Öffne
-[`../GS++-oscal-app/config.html`](../GS++-oscal-app/config.html), um sie zu
-setzen. Bei CORS-Fehlern über `file://` hilft ein lokaler Server:
+**Jede Datei ist für sich vollständig.** Eine einzelne HTML-Datei genügt: keine
+gemeinsame Bibliothek, keine Nachbardatei, kein Build. KI-Zugang, Laufzeitwerte
+und Prompts werden im Werkzeug selbst gesetzt und liegen im `localStorage`
+dieses Browsers — die zentrale
+[`config.html`](../GS++-oscal-app/config.html) der Sammlung gilt hier **nicht**.
+Ergebnis ist jeweils eine heruntergeladene Datei; wer damit in der Sammlung
+weiterarbeiten will, lädt sie dort unter „Artefakte" in ein Set.
+
+Bei CORS-Fehlern über `file://` hilft ein lokaler Server:
 `python -m http.server`.
 
 ## [SSP-Generator Edition 2023](./ssp_generator_ed23.html)

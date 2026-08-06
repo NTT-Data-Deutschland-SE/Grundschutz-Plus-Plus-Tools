@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Grundschutz++ OSCAL Tools · v1.2</title>
+  <title>Grundschutz++ OSCAL Tools · v1.3</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
   <style>
     select,option{background-color:#1b1b23;color:#e8e8ef}
@@ -270,7 +270,7 @@
     </section>
   </div>
 
-  <script src="gpp-core.js?v=3.2"></script>
+  <script src="gpp-core.js?v=3.3"></script>
   <script>
     // Workflow order: Explorer → Katalog/Profil-Erstellung → Modellierung → Umsetzung → Prüfung → Abarbeiten → Validierung.
     // `stage` und `tool` verbinden die Kachel mit den Artefakten, die das Tool ablegt.
@@ -288,7 +288,7 @@
     ];
     const CORE_OK = typeof gppArtefacts !== "undefined";
 
-    const APP_VERSION = "1.2";
+    const APP_VERSION = "1.3";
     document.getElementById("build-pill").textContent = `build ${APP_VERSION}`;
 
     const nav = document.getElementById("tabs");
@@ -537,6 +537,12 @@
         const target = (prompt("In welches Set laden?", suggestion) || "").trim();
         if (!target) return;
         let imported = 0;
+        /* Prüfsummen aus dem Manifest: Ein Export schreibt je Datei den SHA-256
+           mit. Beim Einlesen wird er nachgerechnet — sonst steht im Manifest
+           eine Zusicherung, die nie jemand einlöst. Abweichungen brechen den
+           Import nicht ab (eine von Hand nachbearbeitete Datei ist ein
+           legitimer Fall), werden aber benannt. */
+        const hash = { geprueft: 0, abweichend: [], ohneEintrag: [] };
         for (const f of files) {
           if (/\.zip$/i.test(f.name)) {
             const entries = await gppUnzip(f);
@@ -548,6 +554,14 @@
               if (ent.name === "manifest.json") continue;
               let doc; try { doc = JSON.parse(ent.text); } catch { note.textContent = `Übersprungen (kein JSON): ${ent.name}`; continue; }
               const m = manifest && (manifest.artefacts || []).find(a => a.file === ent.name);
+              if (manifest) {
+                if (m && m.sha256) {
+                  hash.geprueft++;
+                  if (await gppSha256(ent.text) !== m.sha256) hash.abweichend.push(ent.name);
+                } else {
+                  hash.ohneEintrag.push(ent.name);
+                }
+              }
               const g = guessMeta(doc);
               await gppArtefacts.save({
                 set: target,
@@ -569,7 +583,15 @@
         }
         gppArtefacts.setActiveSet(target);
         await refreshArtefacts();
-        note.textContent = `${imported} Artefakt(e) in Set „${target}" geladen — es ist jetzt das aktive Set.`;
+        let pruefsumme = "";
+        if (hash.geprueft || hash.abweichend.length || hash.ohneEintrag.length) {
+          const teile = [];
+          if (hash.geprueft) teile.push(`${hash.geprueft - hash.abweichend.length} von ${hash.geprueft} Prüfsummen stimmen`);
+          if (hash.abweichend.length) teile.push(`abweichend: ${hash.abweichend.join(", ")} (nach dem Export verändert)`);
+          if (hash.ohneEintrag.length) teile.push(`ohne Manifest-Eintrag: ${hash.ohneEintrag.join(", ")}`);
+          pruefsumme = " — " + teile.join(" · ") + ".";
+        }
+        note.textContent = `${imported} Artefakt(e) in Set „${target}" geladen — es ist jetzt das aktive Set.${pruefsumme}`;
       } catch (err) {
         note.textContent = `Hochladen fehlgeschlagen: ${err.message}`;
       }

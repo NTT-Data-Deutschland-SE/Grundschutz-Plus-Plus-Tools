@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Assessment Plan & Results Generator v9 (build 9.5 — Backends Gemini | OpenRouter, editierbare Prompts, Structured Outputs)</title>
+    <title>OSCAL Assessment Plan & Results Generator v9 (build 9.5.1 — Backends Gemini | OpenRouter, editierbare Prompts, Structured Outputs)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -427,7 +427,7 @@ textarea.inp{min-height:80px;line-height:1.55}
         <span class="sub">OSCAL AP &amp; AR — SSP → Prüfung → Assessment Plan + Results</span>
     </div>
     <div class="topbar-meta">
-        <span class="pill">build 9.5</span>
+        <span class="pill">build 9.5.1</span>
         <span id="cat-status" class="pill">Katalog wird geladen …</span>
         <span id="ssp-status" class="pill">Kein SSP</span>
         <span id="comp-status" class="pill hidden"></span>
@@ -563,7 +563,7 @@ textarea.inp{min-height:80px;line-height:1.55}
   </section>
 </div>
 
-<script src="gpp-core.js?v=3.2"></script>
+<script src="gpp-core.js?v=3.3"></script>
 <script>
 if(typeof gppCfg==='undefined'){
     document.body.innerHTML='<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">'+
@@ -730,7 +730,7 @@ const METHOD_COL={EXAMINE:'oklch(0.70 0.15 240)',INTERVIEW:'oklch(0.80 0.15 80)'
 // ============================================================
 document.addEventListener('DOMContentLoaded',()=>{
     initSplitter();
-    L.info('OSCAL AP & AR — build 9.5 gestartet');
+    L.info('OSCAL AP & AR — build 9.5.1 gestartet');
     L.debug('Bei CORS-Fehlern: Ordner mit `python -m http.server` bedienen und über http://localhost:8000/ öffnen.');
     initPrompts();
     loadAICfg();
@@ -1029,7 +1029,7 @@ function showUI(){
     document.getElementById('ctrl-area').classList.remove('hidden');
     document.getElementById('sb-comp-nav').classList.remove('hidden');
     document.getElementById('sb-bulk').classList.remove('hidden');
-    
+
     // Reveal top-level sections
     const sm = document.getElementById('sec-meta'); if(sm) sm.classList.remove('hidden');
     const st = document.getElementById('sec-terms'); if(st) st.classList.remove('hidden');
@@ -1045,7 +1045,7 @@ function showUI(){
     document.getElementById('sb-aemail').value=S.assessor.email;
     document.getElementById('sb-desc').value=S.meta.desc;
     document.getElementById('scope-n').textContent=S.allCids.size-S.excluded.size;
-    
+
     document.getElementById('task-list').innerHTML=tHTML();
 }
 
@@ -1346,6 +1346,7 @@ async function callAIOnce(ai,prompt,schema){
 
 // Retry-Wrapper mit exponentiellem Backoff (500ms → 1s → 2s), Default 2 Wiederholungen.
 async function callAI(prompt,schema,label='KI-Aufruf'){
+    prompt=gppWithContext(prompt);   // Unternehmenskontext aus config.html
     const ai=getAI();if(!ai)throw new Error('Keine KI konfiguriert.');
     const rv=parseInt(document.getElementById('ai-retries')?.value,10);
     const retries=(Number.isFinite(rv)&&rv>=0)?rv:AI_RETRIES_DEFAULT;
@@ -1846,11 +1847,11 @@ function exportAR(){
     const ts=new Date().toISOString();const cids=[...S.allCids].filter(c=>!S.excluded.has(c)).sort();
     L.info(`Assessment Results werden erzeugt (${cids.length} Controls im Scope)`);
     const obs=[],fin=[],rsk=[];
-    
+
     cids.forEach(c=>{
         const f=S.findings.get(c);
         if(!f||!f.status)return;
-        
+
         const comps = [];
         S.compGroups.forEach((ctrlMap, cuuid) => {
             if(cuuid !== '__none' && ctrlMap.has(c)) {
@@ -1880,7 +1881,7 @@ function exportAR(){
                     ...(comp ? { subjects: [{ "subject-uuid": comp.uuid, type: "component", title: comp.title }] } : {})
                 });
             }
-            
+
             let ru=null;
             if(finding.risk&&finding.status==='not-satisfied'){
                 ru=crypto.randomUUID();
@@ -1892,7 +1893,7 @@ function exportAR(){
                     status:"open"
                 });
             }
-            
+
             const fd={
                 uuid:crypto.randomUUID(),
                 title:`Befund ${cid}${comp ? ' (' + comp.title + ')' : ''}`,
@@ -1901,7 +1902,7 @@ function exportAR(){
                 // als not-satisfied mit reason "other" abgebildet
                 target:{type:"objective-id","target-id":cid,status:finding.status==='satisfied'?{state:'satisfied'}:{state:'not-satisfied',...(finding.status!=='not-satisfied'?{reason:'other'}:{})}}
             };
-            
+
             if(ou)fd["related-observations"]=[{"observation-uuid":ou}];
             if(ru)fd["related-risks"]=[{"risk-uuid":ru}];
             fin.push(fd);

@@ -66,7 +66,7 @@ Zwei Werkzeuge lösen abgegrenzte Sonderaufgaben und stehen deshalb außerhalb d
 * **SSP-Generator Edition 2023** — derselbe Ablauf wie der [SSP-Generator](./ssp_generator.html), aber gegen den BSI IT-Grundschutz Edition 2023 statt gegen den G++-Anwenderkatalog.
 * **YAML → OSCAL Konverter (C5:2026)** — deterministische Umwandlung von YAML-Kriteriendateien in einen OSCAL-Katalog, ohne KI.
 
-Beide arbeiten nicht auf dem gemeinsamen Artefakt-Set, nutzen aber dieselben zentralen Einstellungen.
+Beide sind **vollständig eigenständig**: eine einzelne HTML-Datei ohne `gpp-core.js`, mit eigenem KI-Zugang und eigenen Prompts. Sie arbeiten weder auf dem gemeinsamen Artefakt-Set noch mit der zentralen `config.html`. Ihr Ergebnis ist eine heruntergeladene Datei, die sich hier unter „Artefakte" in ein Set laden lässt.
 
 ---
 

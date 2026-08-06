@@ -46,30 +46,39 @@ Ebenfalls konsequent umgesetzt: Was in `config.html` steht, steht **nur noch dor
 
 Der App-Ordner heißt ab dieser Version **`GS++-oscal-app`** (vorher `One-Page-Apps`), das Auslieferungsarchiv entsprechend **`GS++-oscal-app.zip`**. Die Übersicht (`index.html`) hat zwei neue Schaltflächen: **Hilfe** rendert das readme der Sammlung direkt im Browser (eigener Markdown-Renderer, keine externen Bibliotheken), **Handbuch** zeigt die Kapitel des Grundschutz++-Handbuchs aus `handbuch/` mit Kapitelnavigation. Geladen wird zuerst lokal, mit GitHub als Fallback für den Betrieb aus dem ZIP.
 
+Zwei Werkzeuge lösen abgegrenzte Sonderaufgaben und liegen deshalb außerhalb des Ablaufs in **`one-page-apps/`**: der SSP-Generator Edition 2023 und der YAML→OSCAL-Konverter (C5). Sie sind dort **wirklich eigenständig** — eine einzelne HTML-Datei ohne `gpp-core.js`, mit eigenem KI-Zugang, eigenen Laufzeitwerten und eigenen editierbaren Prompts. Weder der gemeinsame Artefaktbestand noch `config.html` gelten für sie; ihr Ergebnis ist die heruntergeladene Datei, die sich in der Sammlung unter „Artefakte" in ein Set laden lässt.
+
 ## Härtung nach internem Review
 
 Vor dem Release lief ein mehrstufiger Review über den gesamten Umbau; alle bestätigten Befunde sind behoben:
 
 * **Baustein_2_Profile war nach dem Umbau funktionsunfähig** (Verweis auf ein entferntes Element brach das Skript beim Laden ab) und hätte mit leerem Gemini-Modell gearbeitet — beides behoben; Testdrive- und Vier-Augen-Checker-Schalter sind wieder sichtbare Run-Optionen.
 * **Quellen-Umpinnen wirkt jetzt wirklich:** Alle Werkzeuge lesen ihre registrierten Quellen über die zentrale Registry, statt den Pin nur anzuzeigen. Inhaltsgepinnte Quellen (SHA-256 im Tool) sind in `config.html` als solche markiert und vom Umpinnen ausgenommen.
-* **Zentrale Einstellungen greifen überall:** Der Validator übernimmt die Backend-Wahl aus `config.html` (vorher gewann ein alter tool-eigener Schlüssel), zentrale Gemini-Modelle werden nicht mehr still durch Tool-Defaults ersetzt oder verworfen, Grounding/Retries/Thinking gelten auch im Explorer, und die ED23-System-Instruktion ist als editierbarer Prompt registriert.
+* **Zentrale Einstellungen greifen überall:** Der Validator übernimmt die Backend-Wahl aus `config.html` (vorher gewann ein alter tool-eigener Schlüssel), zentrale Gemini-Modelle werden nicht mehr still durch Tool-Defaults ersetzt oder verworfen, und Grounding/Retries/Thinking gelten auch im Explorer.
 * **Kein Rückfluss von Schlüsseln:** Zwei Werkzeuge schrieben den zentralen API-Key in alte tool-eigene Speicherplätze zurück; diese Alt-Speicher werden jetzt bereinigt statt befüllt.
-* **Prüfsummen stimmen:** `sha256`/`size` im Artefaktbestand und im Export-Manifest passen jetzt byteweise zu den ausgelieferten Dateien.
+* **Prüfsummen stimmen:** `sha256`/`size` im Artefaktbestand und im Export-Manifest passen jetzt byteweise zu den ausgelieferten Dateien. Beim Import eines Set-ZIPs werden sie **nachgerechnet**; nach dem Export veränderte Dateien werden benannt. `size` zählt UTF-8-Bytes statt JS-Zeichen — bei Umlauten war der Wert vorher zu klein.
+* **Unternehmenskontext gilt wirklich überall:** `config.html` sagt zu, dass der Text in die KI-Aufrufe eingeht. Eingelöst wurde das nur im SSP-Editor; der Explorer hatte ein eigenes, nicht synchronisiertes Feld, die übrigen Werkzeuge ignorierten den Wert. Jetzt hängt ihn jedes Werkzeug an der eigenen Backend-Weiche an.
+* **Ein Pin ist ein Commit-SHA — sonst nichts:** Die Erkennung wertete alles außer `main`, `master` und `refs/heads/…` als gepinnt. `…/develop/…` galt damit als fester Stand, und `develop` wurde sogar als Commit ausgegeben; `refs/tags/v1` blieb ebenfalls unbeanstandet, obwohl Tags verschiebbar sind. Betroffen war auch die Regel D8 im Validator. Verlangt wird jetzt ein 40-stelliger Hex-SHA; bei fremden Hosts, wo sich das nicht entscheiden lässt, wird weiterhin nur der offensichtliche Fall gemeldet.
 
 ## Versionen der Anwendungen
 
 | Anwendung | Version |
 |---|---|
-| Übersicht (index.html) | 1.2 |
-| OSCAL Schema Validator | 1.11.0 |
-| SSP-Generator (G++) | V5.9 |
-| SSP-Generator Edition 2023 | ED23 V1.4 |
-| GS++ Explorer (GSpp-Viewer) | v9.6 |
-| BSI → G++ Profil (Baustein_2_Profile) | 0.9.0 |
+| Übersicht (index.html) | 1.3 |
+| OSCAL Schema Validator | 1.11.1 |
+| SSP-Generator (G++) | V5.9.1 |
+| GS++ Explorer (GSpp-Viewer) | v9.7 |
+| BSI → G++ Profil (Baustein_2_Profile) | 0.9.1 |
 | SSP-Editor (ssp_ausfuellen) | v1.2.0 |
-| Prüfung AP/AR (pruefung_ap_ar) | build 9.5 |
-| POA&M-Generator | v2.3 |
-| C5 → OSCAL Konverter | unverändert (deterministisch) |
+| Prüfung AP/AR (pruefung_ap_ar) | build 9.5.1 |
+| POA&M-Generator | v2.3.1 |
+
+Einzelwerkzeuge in `one-page-apps/` — eigenständig, ohne `gpp-core.js`:
+
+| Anwendung | Version |
+|---|---|
+| SSP-Generator Edition 2023 | ED23 V1.5 |
+| C5 → OSCAL Konverter | v1.1 |
 
 ## Hinweise zum Umstieg
 

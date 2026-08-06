@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.9</title>
+    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.9.1</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -649,7 +649,7 @@
 
         <div class="topbar-actions">
             <div id="catalog-status" class="pill"><span class="dot animate-pulse"></span>Lade Basis-Katalog…</div>
-            <div class="pill pill-quiet">BUILD V5.9</div>
+            <div class="pill pill-quiet">BUILD V5.9.1</div>
         </div>
 
         <div class="progress-track"><div id="ai-doc-progress-bar" class="progress-fill"></div></div>
@@ -705,7 +705,7 @@
             </div>
         </div>
 
-        <div class="rail-foot">BUILD V5.9</div>
+        <div class="rail-foot">BUILD V5.9.1</div>
     </aside>
 
     <div id="rail-splitter" class="splitter" title="Rail-Breite ziehen"></div>
@@ -893,7 +893,7 @@
         </div>
     </div>
 
-<script src="gpp-core.js?v=3.2"></script>
+<script src="gpp-core.js?v=3.3"></script>
     <script>
         if (typeof gppCfg === 'undefined') {
             document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
@@ -2598,10 +2598,12 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         async function callAIDocumentModelOnce(systemPrompt, prompt, schema, label = 'KI-Aufruf') {
             const config = getAIDocumentConfig();
             const backendLabel = AI_BACKEND_LABELS[config.provider] || config.provider;
+            // Unternehmenskontext aus config.html an die System-Instruktion.
+            const system = gppWithContext(systemPrompt);
             aiLog('info', `→ ${label} · Backend ${backendLabel} · Modell ${config.model} · ${(prompt.length / 1024).toFixed(1)} kB Prompt`);
             try {
-                if (config.provider === 'openrouter') return await callOpenRouterStructured(config, systemPrompt, prompt, schema, label);
-                return await callGeminiStructured(config, systemPrompt, prompt, schema, label);
+                if (config.provider === 'openrouter') return await callOpenRouterStructured(config, system, prompt, schema, label);
+                return await callGeminiStructured(config, system, prompt, schema, label);
             } catch (e) {
                 aiLog('err', `${label} · ${backendLabel}/${config.model}: ${e.message}`);
                 throw e;

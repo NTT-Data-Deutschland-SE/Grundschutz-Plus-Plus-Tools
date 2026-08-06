@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GS++ Explorer v9.6 · Multi-Katalog &amp; Profile</title>
+    <title>GS++ Explorer v9.7 · Multi-Katalog &amp; Profile</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
@@ -541,7 +541,7 @@
         <div class="topbar-meta">
             <span class="pill progress-pill" id="progressLabel"></span>
             <span class="pill" id="catalogPill">0 Kataloge</span>
-            <span class="pill build-version" id="buildVersion">v9.6</span>
+            <span class="pill build-version" id="buildVersion">v9.7</span>
         </div>
         <div class="progress-track" id="progressTrack"><div class="progress-fill" id="progressFill"></div></div>
     </header>
@@ -591,8 +591,10 @@
 
         <section class="rail-sec ai-dependent" id="sec-context">
             <span class="section-label"><span class="g">◬</span>KI-Kontext (Unternehmen)</span>
-            <textarea id="aiContextInput" class="search-input" style="min-height: 90px;" placeholder="z.B. Wir sind ein mittelständisches Unternehmen und NIS2 / KRITIS relevant... oder Wir sind eine Stadtverwaltung"></textarea>
-            <small class="rail-note">Wird bei KI-Anfragen an den System-Prompt angehängt.</small>
+            <!-- Der Unternehmenskontext steht zentral in config.html (gpp:cfg:ai:context)
+                 und gilt für alle Werkzeuge. Hier wird er nur angezeigt. -->
+            <div id="aiContextView" class="rail-note" style="white-space:pre-wrap"></div>
+            <small class="rail-note">Wird bei KI-Anfragen an den System-Prompt angehängt · gesetzt in <a href="config.html">Einstellungen</a>.</small>
             <button class="reset-btn" onclick="exportAiCache()">⤓ KI-Antworten exportieren</button>
             <button class="reset-btn" onclick="document.getElementById('aiCacheInput').click()">↗ KI-Antworten importieren</button>
             <input type="file" id="aiCacheInput" accept=".json" style="display: none;" onchange="importAiCache(event)">
@@ -677,7 +679,7 @@
         </div>
     </div>
 
-<script src="gpp-core.js?v=3.2"></script>
+<script src="gpp-core.js?v=3.3"></script>
     <script>
         if (typeof gppCfg === 'undefined') {
             document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
@@ -729,11 +731,17 @@
             if (typeof setBackend === 'function') setBackend(backend, { silent: true });
             else if (typeof state === 'object') state.backend = backend;
             if (typeof toggleAiButtons === 'function') toggleAiButtons();
+            const ctxView = document.getElementById('aiContextView');
+            if (ctxView) {
+                const ctx = gppCfg.get('ai:context');
+                ctxView.textContent = ctx || 'kein Unternehmenskontext gesetzt';
+                ctxView.style.opacity = ctx ? '' : '.6';
+            }
             if (verbose && typeof L === 'object') L.info('Einstellungen aus config.html neu übernommen.');
         };
 
         // Einzige Quelle der Build-Version. Titel und Topbar-Badge werden daraus gesetzt.
-        const BUILD_VERSION = "v9.6";
+        const BUILD_VERSION = "v9.7";
 
         const byId = id => document.getElementById(id);
 
@@ -1524,7 +1532,7 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präßise und du nutzt kei
 			const heute = new Date().toLocaleDateString('de-DE');
             let system = buildPrompt('promptSystem', { heute });
 
-            const userContext = document.getElementById('aiContextInput').value.trim();
+            const userContext = (gppCfg.get('ai:context') || '').trim();
             if (userContext) {
                 system += "\n\nBerücksichtige zwingend folgenden Unternehmenskontext für deine Antwort:\n" + userContext;
             }

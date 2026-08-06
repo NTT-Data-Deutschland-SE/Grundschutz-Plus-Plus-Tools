@@ -95,11 +95,25 @@ const gppCfg = {
   },
 };
 
+/* Hängt den zentral gesetzten Unternehmenskontext an eine System-Instruktion
+   oder — wo ein Werkzeug keine hat — an den Prompt selbst. config.html sagt zu,
+   dass dieser Text in die KI-Aufrufe eingeht; eingelöst wird die Zusage hier,
+   an der einen Backend-Weiche jedes Werkzeugs. Ohne gesetzten Kontext bleibt
+   der Text unverändert — kein leerer Absatz, keine Änderung am Prompt-Hash. */
+function gppWithContext(systemOrPrompt) {
+  const ctx = (gppCfg.get("ai:context") || "").trim();
+  const base = systemOrPrompt == null ? "" : String(systemOrPrompt);
+  if (!ctx) return base;
+  return (base ? base + "\n\n" : "") +
+    "Berücksichtige zwingend folgenden Unternehmenskontext für deine Antwort:\n" + ctx;
+}
+
 /* ---------- Prompts: Selbstregistrierung ----------
-   Die Default-Texte bleiben als Konstanten im jeweiligen Tool — nur so läuft
-   es allein lauffähig. Beim Start meldet das Tool sie an; config.html
-   bearbeitet ausschließlich, was angemeldet ist, und kennt die Defaults
-   dadurch immer im aktuellen Stand statt sie zu duplizieren. */
+   Die Default-Texte bleiben als Konstanten im jeweiligen Tool: dort stehen sie
+   neben dem Code, der sie benutzt, und ändern sich mit ihm. Beim Start meldet
+   das Tool sie an; config.html bearbeitet ausschließlich, was angemeldet ist,
+   und kennt die Defaults dadurch immer im aktuellen Stand, statt eine zweite
+   Kopie zu pflegen, die beim nächsten Prompt-Umbau still veraltet. */
 function gppRegisterPrompts(toolId, prompts) {
   const reg = {
     tool: toolId,
@@ -143,7 +157,12 @@ function gppRegisterSources(toolId, sources) {
     sources: sources.map(s => ({ id: s.id, label: s.label, repo: s.repo, path: s.path, default: s.default, fixed: !!s.fixed })),
   });
 }
-function gppIsUnpinned(url) { return /\/(refs\/heads\/[^/]+|main|master)\//.test(String(url || "")); }
+/* Ein Pin ist genau ein 40-stelliger Commit-SHA — sonst nichts. Branchnamen
+   (main, develop, feature/x) sind offensichtlich beweglich, Tags aber ebenso:
+   ein Tag lässt sich verschieben, ohne dass die URL sich ändert. Wer hier
+   großzügig ist, meldet "gepinnt" für Quellen, die sich morgen still ändern —
+   das ist schlimmer als gar keine Anzeige (Handbuch 3.13/3.14, Grundregel 8). */
+const GPP_COMMIT_RE = /^[0-9a-f]{40}$/i;
 
 /* raw.githubusercontent.com/<owner>/<repo>/<ref>/<pfad> zerlegen.
    <ref> ist entweder ein Commit/Tag-Segment ODER die dreiteilige Form
@@ -155,17 +174,37 @@ function gppParseRawUrl(url) {
   );
   return m ? { owner: m[1], repo: m[2], ref: m[3], path: m[4] } : null;
 }
+/* github.com/<owner>/<repo>/(blob|raw)/<ref>/<pfad> — die Browser-Form derselben Datei */
+function gppParseBlobUrl(url) {
+  const m = String(url || "").match(
+    /^https?:\/\/(?:www\.)?github\.com\/([^/]+)\/([^/]+)\/(?:blob|raw)\/(refs\/(?:heads|tags)\/[^/]+|[^/]+)\/(.+)$/
+  );
+  return m ? { owner: m[1], repo: m[2], ref: m[3], path: m[4] } : null;
+}
+/* Meldet true, wenn die URL nachweislich auf einen beweglichen Ref zeigt.
+   Bei GitHub-URLs ist das entscheidbar: alles außer einem Commit-SHA ist
+   beweglich. Bei fremden Hosts ist es das nicht — dort werden nur die
+   eindeutigen Ref-Namen im Pfad gemeldet, damit die Regel keine Fehlalarme
+   über Quellen produziert, deren Versionierung wir nicht kennen. */
+function gppIsUnpinned(url) {
+  const p = gppParseRawUrl(url) || gppParseBlobUrl(url);
+  if (p) return !GPP_COMMIT_RE.test(p.ref);
+  return /\/(refs\/(?:heads|tags)\/[^/]+|main|master|develop|latest|HEAD)\//.test(String(url || ""));
+}
 /* Commit-SHA der URL, oder null wenn sie auf einen beweglichen Ref zeigt */
 function gppCommitOf(url) {
-  const p = gppParseRawUrl(url);
-  if (!p || /^refs\//.test(p.ref)) return null;
-  return /^(main|master)$/.test(p.ref) ? null : p.ref;
+  const p = gppParseRawUrl(url) || gppParseBlobUrl(url);
+  return p && GPP_COMMIT_RE.test(p.ref) ? p.ref : null;
 }
-/* URL auf einen Commit umschreiben — baut den Pfad neu auf statt zu ersetzen */
+/* URL auf einen Commit umschreiben — baut den Pfad neu auf statt zu ersetzen.
+   Die Host-Form bleibt erhalten: raw bleibt raw, blob bleibt blob. */
 function gppRepinUrl(url, sha) {
-  const p = gppParseRawUrl(url);
-  if (!p || !sha) return url;
-  return `https://raw.githubusercontent.com/${p.owner}/${p.repo}/${sha}/${p.path}`;
+  if (!sha) return url;
+  const raw = gppParseRawUrl(url);
+  if (raw) return `https://raw.githubusercontent.com/${raw.owner}/${raw.repo}/${sha}/${raw.path}`;
+  const blob = gppParseBlobUrl(url);
+  if (blob) return `https://github.com/${blob.owner}/${blob.repo}/blob/${sha}/${blob.path}`;
+  return url;
 }
 
 /* ---------- Verzeichnisse aus GitHub auflisten ----------
@@ -270,8 +309,10 @@ async function gppTx(mode, fn) {
     tx.onabort = () => { db.close(); reject(tx.error); };
   });
 }
-async function gppSha256(text) {
-  const buf = new TextEncoder().encode(text);
+/* Nimmt Text oder fertige Bytes. Text wird als UTF-8 kodiert — dieselbe
+   Kodierung, mit der die Datei später ausgeliefert wird. */
+async function gppSha256(textOrBytes) {
+  const buf = typeof textOrBytes === "string" ? new TextEncoder().encode(textOrBytes) : textOrBytes;
   const d = await crypto.subtle.digest("SHA-256", buf);
   return Array.from(new Uint8Array(d)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
@@ -306,8 +347,12 @@ const gppArtefacts = {
      zusammengeführt, damit wiederholte Exporte nicht den Speicher fluten. */
   async save({ id, stage, kind, title, filename, tool, data, meta, set }) {
     /* Dieselbe Serialisierung wie beim Export (index.html: stringify(…, null, 2)) —
-       sonst passen sha256/size im Manifest nicht zu den ausgelieferten Dateien. */
+       sonst passen sha256/size im Manifest nicht zu den ausgelieferten Dateien.
+       Gezählt und gehasht wird über die UTF-8-Bytes, nicht über JS-Zeichen:
+       jedes ä, ö, ü und — zählt sonst als eins statt als zwei bzw. drei Bytes,
+       und die Größe im Manifest passt nicht zur Datei auf der Platte. */
     const json = JSON.stringify(data, null, 2);
+    const bytes = new TextEncoder().encode(json);
     const now = new Date().toISOString();
     const st = (set || this.activeSet()).trim() || GPP_DEFAULT_SET;
     let key = id || `${st}:${tool}:${filename}`;
@@ -327,8 +372,8 @@ const gppArtefacts = {
       tool: tool || "unknown",
       createdAt: existing ? existing.createdAt : now,
       updatedAt: now,
-      size: json.length,
-      sha256: await gppSha256(json),
+      size: bytes.length,
+      sha256: await gppSha256(bytes),
       meta: meta || {},
       data,
     };

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL SSP Generator — BSI IT-Grundschutz Edition 2023 V1.4</title>
+    <title>OSCAL SSP Generator — BSI IT-Grundschutz Edition 2023 V1.5</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -766,7 +766,7 @@
         <div class="topbar-brand">
             <span class="brand-mark">◈</span>
             <span class="brand-name">OSCAL SSP Generator</span>
-            <span class="brand-sub">Edition 2023 · Build V1.4</span>
+            <span class="brand-sub">Edition 2023 · Build V1.5</span>
         </div>
         <div class="topbar-spacer"></div>
         <div id="catalog-status" class="meta-pill">
@@ -786,6 +786,8 @@
                     class="glyph">◇</span>1 · Metadaten</button>
             <button type="button" onclick="navigateToSection('sec-ai-documents')" data-nav="sec-ai-documents" class="rail-nav-item"><span
                     class="glyph">◉</span>2 · KI-Dokumentanalyse</button>
+            <button type="button" onclick="navigateToSection('sec-ai-settings')" data-nav="sec-ai-settings" class="rail-nav-item"><span
+                    class="glyph">✎</span>2b · Prompts</button>
             <button type="button" onclick="navigateToSection('sec-components')" data-nav="sec-components" class="rail-nav-item"><span
                     class="glyph">▣</span>3 · Bausteine &amp; Assets</button>
             <button type="button" onclick="navigateToSection('sec-tailoring')" data-nav="sec-tailoring" class="rail-nav-item"><span
@@ -794,41 +796,75 @@
                     class="glyph">◬</span>5 · Risikoanalyse</button>
         </div>
 
-        <!-- KI-Zugang und Laufzeit liegen zentral in config.html (gpp:cfg:*).
-             Der ausgeblendete Block hält die alten Feld-IDs als Kompatibilitäts-
-             Layer für den Bestandscode; gefüllt wird er nur aus der zentralen
-             Konfiguration, geschrieben wird ausschließlich in config.html. -->
+        <!-- Einzelwerkzeug: KI-Zugang und Laufzeit werden hier gesetzt und liegen
+             im localStorage dieses Browsers. Es gibt keine zentrale Konfiguration
+             und keine Nachbardatei, aus der etwas nachgeladen würde. -->
         <div class="rail-group">
-            <p class="rail-hint hidden rail-hint-warn" id="ai-doc-migration-hint"></p>
-
-            <div id="gpp-cfg-shim" hidden aria-hidden="true">
-                <select id="ai-doc-provider">
+            <div class="rail-label">KI-Backend</div>
+            <div class="rail-field">
+                <label for="ai-doc-provider">Backend</label>
+                <select id="ai-doc-provider" onchange="onAIDocumentProviderChange()">
                     <option value="gemini">Google Gemini</option>
                     <option value="openrouter">OpenRouter</option>
                 </select>
-                <div id="ai-or-catalog-field" class="hidden">
-                    <span id="ai-or-catalog-status"></span>
-                    <select id="ai-or-model-select"><option value="">— Katalog laden —</option></select>
-                    <input type="checkbox" id="ai-or-schema-only">
-                    <button type="button" id="ai-or-refresh"></button>
-                </div>
-                <input id="ai-doc-model" type="text" list="ai-doc-models" autocomplete="off" spellcheck="false">
-                <span id="ai-doc-model-note"></span>
-                <datalist id="ai-doc-models"></datalist>
-                <input id="ai-doc-key" type="password" autocomplete="off">
-                <span id="ai-doc-key-hint"></span>
-                <input id="ai-set-concurrency" type="number">
-                <input id="ai-set-retries" type="number">
-                <input id="ai-set-chunksize" type="number">
-                <select id="ai-set-thinking">
-                    <option value="minimal">minimal</option>
-                    <option value="low">low</option>
-                    <option value="medium">medium</option>
-                    <option value="high">high</option>
-                </select>
-                <span id="ai-set-thinking-label"></span>
-                <span id="ai-set-thinking-hint"></span>
             </div>
+            <div class="rail-field hidden" id="ai-or-catalog-field">
+                <label for="ai-or-model-select">Modellkatalog<span id="ai-or-catalog-status"
+                        class="rail-chip">nicht geladen</span></label>
+                <select id="ai-or-model-select" onchange="onOpenRouterCatalogPick()">
+                    <option value="">— Katalog laden —</option>
+                </select>
+                <div class="rail-inline">
+                    <label class="rail-check" for="ai-or-schema-only"><input type="checkbox" id="ai-or-schema-only"
+                            onchange="onOpenRouterFilterChange()">nur Schema-fähig</label>
+                    <button type="button" id="ai-or-refresh" class="rail-mini-btn"
+                        onclick="refreshOpenRouterModels(true)">↺ laden</button>
+                </div>
+            </div>
+            <div class="rail-field">
+                <label for="ai-doc-model">Modell<span id="ai-doc-model-note" class="rail-chip">frei</span></label>
+                <input id="ai-doc-model" type="text" list="ai-doc-models" onchange="saveAIDocumentConfig()"
+                    autocomplete="off" spellcheck="false">
+                <datalist id="ai-doc-models"></datalist>
+            </div>
+            <div class="rail-field">
+                <label for="ai-doc-key">API-Key</label>
+                <input id="ai-doc-key" type="password" oninput="saveAIDocumentConfig()" autocomplete="off"
+                    placeholder="bleibt lokal">
+            </div>
+            <p class="rail-hint hidden rail-hint-warn" id="ai-doc-migration-hint"></p>
+            <p class="rail-hint" id="ai-doc-key-hint">Der Key liegt ausschließlich im <span
+                    class="font-mono">localStorage</span> dieses Browsers und geht nur an das gewählte Backend.</p>
+        </div>
+
+        <div class="rail-group">
+            <div class="rail-label">Laufzeit</div>
+            <div class="rail-grid2">
+                <div class="rail-field">
+                    <label for="ai-set-concurrency">Parallelität</label>
+                    <input id="ai-set-concurrency" type="number" min="1" max="12" step="1" onchange="saveAISettings()">
+                </div>
+                <div class="rail-field">
+                    <label for="ai-set-retries">Retries</label>
+                    <input id="ai-set-retries" type="number" min="0" max="5" step="1" onchange="saveAISettings()">
+                </div>
+            </div>
+            <div class="rail-field">
+                <label for="ai-set-chunksize">Chunk-Größe (Zeichen)</label>
+                <input id="ai-set-chunksize" type="number" min="4000" max="60000" step="1000"
+                    onchange="saveAISettings()">
+            </div>
+            <div class="rail-field">
+                <label for="ai-set-thinking" id="ai-set-thinking-label">Thinking-Level</label>
+                <select id="ai-set-thinking" onchange="saveAISettings()">
+                    <option value="minimal">minimal (schnellste)</option>
+                    <option value="low">low</option>
+                    <option value="medium">medium (Default)</option>
+                    <option value="high">high (tiefste Analyse)</option>
+                </select>
+            </div>
+            <p class="rail-hint" id="ai-set-thinking-hint">Parallelität bei HTTP 429 senken · Backoff 500 ms → 1 s →
+                2 s · Thinking-Level steuert <span class="font-mono">thinkingConfig</span> (Gemini).</p>
         </div>
 
         <div class="rail-group">
@@ -839,7 +875,7 @@
                     class="glyph">⋯</span>Chunk-Cache leeren</button>
         </div>
 
-        <div class="rail-foot">Build ED23 V1.4</div>
+        <div class="rail-foot">Build ED23 V1.5</div>
     </aside>
     <div id="rail-splitter" class="rail-splitter" title="Breite der Rail ziehen"></div>
 
@@ -1045,36 +1081,24 @@
         </div>
     </div>
 
-<script src="gpp-core.js?v=3.2"></script>
     <script>
-        if (typeof gppCfg === 'undefined') {
-            document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
-                '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
-                '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) ' +
-                'statt einzelner Dateien.</p></div>';
-            throw new Error('gpp-core.js missing');
-        }
-        const GPP_TOOL_ID = 'ssp_generator_ed23';
-        /* Quellen für die Pin-Übersicht in config.html anmelden (Grundregel 8). */
-        gppRegisterSources(GPP_TOOL_ID, [
-            { id: 'ed23-basiskatalog', label: 'BSI IT-Grundschutz Ed. 2023 (benutzerdefiniert)', repo: 'NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL',
-              path: 'BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json',
-              default: 'https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json' },
-            { id: 'c5-katalog', label: 'BSI C5:2026 Katalog', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
-              path: 'kataloge/c5-2026-oscal-catalog.json',
-              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9dbb6c505c9de510d2c2b97b712cbd837314df5f/kataloge/c5-2026-oscal-catalog.json' },
-            { id: 'c3a-katalog', label: 'C3A Katalog', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
-              path: 'kataloge/c3a_oscal_catalog.json',
-              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/kataloge/c3a_oscal_catalog.json' },
-        ]);
+        /* ===================================================================
+           EINZELWERKZEUG — diese Datei läuft für sich allein.
+           Keine gemeinsame Bibliothek, keine Nachbardatei, kein Build: Quellen,
+           Prompts, KI-Zugang und Laufzeitwerte stehen hier im Dokument und
+           liegen im localStorage dieses Browsers. Wer den durchgängigen
+           Arbeitsablauf mit gemeinsamem Artefaktbestand will, nimmt die
+           Sammlung in GS++-oscal-app/ — dort erledigt der große SSP-Generator
+           dieselbe Aufgabe auf dem Grundschutz++-Anwenderkatalog.
+           =================================================================== */
 
         // --- CONFIG & STATE ---
         // Basis-Katalog: BSI IT-Grundschutz Edition 2023 als benutzerdefinierte OSCAL-Ausgabe
         // (NTT DATA DACH) — Bausteine als Gruppen, Anforderungen als Controls mit level-Prop
         // (1 = Basis, 3 = Standard, 5 = erhöhter Schutzbedarf) und Reifegrad-Beschreibungen.
-        // Repin aus config.html hat Vorrang vor dem festgeschriebenen Stand; der SHA-256-Pin
-        // im Export wird ohnehin über die tatsächlich geladenen Bytes berechnet.
-        const CATALOG_URL_BASE = gppSource('ed23-basiskatalog', 'https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json');
+        // Commit-gepinnt (Handbuch 3.13/3.14, Grundregel 8); der SHA-256-Pin im Export wird
+        // zusätzlich über die tatsächlich geladenen Bytes berechnet.
+        const CATALOG_URL_BASE = 'https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json';
 
         // Pin-Unterstützung (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8):
         // Für den ED23-Basiskatalog gibt es keinen festgeschriebenen Commit-Pin, daher
@@ -1105,14 +1129,14 @@
                 href: 'https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/blob/main/beispiel-kataloge/dsgvo_oscal_catalog.json'
             },
             {
-                // Registrierte Quelle: Repin aus config.html hat Vorrang.
+                // Commit-gepinnt: fester Stand statt Default-Branch.
                 name: 'C5:2026 OSCAL Katalog',
-                href: gppSource('c5-katalog', 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9dbb6c505c9de510d2c2b97b712cbd837314df5f/kataloge/c5-2026-oscal-catalog.json')
+                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9dbb6c505c9de510d2c2b97b712cbd837314df5f/kataloge/c5-2026-oscal-catalog.json'
             },
             {
-                // Registrierte Quelle: Repin aus config.html hat Vorrang.
+                // Commit-gepinnt: fester Stand statt Default-Branch.
                 name: ' C3A - Criteria enabling Cloud Computing Autonomy',
-                href: gppSource('c3a-katalog', 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/kataloge/c3a_oscal_catalog.json')
+                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/kataloge/c3a_oscal_catalog.json'
             }
         ];
 
@@ -1822,7 +1846,21 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
         // --- SECTION 2b: KI-EINSTELLUNGEN & EDITIERBARE PROMPTS ---
         function renderAISettingsHTML() {
-            const promptCards = '';   // Prompts werden ausschließlich in config.html gezeigt und bearbeitet
+            const promptCards = AI_PROMPTS.map(prompt => `
+                <div class="p-4 bg-slate-900/80 border border-slate-700 rounded-xl">
+                    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-2 mb-2">
+                        <div class="min-w-0">
+                            <h4 class="text-xs font-bold text-cyan-300 uppercase tracking-wider">${escapeHTML(prompt.label)}</h4>
+                            <p class="text-[11px] text-slate-500 mt-0.5">${escapeHTML(prompt.hint)} · Platzhalter: <span class="font-mono text-slate-400">${prompt.placeholders.map(escapeHTML).join(' ')}</span></p>
+                        </div>
+                        <button type="button" onclick="resetAIPrompt('${prompt.key}')" class="flex-shrink-0 text-xs font-semibold text-slate-300 border border-slate-600 rounded px-2.5 py-1 hover:bg-slate-700 transition-colors">↺ Zurücksetzen</button>
+                    </div>
+                    <textarea id="ai-prompt-${prompt.key}" rows="${prompt.rows}" spellcheck="false" oninput="onAIPromptInput('${prompt.key}')"
+                        style="resize: vertical; min-height: 200px;"
+                        class="w-full px-3 py-2 bg-slate-950 border border-slate-600 rounded-lg text-xs text-slate-200 font-mono leading-relaxed focus:outline-none focus:border-cyan-500 custom-scroll"></textarea>
+                    <div id="ai-prompt-warn-${prompt.key}" class="hidden mt-2 px-2 py-1 text-[11px] text-amber-200 bg-amber-950/40 border border-amber-800/60 rounded"></div>
+                </div>
+            `).join('');
             return `
                 <div class="space-y-5">
                     <p class="text-xs text-slate-400 leading-relaxed">
@@ -1832,7 +1870,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
                     <div>
                         <h3 class="text-sm font-bold text-cyan-400 uppercase mb-2">Prompts</h3>
-                        <p class="text-xs text-slate-400 mb-4">Alle sechs Prompts sind editierbar und werden lokal gespeichert. Platzhalter in geschweiften Klammern werden zur Laufzeit mit den Daten befüllt; fehlt ein Platzhalter, wird er defensiv angehängt. Der feste Guardrail (System-Instruktion) bleibt in jedem Fall aktiv.</p>
+                        <p class="text-xs text-slate-400 mb-4">Alle ${AI_PROMPTS.length} Prompts sind editierbar und werden im <span class="font-mono">localStorage</span> dieses Browsers gespeichert. Platzhalter in geschweiften Klammern werden zur Laufzeit mit den Daten befüllt; fehlt ein Platzhalter, wird er defensiv angehängt. Die System-Instruktion geht bei jedem Aufruf mit.</p>
                         <div class="space-y-4">
                             ${promptCards}
                         </div>
@@ -2549,31 +2587,26 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 if (legacyKey) { localStorage.removeItem(AI_KEY_STORAGE_LEGACY); sessionStorage.removeItem(AI_KEY_STORAGE_LEGACY); }
             } catch (e) { }
 
-            // Ab hier gilt die zentrale Konfiguration: Backend, Modell und Key kommen
-            // aus config.html und überschreiben die migrierten Altwerte.
-            applyGppConfig(false);
-            showAIBackendMigrationHint(migrationHint);
-            window.addEventListener('storage', e => { if (e.key && e.key.startsWith('gpp:cfg:')) applyGppConfig(false); });
-        }
-
-        // Spiegelt gpp:cfg:* in die ausgeblendeten Shim-Felder; dieses Tool schreibt nie zurück.
-        window.applyGppConfig = function (verbose) {
-            const backend = gppCfg.get('ai:backend') === 'openrouter' ? 'openrouter' : 'gemini';
-            const model = gppCfg.get('ai:model:' + backend) || aiBackendState.models[backend];
-            aiBackendState.provider = backend;
-            aiBackendState.models[backend] = model;
             const providerInput = document.getElementById('ai-doc-provider');
             const modelInput = document.getElementById('ai-doc-model');
             const keyInput = document.getElementById('ai-doc-key');
             if (providerInput) providerInput.value = backend;
-            if (modelInput) modelInput.value = model;
-            if (keyInput) keyInput.value = gppCfg.get('ai:key:' + backend);
-            if (typeof onAIDocumentProviderChange === 'function') onAIDocumentProviderChange({ silent: true });
-            if (typeof loadAISettings === 'function') loadAISettings();
-            if (typeof updateAIModelNote === 'function') updateAIModelNote();
-            if (backend === 'openrouter' && typeof refreshOpenRouterModels === 'function') refreshOpenRouterModels(false);
-            if (verbose) aiLog('ok', 'Einstellungen aus config.html neu übernommen.');
-        };
+            if (modelInput) modelInput.value = aiBackendState.models[backend];
+            if (keyInput) {
+                let storedKey = '';
+                try { storedKey = localStorage.getItem(aiKeyStorageId(backend)) || ''; } catch (e) { }
+                keyInput.value = storedKey;
+            }
+            aiBackendState.provider = backend;
+            onAIDocumentProviderChange({ silent: true });
+            // onAIDocumentProviderChange setzt das Feld beim Backendwechsel neu — der
+            // migrierte Wert gilt, deshalb hier noch einmal schreiben.
+            if (modelInput) modelInput.value = aiBackendState.models[backend];
+            showAIBackendMigrationHint(migrationHint);
+            saveAIDocumentConfig();
+            updateAIModelNote();
+            if (backend === 'openrouter') refreshOpenRouterModels(false);
+        }
 
         // --- KI-EINSTELLUNGEN ---
         function clampInt(value, min, max, fallback) {
@@ -2605,15 +2638,13 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             });
         }
 
-        // Laufzeitwerte kommen aus config.html (gpp:cfg:run:*); die Grenzen dieses
-        // Tools bleiben maßgeblich, damit ein zentral gesetzter Extremwert hier
-        // nicht in einen unbrauchbaren Lauf kippt.
         function loadAISettings() {
-            aiSettings.concurrency = clampInt(gppCfg.get('run:concurrency'), 1, 12, AI_SETTINGS_DEFAULTS.concurrency);
-            aiSettings.chunkSize = clampInt(gppCfg.get('run:chunkchars'), 4000, 60000, AI_SETTINGS_DEFAULTS.chunkSize);
-            aiSettings.retries = clampInt(gppCfg.get('run:retries'), 0, 5, AI_SETTINGS_DEFAULTS.retries);
-            const thinking = gppCfg.get('ai:thinking');
-            aiSettings.thinking = AI_THINKING_LEVELS.includes(thinking) ? thinking : AI_SETTINGS_DEFAULTS.thinking;
+            let stored = {};
+            try { stored = JSON.parse(localStorage.getItem(AI_SETTINGS_STORAGE) || '{}'); } catch (e) { }
+            aiSettings.concurrency = clampInt(stored.concurrency, 1, 12, AI_SETTINGS_DEFAULTS.concurrency);
+            aiSettings.chunkSize = clampInt(stored.chunkSize, 4000, 60000, AI_SETTINGS_DEFAULTS.chunkSize);
+            aiSettings.retries = clampInt(stored.retries, 0, 5, AI_SETTINGS_DEFAULTS.retries);
+            aiSettings.thinking = AI_THINKING_LEVELS.includes(stored.thinking) ? stored.thinking : AI_SETTINGS_DEFAULTS.thinking;
             applyAISettingsToInputs();
         }
 
@@ -2622,12 +2653,15 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             return AI_PROMPTS.find(entry => entry.key === key);
         }
 
-        // Prompttexte kommen zentral aus config.html; der Standardtext (seed) bleibt
-        // hier im Tool, damit es ohne fremde Datei erklärbar und lauffähig ist.
+        // Reihenfolge: offenes Editorfeld → gespeicherte Fassung → Standardtext (seed).
         function getAIPromptTemplate(key) {
             const definition = aiPromptDefinition(key);
             if (!definition) throw new Error(`Unbekannter Prompt: ${key}`);
-            return gppPrompt(GPP_TOOL_ID, key, definition.seed);
+            const field = document.getElementById(`ai-prompt-${key}`);
+            if (field && field.value.trim()) return field.value;
+            let stored = '';
+            try { stored = localStorage.getItem(AI_PROMPT_STORAGE_PREFIX + key) || ''; } catch (e) { }
+            return stored.trim() ? stored : definition.seed;
         }
 
         const getAISystemInstruction = () => getAIPromptTemplate('system');
@@ -2667,11 +2701,32 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             warn.classList.remove('hidden');
         }
 
-        // Bearbeitet werden die Prompts ausschließlich in config.html; hier nur anmelden.
+        window.onAIPromptInput = function (key) {
+            const field = document.getElementById(`ai-prompt-${key}`);
+            if (!field) return;
+            try { localStorage.setItem(AI_PROMPT_STORAGE_PREFIX + key, field.value); } catch (e) { console.warn(e); }
+            validateAIPrompt(key);
+        };
+
+        window.resetAIPrompt = function (key) {
+            const definition = aiPromptDefinition(key);
+            const field = document.getElementById(`ai-prompt-${key}`);
+            if (!definition || !field) return;
+            field.value = definition.seed;
+            try { localStorage.removeItem(AI_PROMPT_STORAGE_PREFIX + key); } catch (e) { }
+            validateAIPrompt(key);
+            aiLog('info', `Prompt zurückgesetzt: ${definition.label}`);
+        };
+
         function initAIPrompts() {
-            gppRegisterPrompts(GPP_TOOL_ID, AI_PROMPTS.map(d => ({
-                id: d.key, label: d.label, placeholders: d.placeholders || [], default: d.seed,
-            })));
+            AI_PROMPTS.forEach(definition => {
+                const field = document.getElementById(`ai-prompt-${definition.key}`);
+                if (!field) return;
+                let stored = '';
+                try { stored = localStorage.getItem(AI_PROMPT_STORAGE_PREFIX + definition.key) || ''; } catch (e) { }
+                field.value = stored.trim() ? stored : definition.seed;
+                validateAIPrompt(definition.key);
+            });
         }
         function getAIDocumentConfig() {
             const provider = document.getElementById('ai-doc-provider')?.value || '';
@@ -5636,12 +5691,9 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             if (!profileData) return;
 
             const safeName = t.replace(/\s+/g, '_');
+            // Ergebnis dieses Einzelwerkzeugs ist die heruntergeladene Datei. Wer damit
+            // in der Sammlung weiterarbeitet, lädt sie dort unter „Artefakte" in ein Set.
             downloadJSON(profileData, `${safeName}_Profile.json`);
-            // zusätzlich in den gemeinsamen Artefaktbestand (Übersicht in index.html)
-            gppArtefacts.save({
-                stage: 'model', kind: 'profile', tool: GPP_TOOL_ID,
-                title: `${t} — OSCAL-Profil (ED23)`, filename: `${safeName}_Profile.json`, data: profileData,
-            }).catch(e => console.warn('Artefakt (Profil) nicht abgelegt:', e));
 
             const generateSSPCheckbox = document.getElementById('generate-ssp-checkbox');
             if (generateSSPCheckbox && generateSSPCheckbox.checked) {
@@ -5651,11 +5703,6 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 const profileHash = await sha256Hex(profileBytes);
                 const sspData = generateSSP(t, profileData.profile.uuid, `${safeName}_Profile.json`, profileHash);
                 setTimeout(() => downloadJSON(sspData, `${safeName}_SSP.json`), 600);
-                gppArtefacts.save({
-                    stage: 'model', kind: 'ssp', tool: GPP_TOOL_ID,
-                    title: `${t} — Muster-SSP (ED23)`, filename: `${safeName}_SSP.json`, data: sspData,
-                    meta: { profile: `${safeName}_Profile.json`, profileSha256: profileHash },
-                }).catch(e => console.warn('Artefakt (SSP) nicht abgelegt:', e));
             }
         }
 

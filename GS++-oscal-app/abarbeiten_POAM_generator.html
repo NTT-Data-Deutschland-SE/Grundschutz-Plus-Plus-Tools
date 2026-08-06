@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL POA&M Generator v2.3</title>
+    <title>OSCAL POA&M Generator v2.3.1</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -600,7 +600,7 @@ input[type=date].inp{color-scheme:dark}
 
 </div><!-- /app -->
 
-<script src="gpp-core.js?v=3.2"></script>
+<script src="gpp-core.js?v=3.3"></script>
 <script>
 if(typeof gppCfg==='undefined'){
     document.body.innerHTML='<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">'+
@@ -612,7 +612,7 @@ if(typeof gppCfg==='undefined'){
 const GPP_TOOL_ID='abarbeiten_POAM_generator';
 gppCollapsibleLog({consoleEl:document.querySelector('.logbox'),
   headEl:document.querySelector('.logbox .log-tools'),toolId:GPP_TOOL_ID});
-const BUILD='v2.3';
+const BUILD='v2.3.1';
 const P={arFilename:'',sspHref:'',sysName:'',catalog:new Map(),findings:[],observations:[],risks:[],items:[],meta:{title:'',version:'1.0.0',desc:''},responsible:{name:'',role:'system-owner',email:''}};
 // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
 // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
@@ -1115,6 +1115,7 @@ async function callAIOnce(prompt,schema){
 }
 // Retry mit exponentiellem Backoff: 500ms → 1s → 2s.
 async function callAI(prompt,schema,retries=aiRetries(),label='KI-Call'){
+    prompt=gppWithContext(prompt);   // Unternehmenskontext aus config.html
     let attempt=0;
     const ai=getAI();
     l.info(`${label} → Backend ${ai?`${BACKENDS[ai.p]?.label||ai.p} · Modell ${ai.m}`:'(unkonfiguriert)'} · Prompt ${(prompt.length/1024).toFixed(1)} kB${schema?' · Structured Output':''}`);

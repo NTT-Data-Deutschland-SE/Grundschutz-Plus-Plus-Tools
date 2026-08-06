@@ -561,7 +561,7 @@ select{color-scheme:dark}
 
 </div>
 
-<script src="gpp-core.js?v=3.2"></script>
+<script src="gpp-core.js?v=3.3"></script>
 <script>
 "use strict";
 if (typeof gppCfg === "undefined") {
@@ -579,7 +579,7 @@ const GPP_TOOL_ID = "Baustein_2_Profile";
    Konstante; keine handgepflegten Versionsstrings mehr im File.
    ════════════════════════════════════════════════════════════════════════ */
 
-const APP_VERSION  = "0.9.0";
+const APP_VERSION  = "0.9.1";
 const APP_NAME     = "Baustein_2_Profile";
 
 // Fallback, wenn zentral kein Gemini-Modell gesetzt ist (config.html).
@@ -1582,9 +1582,11 @@ async function openrouterOnce(prompt, schema, r) {
 
 async function llmOnce(prompt, schema, route) {
   const r = route || resolveRoute("maker");
+  // Unternehmenskontext aus config.html — gilt für jeden Aufruf dieses Werkzeugs.
+  const p = gppWithContext(prompt);
   return r.backend === "openrouter"
-    ? openrouterOnce(prompt, schema, r)
-    : geminiOnce(prompt, schema, r);
+    ? openrouterOnce(p, schema, r)
+    : geminiOnce(p, schema, r);
 }
 
 /* ── Token accounting (Gemini usageMetadata) ─────────────────────────────── */

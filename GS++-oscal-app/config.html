@@ -267,7 +267,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
   </div>
 </main>
 
-<script src="gpp-core.js?v=3.2"></script>
+<script src="gpp-core.js?v=3.3"></script>
 <script>
 if (typeof gppCfg === "undefined") {
   document.querySelector("main").innerHTML =
@@ -391,6 +391,17 @@ $("btn-openai-models").addEventListener("click", async () => {
     note.textContent = "Abfrage fehlgeschlagen: " + e.message + " (CORS des Hosts prüfen)";
   }
 });
+
+/* Werkzeuge, die aus der Sammlung ausgezogen sind (one-page-apps/): sie laufen
+   eigenständig und lesen diese Konfiguration nicht mehr. Ihre alten
+   Registrierungen liegen aber noch im localStorage jedes Browsers, in dem sie
+   einmal liefen — und würden hier Prompts und Repin-Knöpfe anbieten, die
+   nirgends mehr ankommen. Deshalb einmalig entfernen. */
+const GPP_AUSGEZOGEN = ["ssp_generator_ed23", "c5-oscal-converter"];
+for (const tool of GPP_AUSGEZOGEN) {
+  localStorage.removeItem("gpp:cfg:srcdefaults:" + tool);
+  localStorage.removeItem("gpp:cfg:promptdefaults:" + tool);
+}
 
 /* ---------- Prompts (aus der Selbstregistrierung der Tools) ---------- */
 function promptRegistrations() {

@@ -24,8 +24,8 @@ Das Repository umfasst insbesondere folgende Bereiche:
 - [`Gpp-ai-tool`](./Gpp-ai-tool) – Python-basiertes KI-Werkzeug zur automatisierten Erstellung und Anreicherung von OSCAL-Komponentendefinitionen
 - [`GS++-oscal-app`](./GS++-oscal-app) – browserbasierte HTML/JS-Werkzeuge für Modellierung, SSP-Bearbeitung, Audit und Maßnahmenplanung
 - [`kataloge`](./kataloge) – produktive OSCAL-Kataloge zu anderen Themen
-- [`ED23-Baustein-komponenten`](./ED23-Baustein-komponenten) – produktive OSCAL-Kataloge (Komponentendefinitionen) auf Basis des IT-Grundschutz Edition 2023
-- [`zielobjektkategorien`](./zielobjektkategorien) – strukturierte OSCAL-Profile und OSCAL-Komponenten auf Basis von Zielobjektkategorien
+- [`ED23-Baustein-profile`](./ED23-Baustein-profile) – OSCAL-Profile je Baustein des IT-Grundschutz Edition 2023
+- [`Zielobjektkategorien`](./Zielobjektkategorien) – OSCAL-Profile je Zielobjektkategorie, getrennt nach Prozessen und regulären Zielobjekten
 - [`hilfsdateien`](./hilfsdateien) – Mapping-, Referenz- und Arbeitsdateien zur Unterstützung der Werkzeuge und Inhalte
 - [`beispiel-kataloge`](./beispiel-kataloge) – Beispielkataloge im OSCAL-Format für Demonstration, Tests und Experimente
 
@@ -35,10 +35,14 @@ Das Repository umfasst insbesondere folgende Bereiche:
 Grundschutz-Plus-Plus-Tools/
 ├── Gpp-ai-tool/
 ├── GS++-oscal-app/
-├── ED23-Baustein-komponenten/
-├── zielobjektkategorien/
-│   ├── profile/
-│   └── komponenten/
+├── one-page-apps/
+├── ED23-Baustein-profile/
+│   └── DE/
+├── Zielobjektkategorien/
+│   └── profile/
+│       ├── process/
+│       └── regular/
+├── kataloge/
 ├── hilfsdateien/
 └── beispiel-kataloge/
 ```
@@ -217,13 +221,13 @@ Diese Kataloge sind in das OSCAL Katalog Format konvertierte Sicherheitsstandard
 
 ---
 
-### `ED23-Baustein-komponenten`
+### `ED23-Baustein-profile`
 
-Dieses Verzeichnis enthält produktive OSCAL-Kataloge in Form von Komponentendefinitionen, die auf den Bausteinen des BSI IT-Grundschutz Edition 2023 basieren.
+Dieses Verzeichnis enthält OSCAL-Profile, die auf den Bausteinen des BSI IT-Grundschutz Edition 2023 basieren. Die Dateien liegen unter `DE/`.
 
 #### Zweck
 
-Die Komponenten in diesem Verzeichnis dienen als produktive Grundlage für:
+Die Profile in diesem Verzeichnis dienen als Grundlage für:
 
 - Die automatisierte Erstellung und Anreicherung von System Security Plans (SSP).
 - Die detaillierte Dokumentation von Umsetzungsmaßnahmen.
@@ -231,11 +235,11 @@ Die Komponenten in diesem Verzeichnis dienen als produktive Grundlage für:
 
 #### Inhalt
 
-Die Dateien sind nach den Bausteinen der Edition 2023 benannt und enthalten "enhanced" Beschreibungen, die über die reinen Anforderungen hinausgehen und konkrete Implementierungsvorschläge sowie Prüfhinweise liefern.
+Die Dateien sind nach Schicht und Baustein benannt (`anwendungen_APP.4.2_sap-erp-system.json`). Zu jedem Baustein gibt es zwei Fassungen: die schlichte und eine mit dem Zusatz `_enhanced`, die über die reinen Anforderungen hinaus konkrete Implementierungsvorschläge und Prüfhinweise liefert.
 
 ---
 
-### `zielobjektkategorien`
+### `Zielobjektkategorien`
 
 Dieses Verzeichnis enthält die fachlich strukturierte Sammlung von OSCAL-Dateien auf Basis von GS++ Zielobjektkategorien wie sie in der offiziellen Methodik definiert sind.
 
@@ -243,46 +247,33 @@ Es ist der inhaltliche Kernbestand für wiederverwendbare Grundschutz++-Artefakt
 
 #### Zweck
 
-`zielobjektkategorien` dient dazu,
+`Zielobjektkategorien` dient dazu,
 
 - Zielobjektkategorien in strukturierter Form bereitzustellen,
 - OSCAL-Profile pro Kategorie verfügbar zu machen,
-- OSCAL-Komponentendefinitionen pro Kategorie verfügbar zu machen,
 - eine nachvollziehbare Zuordnung zwischen fachlicher Kategorie und technischem Artefakt zu schaffen.
 
-#### Inhalt von `zielobjektkategorien`
+#### Inhalt von `Zielobjektkategorien`
 
-##### `profile/`
-Hier liegen OSCAL-Profile pro Zielobjektkategorie.
+Alle Dateien liegen unter `profile/`, getrennt nach den beiden Arten von Zielobjekten der Methodik.
 
-Die Benennung folgt einem klaren Muster wie zum Beispiel:
+##### `profile/regular/`
+OSCAL-Profile für reguläre Zielobjekte — die Dinge, die man anfassen, betreiben oder beauftragen kann:
 
 - `administrierende_profile.json`
 - `cloud-dienste_profile.json`
-- `daten_profile.json`
-- `it-systeme_profile.json`
-- `webserver_profile.json`
-- `wlans_profile.json`
+- `dateiserver_profile.json`
+- `anwendungen_profile.json`
+
+##### `profile/process/`
+OSCAL-Profile für Prozess-Zielobjekte, benannt nach dem Prozesskürzel:
+
+- `arch_process_profile.json`
+- `asst_process_profile.json`
+
+In beiden Verzeichnissen gibt es zu jedem Profil zusätzlich eine Fassung mit dem Zusatz `_enhanced`.
 
 Diese Profile eignen sich als Ausgangspunkt für Modellierung, Tailoring, SSP-Erstellung und Prüfvorbereitung.
-
-##### `komponenten/`
-Hier liegen OSCAL-Komponentendefinitionen pro Zielobjektkategorie.
-
-Die Benennung folgt einem parallelen Schema, zum Beispiel:
-
-- `administrierende-component.json`
-- `cloud-dienste-component.json`
-- `daten-component.json`
-- `it-systeme-component.json`
-- `office-anwendungen-component.json`
-- `serverraeume-component.json`
-
-Diese Dateien sind vor allem dann relevant, wenn mit konkreten Komponenten, wiederverwendbaren Implementierungsbausteinen oder standardisierten Umsetzungsbeschreibungen gearbeitet wird.
-
-#### Einordnung
-
-Während `profile/` stärker den anwendbaren Kontrollrahmen einer Zielobjektkategorie abbildet, liefern `komponenten/` eher umsetzungsnahe und wiederverwendbare Beschreibungen für die praktische Anwendung in Sicherheitskonzepten, Prüfungen oder Automatisierung.
 
 ---
 
@@ -358,8 +349,8 @@ Die Beispielkataloge sind besonders nützlich für:
 Die Verzeichnisse sind bewusst so angelegt, dass sie zusammen einen nachvollziehbaren Arbeitsfluss unterstützen:
 
 1. **Katalog wählen** – Basiskatalog in `kataloge/` identifizieren.
-2. **Inhalte auswählen** – passende Zielobjektkategorie in `zielobjektkategorien/` identifizieren.
-3. **Umsetzung festlegen** – produktive Implementierungsbausteine aus `ED23-Baustein-komponenten/` wählen.
+2. **Inhalte auswählen** – passende Zielobjektkategorie in `Zielobjektkategorien/` identifizieren.
+3. **Umsetzung festlegen** – passende Baustein-Profile aus `ED23-Baustein-profile/` wählen.
 4. **Grundlage modellieren** – mit den Apps in `GS++-oscal-app/` Profile und SSPs erzeugen bzw. bearbeiten.
 5. **Hilfsdaten einbinden** – Referenz- und Mapping-Dateien aus `hilfsdateien/` zur Unterstützung von Zuordnung, Parsing oder Kontextualisierung nutzen.
 6. **Automatisieren und anreichern** – mit `Gpp-ai-tool/` Komponenten, Zuordnungen oder ergänzende Beschreibungen programmatisch erzeugen.
@@ -380,7 +371,7 @@ Dieses Repository richtet sich insbesondere an:
 
 - Die Verzeichnisse sind bewusst fachlich getrennt, damit Werkzeuge, Inhalte und Hilfsdaten unabhängig voneinander nutzbar bleiben.
 - Die GS++-oscal-app eignen sich für direkte interaktive Nutzung im Browser.
-- Die Artefakte unter `zielobjektkategorien/`, `hilfsdateien/` und `beispiel-kataloge/` eignen sich für Import, Weiterverarbeitung, Analyse und Referenzierung.
+- Die Artefakte unter `Zielobjektkategorien/`, `hilfsdateien/` und `beispiel-kataloge/` eignen sich für Import, Weiterverarbeitung, Analyse und Referenzierung.
 - `Gpp-ai-tool/` ist der technische Bereich für reproduzierbare, skript- und pipelinegestützte Verarbeitung.
 
 ## Haftungsausschluss
