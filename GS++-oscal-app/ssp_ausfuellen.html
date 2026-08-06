@@ -1,0 +1,2805 @@
+<!DOCTYPE html>
+<html lang="de" class="h-full bg-slate-900">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.2.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+    select,option{background-color:#1b1b23;color:#e8e8ef}
+    select{color-scheme:dark}
+    /* ==========================================================================
+       DESIGN SYSTEM "Glassmorphic Deep" — handgeschrieben, kein Tailwind-CDN.
+       Die Utility-Klassennamen im Markup bleiben erhalten und werden ausschliess-
+       lich von diesem Stylesheet bedient (siehe Abschnitt "UTILITY-LAYER").
+       ========================================================================== */
+
+    :root {
+        --bg-deep:      oklch(0.13 0.02 280);
+        --bg-elev-1:    oklch(0.95 0.005 280 / 0.04);
+        --bg-elev-2:    oklch(0.95 0.005 280 / 0.06);
+        --bg-elev-3:    oklch(0.95 0.005 280 / 0.08);
+        --border-1:     oklch(0.95 0.005 280 / 0.06);
+        --border-2:     oklch(0.95 0.005 280 / 0.10);
+        --text-primary:   oklch(0.95 0.005 280);
+        --text-secondary: oklch(0.75 0.02 280);
+        --text-tertiary:  oklch(0.65 0.02 280);
+        --text-quiet:     oklch(0.55 0.02 280);
+        --accent:         oklch(0.7  0.18 300);
+        --accent-soft:    oklch(0.7  0.18 300 / 0.15);
+        --accent-glow:    oklch(0.7  0.18 300 / 0.4);
+        --red:   oklch(0.65 0.2 25);
+        --amber: oklch(0.80 0.15 80);
+        --green: oklch(0.75 0.18 145);
+        --blue:  oklch(0.70 0.15 240);
+        /* abgeleitete Farben fuer Datensemantik (Badges, Schutzziele) */
+        --orange:  oklch(0.72 0.17 55);
+        --cyan:    oklch(0.75 0.12 200);
+        --fuchsia: oklch(0.72 0.20 330);
+        --indigo:  oklch(0.68 0.15 275);
+        --inset:   oklch(0.10 0.02 280 / 0.45);
+        /* Shell-Geometrie */
+        --topbar-h: 64px;
+        --log-h:    220px;
+        --rail-w:   240px;
+        color-scheme: dark;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { height: 100%; background: var(--bg-deep); }
+    body {
+        margin: 0; height: 100%;
+        display: flex; flex-direction: column;
+        background: var(--bg-deep);
+        color: var(--text-primary);
+        font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+        font-size: 14px; line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        overflow: hidden;
+    }
+    h1, h2, h3, h4, h5 { margin: 0; font-weight: 600; }
+    p { margin: 0; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    input, select, textarea { font: inherit; color: inherit; }
+    code { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .92em; }
+    hr { border: 0; border-top: 1px solid var(--border-1); }
+    table { border-collapse: collapse; }
+
+    ::selection { background: oklch(0.7 0.18 300 / 0.35); color: oklch(0.95 0.005 280); }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* ---------- Atmosphaere: Aurora-Blobs + Noise ---------- */
+    .aurora { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
+    .aurora-a { width: 600px; height: 600px; top: -200px; left: -100px; filter: blur(60px);
+                background: radial-gradient(circle, oklch(0.4 0.18 300 / .5), transparent 70%); }
+    .aurora-b { width: 700px; height: 700px; bottom: -300px; right: -200px; filter: blur(80px);
+                background: radial-gradient(circle, oklch(0.4 0.16 240 / .4), transparent 70%); }
+    .noise { position: fixed; inset: 0; opacity: .03; pointer-events: none; z-index: 0;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><filter id='n'><feTurbulence baseFrequency='0.9'/></filter><rect width='100' height='100' filter='url(%23n)'/></svg>"); }
+
+    /* ---------- Scrollbars (6px, Glas-Thumb, Akzent beim Hover) ---------- */
+    ::-webkit-scrollbar, .cscroll::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track, .cscroll::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb, .cscroll::-webkit-scrollbar-thumb { background: var(--bg-elev-3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover, .cscroll::-webkit-scrollbar-thumb:hover { background: var(--accent-soft); }
+    * { scrollbar-width: thin; scrollbar-color: var(--bg-elev-3) transparent; }
+
+    /* ==========================================================================
+       LAYOUT-SHELL: Top-Bar / Rail + Splitter / Main / Log-Konsole
+       ========================================================================== */
+    .topbar {
+        position: relative; z-index: 3; flex: 0 0 auto;
+        height: var(--topbar-h); display: flex; align-items: center; gap: 14px;
+        padding: 0 16px;
+        background: var(--bg-elev-1);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border-2);
+    }
+    .brand { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+    .brand-mark { color: var(--accent); font-size: 18px; line-height: 1; }
+    .brand-name { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700;
+                  letter-spacing: .16em; color: var(--text-primary); white-space: nowrap; }
+    .brand-sep { color: var(--text-quiet); }
+    .brand-app { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 500;
+                 letter-spacing: .18em; color: var(--text-tertiary); text-transform: uppercase; white-space: nowrap; }
+    .topbar-meta { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .meta-pill {
+        font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .08em;
+        text-transform: uppercase; color: var(--text-quiet);
+        border: 1px solid var(--border-1); border-radius: 999px; padding: 3px 10px;
+        background: var(--bg-elev-1); white-space: nowrap;
+    }
+    .sb-toggle {
+        flex: 0 0 auto; width: 32px; height: 32px; border-radius: 8px;
+        border: 1px solid var(--border-2); background: var(--bg-elev-1);
+        color: var(--text-secondary); font-size: 15px; line-height: 1;
+        display: inline-flex; align-items: center; justify-content: center;
+        transition: background .15s ease, color .15s ease, border-color .15s ease;
+    }
+    .sb-toggle:hover { background: var(--bg-elev-3); color: var(--text-primary); }
+    .sb-toggle.shifted { color: var(--accent); border-color: oklch(0.7 0.18 300 / 0.35); }
+
+    .shell { position: relative; z-index: 1; flex: 1 1 auto; min-height: 0; display: flex; }
+
+    .sidebar {
+        flex: 0 0 auto; width: var(--rail-w); min-width: var(--rail-w);
+        height: 100%; overflow-y: auto; overflow-x: hidden;
+        background: var(--bg-elev-1);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border-right: 1px solid var(--border-1);
+        transition: margin-left .18s ease, opacity .18s ease;
+    }
+    .sidebar.collapsed { margin-left: calc(-1 * var(--rail-w)); opacity: 0; pointer-events: none; }
+
+    .splitter {
+        flex: 0 0 5px; cursor: col-resize; background: transparent;
+        border-right: 1px solid transparent; transition: background .15s ease;
+    }
+    .splitter:hover, body.resizing .splitter { background: var(--accent-soft); }
+    body.resizing { user-select: none; cursor: col-resize; }
+
+    main { position: relative; }
+
+    /* Fortschritt statt Spinner: 1px-Hairline, amber -> gruen, blendet verzoegert aus */
+    .progress-strip {
+        position: fixed; top: var(--topbar-h); left: 0; right: 0; z-index: 40;
+        display: flex; align-items: center; gap: 12px; padding: 7px 16px 0;
+        background: oklch(0.13 0.02 280 / 0.85);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border-1);
+    }
+    .progress-strip .progress-label {
+        font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--text-secondary); white-space: nowrap;
+    }
+    .progress-strip .progress-count {
+        font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-quiet); white-space: nowrap;
+    }
+    .progress-track { flex: 1 1 auto; height: 1px; background: var(--border-1); overflow: hidden; margin-bottom: 7px; }
+    .progress-fill { height: 100%; width: 0%; background: var(--amber); transition: width .2s ease, background .2s ease; }
+    .progress-fill.done { background: var(--green); }
+
+    /* KI-Aktivitaet je Control: 1px-Hairline statt Spinner */
+    .ai-loader { display: none; width: 72px; height: 1px; background: var(--border-2); position: relative; overflow: hidden; }
+    .ai-loader::after { content: ''; position: absolute; inset: 0 auto 0 0; width: 34%; background: var(--accent);
+                        animation: hairline 1.1s ease-in-out infinite; }
+    @keyframes hairline { 0% { left: -34%; } 100% { left: 100%; } }
+    .loader-sm { display: none; }
+
+    /* ---------- Log-Konsole ---------- */
+    .logbox {
+        position: relative; z-index: 2; flex: 0 0 var(--log-h);
+        display: flex; flex-direction: column; min-height: 0;
+        background: var(--bg-elev-1);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid var(--border-2);
+    }
+    .log-head {
+        flex: 0 0 auto; display: flex; align-items: center; gap: 12px;
+        padding: 8px 14px; border-bottom: 1px solid var(--border-1);
+        font-family: 'JetBrains Mono', monospace; font-size: 10px;
+        letter-spacing: .12em; text-transform: uppercase; color: var(--text-tertiary);
+    }
+    .log-head .log-title { color: var(--text-secondary); font-weight: 700; }
+    .log-head .log-title .g { color: var(--accent); margin-right: 6px; }
+    .log-head .log-count { color: var(--text-secondary); font-weight: 700; }
+    .log-head .spacer { margin-left: auto; }
+    .log-head label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+    .log-btn {
+        font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+        border: 1px solid var(--border-2); border-radius: 6px; padding: 3px 9px;
+        background: var(--bg-elev-1); color: var(--text-tertiary);
+        transition: background .15s ease, color .15s ease, border-color .15s ease;
+    }
+    .log-btn:hover { background: var(--bg-elev-3); color: var(--text-primary); border-color: var(--accent); }
+    .log-body {
+        flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 8px 14px 12px;
+        font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.55;
+    }
+    .log-line { display: flex; gap: 10px; white-space: pre-wrap; word-break: break-word; }
+    .log-ts { color: var(--text-quiet); flex: 0 0 auto; }
+    .log-lvl { flex: 0 0 46px; font-weight: 700; letter-spacing: .06em; }
+    .log-msg { flex: 1 1 auto; color: var(--text-secondary); }
+    .log-info  .log-lvl { color: var(--blue); }
+    .log-ok    .log-lvl { color: var(--green); }
+    .log-warn  .log-lvl { color: var(--amber); }
+    .log-err   .log-lvl { color: var(--red); }
+    .log-debug .log-lvl { color: var(--text-quiet); }
+    .log-err   .log-msg { color: oklch(0.82 0.10 25); }
+    .log-debug .log-msg { color: var(--text-quiet); }
+
+    /* ==========================================================================
+       KOMPONENTEN
+       ========================================================================== */
+    .collapsible-content, .coll-content { overflow: hidden; max-height: 0; opacity: 0; transition: max-height .2s ease-out, opacity .16s ease-in-out; }
+    .collapsible-content.open, .coll-content.open { max-height: none; opacity: 1; overflow: auto; min-height: 0; }
+    .chevron-icon, .chev { transition: transform .18s ease; }
+    .chevron-icon.open, .chev.open { transform: rotate(90deg); }
+
+    .param-placeholder {
+        color: var(--accent); font-family: 'JetBrains Mono', monospace; font-weight: 600;
+        background: var(--accent-soft); padding: 0 5px; border-radius: 4px; cursor: help;
+    }
+    .maturity-radio-label:hover { background: var(--bg-elev-2); }
+
+    .drag-over { border-color: var(--accent) !important; background: var(--accent-soft) !important; }
+
+    .sb {
+        font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 8px; border-radius: 999px;
+        font-weight: 700; text-transform: uppercase; letter-spacing: .06em; border: 1px solid; display: inline-block;
+    }
+
+    /* Dropzones */
+    .dz { transition: border-color .15s ease, background .15s ease, color .15s ease; }
+    .dz:hover { background: var(--bg-elev-2); }
+
+    /* File input versteckt, aber klickbar */
+    input[type="file"].fip { position: absolute; left: -9999px; top: -9999px; width: 0; height: 0; opacity: 0; }
+
+    /* Formularfelder — Glas, violetter Focus-Ring */
+    input[type="text"].inp, input[type="password"].inp, input[type="email"].inp, input[type="date"].inp,
+    select.inp, textarea.inp {
+        padding: .45rem .6rem !important;
+        background-color: var(--bg-elev-2) !important;
+        border: 1px solid var(--border-2) !important;
+        border-radius: 8px !important;
+        font-size: .8125rem !important;
+        color: var(--text-primary) !important;
+        outline: none !important;
+        transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease !important;
+    }
+    input.inp:focus, select.inp:focus, textarea.inp:focus {
+        border-color: var(--accent) !important;
+        box-shadow: 0 0 0 3px var(--accent-soft) !important;
+        background-color: var(--bg-elev-3) !important;
+    }
+    input.inp::placeholder, textarea.inp::placeholder { color: var(--text-quiet); }
+    select.inp {
+        appearance: none; -webkit-appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6' fill='none' stroke='%23a89fb5' stroke-width='1.4'><path d='M1 1l4 4 4-4'/></svg>") !important;
+        background-repeat: no-repeat !important;
+        background-position: right .5rem center !important;
+        background-size: 9px 6px !important;
+        padding-right: 1.6rem !important;
+    }
+    select.inp option { background: #17131f; color: #eae7ef; }
+    textarea { resize: vertical; }
+    textarea.inp { resize: vertical; min-height: 80px; font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    input[type="radio"], input[type="checkbox"] { accent-color: oklch(0.7 0.18 300); cursor: pointer; }
+
+    /* KI-Antworten (marked.js Output) */
+    .ai-response-content { font-size: .8125rem; line-height: 1.65; color: var(--text-secondary); }
+    .ai-response-content h1, .ai-response-content h2, .ai-response-content h3 {
+        color: var(--text-primary); font-weight: 600; margin: 1em 0 .5em;
+        border-bottom: 1px solid var(--border-2); padding-bottom: .25em;
+    }
+    .ai-response-content p { margin-bottom: 1em; }
+    .ai-response-content ul { list-style: disc; padding-left: 1.5em; margin-bottom: 1em; }
+    .ai-response-content ol { list-style: decimal; padding-left: 1.5em; margin-bottom: 1em; }
+    .ai-response-content strong { color: var(--text-primary); font-weight: 600; }
+    .ai-response-content table { width: 100%; margin-bottom: 1em; }
+    .ai-response-content th, .ai-response-content td { border: 1px solid var(--border-2); padding: .5em; }
+    .ai-response-content th { background: var(--bg-elev-2); color: var(--text-primary); }
+    .ai-response-content code {
+        background: var(--accent-soft); color: var(--text-primary);
+        padding: .15em .4em; border-radius: 4px; font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Karten heben beim Hover eine Elevation-Stufe */
+    .ctrl-entry { transition: background-color .15s ease, border-color .15s ease; }
+    .ctrl-entry:hover { border-color: var(--border-2) !important; }
+
+    /* Mono fuer Sektions-Labels, IDs, Zahlen */
+    .collapsible-header h2, .comp-card h3 { letter-spacing: -.01em; }
+    label.block, .uppercase.tracking-wide, .uppercase.tracking-wider { font-family: 'JetBrains Mono', monospace; }
+
+    /* ==========================================================================
+       UTILITY-LAYER — Ersatz fuer das entfernte Tailwind-CDN.
+       Enthaelt genau die Klassen, die im Markup bzw. in den JS-Template-Literalen
+       dieser Datei vorkommen (per Skript ermittelt).
+       ========================================================================== */
+
+    /* Display / Position */
+    .block { display: block; }
+    .inline-flex { display: inline-flex; }
+    .flex { display: flex; }
+    .grid { display: grid; }
+    .hidden { display: none !important; }
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+    .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+    .top-0 { top: 0; }
+    .right-0 { right: 0; }
+    .z-30 { z-index: 30; }
+    .z-50 { z-index: 50; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-y-auto { overflow-y: auto; min-height: 0; }
+
+    /* Flex / Grid */
+    .flex-1 { flex: 1 1 0%; min-width: 0; min-height: 0; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-start { align-items: flex-start; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .gap-1 { gap: .25rem; }
+    .gap-2 { gap: .5rem; }
+    .gap-3 { gap: .75rem; }
+    .gap-4 { gap: 1rem; }
+
+    /* Groessen */
+    .h-full { height: 100%; }
+    .h-1\.5 { height: .375rem; }
+    .h-2 { height: .5rem; }
+    .h-3 { height: .75rem; }
+    .h-5 { height: 1.25rem; }
+    .h-12 { height: 3rem; }
+    .w-full { width: 100%; }
+    .w-1\.5 { width: .375rem; }
+    .w-2 { width: .5rem; }
+    .w-3 { width: .75rem; }
+    .w-5 { width: 1.25rem; }
+    .w-12 { width: 3rem; }
+    .w-32 { width: 8rem; }
+    .max-h-96 { max-height: 24rem; }
+    .max-w-lg { max-width: 32rem; }
+    .max-w-7xl { max-width: 80rem; }
+
+    /* Abstaende */
+    .p-1\.5 { padding: .375rem; }
+    .p-2 { padding: .5rem; }
+    .p-2\.5 { padding: .625rem; }
+    .p-3 { padding: .75rem; }
+    .p-4 { padding: 1rem; }
+    .px-2 { padding-left: .5rem; padding-right: .5rem; }
+    .py-0\.5 { padding-top: .125rem; padding-bottom: .125rem; }
+    .py-1 { padding-top: .25rem; padding-bottom: .25rem; }
+    .py-1\.5 { padding-top: .375rem; padding-bottom: .375rem; }
+    .py-12 { padding-top: 3rem; padding-bottom: 3rem; }
+    .pt-1 { padding-top: .25rem; }
+    .pt-2 { padding-top: .5rem; }
+    .pt-3 { padding-top: .75rem; }
+    .pr-2 { padding-right: .5rem; }
+    .pr-16 { padding-right: 4rem; }
+    .m-auto { margin: auto; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .ml-auto { margin-left: auto; }
+    .mt-auto { margin-top: auto; }
+    .ml-1 { margin-left: .25rem; }
+    .ml-2 { margin-left: .5rem; }
+    .mr-1 { margin-right: .25rem; }
+    .mr-1\.5 { margin-right: .375rem; }
+    .mr-2 { margin-right: .5rem; }
+    .mr-4 { margin-right: 1rem; }
+    .mt-0\.5 { margin-top: .125rem; }
+    .mt-1 { margin-top: .25rem; }
+    .mt-2 { margin-top: .5rem; }
+    .mt-3 { margin-top: .75rem; }
+    .mt-4 { margin-top: 1rem; }
+    .mb-0\.5 { margin-bottom: .125rem; }
+    .mb-1 { margin-bottom: .25rem; }
+    .mb-1\.5 { margin-bottom: .375rem; }
+    .mb-2 { margin-bottom: .5rem; }
+    .mb-3 { margin-bottom: .75rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .space-y-1 > * + * { margin-top: .25rem; }
+    .space-y-1\.5 > * + * { margin-top: .375rem; }
+    .space-y-2 > * + * { margin-top: .5rem; }
+    .space-y-3 > * + * { margin-top: .75rem; }
+    .space-y-4 > * + * { margin-top: 1rem; }
+    .space-y-5 > * + * { margin-top: 1.25rem; }
+    .space-y-6 > * + * { margin-top: 1.5rem; }
+
+    /* Typografie */
+    .font-sans { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    .font-medium { font-weight: 500; }
+    .font-semibold { font-weight: 600; }
+    .font-bold { font-weight: 700; }
+    .text-\[8px\] { font-size: 8px; }
+    .text-\[9px\] { font-size: 9px; }
+    .text-\[10px\] { font-size: 10px; }
+    .text-xs { font-size: 11.5px; }
+    .text-sm { font-size: 13px; }
+    .text-base { font-size: 15px; }
+    .text-lg { font-size: 17px; }
+    .text-2xl { font-size: 24px; }
+    .uppercase { text-transform: uppercase; }
+    .italic { font-style: italic; }
+    .underline { text-decoration: underline; }
+    .tracking-wide { letter-spacing: .035em; }
+    .tracking-wider { letter-spacing: .06em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.38; }
+    .leading-relaxed { line-height: 1.65; }
+    .text-left { text-align: left; }
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    .whitespace-nowrap { white-space: nowrap; }
+    .whitespace-pre-wrap { white-space: pre-wrap; }
+    .break-all { word-break: break-all; }
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .align-top { vertical-align: top; }
+    /* Mono fuer strukturierte Texte: Labels, IDs, Zahlen */
+    .uppercase.font-bold, .uppercase.font-semibold, .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+    /* Rahmen / Radius */
+    .border { border-width: 1px; border-style: solid; border-color: var(--border-1); }
+    .border-4 { border-width: 4px; border-style: solid; border-color: var(--border-1); }
+    .border-t { border-top-width: 1px; border-top-style: solid; border-top-color: var(--border-1); }
+    .border-b { border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: var(--border-1); }
+    .border-l { border-left-width: 1px; border-left-style: solid; border-left-color: var(--border-1); }
+    .border-r { border-right-width: 1px; border-right-style: solid; border-right-color: var(--border-1); }
+    .border-l-4 { border-left-width: 3px; border-left-style: solid; }
+    .border-dashed { border-style: dashed; }
+    .border-collapse { border-collapse: collapse; }
+    .rounded { border-radius: 8px; }
+    .rounded-md { border-radius: 10px; }
+    .rounded-lg { border-radius: 12px; }
+    .rounded-bl { border-bottom-left-radius: 8px; }
+    .rounded-full { border-radius: 9999px; }
+    .ring-2 { box-shadow: 0 0 0 2px var(--ring-color, transparent); }
+    .ring-emerald-500 { --ring-color: oklch(0.7 0.18 300 / .55); }
+
+    /* Effekte / Motion */
+    .opacity-50 { opacity: .5; }
+    .opacity-60 { opacity: .6; }
+    .opacity-70 { opacity: .7; }
+    .shadow-sm, .shadow-md { box-shadow: none; }
+    .transition-colors { transition: background-color .15s ease, border-color .15s ease, color .15s ease; }
+    .cursor-pointer { cursor: pointer; }
+    .cursor-not-allowed { cursor: not-allowed; }
+    .animate-pulse { animation: calmpulse 2.4s ease-in-out infinite; }
+    @keyframes calmpulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+
+    /* --- Flaechen (slate -> Glas) --- */
+    .bg-slate-900 { background-color: transparent; }
+    .bg-slate-900\/30 { background-color: oklch(0.10 0.02 280 / .30); }
+    .bg-slate-900\/40 { background-color: oklch(0.10 0.02 280 / .34); }
+    .bg-slate-900\/50 { background-color: oklch(0.10 0.02 280 / .40); }
+    .bg-slate-900\/60 { background-color: oklch(0.10 0.02 280 / .46); }
+    .bg-slate-900\/80 { background-color: oklch(0.10 0.02 280 / .55); }
+    .bg-slate-800 { background-color: var(--bg-elev-1); }
+    .bg-slate-700 { background-color: var(--bg-elev-3); }
+    .hover\:bg-slate-600:hover { background-color: var(--bg-elev-3); }
+    .hover\:bg-slate-700:hover { background-color: var(--bg-elev-2); }
+    .hover\:bg-slate-800:hover { background-color: var(--bg-elev-2); }
+    .disabled\:bg-slate-700:disabled { background-color: var(--bg-elev-1); color: var(--text-quiet); box-shadow: none; border-color: var(--border-1); }
+
+    /* --- Text (slate) --- */
+    .text-white { color: var(--text-primary); }
+    .text-slate-200 { color: var(--text-primary); }
+    .text-slate-300 { color: var(--text-secondary); }
+    .text-slate-400 { color: var(--text-tertiary); }
+    .text-slate-500 { color: var(--text-quiet); }
+    .text-gray-400 { color: var(--text-tertiary); }
+
+    /* --- Rahmenfarben (slate/grau) --- */
+    .border-slate-600 { border-color: var(--border-2); }
+    .border-slate-600\/50 { border-color: var(--border-1); }
+    .border-slate-700 { border-color: var(--border-1); }
+    .border-slate-700\/50 { border-color: var(--border-1); }
+    .border-gray-700 { border-color: var(--border-1); }
+    .bg-gray-800 { background-color: var(--bg-elev-1); }
+    .border-transparent { border-color: transparent; }
+    .hover\:border-slate-700:hover { border-color: var(--border-2); }
+
+    /* --- Akzent: violett (ersetzt Emerald/Blau/Purple als Interaktionsfarbe) --- */
+    .bg-emerald-600 { background-color: var(--accent); color: oklch(0.16 0.03 300); box-shadow: 0 6px 20px var(--accent-glow); }
+    .hover\:bg-emerald-500:hover { background-color: oklch(0.76 0.17 300); }
+    .bg-purple-700 { background-color: var(--bg-elev-2); border: 1px solid oklch(0.7 0.18 300 / .35); color: var(--text-primary); }
+    .hover\:bg-purple-600:hover { background-color: var(--accent-soft); }
+    .hover\:text-emerald-400:hover { color: var(--accent); }
+    .hover\:text-white:hover { color: var(--text-primary); }
+    .hover\:border-emerald-500:hover, .hover\:border-blue-500:hover, .hover\:border-purple-500:hover { border-color: var(--accent); }
+    .text-violet-300 { color: oklch(0.82 0.12 300); }
+    .text-violet-400 { color: var(--accent); }
+    .bg-violet-900 { background-color: var(--accent-soft); }
+    .bg-violet-900\/50 { background-color: oklch(0.7 0.18 300 / .12); }
+    .hover\:bg-violet-800:hover { background-color: oklch(0.7 0.18 300 / .24); }
+    .border-violet-700 { border-color: oklch(0.7 0.18 300 / .45); }
+    .border-violet-700\/50 { border-color: oklch(0.7 0.18 300 / .30); }
+    .border-violet-800\/30 { border-color: oklch(0.7 0.18 300 / .22); }
+    .bg-purple-900\/50 { background-color: oklch(0.7 0.18 300 / .12); }
+    .border-purple-800 { border-color: oklch(0.7 0.18 300 / .35); }
+    .text-purple-200 { color: oklch(0.85 0.09 300); }
+
+    /* --- Gruen (Erfolg / umgesetzt) --- */
+    .text-emerald-200 { color: oklch(0.85 0.10 145); }
+    .text-emerald-400 { color: var(--green); }
+    .text-emerald-500 { color: var(--accent); }
+    .text-green-100 { color: oklch(0.93 0.05 145); }
+    .text-green-200 { color: oklch(0.85 0.10 145); }
+    .text-green-300 { color: oklch(0.82 0.13 145); }
+    .text-green-400 { color: var(--green); }
+    .bg-emerald-500 { background-color: var(--green); }
+    .bg-emerald-900\/10 { background-color: oklch(0.75 0.18 145 / .06); }
+    .bg-emerald-900\/60 { background-color: oklch(0.75 0.18 145 / .16); }
+    .bg-green-900 { background-color: oklch(0.75 0.18 145 / .16); }
+    .bg-green-900\/50 { background-color: oklch(0.75 0.18 145 / .14); }
+    .bg-green-700\/80 { background-color: oklch(0.75 0.18 145 / .36); }
+    .border-emerald-700 { border-color: oklch(0.75 0.18 145 / .45); }
+    .border-emerald-800\/50 { border-color: oklch(0.75 0.18 145 / .28); }
+    .border-green-400 { border-color: oklch(0.75 0.18 145 / .70); }
+    .border-green-700 { border-color: oklch(0.75 0.18 145 / .40); }
+    .border-green-800 { border-color: oklch(0.75 0.18 145 / .32); }
+
+    /* --- Blau (Info / Schutzziel Integritaet / ED23) --- */
+    .text-blue-100 { color: oklch(0.93 0.05 240); }
+    .text-blue-200 { color: oklch(0.85 0.09 240); }
+    .text-blue-300 { color: oklch(0.82 0.12 240); }
+    .text-blue-400 { color: var(--accent); }
+    .bg-blue-900 { background-color: oklch(0.70 0.15 240 / .18); }
+    .bg-blue-900\/50 { background-color: oklch(0.70 0.15 240 / .14); }
+    .bg-blue-900\/10 { background-color: oklch(0.7 0.18 300 / .06); }
+    .bg-blue-700\/80 { background-color: oklch(0.70 0.15 240 / .36); }
+    .border-blue-400 { border-color: oklch(0.70 0.15 240 / .70); }
+    .border-blue-700 { border-color: oklch(0.70 0.15 240 / .42); }
+    .border-blue-700\/50 { border-color: oklch(0.70 0.15 240 / .30); }
+    .border-blue-800 { border-color: oklch(0.70 0.15 240 / .34); }
+    .border-blue-800\/30 { border-color: oklch(0.70 0.15 240 / .22); }
+    .border-blue-900\/30 { border-color: oklch(0.7 0.18 300 / .18); }
+    .hover\:bg-blue-800:hover { background-color: oklch(0.70 0.15 240 / .24); }
+
+    /* --- Amber / Gelb (Warnung / Verfuegbarkeit / offen) --- */
+    .text-amber-300 { color: oklch(0.86 0.11 80); }
+    .text-amber-400 { color: var(--amber); }
+    .bg-amber-500 { background-color: var(--amber); }
+    .bg-amber-900\/30 { background-color: oklch(0.80 0.15 80 / .12); }
+    .border-amber-700\/50 { border-color: oklch(0.80 0.15 80 / .32); }
+    .text-yellow-100 { color: oklch(0.93 0.05 80); }
+    .text-yellow-200 { color: oklch(0.86 0.09 80); }
+    .text-yellow-300 { color: oklch(0.84 0.12 80); }
+    .bg-yellow-900 { background-color: oklch(0.80 0.15 80 / .16); }
+    .bg-yellow-900\/50 { background-color: oklch(0.80 0.15 80 / .13); }
+    .bg-yellow-700\/80 { background-color: oklch(0.80 0.15 80 / .34); }
+    .border-yellow-400 { border-color: oklch(0.80 0.15 80 / .70); }
+    .border-yellow-800 { border-color: oklch(0.80 0.15 80 / .32); }
+
+    /* --- Orange (Risiken / fehlende Ressourcen) --- */
+    .text-orange-200 { color: oklch(0.86 0.09 55); }
+    .text-orange-300 { color: oklch(0.83 0.13 55); }
+    .text-orange-400 { color: var(--orange); }
+    .bg-orange-500 { background-color: var(--orange); }
+    .bg-orange-900 { background-color: oklch(0.72 0.17 55 / .18); }
+    .bg-orange-900\/40 { background-color: oklch(0.72 0.17 55 / .13); }
+    .bg-orange-900\/50 { background-color: oklch(0.72 0.17 55 / .14); }
+    .bg-orange-900\/60 { background-color: oklch(0.72 0.17 55 / .16); }
+    .border-orange-500 { border-color: var(--orange); }
+    .border-orange-500\/30 { border-color: oklch(0.72 0.17 55 / .32); }
+    .border-orange-700 { border-color: oklch(0.72 0.17 55 / .42); }
+    .border-orange-700\/50 { border-color: oklch(0.72 0.17 55 / .30); }
+    .hover\:bg-orange-800:hover { background-color: oklch(0.72 0.17 55 / .24); }
+
+    /* --- Rot (Fehler / Vertraulichkeit) --- */
+    .text-red-100 { color: oklch(0.93 0.05 25); }
+    .text-red-200 { color: oklch(0.85 0.09 25); }
+    .text-red-300 { color: oklch(0.82 0.13 25); }
+    .text-red-400 { color: var(--red); }
+    .bg-red-900 { background-color: oklch(0.65 0.20 25 / .18); }
+    .bg-red-900\/20 { background-color: oklch(0.65 0.20 25 / .10); }
+    .bg-red-900\/40 { background-color: oklch(0.65 0.20 25 / .13); }
+    .bg-red-900\/50 { background-color: oklch(0.65 0.20 25 / .14); }
+    .bg-red-700\/80 { background-color: oklch(0.65 0.20 25 / .36); }
+    .border-red-400 { border-color: oklch(0.65 0.20 25 / .70); }
+    .border-red-500 { border-color: var(--red); }
+    .border-red-500\/30 { border-color: oklch(0.65 0.20 25 / .32); }
+    .border-red-700 { border-color: oklch(0.65 0.20 25 / .42); }
+    .border-red-800 { border-color: oklch(0.65 0.20 25 / .34); }
+
+    /* --- Weitere Datenfarben --- */
+    .text-cyan-200 { color: oklch(0.86 0.08 200); }
+    .bg-cyan-900\/60 { background-color: oklch(0.75 0.12 200 / .16); }
+    .border-cyan-700 { border-color: oklch(0.75 0.12 200 / .40); }
+    .text-fuchsia-200 { color: oklch(0.86 0.10 330); }
+    .bg-fuchsia-900\/60 { background-color: oklch(0.72 0.20 330 / .16); }
+    .border-fuchsia-700 { border-color: oklch(0.72 0.20 330 / .40); }
+    .text-indigo-200 { color: oklch(0.86 0.08 275); }
+    .bg-indigo-900\/60 { background-color: oklch(0.68 0.15 275 / .16); }
+    .border-indigo-700 { border-color: oklch(0.68 0.15 275 / .40); }
+
+    /* Formularelemente aus dem entfernten Tailwind-Forms-Plugin */
+    .form-radio { width: .75rem; height: .75rem; margin: 0; }
+
+    /* JS-Hook-Klassen (querySelectorAll) — Darstellung ergaenzend zu .inp */
+    .flt-sel { display: block; }
+    .param-input { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+    /* Responsive Utilities (nach den Basisregeln, damit sie gewinnen) */
+    @media (min-width: 640px) {
+        .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (min-width: 768px) {
+        .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .md\:p-8 { padding: 2rem; }
+    }
+    @media (min-width: 1024px) {
+        .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    /* Mobile: Rail als Overlay — bestehende Collapse-Logik bleibt unveraendert */
+    @media (max-width: 768px) {
+        .sidebar {
+            position: fixed; top: var(--topbar-h); left: 0; z-index: 40;
+            width: 88%; min-width: 88%; height: calc(100% - var(--topbar-h) - var(--log-h));
+            background: oklch(0.13 0.02 280 / 0.97);
+        }
+        .sidebar.collapsed { margin-left: -100%; }
+        .splitter { display: none; }
+        .logbox { flex-basis: 160px; }
+        :root { --log-h: 160px; }
+        .topbar-meta .meta-pill { display: none; }
+    }
+    </style>
+</head>
+<body class="h-full font-sans text-slate-200 overflow-hidden">
+
+<div class="aurora aurora-a"></div>
+<div class="aurora aurora-b"></div>
+<div class="noise"></div>
+
+<!-- ===================== TOP BAR ===================== -->
+<header class="topbar">
+    <button id="sb-btn" class="sb-toggle shifted" title="Seitenleiste ein-/ausblenden" onclick="document.getElementById('sidebar').classList.toggle('collapsed');this.classList.toggle('shifted')">&#9636;</button>
+    <div class="brand">
+        <span class="brand-mark">&#9672;</span>
+        <span class="brand-name">NTT DATA</span>
+        <span class="brand-sep">/</span>
+        <span class="brand-app">OSCAL SSP Editor</span>
+    </div>
+    <div class="topbar-meta">
+        <div id="ssp-status-ind" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 flex items-center">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>Kein SSP geladen
+        </div>
+        <div id="resource-status-ind" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 items-center hidden"></div>
+        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.2.0</span></span>
+    </div>
+</header>
+
+<!-- ============ FORTSCHRITT (1px-Hairline statt Spinner) ============ -->
+<div id="loading-indicator" class="hidden progress-strip">
+    <span id="loading-text" class="progress-label">Bereit</span>
+    <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+    <span id="progress-count" class="progress-count"></span>
+</div>
+
+<div class="shell">
+    <!-- ===================== LINKE RAIL ===================== -->
+    <aside id="sidebar" class="sidebar cscroll p-3 flex flex-col gap-2 relative z-30">
+
+        <!-- Kein Datei-Import mehr: SSP, Kataloge und der Arbeitsstand kommen
+             aus dem aktiven Artefakt-Set (Verwaltung in index.html). -->
+
+        <!-- Unternehmenskontext: gehört zum Dokument, nicht zum Werkzeug.
+             Backend, Key und Modell liegen zentral in config.html (gpp:cfg:*);
+             der ausgeblendete Shim-Block hält die alten IDs für den Bestandscode. -->
+        <div class="border border-slate-700 rounded overflow-hidden">
+            <div id="sb-ai-content" class="coll-content p-2 bg-slate-900/30 space-y-1.5">
+                <!-- Unternehmenskontext liegt zentral in config.html (ai:context);
+                     das Feld hier ist nur noch der unsichtbare Spiegel. -->
+                <textarea id="ai-context" hidden aria-hidden="true"></textarea>
+
+                <div id="gpp-cfg-shim" hidden aria-hidden="true">
+                    <select id="ai-provider"><option value="">—</option><option value="gemini">Google Gemini</option><option value="openrouter">OpenRouter</option></select>
+                    <input type="password" id="ai-key">
+                    <select id="ai-model"></select>
+                    <div id="or-extra" class="hidden">
+                        <input type="text" id="ai-model-free">
+                        <button id="or-refresh-shim" onclick="refreshORCatalog()"></button>
+                        <span id="or-cat-status"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="space-y-1 border-t border-slate-700 pt-2">
+            <div class="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">&#9678; Navigation</div>
+            <button onclick="scrollToSec('sec-meta')" class="w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400">&#11041; Metadaten &amp; Status</button>
+            <button onclick="scrollToSec('sec-chars')" class="w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400">&#9635; Charakteristika</button>
+            <button onclick="scrollToSec('sec-risk')" class="w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400" id="nav-risk" style="display:none">&#9708; Risikoanalyse</button>
+        </div>
+
+        <!-- Global Filters (Injected by JS) -->
+        <div class="border border-slate-700 rounded overflow-hidden mt-1">
+            <button onclick="tog('sb-flt')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300">
+                &#8981; Komponenten Filter
+                <svg id="icon-sb-flt" class="chev open w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+            </button>
+            <div id="sb-flt-content" class="coll-content open p-2 bg-slate-900/30 space-y-1.5">
+                <div id="sb-filters">
+                    <!-- Filers injected here -->
+                    <p class="text-[9px] text-slate-500 italic">Laden Sie ein SSP, um Filter zu sehen.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Component Navigation (Injected by JS) -->
+        <div id="sb-comp-nav" class="space-y-1 mt-1 hidden"></div>
+
+        <!-- Export -->
+        <div class="mt-auto space-y-1.5 pt-2 border-t border-slate-700">
+            <button id="save-session-btn" onclick="saveSessionFile()" class="w-full bg-purple-700 text-white font-bold py-1.5 px-2 rounded text-[10px] hover:bg-purple-600 disabled:bg-slate-700">&#9635; Session (.json)</button>
+            <button id="save-ssp-btn" onclick="handleFileSave()" class="w-full bg-emerald-600 text-white font-bold py-1.5 px-2 rounded text-[10px] hover:bg-emerald-500 disabled:bg-slate-700" disabled>&#10515; SSP Export</button>
+            <div class="text-[9px] text-slate-500 text-center pt-2">&copy; 2026 NTT DATA Deutschland SE</div>
+        </div>
+
+    </aside>
+
+    <div id="rail-splitter" class="splitter" title="Breite ziehen (Doppelklick: zurücksetzen)"></div>
+
+    <!-- ===================== MAIN CONTENT ===================== -->
+    <main class="flex-1 overflow-y-auto bg-slate-900 relative cscroll">
+
+        <div class="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
+
+            <div id="welcome-msg" class="text-center py-12">
+                <h2 class="text-2xl font-bold text-slate-300 mb-4">Willkommen im OSCAL SSP Editor</h2>
+                <p class="text-slate-400 mb-6 max-w-lg mx-auto">Der Editor arbeitet auf dem aktiven Arbeitsstand (Set): sobald dort ein SSP liegt, wird es hier automatisch &uuml;bernommen. Sets verwalten Sie in <code>index.html</code>.</p>
+            </div>
+
+            <div id="ssp-editor" class="hidden space-y-6">
+                <!-- Resource Status -->
+                <div id="sec-resource" class="border border-slate-700 rounded-lg overflow-hidden">
+                    <button class="collapsible-header w-full flex justify-between items-center p-4 bg-slate-800 hover:bg-slate-700 text-left">
+                        <h2 class="text-lg font-bold text-white">&#9672; Ressourcen-Status (Workspace)</h2>
+                        <svg class="chevron-icon w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                    </button>
+                    <div class="collapsible-content p-4 border-t border-slate-700 bg-slate-900" id="resource-status-content-inner"></div>
+                </div>
+
+                <!-- Risk Analysis -->
+                <div id="sec-risk" class="border border-slate-700 rounded-lg overflow-hidden hidden">
+                    <button class="collapsible-header w-full flex justify-between items-center p-4 bg-slate-800 hover:bg-slate-700 text-left">
+                        <h2 class="text-lg font-bold text-white">&#9708; Risikoanalyse (aus SSP &amp; Profilen)</h2>
+                        <svg class="chevron-icon open w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                    </button>
+                    <div class="collapsible-content open p-4 border-t border-slate-700 bg-slate-900" id="risk-analysis-content-inner"></div>
+                </div>
+
+                <!-- Metadata -->
+                <div id="sec-meta" class="border border-slate-700 rounded-lg overflow-hidden">
+                    <button class="collapsible-header w-full flex justify-between items-center p-4 bg-slate-800 hover:bg-slate-700 text-left">
+                        <h2 class="text-lg font-bold text-white">&#11041; Metadaten</h2>
+                        <svg class="chevron-icon w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                    </button>
+                    <div class="collapsible-content p-4 border-t border-slate-700 bg-slate-900" id="metadata-content-inner"></div>
+                </div>
+
+                <!-- System Chars -->
+                <div id="sec-chars" class="border border-slate-700 rounded-lg overflow-hidden">
+                    <button class="collapsible-header w-full flex justify-between items-center p-4 bg-slate-800 hover:bg-slate-700 text-left">
+                        <h2 class="text-lg font-bold text-white">&#9635; System-Charakteristika</h2>
+                        <svg class="chevron-icon w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                    </button>
+                    <div class="collapsible-content p-4 border-t border-slate-700 bg-slate-900" id="system-chars-content-inner"></div>
+                </div>
+
+                <!-- Implementation Area -->
+                <div id="impl-area"></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ===================== LOG-KONSOLE ===================== -->
+<section class="logbox" id="logbox">
+    <div class="log-head">
+        <span class="log-title"><span class="g">&#9678;</span>Log-Konsole</span>
+        <span id="log-count" class="log-count">0</span>&nbsp;Zeilen
+        <span class="spacer"></span>
+        <label title="Automatisch zur letzten Zeile scrollen"><input type="checkbox" id="log-autoscroll" checked> Autoscroll</label>
+        <button class="log-btn" id="log-clear" type="button" title="Log leeren">Leeren</button>
+    </div>
+    <div id="log-body" class="log-body cscroll"></div>
+</section>
+
+<script src="gpp-core.js?v=3.3"></script>
+<script>
+    if (typeof gppCfg === 'undefined') {
+        document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
+            '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
+            '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) ' +
+            'statt einzelner Dateien.</p></div>';
+        throw new Error('gpp-core.js missing');
+    }
+    const GPP_TOOL_ID = 'ssp_ausfuellen';
+    gppCollapsibleLog({ consoleEl: document.getElementById('logbox'),
+        headEl: document.querySelector('#logbox .log-head'), toolId: GPP_TOOL_ID });
+    /* Quelle für die Pin-Übersicht in config.html anmelden (Grundregel 8). */
+    gppRegisterSources(GPP_TOOL_ID, [{ id: 'ed23-anforderungen', label: 'G++/ED23 Anforderungen (Hilfsdatei)',
+        repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools', path: 'hilfsdateien/gpp_ed23_anforderungen.json',
+        default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/hilfsdateien/gpp_ed23_anforderungen.json' }]);
+
+    // ============================================================
+    // LOG-KONSOLE (fünf Level, Millisekunden-Timestamps, Autoscroll, Clear)
+    // Reine Darstellung — keine fachliche Logik hängt daran.
+    // ============================================================
+    const LOG_MAX_LINES = 1000;
+    let logLineCount = 0;
+    function logWrite(level, msg) {
+        const body = document.getElementById('log-body');
+        const d = new Date();
+        const p2 = n => String(n).padStart(2, '0');
+        const ts = `${p2(d.getHours())}:${p2(d.getMinutes())}:${p2(d.getSeconds())}.${String(d.getMilliseconds()).padStart(3, '0')}`;
+        const text = (msg && msg.stack) ? String(msg.message || msg) : String(msg);
+        if (!body) { console.log(`[${ts}] ${level.toUpperCase()} ${text}`); return; }
+        const row = document.createElement('div');
+        row.className = 'log-line log-' + level;
+        const tsEl = document.createElement('span'); tsEl.className = 'log-ts'; tsEl.textContent = ts;
+        const lvEl = document.createElement('span'); lvEl.className = 'log-lvl'; lvEl.textContent = level.toUpperCase();
+        const msEl = document.createElement('span'); msEl.className = 'log-msg'; msEl.textContent = text;
+        row.appendChild(tsEl); row.appendChild(lvEl); row.appendChild(msEl);
+        body.appendChild(row);
+        while (body.childElementCount > LOG_MAX_LINES) body.removeChild(body.firstElementChild);
+        logLineCount++;
+        const c = document.getElementById('log-count');
+        if (c) c.textContent = String(logLineCount);
+        const auto = document.getElementById('log-autoscroll');
+        if (!auto || auto.checked) body.scrollTop = body.scrollHeight;
+    }
+    const L = {
+        info:  m => logWrite('info', m),
+        ok:    m => logWrite('ok', m),
+        warn:  m => logWrite('warn', m),
+        err:   m => logWrite('err', m),
+        debug: m => logWrite('debug', m)
+    };
+    function clearLog() {
+        const body = document.getElementById('log-body');
+        if (body) body.innerHTML = '';
+        logLineCount = 0;
+        const c = document.getElementById('log-count');
+        if (c) c.textContent = '0';
+    }
+
+    // ============================================================
+    // FORTSCHRITT (1px-Hairline, amber -> grün, ~800ms verzögert ausblenden)
+    // ============================================================
+    let progressHideTimer = null;
+    function progress(phase, done, total) {
+        const strip = document.getElementById('loading-indicator');
+        if (!strip) return;
+        clearTimeout(progressHideTimer);
+        strip.classList.remove('hidden');
+        const txt = document.getElementById('loading-text');
+        if (txt && phase) txt.textContent = phase;
+        const fill = document.getElementById('progress-fill');
+        const cnt = document.getElementById('progress-count');
+        const pct = (total > 0) ? Math.max(0, Math.min(100, Math.round((done / total) * 100))) : 0;
+        if (fill) { fill.classList.remove('done'); fill.style.width = pct + '%'; }
+        if (cnt) cnt.textContent = (total > 0) ? `${done}/${total} · ${pct}%` : '';
+    }
+    function progressEnd(phase) {
+        const strip = document.getElementById('loading-indicator');
+        if (!strip) return;
+        const txt = document.getElementById('loading-text');
+        if (txt && phase) txt.textContent = phase;
+        const fill = document.getElementById('progress-fill');
+        if (fill) { fill.style.width = '100%'; fill.classList.add('done'); }
+        clearTimeout(progressHideTimer);
+        progressHideTimer = setTimeout(() => {
+            strip.classList.add('hidden');
+            if (fill) { fill.classList.remove('done'); fill.style.width = '0%'; }
+            const cnt = document.getElementById('progress-count');
+            if (cnt) cnt.textContent = '';
+        }, 800);
+    }
+
+    // ============================================================
+    // LINKE RAIL: ziehbarer Splitter, Breite in localStorage
+    // ============================================================
+    const RAIL_WIDTH_KEY = 'oscal_ssp_rail_w';
+    const RAIL_MIN = 200, RAIL_MAX = 420, RAIL_DEFAULT = 240;
+    function setRailWidth(px, persist) {
+        const w = Math.max(RAIL_MIN, Math.min(RAIL_MAX, Math.round(px)));
+        document.documentElement.style.setProperty('--rail-w', w + 'px');
+        if (persist) { try { localStorage.setItem(RAIL_WIDTH_KEY, String(w)); } catch (e) {} }
+        return w;
+    }
+    function initRailSplitter() {
+        const saved = parseInt(localStorage.getItem(RAIL_WIDTH_KEY) || '', 10);
+        if (saved) setRailWidth(saved, false);
+        const sp = document.getElementById('rail-splitter');
+        if (!sp) return;
+        let dragging = false;
+        sp.addEventListener('mousedown', e => { dragging = true; document.body.classList.add('resizing'); e.preventDefault(); });
+        window.addEventListener('mousemove', e => { if (dragging) setRailWidth(e.clientX, false); });
+        window.addEventListener('mouseup', () => {
+            if (!dragging) return;
+            dragging = false;
+            document.body.classList.remove('resizing');
+            const cur = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--rail-w'), 10) || RAIL_DEFAULT;
+            setRailWidth(cur, true);
+            L.debug(`Rail-Breite gespeichert: ${cur}px`);
+        });
+        sp.addEventListener('dblclick', () => { setRailWidth(RAIL_DEFAULT, true); L.debug('Rail-Breite zurückgesetzt (240px)'); });
+    }
+
+    // ============================================================
+    // CONFIG & STATE
+    // ============================================================
+    // Build-Version der App (nicht zu verwechseln mit dem Session-Format `_v`).
+    const BUILD_VERSION = 'v1.2.0';
+
+    // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
+    // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
+    const GPP_CATALOG_PIN_COMMIT = '47de2824a341812438ef3f044b3f65ce2cad6e32';
+    const GPP_CATALOG_PIN_SHA256 = 'db3a1417d7e904315a0886f450129832e19c57324660358c830357349f552332';
+    const GS_PLUS_CATALOG_URL = `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json`;
+
+    async function sha256Hex(buf) {
+        const d = await crypto.subtle.digest('SHA-256', buf);
+        return Array.from(new Uint8Array(d)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    // Lebende Modell-IDs. Erster Eintrag je Backend = Default (wird vorausgewählt).
+    // Nur Gemini hat eine gepflegte Liste — der OpenRouter-Katalog wird live aus
+    // https://openrouter.ai/api/v1/models geladen (siehe OR_*-Block weiter unten).
+    const MODELS = {
+        gemini: [
+            { id: 'gemini-3.6-flash', label: 'Gemini 3.6 Flash (Standard)' },
+            { id: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash' },
+            { id: 'gemini-3.5-flash-lite', label: 'Gemini 3.5 Flash-Lite (schnell, günstig)' },
+            { id: 'gemini-3.1-pro-preview', label: 'Gemini 3.1 Pro Preview (kostenpflichtig)' }
+        ]
+    };
+    const DEFAULT_MODEL = { gemini: 'gemini-3.6-flash' };
+
+    // ============================================================
+    // PROMPTS — Defaults (Seed + Reset-Ziel). Die tatsächlich gesendeten
+    // Prompts stehen in den <textarea>s der Karte "KI-Prompts".
+    // ============================================================
+    const DEFAULT_SYSTEM_PROMPT = `Du bist ein Experte für IT-Sicherheit, ISO 27001, IT-Grundschutz *und* den neuen BSI Grundschutz++. Wo passend referenzierst Du aktuelle Materialen des BSI: C5, Standards, B3S Profile, Technische Richtlinien (TR) und Mindestandards (*keine* Grundschutz Bausteine!)
+Antworte in strukturierter Markdown-Form (Listen, Fettgedrucktes). Wichtig: Dein Fokus liegt ausschließlich auf der in der User-Anfrage genannten Einzelmaßnahme.
+Verstehe: Der neue Grundschutz++ nutzt einen granularen Katalog, in dem jede Anforderung nur aus einem Satz besteht. Andere Aspekte des Themas stehen in anderen Anforderungen!
+Keine Einleitenden Worte über deine Rolle oder wie der Grundschutz++ aufgebaut ist. Fokus ist nur die Aufgabe ohne Ausschmückungen. Du Schreibst wie ein Experte, aber nicht wie
+eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt keine KI Floskeln. Heute ist der {heute}.`;
+
+    const DEFAULT_IMPLEMENTATION_PROMPT = `Erstelle einen Umsetzungsvorschlag für die BSI Maßnahme "{title}" ({cid}). Beschreibung: {prose}{guidance}. Nenne praktische Schritte. Drei sehr ausführliche Praxis Beispiele die alle Aspekte des Controls abdecken.`;
+
+    const DEFAULT_RISK_PROMPT = `Welche Risiken bestehen bei Nicht-Umsetzung von "{title}" ({cid})? Beschreibung: {prose}. Nenne mindestens Gefahren mit kritischem Schadenspotential und mit hoher eintrittshäufigkeit.`;
+
+    // kind -> { def, el, store, required, label }
+    const PROMPT_DEFS = {
+        system:         { def: DEFAULT_SYSTEM_PROMPT,         el: 'prompt-system',         required: ['{heute}'],            label: 'System-Prompt' },
+        implementation: { def: DEFAULT_IMPLEMENTATION_PROMPT, el: 'prompt-implementation', required: ['{title}', '{prose}'], label: 'Umsetzungsvorschlag' },
+        risk:           { def: DEFAULT_RISK_PROMPT,           el: 'prompt-risk',           required: ['{title}', '{prose}'], label: 'Risiken' }
+    };
+    const PROMPT_STORE_KEY = 'oscal_ssp_prompts_v1';
+    // Fallback-Anhang, falls der Nutzer einen Pflicht-Platzhalter gelöscht hat.
+    const PROMPT_FALLBACK_LINE = {
+        '{heute}': 'Heute ist der {heute}.',
+        '{title}': 'Maßnahme: "{title}"',
+        '{prose}': 'Beschreibung: {prose}'
+    };
+
+    const workspaceFiles = new Map();
+    let sspData = null;
+    let sspFileName = 'edited-ssp.json';
+
+    let catalogControlMap = new Map();
+    let catalogParamMap = new Map();
+    let profileModifications = { setParams: new Map(), alters: new Map() };
+    let loadedRiskData = [];
+    let loadedProfiles = new Map();
+    let resourceLoadStatus = [];
+    let aiCache = {};
+
+    let autoSaveTimer = null;
+
+    // UI Elements
+    const editorDiv = document.getElementById('ssp-editor');
+    const welcomeMsg = document.getElementById('welcome-msg');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const loadingText = document.getElementById('loading-text');
+    const saveSspBtn = document.getElementById('save-ssp-btn');
+
+    // ============================================================
+    // HELPER (FIX C: Properties Config für Filter und Tags)
+    // ============================================================
+    function getPropConfig(name) {
+        const n = (name || '').toLowerCase();
+        const iconClass = "w-3 h-3 mr-1.5 flex-shrink-0";
+
+        const icons = {
+            shield: `<svg class="${iconClass}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>`,
+            zap: `<svg class="${iconClass}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>`,
+            eye: `<svg class="${iconClass}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>`,
+            doc: `<svg class="${iconClass}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 011.414.586l5.414 5.414a1 1 0 01.586 1.414V19a2 2 0 01-2 2z"></path></svg>`,
+            clock: `<svg class="${iconClass}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
+            check: `<svg class="${iconClass}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
+            alert: `<svg class="${iconClass}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`,
+            tag: `<svg class="${iconClass}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>`,
+            cube: `<svg class="${iconClass}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>`
+        };
+
+        // BSI-Schutzziel-Props (security_targets.csv, Werte 0/1/2); Wert 0 wird nicht angezeigt.
+        if (n.includes('confidentiality')) return { icon: icons.shield, color: 'text-red-200 bg-red-900/50 border-red-800', strongColor: 'text-red-100 bg-red-700/80 border-red-400', label: 'Confidentiality', schutzziel: true };
+        if (n.includes('integrity')) return { icon: icons.shield, color: 'text-blue-200 bg-blue-900/50 border-blue-800', strongColor: 'text-blue-100 bg-blue-700/80 border-blue-400', label: 'Integrity', schutzziel: true };
+        if (n.includes('availability')) return { icon: icons.shield, color: 'text-yellow-200 bg-yellow-900/50 border-yellow-800', strongColor: 'text-yellow-100 bg-yellow-700/80 border-yellow-400', label: 'Availability', schutzziel: true };
+        if (n.includes('authenticity')) return { icon: icons.shield, color: 'text-green-200 bg-green-900/50 border-green-800', strongColor: 'text-green-100 bg-green-700/80 border-green-400', label: 'Authenticity', schutzziel: true };
+        if (n.includes('phase')) return { icon: icons.clock, color: 'text-purple-200 bg-purple-900/50 border-purple-800', label: 'Phase' };
+        if (n.includes('class') || n.includes('technical')) return { icon: icons.cube, color: 'text-slate-200 bg-slate-700 border-slate-600', label: 'Class' };
+        if (n.includes('modal_verb') || n.includes('modalverb')) return { icon: icons.alert, color: 'text-fuchsia-200 bg-fuchsia-900/60 border-fuchsia-700', label: 'Modalverb' };
+        if (n.includes('effort_level') || n.includes('aufwand')) return { icon: icons.zap, color: 'text-orange-200 bg-orange-900/60 border-orange-700', label: 'Aufwand' };
+        if (n.includes('documentation') || n.includes('dokumentation')) return { icon: icons.doc, color: 'text-cyan-200 bg-cyan-900/60 border-cyan-700', label: 'Doku' };
+        if (n.includes('ergebnis') || n.includes('result')) return { icon: icons.check, color: 'text-emerald-200 bg-emerald-900/60 border-emerald-700', label: 'Ergebnis' };
+        if (n.includes('handlung')) return { icon: icons.tag, color: 'text-indigo-200 bg-indigo-900/60 border-indigo-700', label: 'Handlung' };
+        if (n.includes('alt-identifier')) return { icon: icons.tag, color: 'text-gray-400 bg-gray-800 border-gray-700', label: 'ID' };
+
+        return { icon: icons.tag, color: 'text-slate-300 bg-slate-800 border-slate-600', label: name };
+    }
+
+    // ============================================================
+    // INIT & EVENT LISTENERS
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', () => {
+        const bv = document.getElementById('build-version');
+        if (bv) bv.textContent = BUILD_VERSION;
+
+        // Log-Konsole verdrahten
+        document.getElementById('log-clear')?.addEventListener('click', () => { clearLog(); L.debug('Log geleert.'); });
+        document.getElementById('log-autoscroll')?.addEventListener('change', e => L.debug(`Autoscroll ${e.target.checked ? 'an' : 'aus'}`));
+        L.info(`OSCAL SSP Editor ${BUILD_VERSION} gestartet.`);
+        L.debug(`G++-Katalog-Pin: commit ${GPP_CATALOG_PIN_COMMIT.slice(0, 12)}… · SHA-256 ${GPP_CATALOG_PIN_SHA256.slice(0, 12)}…`);
+        if (location.protocol === 'file:') L.warn('Läuft unter file:// — bei CORS-Fehlern den Ordner mit "python -m http.server" servieren und über http://localhost:8000/ öffnen. Gemini und OpenRouter erlauben Browser-Aufrufe beide ausdrücklich; der frühere Anthropic-Direktpfad tat das nicht und ist entfallen.');
+
+        initRailSplitter();
+        setupDragAndDrop();
+        loadAICfg();
+        loadPrompts();
+        loadED23Map();
+        bootFromSet();
+
+        // Header Toggles
+        document.querySelectorAll('.collapsible-header').forEach(header => {
+            header.addEventListener('click', () => {
+                header.nextElementSibling.classList.toggle('open');
+                header.querySelector('.chevron-icon')?.classList.toggle('open');
+            });
+        });
+
+        // Auto-save listeners on DOM changes
+        document.querySelector('main').addEventListener('input', scheduleAutoSave);
+        document.querySelector('main').addEventListener('change', scheduleAutoSave);
+    });
+
+    function setupDragAndDrop() {
+        document.querySelectorAll('.dz').forEach(dz => {
+            const fi = dz.querySelector('.fip'), ty = dz.dataset.type;
+            // Nur auslösen, wenn der Klick NICHT vom (Kind-)File-Input selbst stammt –
+            // sonst löst fi.click() per Bubbling den Handler erneut aus (Rekursion),
+            // und der Browser blockiert den Datei-Dialog als nicht-vertrauenswürdig.
+            dz.addEventListener('click', (e) => { if (e.target !== fi) fi.click(); });
+            dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over') });
+            dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+            dz.addEventListener('drop', e => {
+                e.preventDefault(); dz.classList.remove('drag-over');
+                if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files, ty);
+            });
+            fi.addEventListener('change', e => {
+                if (e.target.files.length) handleFiles(e.target.files, ty);
+                fi.value = ''; // Reset
+            });
+        });
+    }
+
+    window.tog = id => {
+        document.getElementById(id + '-content')?.classList.toggle('open');
+        document.getElementById('icon-' + id)?.classList.toggle('open');
+    };
+
+    window.scrollToSec = id => {
+        const el = document.getElementById(id);
+        if(el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            el.nextElementSibling?.classList.add('open');
+            el.querySelector('.chevron-icon')?.classList.add('open');
+            el.parentElement.classList.add('ring-2', 'ring-emerald-500');
+            setTimeout(() => el.parentElement.classList.remove('ring-2', 'ring-emerald-500'), 1500);
+        }
+    };
+
+    // ============================================================
+    // SESSION MANAGEMENT (AUTO SAVE)
+    // ============================================================
+    function scheduleAutoSave(e) {
+        if(!sspData) return;
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(() => {
+            updateSSPFromDOM();
+            autoSave();
+        }, 2000);
+    }
+
+    // FIX D: Updates hidden filter attribute live on change
+    window.updateStatus = (el) => {
+        const entry = el.closest('.ctrl-entry');
+        if (entry) {
+            const newStatus = el.value || 'open';
+            entry.dataset.filter = entry.dataset.filter.replace(/\|status:[^|]+\|/, `|status:${newStatus}|`);
+            L.debug(`Umsetzungsstatus ${entry.dataset.cid} → ${newStatus}`);
+            applyFilters();
+            scheduleAutoSave();
+        }
+    };
+
+    function updateSSPFromDOM() {
+        if (!sspData) return;
+        try {
+            const ssp = sspData['system-security-plan'];
+            // Pflichtfelder mit Schema-Pattern (kein Leerstring, kein Rand-Whitespace):
+            // leere Eingaben behalten den bisherigen Wert, statt invalides OSCAL zu erzeugen.
+            const titleEl = document.getElementById('metadata-title');
+            if(titleEl && titleEl.value.trim()) ssp.metadata.title = titleEl.value.trim();
+
+            const remarksEl = document.getElementById('metadata-remarks');
+            if(remarksEl) {
+                const v = remarksEl.value.trim();
+                if (v) ssp.metadata.remarks = v; else delete ssp.metadata.remarks;
+            }
+
+            const sysNameEl = document.getElementById('system-name');
+            if(sysNameEl && sysNameEl.value.trim()) ssp['system-characteristics']['system-name'] = sysNameEl.value.trim();
+
+            const sysDescEl = document.getElementById('system-description');
+            if(sysDescEl && sysDescEl.value.trim()) ssp['system-characteristics'].description = sysDescEl.value;
+
+            ssp.metadata["last-modified"] = new Date().toISOString();
+
+            const statusEl = document.getElementById('system-status');
+            if (statusEl) {
+                if (!ssp['system-characteristics'].status) ssp['system-characteristics'].status = {};
+                ssp['system-characteristics'].status.state = statusEl.value;
+            }
+
+            if (!ssp['control-implementation']) ssp['control-implementation'] = {};
+            if (!ssp['control-implementation'].description) ssp['control-implementation'].description = "Umsetzung der Controls je Komponente, erfasst mit dem OSCAL SSP Editor.";
+
+            // Params
+            const paramInputs = document.querySelectorAll('.param-input');
+            const setParameters = [];
+            const paramMap = new Map();
+            paramInputs.forEach(input => {
+                const val = input.value.trim();
+                const paramId = input.dataset.paramId;
+                if (val && paramId) paramMap.set(paramId, val);
+            });
+            paramMap.forEach((value, paramId) => {
+                setParameters.push({ "param-id": paramId, "values": [ value ] });
+            });
+            if (setParameters.length > 0) ssp['control-implementation']['set-parameters'] = setParameters;
+            else delete ssp['control-implementation']['set-parameters'];
+
+            // Requirements
+            if (!Array.isArray(ssp['control-implementation']['implemented-requirements'])) {
+                ssp['control-implementation']['implemented-requirements'] = [];
+            }
+            let requirements = ssp['control-implementation']['implemented-requirements'];
+            const controlEntries = document.querySelectorAll('.ctrl-entry');
+
+            controlEntries.forEach(entry => {
+                const controlId = entry.dataset.cid;
+                const compUuid = entry.dataset.comp;
+                const uniqueDomId = `${controlId.replace(/[^a-zA-Z0-9]/g, '-')}-${compUuid}`;
+
+                const stateEl = entry.querySelector(`#state-${uniqueDomId}`);
+                if (!stateEl) return;
+
+                const state = stateEl.value;
+                const description = entry.querySelector(`#desc-${uniqueDomId}`)?.value || '';
+                const name = (entry.querySelector(`#name-${uniqueDomId}`)?.value || '').trim();
+                const date = entry.querySelector(`#date-${uniqueDomId}`)?.value || '';
+                const statementRadio = entry.querySelector(`input[name="mat-${uniqueDomId}"]:checked`);
+                const selectedStmtId = (statementRadio && statementRadio.value !== 'manual') ? statementRadio.value : '';
+
+                if (state || description || name || date || selectedStmtId) {
+                    let req = requirements.find(r => r['control-id'] === controlId);
+                    if (!req) {
+                        req = { "uuid": crypto.randomUUID(), "control-id": controlId, "by-components": [] };
+                        requirements.push(req);
+                    }
+                    if (!req['by-components']) req['by-components'] = [];
+
+                    let byCompEntry = req['by-components'].find(bc => bc['component-uuid'] === compUuid);
+                    if (!byCompEntry) {
+                        byCompEntry = {
+                            "uuid": crypto.randomUUID(),
+                            "component-uuid": compUuid,
+                            "description": description,
+                            "implementation-status": { "state": state || "partial" },
+                            "props": []
+                        };
+                        req['by-components'].push(byCompEntry);
+                    } else {
+                        byCompEntry.description = description;
+                        if(!byCompEntry['implementation-status']) byCompEntry['implementation-status'] = {};
+                        byCompEntry['implementation-status'].state = state || "partial";
+                        if(!byCompEntry.props) byCompEntry.props = [];
+                    }
+
+                    const setProp = (n, v) => {
+                        let p = byCompEntry.props.find(x => x.name === n);
+                        if(v) { p ? p.value = v : byCompEntry.props.push({ "name": n, "value": v }); }
+                        else { byCompEntry.props = byCompEntry.props.filter(x => x.name !== n); }
+                    };
+                    setProp('implementing-user', name);
+                    setProp('implementation-date', date);
+                    setProp('implemented-statement-id', selectedStmtId);
+
+                    if (byCompEntry.props.length === 0) delete byCompEntry.props;
+                } else {
+                    let req = requirements.find(r => r['control-id'] === controlId);
+                    if (req && req['by-components']) {
+                        req['by-components'] = req['by-components'].filter(bc => bc['component-uuid'] !== compUuid);
+                        // Leeres by-components verletzt minItems:1 — Feld dann ganz entfernen
+                        if (req['by-components'].length === 0) delete req['by-components'];
+                    }
+                }
+            });
+
+            // Nur inhaltsleere Requirements entfernen — Anforderungen mit statements,
+            // set-parameters, props, links oder remarks (ohne by-components) sind valides
+            // OSCAL und bleiben erhalten.
+            requirements = requirements.filter(req => (req['by-components']?.length) || req.statements || req['set-parameters'] || req['responsible-roles'] || req.props || req.links || req.remarks);
+            if (requirements.some(r => r['control-id'] !== 'PLACEHOLDER')) requirements = requirements.filter(r => r['control-id'] !== 'PLACEHOLDER');
+            if (requirements.length > 0) {
+                ssp['control-implementation']['implemented-requirements'] = requirements;
+            } else {
+                // Schema verlangt mindestens ein implemented-requirement
+                ssp['control-implementation']['implemented-requirements'] = [{ uuid: crypto.randomUUID(), 'control-id': 'PLACEHOLDER', remarks: 'Noch keine Umsetzung erfasst.' }];
+            }
+        } catch (error) {
+            console.error("DOM Sync Fehler:", error);
+        }
+    }
+
+    function ser() {
+        return JSON.stringify({
+            _v: 2,
+            sspFileName,
+            sspData,
+            aiCache,
+            wsFilesArr: [...workspaceFiles.entries()]
+        });
+    }
+
+    // Der Arbeitsstand liegt im gemeinsamen Artefakt-Set — kein tool-eigener
+    // Speicher mehr, damit alle Werkzeuge denselben Stand sehen.
+    function autoSave() {
+        if(!sspData || typeof gppArtefacts === 'undefined') return;
+        gppArtefacts.save({
+            stage: 'implement', kind: 'workspace', title: 'SSP-Editor Arbeitsstand',
+            filename: 'ssp-editor-workspace.json', tool: GPP_TOOL_ID, data: JSON.parse(ser())
+        }).then(r => L.debug(`Arbeitsstand im Set „${gppArtefacts.activeSet()}" gesichert (${(r.size/1024).toFixed(1)} kB).`))
+          .catch(e => L.warn(`Arbeitsstand nicht gesichert: ${e.message}`));
+    }
+
+    // Beim Start übernehmen, was im aktiven Set liegt: eigener Arbeitsstand vor
+    // SSP; Kataloge und Profile wandern als Workspace-Dateien mit.
+    async function bootFromSet() {
+        if (typeof gppArtefacts === 'undefined') return;
+        try {
+            await migrateLegacyAutosave();
+            const set = gppArtefacts.activeSet();
+            const ws = await gppArtefacts.latest('workspace');
+            if (ws && ws.tool === GPP_TOOL_ID && ws.data && ws.data.sspData) {
+                L.info(`Arbeitsstand aus Set „${set}" übernommen.`);
+                await restoreSession(ws.data);
+                return;
+            }
+            const ssp = await gppArtefacts.latest('ssp');
+            // Ein SSP ohne metadata bringt processWorkspace zu Fall — im Set kann
+            // per Hochladen beliebiges JSON landen, also hier prüfen statt vertrauen.
+            if (ssp && ssp.data && ssp.data['system-security-plan'] &&
+                ssp.data['system-security-plan'].metadata) {
+                workspaceFiles.clear();
+                workspaceFiles.set(ssp.filename || 'ssp.json', ssp.data);
+                sspData = ssp.data;
+                sspFileName = (ssp.filename || 'ssp.json').replace(/\.json$/i, '-edited.json');
+                const refs = (await gppArtefacts.all()).filter(r => r.kind === 'catalog' || r.kind === 'profile');
+                refs.forEach(r => workspaceFiles.set(r.filename, r.data));
+                L.ok(`SSP aus Set „${set}" übernommen: ${ssp.title}${refs.length ? ` (+ ${refs.length} Katalog/Profil)` : ''}`);
+                await processWorkspace();
+            } else if (ssp) {
+                L.warn(`SSP „${ssp.title}" im Set „${set}" hat keine metadata und wurde nicht geladen.`);
+            } else {
+                L.info(`Set „${set}" enthält noch keinen SSP — im SSP-Generator erzeugen, er erscheint hier automatisch.`);
+            }
+        } catch (e) { L.err(`Set-Übernahme fehlgeschlagen: ${e.message}`); }
+    }
+
+    // Einmalige Übernahme des früheren tool-eigenen Autosaves
+    async function migrateLegacyAutosave() {
+        try {
+            const s = localStorage.getItem('oscal_ssp_editor_v2');
+            if (!s) return;
+            const d = JSON.parse(s);
+            if (d && d._v >= 2 && d.sspData) {
+                await gppArtefacts.save({
+                    stage: 'implement', kind: 'workspace', title: 'SSP-Editor Arbeitsstand (übernommen)',
+                    filename: 'ssp-editor-workspace.json', tool: GPP_TOOL_ID, data: d });
+                L.info('Früherer Autosave in das Set übernommen.');
+            }
+            localStorage.removeItem('oscal_ssp_editor_v2');
+        } catch (e) { /* Altbestand unlesbar — dann eben nicht */ }
+    }
+
+    // Ein anderes Fenster hat etwas abgelegt oder das Set gewechselt
+    window.addEventListener('storage', e => {
+        if (e.key !== 'gpp:cfg:artefacts:touch') return;
+        if (!sspData) bootFromSet();
+        else L.debug('Set-Änderung erkannt — laufende Bearbeitung bleibt unberührt.');
+    });
+
+    async function restoreSession(d) {
+        sspFileName = d.sspFileName || 'edited-ssp.json';
+        sspData = d.sspData;
+        aiCache = d.aiCache || {};
+        workspaceFiles.clear();
+        if(d.wsFilesArr) {
+            d.wsFilesArr.forEach(([k, v]) => workspaceFiles.set(k, v));
+        }
+        L.info(`Session wiederhergestellt: ${sspFileName} · ${workspaceFiles.size} Workspace-Datei(en) · KI-Cache für ${Object.keys(aiCache).length} Control(s).`);
+        await processWorkspace();
+    }
+
+    window.saveSessionFile = () => {
+        updateSSPFromDOM();
+        const dataStr = ser();
+        const blob = new Blob([dataStr], { type: 'application/json;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = sspFileName.replace('.json', '_session.json');
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        L.ok(`Session exportiert: ${a.download} (${(dataStr.length / 1024).toFixed(1)} kB).`);
+    };
+
+    // ============================================================
+    // KI ANBINDUNG — Backends: Gemini | OpenRouter
+    // Key und Modell werden pro Backend GETRENNT in localStorage abgelegt,
+    // die Backend-Auswahl ebenfalls. Der frühere Claude-Direktpfad
+    // (api.anthropic.com aus dem Browser) ist entfallen: er scheitert
+    // ausserhalb einer Artifact-Umgebung an CORS. Anthropic-Modelle laufen
+    // jetzt über OpenRouter — ein Key, erlaubter Browser-Zugriff.
+    // ============================================================
+    const AI_STORE_KEY = 'oscal_ssp_ai';
+    const BACKEND_LABEL = { gemini: 'Gemini', openrouter: 'OpenRouter' };
+    // Bevorzugte Anthropic-Slugs (Reihenfolge = Vorschlagsreihenfolge). Nur ein
+    // Vorschlag: gültig ist am Ende, was der live geladene Katalog hergibt.
+    const OR_PREFERRED = ['anthropic/claude-sonnet-5', 'anthropic/claude-opus-5', 'anthropic/claude-sonnet-4.5'];
+    // Sanfte Migration alter Claude-Konfigurationen auf den OpenRouter-Slug.
+    const CLAUDE_TO_OR = { 'claude-sonnet-5': 'anthropic/claude-sonnet-5', 'claude-opus-5': 'anthropic/claude-opus-5' };
+
+    // { _v, p, ctx, keys: {backend: key}, models: {backend: modelId} }
+    let aiStore = { _v: 2, p: '', ctx: '', keys: {}, models: {} };
+
+    // Liest den Store und migriert das alte Ein-Feld-Format {p,k,m,ctx}.
+    function readAiStore() {
+        let raw = {};
+        try { raw = JSON.parse(localStorage.getItem(AI_STORE_KEY) || '{}') || {}; } catch (e) { raw = {}; }
+        const st = { _v: 2, p: '', ctx: raw.ctx || '', keys: {}, models: {} };
+        if (raw._v === 2) {
+            st.p = (raw.p === 'gemini' || raw.p === 'openrouter') ? raw.p : '';
+            st.keys = Object.assign({}, raw.keys);
+            st.models = Object.assign({}, raw.models);
+            return { store: st, migrated: null };
+        }
+        let migrated = null;
+        if (raw.p === 'claude') {
+            st.p = 'openrouter';
+            st.models.openrouter = CLAUDE_TO_OR[raw.m] || OR_PREFERRED[0];
+            // Der alte Claude-Key (sk-ant-…) passt nicht zu OpenRouter (sk-or-…)
+            // und wird bewusst NICHT übernommen.
+            migrated = st.models.openrouter;
+        } else if (raw.p === 'gemini') {
+            st.p = 'gemini';
+            if (raw.k) st.keys.gemini = raw.k;
+            if (raw.m) st.models.gemini = raw.m;
+        }
+        return { store: st, migrated };
+    }
+
+    function persistAiStore() {
+        try { localStorage.setItem(AI_STORE_KEY, JSON.stringify(aiStore)); } catch (e) {}
+    }
+
+    // ---- OpenRouter-Endpunkte und optionale Attribution ----
+    const OR_CHAT_URL = 'https://openrouter.ai/api/v1/chat/completions';
+    const OR_TITLE = 'OSCAL SSP Editor';
+    // HTTP-Referer ist optional. Unter file:// ist location.origin "null" — dann
+    // den Header weglassen statt Unsinn zu senden.
+    function orAttributionHeaders() {
+        const h = { 'X-Title': OR_TITLE };
+        try {
+            if (/^https?:$/.test(location.protocol) && location.origin && location.origin !== 'null') {
+                h['HTTP-Referer'] = location.origin;
+            }
+        } catch (e) {}
+        return h;
+    }
+
+    // ---- OpenRouter-Modellkatalog: live laden, 24 h in localStorage cachen ----
+    const OR_MODELS_URL = 'https://openrouter.ai/api/v1/models';
+    const OR_CATALOG_KEY = 'oscal_ssp_or_models_v1';
+    const OR_CATALOG_TTL_MS = 24 * 60 * 60 * 1000;
+    let orCatalog = [];          // [{ id, label }]
+    let orCatalogLoading = false;
+
+    function readORCache() {
+        try {
+            const c = JSON.parse(localStorage.getItem(OR_CATALOG_KEY) || 'null');
+            if (c && typeof c.ts === 'number' && Array.isArray(c.models)) return c;
+        } catch (e) {}
+        return null;
+    }
+
+    // Preis pro Token ("0.000003") -> "$3.00" pro 1M Token. Rein kosmetisch.
+    function orPrice(v) {
+        const n = parseFloat(v);
+        if (!isFinite(n) || n <= 0) return null;
+        const per1m = n * 1e6;
+        return per1m >= 10 ? `$${per1m.toFixed(0)}` : `$${per1m.toFixed(2)}`;
+    }
+    function orLabel(m) {
+        const bits = [];
+        const ctx = Number(m.context_length);
+        if (isFinite(ctx) && ctx > 0) bits.push(ctx >= 1000 ? `${Math.round(ctx / 1000)}k ctx` : `${ctx} ctx`);
+        const pin = orPrice(m.pricing && m.pricing.prompt);
+        const pout = orPrice(m.pricing && m.pricing.completion);
+        if (pin || pout) bits.push(`${pin || '$0'}/${pout || '$0'} je 1M`);
+        else if (m.pricing) bits.push('kostenlos');
+        return bits.length ? `${m.id} · ${bits.join(' · ')}` : m.id;
+    }
+
+    function setORStatus(txt) {
+        const el = document.getElementById('or-cat-status');
+        if (el) el.textContent = txt;
+    }
+
+    // Übernimmt eine Katalogliste in das Dropdown, ohne die aktuelle Auswahl zu verlieren.
+    function applyORCatalog(models) {
+        orCatalog = models;
+        const prov = document.getElementById('ai-provider');
+        if (!prov || prov.value !== 'openrouter') return;
+        const want = currentModelValue('openrouter') || aiStore.models.openrouter || '';
+        fillModelSelect(orCatalog.map(m => ({ value: m.id, label: m.label })));
+        setOrModel(want);
+        saveAICfg();
+    }
+
+    async function loadORCatalog(force) {
+        if (orCatalogLoading) return;
+        const cached = readORCache();
+        if (!force && cached && (Date.now() - cached.ts) < OR_CATALOG_TTL_MS && cached.models.length) {
+            applyORCatalog(cached.models);
+            const ageMin = Math.round((Date.now() - cached.ts) / 60000);
+            setORStatus(`${cached.models.length} Modelle · Cache (${ageMin} min alt)`);
+            L.debug(`OpenRouter-Katalog aus dem Cache: ${cached.models.length} Modelle, ${ageMin} min alt (Auffrischung nach 24 h).`);
+            return;
+        }
+        orCatalogLoading = true;
+        setORStatus('lade Modellkatalog …');
+        try {
+            // /models braucht keine Auth — der Katalog lädt schon vor der Key-Eingabe.
+            const r = await fetch(OR_MODELS_URL, { method: 'GET' });
+            const d = await safeJson(r);
+            if (d.error) throw new Error(truncErr(d.error.message || JSON.stringify(d.error)));
+            if (!r.ok) throw new Error(truncErr(`HTTP ${r.status} ${r.statusText} ${d.__raw || ''}`.trim()));
+            const list = Array.isArray(d.data) ? d.data : [];
+            if (!list.length) throw new Error('Katalog leer.');
+            const models = list
+                .filter(m => m && typeof m.id === 'string')
+                .map(m => ({ id: m.id, label: orLabel(m) }))
+                .sort((a, b) => a.id.localeCompare(b.id));
+            try { localStorage.setItem(OR_CATALOG_KEY, JSON.stringify({ ts: Date.now(), models })); } catch (e) {}
+            applyORCatalog(models);
+            setORStatus(`${models.length} Modelle geladen`);
+            L.ok(`OpenRouter-Katalog geladen: ${models.length} Modelle (24 h in localStorage gecacht).`);
+        } catch (e) {
+            const msg = truncErr(e && e.message);
+            if (cached && cached.models.length) {
+                applyORCatalog(cached.models);
+                setORStatus(`Katalog nicht erreichbar — Cache aktiv (${cached.models.length})`);
+                L.warn(`OpenRouter-Katalog nicht erreichbar (${msg}) — alter Cache mit ${cached.models.length} Modellen bleibt aktiv.`);
+            } else {
+                setORStatus('Katalog nicht erreichbar — Slug bitte frei eintragen');
+                L.warn(`OpenRouter-Katalog nicht erreichbar (${msg}) — Modell-Slug bitte ins Freitextfeld eintragen.`);
+            }
+        } finally {
+            orCatalogLoading = false;
+        }
+    }
+
+    window.refreshORCatalog = () => { L.info('OpenRouter-Modellkatalog wird neu geladen …'); loadORCatalog(true); };
+
+    // ---- Modell-Felder ----
+    function fillModelSelect(opts) {
+        const s = document.getElementById('ai-model');
+        if (!s) return;
+        s.innerHTML = '';
+        opts.forEach(o => {
+            const el = document.createElement('option');
+            el.value = o.value; el.textContent = o.label;
+            s.appendChild(el);
+        });
+    }
+
+    // Bei OpenRouter gewinnt ein gefülltes Freitextfeld über das Dropdown.
+    function currentModelValue(p) {
+        if (p === 'openrouter') {
+            const free = document.getElementById('ai-model-free');
+            const v = free ? String(free.value || '').trim() : '';
+            if (v) return v;
+        }
+        const s = document.getElementById('ai-model');
+        return s ? (s.value || '') : '';
+    }
+
+    // Slug im Katalog -> Dropdown; sonst -> Freitextfeld. Ohne Slug: bevorzugten
+    // Anthropic-Eintrag aus dem Katalog vorschlagen.
+    function setOrModel(slug) {
+        const s = document.getElementById('ai-model');
+        const free = document.getElementById('ai-model-free');
+        if (!s || !free) return;
+        const has = id => Array.from(s.options).some(o => o.value === id);
+        if (slug && has(slug)) { s.value = slug; free.value = ''; return; }
+        if (slug) { free.value = slug; return; }
+        const pref = OR_PREFERRED.find(has);
+        if (pref) { s.value = pref; free.value = ''; }
+    }
+
+    // Dropdown-Auswahl soll wirken -> Freitextfeld leeren.
+    window.onModelSelect = () => {
+        const free = document.getElementById('ai-model-free');
+        if (free && String(free.value || '').trim()) {
+            free.value = '';
+            L.debug('Freitext-Slug geleert — die Auswahl aus der Modell-Liste gilt.');
+        }
+        saveAICfg();
+    };
+
+    // Backend-Wechsel: Key- und Modellfelder aus dem jeweiligen Backend-Slot füllen.
+    function applyBackendToDom(p) {
+        const keyEl = document.getElementById('ai-key');
+        const orExtra = document.getElementById('or-extra');
+        const sel = document.getElementById('ai-model');
+        const free = document.getElementById('ai-model-free');
+        if (keyEl) {
+            keyEl.value = aiStore.keys[p] || '';
+            keyEl.placeholder = p === 'openrouter' ? 'API-Key (sk-or-…)' : (p === 'gemini' ? 'API-Key (AIza…)' : 'API-Key');
+        }
+        if (orExtra) orExtra.classList.toggle('hidden', p !== 'openrouter');
+        if (free) free.value = '';
+        if (p === 'openrouter') {
+            fillModelSelect(orCatalog.map(m => ({ value: m.id, label: m.label })));
+            setOrModel(aiStore.models.openrouter || '');
+        } else {
+            fillModelSelect((MODELS[p] || []).map(m => ({ value: m.id, label: m.label })));
+            const want = aiStore.models[p];
+            if (want && sel) {
+                // Abgekündigte/tote Modell-IDs aus alten Sessions auf den aktuellen
+                // Default zurücksetzen, statt einen 404 zu provozieren.
+                if ((MODELS[p] || []).some(m => m.id === want)) {
+                    sel.value = want;
+                } else {
+                    const fb = DEFAULT_MODEL[p] || (MODELS[p] || [])[0]?.id || '';
+                    sel.value = fb;
+                    console.warn(`Gespeichertes Modell "${want}" existiert nicht mehr — zurückgesetzt auf "${fb}".`);
+                    L.warn(`Gespeichertes Modell "${want}" existiert nicht mehr — zurückgesetzt auf "${fb}".`);
+                }
+            }
+        }
+    }
+
+    window.onProvChange = () => {
+        const p = document.getElementById('ai-provider').value;
+        aiStore.p = p;
+        applyBackendToDom(p);
+        saveAICfg();
+        if (p === 'openrouter') loadORCatalog(false);
+    };
+
+    let lastAiSig = null;
+    window.saveAICfg = () => {
+        const p = document.getElementById('ai-provider').value;
+        const k = document.getElementById('ai-key').value;
+        const m = currentModelValue(p);
+        aiStore.p = p;
+        aiStore.ctx = document.getElementById('ai-context').value;
+        if (p) { aiStore.keys[p] = k; aiStore.models[p] = m; }
+        persistAiStore();
+        // Nur bei echter Änderung loggen — saveAICfg() feuert bei jedem Tastendruck im Key-Feld.
+        const sig = `${p}/${m}/${k ? 'key' : 'nokey'}`;
+        if (sig !== lastAiSig) {
+            lastAiSig = sig;
+            L.info(p ? `KI-Backend: ${BACKEND_LABEL[p] || p} · ${m || '(kein Modell)'} · ${k ? 'Key gesetzt' : 'KEIN Key'}` : 'KI-Backend: keines gewählt.');
+        }
+        const b = document.getElementById('ai-badge');
+        if (!b) return;
+        if (p && k) {
+            b.classList.remove('hidden');
+            b.className = 'sb bg-violet-900 text-violet-300 border-violet-700';
+            b.textContent = BACKEND_LABEL[p] || p;
+        } else {
+            b.classList.add('hidden');
+        }
+    };
+
+    // Spiegelt gpp:cfg:* in die ausgeblendeten Shim-Felder; dieses Tool schreibt
+    // Backend/Key/Modell nie zurück — das macht ausschließlich config.html.
+    window.applyGppConfig = function (verbose) {
+        const backend = gppCfg.get('ai:backend') === 'openrouter' ? 'openrouter' : 'gemini';
+        const model = gppCfg.get('ai:model:' + backend);
+        const prov = document.getElementById('ai-provider');
+        const key = document.getElementById('ai-key');
+        const free = document.getElementById('ai-model-free');
+        if (prov) prov.value = backend;
+        if (key) key.value = gppCfg.get('ai:key:' + backend);
+        if (typeof applyBackendToDom === 'function') applyBackendToDom(backend);
+        const sel = document.getElementById('ai-model');
+        if (sel && model) {
+            if (![...sel.options].some(o => o.value === model)) sel.add(new Option(model, model));
+            sel.value = model;
+        }
+        if (free && backend === 'openrouter') free.value = model || '';
+        if (backend === 'openrouter' && typeof loadORCatalog === 'function') loadORCatalog(false);
+        if (verbose) L.info('Einstellungen aus config.html neu übernommen.');
+    };
+    function loadAICfg() {
+        const res = readAiStore();
+        aiStore = res.store;
+        // Unternehmenskontext kommt zentral aus config.html
+        const ctxEl = document.getElementById('ai-context');
+        if (ctxEl) ctxEl.value = gppCfg.get('ai:context') || aiStore.ctx || '';
+        applyGppConfig(false);
+        window.addEventListener('storage', e => { if (e.key && e.key.startsWith('gpp:cfg:')) applyGppConfig(false); });
+        if (res.migrated) {
+            const hint = document.getElementById('ai-migrate-hint');
+            if (hint) {
+                hint.textContent = `◬ Backend „Anthropic Claude“ (Direktzugriff) ist entfallen — der Browser-Pfad scheitert an CORS. Umgestellt auf OpenRouter mit „${res.migrated}“. OpenRouter braucht einen eigenen sk-or-…-Key; der alte Claude-Key wurde nicht übernommen.`;
+                hint.classList.remove('hidden');
+            }
+            L.warn(`Migration: Backend "claude" → OpenRouter (${res.migrated}). Alter Claude-Key nicht übernommen (anderes Key-Format: sk-or-…).`);
+        }
+    }
+
+    // ============================================================
+    // EDITIERBARE PROMPTS (Persistenz, Reset, Platzhalter-Prüfung)
+    // ============================================================
+    // Prompts werden zentral in config.html bearbeitet; hier nur anmelden und anzeigen.
+    function loadPrompts() {
+        gppRegisterPrompts(GPP_TOOL_ID, Object.entries(PROMPT_DEFS).map(([kind, cfg]) => ({
+            id: kind, label: cfg.label, placeholders: cfg.required || [], default: cfg.def,
+        })));
+        const custom = Object.entries(PROMPT_DEFS)
+            .filter(([kind]) => localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${kind}`) !== null)
+            .map(([, cfg]) => cfg.label);
+        L.debug(custom.length
+            ? `Prompts angemeldet — eigene Fassung aktiv für: ${custom.join(', ')}`
+            : 'Prompts angemeldet — alle drei auf Default (bearbeitbar in config.html).');
+    }
+
+    function savePrompts() {
+        const out = {};
+        Object.keys(PROMPT_DEFS).forEach(kind => {
+            const el = document.getElementById(PROMPT_DEFS[kind].el);
+            if (el) out[kind] = el.value;
+        });
+        try { localStorage.setItem(PROMPT_STORE_KEY, JSON.stringify(out)); } catch(e) {}
+    }
+
+    function validatePrompt(kind) {
+        const cfg = PROMPT_DEFS[kind];
+        const el = document.getElementById(cfg.el);
+        const warn = document.getElementById('warn-' + kind);
+        if (!el || !warn) return;
+        const missing = cfg.required.filter(ph => !el.value.includes(ph));
+        if (missing.length) {
+            warn.textContent = `◬ Platzhalter fehlt: ${missing.join(', ')} — wird beim Senden automatisch am Ende ergänzt.`;
+            warn.classList.remove('hidden');
+        } else {
+            warn.classList.add('hidden');
+            warn.textContent = '';
+        }
+    }
+
+    window.onPromptInput = (kind) => { validatePrompt(kind); savePrompts(); };
+
+    window.resetPrompt = (kind) => {
+        const cfg = PROMPT_DEFS[kind];
+        const el = document.getElementById(cfg.el);
+        if (!el) return;
+        el.value = cfg.def;
+        validatePrompt(kind);
+        savePrompts();
+        L.info(`Prompt "${cfg.label}" auf Default zurückgesetzt.`);
+    };
+
+    // Baut den tatsächlich gesendeten Prompt: Template aus der UI (leer -> Default),
+    // fehlende Pflicht-Platzhalter defensiv anhängen, dann alle Werte einsetzen.
+    function buildPrompt(kind, vars) {
+        const cfg = PROMPT_DEFS[kind];
+        // Prompttext kommt zentral aus config.html; der Default bleibt hier im Tool.
+        let tpl = gppPrompt(GPP_TOOL_ID, kind, cfg.def);
+        if (!tpl.trim()) tpl = cfg.def;
+        cfg.required.forEach(ph => {
+            if (!tpl.includes(ph)) tpl += `\n\n${PROMPT_FALLBACK_LINE[ph] || ph}`;
+        });
+        Object.keys(vars).forEach(k => {
+            tpl = tpl.split('{' + k + '}').join(vars[k] == null ? '' : String(vars[k]));
+        });
+        return tpl;
+    }
+
+    function getAI() {
+        const p = document.getElementById('ai-provider').value;
+        const k = document.getElementById('ai-key').value;
+        // currentModelValue(): bei OpenRouter gewinnt das Freitextfeld über das Dropdown.
+        const m = currentModelValue(p);
+        const ctx = gppCfg.get('ai:context') || '';
+        return (p && k) ? { p, k, m, ctx } : null;
+    }
+
+    // Rohe API-Fehlermeldungen können seitenlang sein — auf ~400 Zeichen kürzen.
+    const MAX_ERR_LEN = 400;
+    const truncErr = (m) => {
+        const s = String(m == null ? '' : m);
+        return s.length > MAX_ERR_LEN ? s.slice(0, MAX_ERR_LEN) + '…' : s;
+    };
+    const sleep = (ms) => new Promise(res => setTimeout(res, ms));
+    // Wiederholungen pro Call (zusätzlich zum ersten Versuch) — zentral aus gppCfg ("run:retries").
+    function aiRetries(){ return (typeof gppCfg!=="undefined" ? parseInt(gppCfg.get("run:retries"),10) : 2) || 2; }
+    // Antwort kann bei CORS-/Proxy-Fehlern HTML statt JSON sein — dann nicht am
+    // JSON-Parser scheitern, sondern den HTTP-Status als Fehler durchreichen.
+    async function safeJson(r) {
+        const t = await r.text();
+        try { return JSON.parse(t); } catch (e) { return { __raw: t }; }
+    }
+
+    // Gemeinsame Fehlerauswertung beider Backends: Provider melden Fehler teils im
+    // Body (auch bei HTTP 200), teils nur über den Status.
+    function throwApiError(r, d) {
+        if (d && d.error) throw new Error(truncErr(d.error.message || JSON.stringify(d.error)));
+        if (!r.ok) throw new Error(truncErr(`HTTP ${r.status} ${r.statusText} ${(d && d.__raw) || ''}`.trim()));
+    }
+
+    // Ein einzelner Gemini-Call ohne Retry.
+    // WICHTIG (Gemini 3.x): keine Sampling-Parameter senden (temperature/top_p/top_k/
+    // candidate_count sind abgekündigt und liefern auf neuen Modellen HTTP 400).
+    async function geminiOnce(ai, prompt, systemPrompt) {
+        const payload = {
+            contents: [{ role: 'user', parts: [{ text: prompt }] }]
+        };
+        if (systemPrompt) {
+            payload.system_instruction = { parts: [{ text: systemPrompt }] };
+        }
+        const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${ai.m}:generateContent`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-goog-api-key': ai.k
+            },
+            body: JSON.stringify(payload)
+        });
+        const d = await safeJson(r);
+        throwApiError(r, d);
+        return (d.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('\n');
+    }
+
+    // Ein einzelner OpenRouter-Call ohne Retry (OpenAI-kompatible Chat Completions).
+    // Diese App erzeugt Markdown-Prosa, kein JSON — deshalb KEIN response_format und
+    // kein provider.require_parameters (die kämen nur bei echtem Schema-Bedarf dazu).
+    // Ebenfalls bewusst weggelassen: sämtliche Sampling-Parameter.
+    async function openrouterOnce(ai, prompt, systemPrompt) {
+        const messages = [];
+        if (systemPrompt) messages.push({ role: 'system', content: systemPrompt });
+        messages.push({ role: 'user', content: prompt });
+        const r = await fetch(OR_CHAT_URL, {
+            method: 'POST',
+            headers: Object.assign({
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${ai.k}`
+            }, orAttributionHeaders()),
+            body: JSON.stringify({ model: ai.m, messages })
+        });
+        const d = await safeJson(r);
+        throwApiError(r, d);
+        return d.choices?.[0]?.message?.content ?? '';
+    }
+
+    // Backend-Weiche. Alles darüber — Retry-Wrapper, buildPrompt, editierbare
+    // Prompts, safeJson, Progress, Logging, aiCache — bleibt backend-agnostisch.
+    async function callAIOnce(prompt, systemPrompt = "") {
+        const ai = getAI();
+        if (!ai) throw new Error('Keine KI konfiguriert (Sidebar checken).');
+        if (!ai.m) throw new Error(`Kein Modell gewählt für Backend "${BACKEND_LABEL[ai.p] || ai.p}".`);
+        L.debug(`API-Call → ${BACKEND_LABEL[ai.p] || ai.p} · Modell ${ai.m}`);
+        if (ai.p === 'openrouter') return openrouterOnce(ai, prompt, systemPrompt);
+        if (ai.p === 'gemini') return geminiOnce(ai, prompt, systemPrompt);
+        throw new Error(`Unbekanntes KI-Backend "${ai.p}".`);
+    }
+
+    // Retry-Wrapper mit exponentiellem Backoff (500ms -> 1s -> 2s).
+    async function callAI(prompt, systemPrompt = "", label = "KI-Call") {
+        const ai = getAI();
+        if (!ai) throw new Error('Keine KI konfiguriert (Sidebar checken).'); // nicht retry-fähig
+        // Konfigurationsfehler sind nicht retry-fähig — sofort abbrechen statt 3x zu scheitern.
+        if (!ai.m) throw new Error(`Kein Modell gewählt für Backend "${BACKEND_LABEL[ai.p] || ai.p}".`);
+        let attempt = 0;
+        const maxRetries = aiRetries();
+        L.info(`${label} → ${BACKEND_LABEL[ai.p] || ai.p} · ${ai.m || '(kein Modell)'} · Prompt ${(prompt.length / 1024).toFixed(1)} kB, System ${(systemPrompt.length / 1024).toFixed(1)} kB.`);
+        while (true) {
+            const t0 = performance.now();
+            try {
+                const txt = await callAIOnce(prompt, systemPrompt);
+                L.ok(`${label} ← ${(txt.length / 1024).toFixed(1)} kB in ${Math.round(performance.now() - t0)}ms.`);
+                return txt;
+            } catch (e) {
+                attempt++;
+                if (attempt > maxRetries) {
+                    L.err(`${label} endgültig fehlgeschlagen nach ${attempt} Versuch(en): ${truncErr(e.message)}`);
+                    throw e;
+                }
+                const wait = 500 * Math.pow(2, attempt - 1);
+                console.warn(`${label} fehlgeschlagen (${e.message}) — Retry ${attempt}/${maxRetries} in ${wait}ms`);
+                L.warn(`${label} fehlgeschlagen (${truncErr(e.message)}) — Retry ${attempt}/${maxRetries} in ${wait}ms.`);
+                await sleep(wait);
+            }
+        }
+    }
+
+    // ============================================================
+    // FILE LOADING LOGIC
+    // ============================================================
+    async function handleFiles(files, type) {
+        if (!files.length) return;
+        L.info(`${files.length} Datei(en) ausgewählt (Typ: ${type}).`);
+        progress(`Lade ${files.length} Datei(en)`, 0, files.length);
+
+        if (type === 'state') {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const d = JSON.parse(e.target.result);
+                    L.info(`Session-Datei gelesen (${(String(e.target.result).length / 1024).toFixed(1)} kB) — Format _v=${d._v}.`);
+                    await restoreSession(d);
+                } catch(err) {
+                    L.err(`Session ungültig: ${err.message}`);
+                    alert("Session ungültig: " + err.message);
+                    progressEnd('Session ungültig');
+                }
+            };
+            reader.readAsText(files[0]);
+            return;
+        }
+
+        if (type === 'ssp') {
+            workspaceFiles.clear();
+            sspData = null;
+            sspFileName = files[0].name.replace('.json', '-edited.json') || 'edited-ssp.json';
+            L.debug(`Workspace geleert. Ziel-Dateiname für den Export: ${sspFileName}`);
+        }
+
+        let filesDone = 0;
+        const loadPromises = Array.from(files).map((file, index) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const json = JSON.parse(e.target.result);
+                        if (type === 'ssp' && !json['system-security-plan']) throw new Error(`Kein gültiges SSP!`);
+                        workspaceFiles.set(file.name, json);
+
+                        // FIX: Wir nutzen den Index der Iteration, da das externe files-Objekt bereits geleert wurde
+                        if (type === 'ssp' && index === 0) sspData = json;
+
+                        const kind = Object.keys(json)[0] || 'unbekannt';
+                        L.ok(`${file.name} geladen — Wurzel "${kind}", ${(String(e.target.result).length / 1024).toFixed(1)} kB.`);
+                        progress(`Lade ${files.length} Datei(en)`, ++filesDone, files.length);
+                        resolve();
+                    } catch (error) { L.err(`${file.name}: ${error.message}`); reject(error.message); }
+                };
+                reader.onerror = () => { L.err(`Lesefehler bei ${file.name}`); reject(`Lesefehler bei ${file.name}`); };
+                reader.readAsText(file, 'UTF-8');
+            });
+        });
+
+        try {
+            await Promise.all(loadPromises);
+            L.ok(`Alle ${files.length} Datei(en) eingelesen. Workspace hält jetzt ${workspaceFiles.size} Dokument(e).`);
+            if(sspData) await processWorkspace();
+            else progressEnd('Dateien geladen');
+        } catch (error) {
+            L.err(`Fehler beim Laden: ${error}`);
+            alert("Fehler beim Laden:\n\n" + error);
+            progressEnd('Fehler beim Laden');
+        }
+    }
+
+    // ============================================================
+    // WORKSPACE PROCESSING
+    // ============================================================
+    async function processWorkspace() {
+        welcomeMsg.style.display = 'none';
+        editorDiv.classList.add('hidden');
+        saveSspBtn.disabled = true;
+
+        if (!sspData || !sspData['system-security-plan']) {
+            L.warn('Kein gültiges SSP im Workspace — Verarbeitung abgebrochen.');
+            progressEnd('Kein SSP');
+            return;
+        }
+
+        catalogControlMap.clear(); catalogParamMap.clear();
+        profileModifications = { setParams: new Map(), alters: new Map() };
+        loadedRiskData = []; loadedProfiles.clear(); resourceLoadStatus = [];
+
+        const ssp = sspData['system-security-plan'];
+        const t0 = performance.now();
+        const PHASES = 6;
+        L.info(`Verarbeite SSP "${ssp.metadata?.title || '(ohne Titel)'}" — ${(ssp['system-implementation']?.components || []).length} Komponente(n).`);
+
+        try {
+            progress('Verlinkte Profile', 1, PHASES);
+            await processLinkedProfiles(ssp);
+
+            progress('Komponenten-Profile', 2, PHASES);
+            await processProfiles(ssp);
+            L.debug(`Profile aufgelöst: ${loadedProfiles.size}`);
+
+            progress('Hauptkatalog', 3, PHASES);
+            await processMainCatalog(ssp);
+            L.debug(`Katalog nach Import-Profil: ${catalogControlMap.size} Controls, ${catalogParamMap.size} Parameter, ${profileModifications.setParams.size} set-parameters, ${profileModifications.alters.size} alters.`);
+
+            progress('Risikodaten', 4, PHASES);
+            extractRiskDataFromSSP(ssp);
+            L.debug(`Risikoquellen gefunden: ${loadedRiskData.length}`);
+
+            if (catalogControlMap.size === 0) {
+                progress('Fallback-Katalog (Grundschutz++)', 5, PHASES);
+                L.warn('Kein Katalog aus dem SSP auflösbar — lade gepinnten G++-Fallback-Katalog.');
+                await loadFallbackCatalog();
+            }
+
+            progress('Rendern', 5, PHASES);
+            renderSSP(ssp);
+            renderResourceStatus();
+
+            document.getElementById('ssp-status-ind').innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>SSP Aktiv (${sspFileName})`;
+            document.getElementById('ssp-status-ind').classList.replace('border-slate-600', 'border-emerald-700');
+            document.getElementById('ssp-status-ind').classList.replace('text-slate-400', 'text-emerald-400');
+
+            editorDiv.classList.remove('hidden');
+            saveSspBtn.disabled = false;
+            progress('Autosave', 6, PHASES);
+            autoSave();
+            L.ok(`Workspace fertig in ${Math.round(performance.now() - t0)}ms — ${catalogControlMap.size} Controls im Katalog.`);
+            progressEnd('Workspace bereit');
+        } catch (error) {
+            console.error("Verarbeitungsfehler:", error);
+            L.err(`Verarbeitungsfehler: ${error.message}`);
+            alert("Fehler bei der Verarbeitung: " + error.message);
+            progressEnd('Verarbeitungsfehler');
+        }
+    }
+
+    async function loadReferencedResource(href, rootDoc, expectedSha256) {
+        if (!href) return null;
+
+        // Fragment-href (Pin-Muster, Grundregel 8): "#uuid" über die back-matter des
+        // umgebenden Dokuments (rootDoc) auflösen — die Resource liefert die rlink-URL
+        // und den Soll-SHA-256, mit denen rekursiv weitergeladen wird. Alternativ kann
+        // die Resource den Inhalt als base64-Attachment einbetten.
+        if (href.startsWith('#')) {
+            const res = (((rootDoc || {})['back-matter'] || {}).resources || []).find(r => r.uuid === href.slice(1));
+            const rl = res?.rlinks?.[0];
+            if (rl?.href) {
+                const pinHash = (rl.hashes || []).find(h => h.algorithm === 'SHA-256')?.value || null;
+                L.debug(`back-matter ${href} → ${rl.href}${pinHash ? ` (Pin SHA-256 ${pinHash.slice(0, 12)}…)` : ' (ohne Pin)'}`);
+                return loadReferencedResource(rl.href, rootDoc, pinHash);
+            }
+            const b64 = res?.base64?.value || res?.attachments?.[0]?.base64?.value;
+            if (b64) {
+                const txt = base64DecodeUnicode(b64);
+                if (txt) { try { const j = JSON.parse(txt); L.ok(`${href} aus eingebettetem base64 gelesen (${(txt.length / 1024).toFixed(1)} kB).`); return j; } catch (e) { /* fällt durch zu missing */ } }
+            }
+            L.warn(`${href} nicht auflösbar (keine rlink-URL, kein eingebettetes base64).`);
+            resourceLoadStatus.push({ href, status: 'missing', source: 'back-matter', error: 'Resource nicht auflösbar (keine rlink-URL, kein eingebettetes base64)' });
+            return null;
+        }
+
+        const filename = href.split('/').pop();
+        const existingStatus = resourceLoadStatus.some(r => r.href === href);
+
+        if (workspaceFiles.has(href)) {
+            L.debug(`${href} aus dem Workspace bedient.`);
+            if (!existingStatus) resourceLoadStatus.push({ href, status: 'success', source: 'workspace' });
+            return workspaceFiles.get(href);
+        }
+        if (workspaceFiles.has(filename)) {
+            L.debug(`${filename} aus dem Workspace bedient (href: ${href}).`);
+            if (!existingStatus) resourceLoadStatus.push({ href, status: 'success', source: 'workspace' });
+            return workspaceFiles.get(filename);
+        }
+
+        if (href.startsWith('http')) {
+            const tNet = performance.now();
+            try {
+                L.debug(`GET ${href}${expectedSha256 ? ' (Pin erwartet)' : ''}`);
+                const response = await fetch(href);
+                if (!response.ok) throw new Error(`Netzwerk-Status ${response.status}`);
+                const buf = await response.arrayBuffer();
+                // Pin-Prüfung: Trägt die referenzierende Resource einen SHA-256, muss der
+                // geladene Inhalt exakt passen — sonst wird er verworfen.
+                if (expectedSha256) {
+                    const hash = await sha256Hex(buf);
+                    if (hash !== expectedSha256) {
+                        throw new Error(`Pin-Verletzung: SHA-256 ${hash.slice(0, 12)}… statt ${expectedSha256.slice(0, 12)}…`);
+                    }
+                    L.ok(`Pin-Prüfung bestanden für ${filename} — SHA-256 ${hash.slice(0, 12)}…`);
+                }
+                const json = JSON.parse(new TextDecoder().decode(buf));
+                L.ok(`${filename} geladen (${(buf.byteLength / 1024).toFixed(1)} kB in ${Math.round(performance.now() - tNet)}ms${expectedSha256 ? ', SHA-256 geprüft' : ''}).`);
+                if (!existingStatus) resourceLoadStatus.push({ href, status: 'success', source: expectedSha256 ? 'network · SHA-256 geprüft' : 'network' });
+                return json;
+            } catch (error) {
+                L.err(`${href}: ${error.message}`);
+                if (!existingStatus) resourceLoadStatus.push({ href, status: 'error', source: 'network', error: error.message });
+                return null;
+            }
+        }
+        L.warn(`${href} fehlt im Workspace — bitte als "Assoziierte Datei" nachladen.`);
+        if (!existingStatus) resourceLoadStatus.push({ href, status: 'missing', source: 'workspace' });
+        return null;
+    }
+
+    // Decoding, Profiles, Catalog scanning remains essentially unchanged logic-wise
+    function base64DecodeUnicode(str) {
+        try { return new TextDecoder().decode(Uint8Array.from(atob(str), c => c.charCodeAt(0))); }
+        catch (e) { return null; }
+    }
+
+    async function loadFallbackCatalog() {
+        // Fallback lädt die gepinnte Katalogversion und verifiziert den Pin-Hash.
+        L.info(`Lade gepinnten G++-Katalog (commit ${GPP_CATALOG_PIN_COMMIT.slice(0, 12)}…).`);
+        const d = await loadReferencedResource(GS_PLUS_CATALOG_URL, null, GPP_CATALOG_PIN_SHA256);
+        if (d?.catalog) {
+            processCatalogData(d.catalog);
+            L.ok(`Fallback-Katalog verarbeitet — ${catalogControlMap.size} Controls, ${catalogParamMap.size} Parameter.`);
+        } else {
+            L.err('Fallback-Katalog konnte nicht geladen werden (Pin-Verletzung oder Netzwerkfehler).');
+        }
+    }
+
+    async function processLinkedProfiles(ssp) {
+        const links = (ssp.metadata?.links || []).filter(l => l.rel === 'profile' && l.href);
+        await Promise.all(links.map(async (link) => {
+            const d = await loadReferencedResource(link.href, ssp);
+            if (d?.profile) {
+                extractRiskData(d.profile, link.href);
+                extractEmbeddedCatalogs(d.profile);
+            }
+        }));
+    }
+
+    async function processProfiles(ssp) {
+        const defLinks = new Set();
+        (ssp['system-implementation']?.components || []).forEach(c => {
+            const dl = c.links?.find(l => l.rel === 'profile' || l.rel === 'source-profile');
+            if (dl?.href) defLinks.add(dl.href);
+        });
+
+        const catLinks = new Set();
+        await Promise.all(Array.from(defLinks).map(async (href) => {
+            const d = await loadReferencedResource(href, ssp);
+            if (d) {
+                loadedProfiles.set(href, d);
+                if (d['profile']) {
+                    (d['profile'].metadata?.links || []).forEach(l => {
+                        if (l.rel === 'source-profile') {
+                            loadedProfiles.set(l.href, d);
+                        }
+                    });
+                }
+            }
+        }));
+
+        await Promise.all(Array.from(catLinks).map(async (href) => {
+            const d = await loadReferencedResource(href, ssp);
+            if (d?.catalog) processCatalogData(d.catalog);
+        }));
+    }
+
+    async function processMainCatalog(ssp) {
+        const pHref = ssp['import-profile']?.href;
+        if (!pHref) return;
+        const d = await loadReferencedResource(pHref, ssp);
+        if (d?.profile) {
+            const m = d.profile.modify;
+            if (m?.['set-parameters']) m['set-parameters'].forEach(p => { if (p['param-id'] && p.values?.length) profileModifications.setParams.set(p['param-id'], p.values[0]); });
+            if (m?.['alters']) m['alters'].forEach(a => { if (a['control-id'] && a.adds) profileModifications.alters.set(a['control-id'], [...(profileModifications.alters.get(a['control-id'])||[]), ...a.adds]); });
+            if (m?.inserts) m.inserts.forEach(ins => {
+                (ins.controls || []).forEach(ctrl => {
+                    if (ctrl && ctrl.id) catalogControlMap.set(ctrl.id, ctrl);
+                });
+            });
+            if (d.profile.imports) {
+                for (const imp of d.profile.imports) {
+                    // Wurzeldokument für Fragment-Importe ist hier das PROFIL — dessen
+                    // back-matter trägt die gepinnte Katalog-URL samt SHA-256.
+                    const r = await loadReferencedResource(imp.href, d.profile);
+                    if (r?.catalog) processCatalogData(r.catalog);
+                }
+            }
+        }
+    }
+
+    function extractRiskDataFromSSP(ssp) {
+        (ssp["back-matter"]?.resources || []).forEach(r => {
+            // Standard-OSCAL: base64 direkt auf der Resource; Altformat: attachments[].base64
+            const b64 = r.base64 || r.attachments?.[0]?.base64;
+            if (b64?.filename === "risk-analysis.json" && b64.value) {
+                try {
+                    const json = JSON.parse(base64DecodeUnicode(b64.value));
+                    if (json.risks) loadedRiskData.push({ sourceHref: "SSP", sourceTitle: "SSP Risikoanalyse", risks: json.risks });
+                } catch (e) {}
+            }
+        });
+    }
+
+    function extractRiskData(p, src) {
+        const ref = p.metadata?.props?.find(pr => pr && pr.name === 'risk-analysis-details-ref')?.value?.replace('#', '');
+        const res = p["back-matter"]?.resources?.find(r => r.uuid === ref);
+        const b64 = res?.base64 || res?.attachments?.[0]?.base64;
+        if (b64?.value) {
+            try {
+                const json = JSON.parse(base64DecodeUnicode(b64.value));
+                if (json.risks) loadedRiskData.push({ sourceHref: src, sourceTitle: p.metadata.title || src, risks: json.risks });
+            } catch (e) {}
+        }
+    }
+
+    function extractEmbeddedCatalogs(p) {
+        (p["back-matter"]?.resources || []).forEach(r => {
+            if (r.rlinks?.some(rl => rl["media-type"] === "application/oscal.catalog+json")) {
+                const b64 = r.base64 || r.attachments?.[0]?.base64;
+                if (b64?.value) {
+                    try {
+                        const json = JSON.parse(base64DecodeUnicode(b64.value));
+                        if (json.catalog) processCatalogData(json.catalog);
+                    } catch (e) {}
+                }
+            }
+        });
+    }
+
+    function processCatalogData(c) {
+        function scan(items) {
+            if (!items) return;
+            items.forEach(i => {
+                if (i.id && (i.parts || i.class || i.title)) catalogControlMap.set(i.id, i);
+                if (i.params) i.params.forEach(p => { if (p.id) catalogParamMap.set(p.id, p); });
+                if (i.controls) scan(i.controls);
+                if (i.groups) scan(i.groups);
+            });
+        }
+        if (c) { scan(c.groups); scan(c.controls); }
+    }
+
+    // ============================================================
+    // RENDERING
+    // ============================================================
+    function renderSSP(ssp) {
+        document.getElementById('metadata-content-inner').innerHTML = renderMetadata(ssp.metadata);
+        document.getElementById('system-chars-content-inner').innerHTML = renderSystemCharacteristics(ssp['system-characteristics']);
+
+        if (loadedRiskData.length > 0) {
+            document.getElementById('sec-risk').classList.remove('hidden');
+            document.getElementById('nav-risk').style.display = 'block';
+            document.getElementById('risk-analysis-content-inner').innerHTML = renderRiskAnalysis(ssp);
+        } else {
+            document.getElementById('sec-risk').classList.add('hidden');
+            document.getElementById('nav-risk').style.display = 'none';
+        }
+
+        renderImplementation(ssp); // Injects directly into DOM and Sidebar
+    }
+
+    function renderResourceStatus() {
+        const c = document.getElementById('resource-status-content-inner');
+        let h = '<div class="space-y-2">';
+        const unique = new Map();
+        resourceLoadStatus.forEach(i => { if (!unique.has(i.href) || i.status === 'success') unique.set(i.href, i); });
+
+        const sorted = Array.from(unique.values()).sort((a,b) => (a.status === 'error' ? 0 : a.status === 'missing' ? 1 : 2) - (b.status === 'error' ? 0 : b.status === 'missing' ? 1 : 2));
+
+        let fails = 0;
+        sorted.forEach(i => {
+            let sc = '', st = '';
+            if (i.status === 'success') { sc = 'text-green-400'; st = `Geladen (${i.source})`; }
+            else if (i.status === 'error') { sc = 'text-red-400'; st = `Fehler: ${i.error}`; fails++; }
+            else { sc = 'text-orange-400'; st = 'Fehlt (Upload nötig)'; fails++; }
+            h += `<div class="flex justify-between items-start text-xs p-2 bg-slate-800 rounded-md border border-slate-700"><span class="text-slate-300 break-all mr-4">${i.href}</span><span class="${sc} font-medium flex-shrink-0">${st}</span></div>`;
+        });
+        h += '</div>';
+        c.innerHTML = h || '<p class="text-slate-500 text-xs">Keine externen Ressourcen.</p>';
+
+        const ri = document.getElementById('resource-status-ind');
+        ri.classList.remove('hidden');
+        ri.style.display = 'flex';
+        if (fails > 0) {
+            ri.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-orange-500 mr-1.5"></span>${fails} Ressource(n) fehlen`;
+            ri.classList.replace('text-slate-400', 'text-orange-400');
+        } else {
+            ri.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>Alle geladen`;
+            ri.classList.replace('text-slate-400', 'text-emerald-400');
+        }
+        if (fails > 0) L.warn(`Ressourcen-Status: ${sorted.length - fails}/${sorted.length} geladen, ${fails} fehlen oder sind fehlerhaft.`);
+        else L.ok(`Ressourcen-Status: alle ${sorted.length} Referenz(en) aufgelöst.`);
+    }
+
+    function renderMetadata(m) {
+        return `<div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Titel</label><input type="text" id="metadata-title" class="inp w-full" value="${(m.title||'').replace(/"/g, '&quot;')}"></div>
+                <div><label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Letzte Änderung</label><input type="text" disabled class="inp w-full opacity-50 cursor-not-allowed" value="${m['last-modified']||'N/A'}"></div>
+            </div>
+            <div><label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Zweck &amp; Geltungsbereich (Rationale)</label><textarea id="metadata-remarks" rows="3" class="inp w-full">${(m.remarks||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea></div>
+        </div>`;
+    }
+
+    function renderSystemCharacteristics(c) {
+        const s = c.status?.state || 'operational';
+        return `<div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">System-Name</label><input type="text" id="system-name" class="inp w-full" value="${(c['system-name']||'').replace(/"/g, '&quot;')}"></div>
+                <div><label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Status</label><select id="system-status" class="inp w-full"><option value="operational" ${s==='operational'?'selected':''}>Operational</option><option value="under-development" ${s==='under-development'?'selected':''}>Under Development</option><option value="other" ${s==='other'?'selected':''}>Other</option></select></div>
+            </div>
+            <div><label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Beschreibung</label><textarea id="system-description" rows="3" class="inp w-full">${c.description||''}</textarea></div>
+        </div>`;
+    }
+
+    function renderRiskAnalysis(ssp) {
+        let h = '<div class="space-y-4">';
+        loadedRiskData.forEach((rp, si) => {
+            h += `<div class="p-4 border border-emerald-800/50 rounded-lg bg-emerald-900/10 shadow-sm"><h3 class="text-sm font-bold text-emerald-400 mb-1">${rp.sourceTitle}</h3><p class="text-[10px] text-slate-500 mb-3 break-all">${rp.sourceHref}</p><div class="space-y-3">`;
+            rp.risks.forEach((r, ri) => {
+                const badge = v => { const b = {'low':'bg-green-900 text-green-300','medium':'bg-yellow-900 text-yellow-300','high':'bg-orange-900 text-orange-300','very-high':'bg-red-900 text-red-300'}[v]||'bg-slate-700 text-slate-300'; return `<span class="sb ${b}">${v}</span>`; };
+                h += `<div class="bg-slate-800 border border-slate-700 rounded p-3"><div class="flex flex-wrap gap-2 mb-2 items-center"><span class="font-bold text-white text-sm">${r.title}</span>${badge(r.likelihood)} ${badge(r.impact)}</div><p class="text-xs text-slate-300 mb-2">${r.description||''}</p><p class="text-[10px] text-slate-400"><strong>Threat:</strong> ${r.threat||'N/A'}</p></div>`;
+            });
+            h += `</div></div>`;
+        });
+        h += '</div>';
+        return h;
+    }
+
+    function renderImplementation(ssp) {
+        const comps = ssp['system-implementation']?.components || [];
+        const reqs = ssp['control-implementation']?.['implemented-requirements'] || [];
+        const setParams = ssp['control-implementation']?.['set-parameters'] || [];
+        const pMap = new Map(); setParams.forEach(p => { if (p.values?.length) pMap.set(p['param-id'], p.values[0]); });
+
+        if (!comps.length) {
+            document.getElementById('impl-area').innerHTML = '<p class="text-slate-400">Keine Systemkomponenten.</p>';
+            return;
+        }
+
+        let navHtml = '';
+        let filterOpts = { status: new Set(['open', 'implemented', 'partial', 'planned', 'alternative', 'not-applicable']) };
+        const allowedFilters = ['status', 'modal_verb', 'modalverb', 'sec_level', 'class', 'phase', 'tags', 'tag'];
+        const addFilter = (k, v) => {
+            if(!k || !v) return;
+            const kl = k.toLowerCase();
+            if(allowedFilters.includes(kl)) {
+                if(!filterOpts[kl]) filterOpts[kl] = new Set();
+                filterOpts[kl].add(v);
+            }
+        };
+
+        let compHtml = '';
+        comps.forEach((c, idx) => {
+            const sNiv = c.props?.find(p => p && p.name === 'sicherheitsniveau')?.value || '';
+            const sNivTag = sNiv ? ` <span class="text-[8px] opacity-60">[${sNiv}]</span>` : '';
+            navHtml += `<button onclick="scrollToSec('comp-${c.uuid}')" class="w-full text-left p-1.5 text-[10px] font-bold text-slate-300 bg-slate-900/40 hover:bg-slate-800 rounded truncate border border-transparent hover:border-slate-700">◇ ${c.title}${sNivTag}</button>`;
+
+            let dl = c.links?.find(l => l.rel === 'profile' || l.rel === 'source-profile');
+            const cd = dl ? loadedProfiles.get(dl.href) : null;
+
+            const sMap = new Map();
+            reqs.forEach(r => { const e = r['by-components']?.find(bc => bc['component-uuid'] === c.uuid); if(e) sMap.set(r['control-id'], e); });
+
+            const dMap = new Map();
+            let tc = null;
+            try {
+                tc = cd?.['profile'] || null;
+                if (tc?.imports) {
+                    tc.imports.forEach(i => { if(i) (i["include-controls"]||[]).forEach(ic => { if(ic) (ic["with-ids"]||[]).forEach(id => { if(id) dMap.set(id, { "control-id": id }); }); }); });
+                }
+                // Reifegrade/Statements liegen im Profil unter modify.alters[].adds[].parts (name:"statement").
+                // OSCAL erlaubt keine neuen statements in einer CDef → sie werden im Profil per `adds`
+                // als neue `part` an das Control angehängt. Hier in die statements des Controls überführen.
+                // Neue Form (issue 3.1): der Reifegrad-Text steht in pt.prose, Guidance/Assessment
+                // als verschachtelte parts. Alte Form: Text lag in props statement/guidance/
+                // assessment-method. Neue zuerst lesen, sonst auf alte zurückfallen.
+                (tc?.modify?.['alters'] || []).forEach(alt => {
+                    const cid = alt && alt['control-id']; if(!cid) return;
+                    const entry = dMap.get(cid) || { "control-id": cid };
+                    entry.statements = entry.statements || [];
+                    (alt.adds || []).forEach(add => (add.parts || []).filter(pt => pt && pt.name === 'statement').forEach(pt => {
+                        const props = pt.props || [];
+                        const propVal = (n) => props.find(p => p && p.name === n)?.value || '';
+                        const label = propVal('label');
+                        const sub = {};
+                        (pt.parts || []).forEach(np => { if(np && np.name) sub[np.name] = np.prose; });
+                        const statementText = (pt.prose != null && !propVal('statement')) ? pt.prose : (propVal('statement') || pt.prose || '');
+                        const guidanceText = sub.guidance || propVal('guidance') || '';
+                        const assessmentText = sub.assessment || propVal('assessment-method') || '';
+                        entry.statements.push({ "statement-id": pt.id, description: label, statementText, guidanceText, assessmentText, props });
+                    }));
+                    dMap.set(cid, entry);
+                });
+            } catch(cdErr) { console.warn('Fehler beim Lesen des Profils für', c.title, cdErr); }
+
+            const allKeys = new Set([...sMap.keys(), ...dMap.keys(), ...profileModifications.alters.keys()]);
+            const sorted = Array.from(allKeys).sort();
+
+            // FIX C: Sammle ALLE Filter (Class, Modalverb, Tags etc.)
+            sorted.forEach(cid => {
+              try {
+                const st = sMap.get(cid)?.['implementation-status']?.state || 'open';
+                addFilter('status', st);
+
+                const catCtrl = catalogControlMap.get(cid);
+                if (catCtrl) {
+                    if (catCtrl.class) addFilter('class', catCtrl.class);
+                    if (catCtrl.props) catCtrl.props.forEach(p => { if (p && p.name) addFilter(p.name, p.value); });
+                    const stmt = catCtrl.parts?.find(p => p && p.name === 'statement');
+                    if (stmt && stmt.props) stmt.props.forEach(p => { if (p && p.name) addFilter(p.name, p.value); });
+                }
+                const implReq = dMap.get(cid);
+                if (implReq && implReq.props) implReq.props.forEach(p => { if (p && p.name) addFilter(p.name, p.value); });
+                if (implReq && implReq.statements) implReq.statements.forEach(s => {
+                    if (s && s.props) s.props.forEach(p => { if (p && p.name) addFilter(p.name, p.value); });
+                });
+              } catch(filterErr) { console.warn('Filter-Fehler bei', cid, filterErr); }
+            });
+
+            // FIX E & B: Sichtbare Component Level Props (Eigenschaften & Risiken)
+            let compLevelHtml = '<div class="mb-4 space-y-4">';
+            let hasCompLevelContent = false;
+
+            if (c.description || (tc && tc.description)) {
+                compLevelHtml += `<div class="text-sm text-slate-300 bg-slate-900/50 p-4 rounded-lg border border-slate-700/50 leading-relaxed">${c.description || tc.description}</div>`;
+                hasCompLevelContent = true;
+            }
+
+            let generalProps = [];
+            let riskProps = [];
+            const riskRegex = /^_2\.(\d+)\.(.*)$/;
+
+            // 1. Props aus dem SSP (Komponente)
+            if (c.props) {
+                c.props.forEach(p => {
+                    if (!p || !p.name) return;
+                    if (p.name === 'identified-risk') riskProps.push({ source: 'SSP', num: '◬', title: p.value, value: p.remarks || '' });
+                    else if (p.name === 'sicherheitsniveau') { /* shown in header badge */ }
+                    else generalProps.push({ source: 'SSP', name: p.name, value: p.value });
+                });
+            }
+
+            // 2. Props aus dem Profil (Blaupause)
+            if (tc && tc.props && tc.props.length > 0) {
+                tc.props.forEach(p => {
+                    if (!p || !p.name) return;
+                    if (!p.value) return;
+                    const match = p.name.match(riskRegex);
+                    if (match) riskProps.push({ source: 'Komp.-Def.', num: parseInt(match[1], 10), title: match[2].replace(/_/g, ' ').trim(), value: p.value });
+                    else generalProps.push({ source: 'Komp.-Def.', name: p.name, value: p.value });
+                });
+            }
+
+            if (generalProps.length > 0) {
+                let genHtml = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">`;
+                generalProps.forEach(p => {
+                    const propName = (p.name || '').replace(/_/g, ' ');
+                    genHtml += `<div class="bg-slate-900/60 p-3 rounded-lg border border-slate-700/50 shadow-sm"><div class="flex justify-between items-start mb-1"><h4 class="text-[10px] font-bold text-blue-400 uppercase tracking-wider">${propName}</h4><span class="text-[8px] text-slate-500 uppercase">${p.source}</span></div><div class="text-xs text-slate-300 whitespace-pre-wrap">${p.value}</div></div>`;
+                });
+                genHtml += `</div>`;
+                compLevelHtml += `<div><h4 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">Eigenschaften (${generalProps.length})</h4>${genHtml}</div>`;
+                hasCompLevelContent = true;
+            }
+
+            if (riskProps.length > 0) {
+                let riskHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">`;
+                riskProps.forEach(r => {
+                    const borderColor = r.source === 'SSP' ? 'border-orange-500' : 'border-red-500';
+                    const badgeColor = r.source === 'SSP' ? 'bg-orange-900/40 text-orange-300 border-orange-500/30' : 'bg-red-900/40 text-red-300 border-red-500/30';
+                    riskHtml += `<div class="p-3 bg-slate-900/80 rounded-lg border-l-4 ${borderColor} border border-slate-700 shadow-sm relative"><div class="absolute top-0 right-0 ${badgeColor} text-[9px] font-bold px-2 py-0.5 rounded-bl border-b border-l">RISIKO (${r.source})</div><h5 class="text-xs font-bold text-slate-200 mb-1 pr-16"><span class="opacity-50 mr-1">${r.num}</span> ${r.title}</h5><p class="text-xs text-slate-400 whitespace-pre-wrap">${r.value}</p></div>`;
+                });
+                riskHtml += `</div>`;
+                compLevelHtml += `<div class="mt-4"><h4 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">Identifizierte Risiken (${riskProps.length})</h4>${riskHtml}</div>`;
+                hasCompLevelContent = true;
+            }
+
+            compLevelHtml += '</div>';
+            if(hasCompLevelContent) compLevelHtml += '<hr class="border-slate-700 mb-4">';
+            else compLevelHtml = '';
+
+            const openCls = idx === 0 ? 'open' : '';
+            const sichNiv = c.props?.find(p => p && p.name === 'sicherheitsniveau')?.value || '';
+            const sichNivBadge = sichNiv ? (() => {
+                const nivColors = {
+                    'basis': 'bg-green-900 text-green-300 border-green-700',
+                    'normal-SdT': 'bg-blue-900 text-blue-300 border-blue-700',
+                    'standard': 'bg-blue-900 text-blue-300 border-blue-700',
+                    'erhöht': 'bg-orange-900 text-orange-300 border-orange-700',
+                    'hoch': 'bg-red-900 text-red-300 border-red-700'
+                };
+                const cls = nivColors[sichNiv] || 'bg-slate-700 text-slate-300 border-slate-600';
+                return `<span class="sb ${cls} ml-2">◈ ${sichNiv}</span>`;
+            })() : '';
+            compHtml += `<div id="comp-${c.uuid}" class="border border-slate-700 rounded-lg overflow-hidden bg-slate-800 mb-6 shadow-md comp-card" data-search="${(c.title + ' ' + (c.description||'')).toLowerCase()}">
+                <button class="w-full flex justify-between items-center p-4 hover:bg-slate-700 text-left" onclick="tog('cb-${c.uuid}')">
+                    <h3 class="text-lg font-bold text-white">${c.title} <span class="sb bg-slate-700 text-slate-300 ml-2">${c.status?.state||'unknown'}</span>${sichNivBadge}</h3>
+                    <svg id="icon-cb-${c.uuid}" class="chev ${openCls} w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                </button>
+                <div id="cb-${c.uuid}-content" class="coll-content ${openCls} p-4 border-t border-slate-700 bg-slate-900 space-y-4">
+                    ${compLevelHtml}
+                    <div class="space-y-4">`;
+
+            if(sorted.length > 0) sorted.forEach(cid => {
+                try { compHtml += renderControlEntry(cid, c, sMap.get(cid), dMap.get(cid), pMap); }
+                catch(renderErr) {
+                    console.warn('Render-Fehler bei Control', cid, renderErr);
+                    compHtml += `<div class="ctrl-entry border border-red-700 bg-red-900/20 rounded-lg p-3" data-cid="${cid}" data-comp="${c.uuid}" data-filter="|status:open|" data-search="${cid.toLowerCase()}"><p class="text-red-400 text-xs">◬ Render-Fehler bei <strong>${cid}</strong>: ${renderErr.message}</p></div>`;
+                }
+            });
+            else compHtml += `<p class="text-xs text-slate-500">Keine spezifischen Controls zugewiesen.</p>`;
+
+            compHtml += `</div></div></div>`;
+        });
+
+        // Inject HTML
+        document.getElementById('impl-area').innerHTML = compHtml;
+        document.getElementById('sb-comp-nav').innerHTML = navHtml;
+        document.getElementById('sb-comp-nav').classList.remove('hidden');
+
+        // Build Filters mit ConfigMap Bezeichnern
+        const configMap = {
+            'status': 'Umsetzung',
+            'class': 'Klasse',
+            'sec_level': 'Sicherheitslevel',
+            'phase': 'Phase',
+            'modalverb': 'Modalverb',
+            'tags': 'Tags',
+            'tag': 'Tags'
+        };
+
+        let fHtml = `<input type="text" id="global-search" class="inp text-[10px] w-full mb-2 font-mono" placeholder="Suche (Text/ID)..." oninput="applyFilters()">`;
+        Object.keys(filterOpts).sort().forEach(k => {
+            const kl = k.toLowerCase();
+            if(kl === 'alt-identifier') return;
+            const label = configMap[kl] || getPropConfig(kl).label || kl.toUpperCase();
+            fHtml += `<select data-filter="${kl}" class="flt-sel inp text-[10px] w-full mb-1.5" onchange="applyFilters()">
+                <option value="">${label}: Alle</option>
+                ${Array.from(filterOpts[k]).sort().map(v => `<option value="${v}">${v}</option>`).join('')}
+            </select>`;
+        });
+        document.getElementById('sb-filters').innerHTML = fHtml;
+        L.ok(`Implementierung gerendert: ${comps.length} Komponente(n), ${document.querySelectorAll('.ctrl-entry').length} Control-Einträge, ${Object.keys(filterOpts).length} Filterdimension(en).`);
+    }
+
+    function renderControlEntry(cid, comp, sReq, dReq, pMap) {
+        const rk = `${cid.replace(/[^a-zA-Z0-9]/g, '-')}-${comp.uuid}`;
+        const st = sReq?.['implementation-status']?.state || '';
+        const currSt = st || 'open';
+
+        const cc = catalogControlMap.get(cid);
+        const title = cc?.title || 'Unbekanntes Control';
+        const pTxt = cc?.parts?.find(p => p && p.name==='statement')?.prose || '';
+
+        let fStr = `|status:${currSt}|class:${cc?.class||''}|`;
+        let sStr = `${cid} ${title} ${pTxt}`.toLowerCase();
+
+        // 1. Catalog Props
+        const catProps = (cc?.props || []).filter(Boolean);
+        let catPropsHtml = '';
+        if (catProps.length > 0) {
+            catPropsHtml = '<div class="flex flex-wrap gap-2 mt-2 mb-3">';
+            catProps.forEach(p => {
+                if (!p) return;
+                const pName = p.name || ''; const pVal = p.value || '';
+                const conf = getPropConfig(pName);
+                // Schutzziel-Wert 0 = wirkt nicht auf dieses Schutzziel -> Badge unterdrücken
+                if (conf.schutzziel && pVal === '0') return;
+                fStr += `${pName.toLowerCase()}:${pVal.toLowerCase()}|`;
+                sStr += ` ${pVal.toLowerCase()}`;
+                // Wert 2 = Schutzziel steht im Zentrum der Anforderung -> hervorheben
+                const color = (conf.schutzziel && pVal === '2' && conf.strongColor) ? conf.strongColor : conf.color;
+                catPropsHtml += `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-semibold border ${color}" title="${pName}: ${pVal}">
+                    ${conf.icon}<span class="mr-1 opacity-70">${conf.label}:</span> ${pVal}
+                </span>`;
+            });
+            catPropsHtml += '</div>';
+        }
+
+        // 2. Statement Props
+        const stmtProps = (cc?.parts?.find(p => p && p.name==='statement')?.props || []).filter(Boolean);
+        let stmtPropsHtml = '';
+        if (stmtProps.length > 0) {
+            stmtPropsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-600/50">';
+            stmtProps.forEach(p => {
+                if (!p) return;
+                const pName = p.name || ''; const pVal = p.value || '';
+                fStr += `${pName.toLowerCase()}:${pVal.toLowerCase()}|`;
+                sStr += ` ${pVal.toLowerCase()}`;
+                const conf = getPropConfig(pName);
+                stmtPropsHtml += `<div class="flex items-center text-xs p-1.5 rounded bg-slate-900/30 border border-slate-700/50">
+                    <div class="${conf.color.split(' ')[0]} mr-2">${conf.icon}</div>
+                    <div><span class="block text-[10px] uppercase text-slate-500 font-bold leading-tight">${conf.label}</span><span class="text-slate-300 font-medium">${pVal}</span></div>
+                </div>`;
+            });
+            stmtPropsHtml += '</div>';
+        }
+
+        // 3. Component Definition Props
+        const defProps = (dReq?.props || []).filter(Boolean);
+        let propsHtml = '';
+        if (defProps.length > 0) {
+            propsHtml = '<div class="flex flex-wrap gap-2 mt-2 border-t border-slate-700/50 pt-3">';
+            defProps.forEach(p => {
+                if (!p) return;
+                const pName = p.name || ''; const pVal = p.value || '';
+                fStr += `${pName.toLowerCase()}:${pVal.toLowerCase()}|`;
+                sStr += ` ${pVal.toLowerCase()}`;
+                const conf = getPropConfig(pName);
+                propsHtml += `<span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${conf.color}" title="${pName}">
+                    ${conf.icon}<span class="mr-1 opacity-70">${conf.label}:</span> ${pVal}
+                </span>`;
+            });
+            propsHtml += '</div>';
+        }
+
+        // params
+        let pRef = new Set();
+        const pRegex = /{{\s*insert:\s*param,\s*([a-zA-Z0-9._-]+)\s*}}/g;
+        let match; while((match = pRegex.exec(pTxt)) !== null) pRef.add(match[1]);
+
+        let pTxtParsed = pTxt.replace(pRegex, (m, pid) => `<span class="param-placeholder" title="${pid}">[${catalogParamMap.get(pid)?.label||pid}]</span>`);
+
+        const stmts = (dReq?.statements || []).filter(Boolean);
+        const selId = sReq?.props?.find(p => p && p.name==='implemented-statement-id')?.value || '';
+
+        // Safe prop extraction helpers
+        const sReqPropVal = (n) => sReq?.props?.find(p => p && p.name === n)?.value || '';
+
+        return `<div class="ctrl-entry border border-slate-700 bg-slate-800 rounded-lg p-3 shadow-sm" data-cid="${cid}" data-comp="${comp.uuid}" data-filter="${fStr}" data-search="${sStr}">
+            <div class="flex justify-between items-start mb-2">
+                <h4 class="font-bold text-white text-sm"><span class="text-blue-400 font-mono mr-1">${cid}</span> ${title}</h4>
+                <select id="state-${rk}" onchange="updateStatus(this)" class="inp text-xs py-1 px-2 w-32 font-bold ${st==='implemented'?'text-emerald-400':st==='not-applicable'?'text-slate-500':'text-amber-400'}">
+                    <option value="" ${st===''?'selected':''}>Offen</option>
+                    <option value="implemented" ${st==='implemented'?'selected':''}>Umgesetzt</option>
+                    <option value="partial" ${st==='partial'?'selected':''}>Teilweise</option>
+                    <option value="planned" ${st==='planned'?'selected':''}>Geplant</option>
+                    <option value="alternative" ${st==='alternative'?'selected':''}>Alternativ</option>
+                    <option value="not-applicable" ${st==='not-applicable'?'selected':''}>N/A</option>
+                </select>
+            </div>
+
+            ${catPropsHtml}
+            ${propsHtml}
+
+            ${pTxtParsed ? `<div class="p-2.5 bg-slate-900/50 rounded border border-slate-600 text-xs text-slate-300 leading-relaxed mb-3">${pTxtParsed}${stmtPropsHtml}</div>` : ''}
+
+            ${pRef.size > 0 ? `<div class="mb-3 p-2 bg-blue-900/10 border border-blue-900/30 rounded grid grid-cols-1 md:grid-cols-2 gap-2">
+                ${Array.from(pRef).map(pid => `<div><label class="block text-[9px] text-blue-400 uppercase font-bold">${catalogParamMap.get(pid)?.label||pid}</label><input type="text" data-param-id="${pid}" class="param-input inp text-xs py-1 px-2 w-full" value="${(pMap.get(pid)||(profileModifications.setParams.get(pid)||'')).replace(/"/g,'&quot;')}"></div>`).join('')}
+            </div>` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                <div><label class="block text-[10px] text-slate-400 uppercase font-bold mb-0.5">Kommentar</label><textarea id="desc-${rk}" rows="2" class="inp text-xs w-full p-1.5">${sReq?.description||''}</textarea></div>
+                <div class="flex flex-col gap-2">
+                    <div><label class="block text-[10px] text-slate-400 uppercase font-bold mb-0.5">Bearbeiter</label><input type="text" id="name-${rk}" class="inp text-xs py-1 px-2 w-full" value="${sReqPropVal('implementing-user')}"></div>
+                    <div><label class="block text-[10px] text-slate-400 uppercase font-bold mb-0.5">Datum</label><input type="date" id="date-${rk}" class="inp text-xs py-1 px-2 w-full" value="${sReqPropVal('implementation-date')}"></div>
+                </div>
+            </div>
+
+            ${stmts.length ? `<div class="mb-3 space-y-1.5">
+                <label class="block text-[10px] text-slate-400 uppercase font-bold">Reifegrad (aus Profil)</label>
+                <label class="flex items-center gap-2 p-1.5 bg-slate-900/50 rounded border border-slate-700 cursor-pointer hover:bg-slate-800"><input type="radio" name="mat-${rk}" value="manual" ${!selId?'checked':''} class="form-radio text-emerald-500 h-3 w-3"><span class="text-xs text-slate-300">Manuell (kein Level gewählt)</span></label>
+                ${stmts.map(s => `<label class="flex items-center gap-2 p-1.5 bg-slate-900/50 rounded border border-slate-700 cursor-pointer hover:bg-slate-800"><input type="radio" name="mat-${rk}" value="${s['statement-id']||''}" ${selId===s['statement-id']?'checked':''} class="form-radio text-emerald-500 h-3 w-3"><div class="text-xs"><span class="font-bold text-emerald-400">${s.description||s['statement-id']||''}</span> <span class="text-slate-400">${s.statementText||s.props?.find(p => p && p.name==='statement')?.value||''}</span></div></label>`).join('')}
+            </div>` : ''}
+
+            <div class="border-t border-slate-700 pt-3 flex gap-2 flex-wrap items-center">
+                <button onclick="triggerAI('${rk}', '${cid}', 'implementation')" class="px-2 py-1 bg-violet-900/50 hover:bg-violet-800 border border-violet-700/50 text-violet-300 text-[10px] font-bold uppercase rounded flex items-center gap-1 transition-colors">✎ Umsetzungsvorschlag</button>
+                <button onclick="triggerAI('${rk}', '${cid}', 'risk')" class="px-2 py-1 bg-orange-900/50 hover:bg-orange-800 border border-orange-700/50 text-orange-300 text-[10px] font-bold uppercase rounded flex items-center gap-1 transition-colors">◬ Risiken</button>
+                <button onclick="showED23('${cid}', '${rk}')" class="px-2 py-1 bg-blue-900/50 hover:bg-blue-800 border border-blue-700/50 text-blue-300 text-[10px] font-bold uppercase rounded flex items-center gap-1 transition-colors">⬡ Zeige BSI ED23 Anforderungen</button>
+                <div id="loader-${rk}" class="ai-loader ml-auto"></div>
+            </div>
+            <div id="ai-out-${rk}" class="hidden mt-3 p-3 bg-slate-900 border border-violet-800/30 rounded ai-response-content max-h-96 overflow-y-auto cscroll"></div>
+            <div id="ed23-${rk}" class="hidden mt-3 p-3 bg-slate-900 border border-blue-800/30 rounded max-h-96 overflow-y-auto cscroll"></div>
+        </div>`;
+    }
+
+    // --- BSI ED2023 Anforderungen (vorberechnet von Gpp-ai-tool, ohne Laufzeit-KI) ---
+    let ED23_MAP = {};
+    const ED23_MAP_URL = "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/hilfsdateien/gpp_ed23_anforderungen.json";
+    // Flatten an OSCAL 1.2.2 mapping-collection (or the legacy bespoke map) into
+    // { controlId: [{id, name, begruendung}] } for the ED23 panel.
+    function buildEd23MapFromOscal(doc) {
+        if (doc && doc.gpp_ed23_anforderungen_map) return doc.gpp_ed23_anforderungen_map;
+        const out = {}, mc = doc && doc["mapping-collection"];
+        if (!mc) return out;
+        (mc.mappings || []).forEach(mp => (mp.maps || []).forEach(m => {
+            const src = (m.sources || [])[0];
+            if (!src) return;
+            const cid = src["id-ref"];
+            (m.targets || []).forEach(t => {
+                const label = (t.props || []).find(p => p.name === "label" || p.name === "title");
+                (out[cid] = out[cid] || []).push({ id: t["id-ref"], name: (label && label.value) || "", begruendung: m.remarks || "" });
+            });
+        }));
+        return out;
+    }
+    async function loadED23Map() {
+        const t0 = performance.now();
+        try {
+            L.debug('Lade BSI-ED23-Mapping (vorberechnet, ohne Laufzeit-KI)…');
+            // Repin-Override aus config.html berücksichtigen (Grundregel 8).
+            const r = await fetch(gppSource('ed23-anforderungen', ED23_MAP_URL));
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            const d = await r.json();
+            ED23_MAP = buildEd23MapFromOscal(d);
+            const controls = Object.keys(ED23_MAP).length;
+            const targets = Object.values(ED23_MAP).reduce((s, a) => s + (a ? a.length : 0), 0);
+            L.ok(`ED23-Mapping geladen: ${controls} Controls → ${targets} Anforderungen (${Math.round(performance.now() - t0)}ms).`);
+        } catch (e) {
+            console.warn("BSI ED23-Anforderungen nicht geladen:", e);
+            L.warn(`ED23-Mapping nicht geladen (${e.message}) — der ED23-Button bleibt leer.`);
+            ED23_MAP = {};
+        }
+    }
+    const ed23Esc = s => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    function renderED23Table(list) {
+        if (!list || !list.length) return '<p class="text-xs text-slate-500 italic">Keine passenden BSI ED23-Anforderungen hinterlegt.</p>';
+        const rows = list.map(a => `<tr class="border-b border-slate-700/50 align-top"><td class="py-1 pr-2 font-mono font-bold text-blue-300 whitespace-nowrap">${ed23Esc(a.id)}</td><td class="py-1 pr-2 text-slate-200">${ed23Esc(a.name)}</td><td class="py-1 text-slate-400">${ed23Esc(a.begruendung || '')}</td></tr>`).join('');
+        return `<div class="text-[10px] font-bold text-blue-400 uppercase mb-2">⬡ BSI IT-Grundschutz Edition 2023 – passende Anforderungen</div><table class="w-full text-xs border-collapse"><thead><tr class="text-left text-slate-500"><th class="py-1 pr-2">ID</th><th class="py-1 pr-2">Name der Anforderung</th><th class="py-1">Begründung</th></tr></thead><tbody>${rows}</tbody></table>`;
+    }
+    window.showED23 = (cid, rk) => {
+        const box = document.getElementById('ed23-' + rk);
+        if (!box) return;
+        if (!box.classList.contains('hidden')) { box.classList.add('hidden'); return; }
+        box.innerHTML = renderED23Table(ED23_MAP[cid]);
+        box.classList.remove('hidden');
+        L.debug(`ED23-Mapping für ${cid}: ${(ED23_MAP[cid] || []).length} Anforderung(en) — vorberechnet, ohne Laufzeit-KI.`);
+    };
+
+    window.applyFilters = () => {
+        const term = document.getElementById('global-search')?.value.toLowerCase() || '';
+        const sels = Array.from(document.querySelectorAll('.flt-sel')).map(s => ({ k: s.dataset.filter, v: s.value })).filter(x => x.v);
+
+        document.querySelectorAll('.comp-card').forEach(cc => {
+            const cStr = cc.dataset.search || '';
+            let cMatch = !term || cStr.includes(term);
+            let hasVis = false;
+
+            cc.querySelectorAll('.ctrl-entry').forEach(ce => {
+                const sStr = ce.dataset.search || '';
+                const fStr = ce.dataset.filter || '';
+                let m = (!term || sStr.includes(term)) && sels.every(s => fStr.includes(`|${s.k}:${s.v}|`));
+                ce.style.display = m ? '' : 'none';
+                if (m) hasVis = true;
+            });
+            cc.style.display = (hasVis || cMatch) ? '' : 'none';
+        });
+    };
+
+    // ============================================================
+    // KI ACTIONS — Prompts stammen aus den editierbaren Textareas (siehe buildPrompt)
+    // ============================================================
+    window.triggerAI = async (rk, cid, type, forceRefresh = false) => {
+        const out = document.getElementById(`ai-out-${rk}`);
+        const loader = document.getElementById(`loader-${rk}`);
+        out.classList.remove('hidden');
+
+        if (!forceRefresh && aiCache[cid] && aiCache[cid][type]) {
+            L.debug(`${cid} · ${type}: aus dem lokalen KI-Cache bedient (kein API-Call).`);
+            out.innerHTML = marked.parse(aiCache[cid][type]) + `<button onclick="triggerAI('${rk}','${cid}','${type}',true)" class="text-[9px] text-violet-400 hover:text-white mt-2 font-bold uppercase block text-right w-full">⋯ Neu generieren</button>`;
+            return;
+        }
+
+        const ai = getAI();
+        if(!ai) { L.warn(`${cid} · ${type}: kein KI-Provider/Key konfiguriert — Abbruch.`); return alert("Bitte erst KI-Provider und API Key in der Seitenleiste konfigurieren."); }
+
+        loader.style.display = 'block';
+        out.innerHTML = '<span class="text-slate-400 text-xs italic">KI analysiert …</span>';
+
+        const cc = catalogControlMap.get(cid);
+        const title = cc?.title || cid;
+        const prose = cc?.parts?.find(p => p && p.name==='statement')?.prose || '';
+        const guidance = cc?.parts?.find(p => p && p.name==='guidance')?.prose || '';
+
+        const prefix = cid.substring(0, cid.lastIndexOf('.') + 1);
+        let relatedControlsText = "";
+
+        if (prefix) {
+            const siblings = [];
+            catalogControlMap.forEach((v, k) => {
+                if (k.startsWith(prefix) && k !== cid) {
+                    const sProse = v.parts?.find(p => p && p.name === 'statement')?.prose || '';
+                    siblings.push(`- ${k}: ${sProse}`);
+                }
+            });
+
+            if (siblings.length > 0) {
+                L.debug(`${cid}: ${Math.min(siblings.length, 10)} Nachbar-Control(s) zur Abgrenzung angehängt (von ${siblings.length} im Modul, deterministisch aus dem Katalog).`);
+                relatedControlsText = `\n\nBeachte zur inhaltlichen Abgrenzung, dass es im selben Modul auch noch diese ähnlichen Controls gibt. Diese sind HIER NICHT THEMA! Bitte stelle sicher, dass sich deine Antwort inhaltlich nicht mit ihnen überschneidet:\n${siblings.slice(0, 10).join('\n')}`;
+            }
+        }
+
+        const heute = new Date().toLocaleDateString('de-DE');
+        const guidanceText = guidance ? `\nZusätzliche Erläuterungen (Guidance): ${guidance}` : "";
+
+        // Alle drei Prompts kommen aus den editierbaren <textarea>s der Karte "KI-Prompts".
+        let system = buildPrompt('system', { heute });
+
+        const userContext = ai.ctx;
+        if (userContext) {
+            system += "\n\nBerücksichtige zwingend folgenden Unternehmenskontext für deine Antwort:\n" + userContext;
+        }
+
+        const promptKind = (type === 'implementation') ? 'implementation' : 'risk';
+        let prompt = buildPrompt(promptKind, { cid, title, prose, guidance: guidanceText });
+
+        prompt += relatedControlsText;
+
+        const tAi = performance.now();
+        try {
+            const txt = await callAI(prompt, system, `${cid} · ${promptKind}`);
+            if(!aiCache[cid]) aiCache[cid] = {};
+            aiCache[cid][type] = txt;
+            autoSave();
+            L.ok(`${cid} · ${promptKind} fertig — ${(txt.length / 1024).toFixed(1)} kB in ${Math.round(performance.now() - tAi)}ms (inkl. Retries), im Cache abgelegt.`);
+            out.innerHTML = marked.parse(txt) + `<button onclick="triggerAI('${rk}','${cid}','${type}',true)" class="text-[9px] text-violet-400 hover:text-white mt-2 font-bold uppercase block text-right w-full">⋯ Neu generieren</button>`;
+        } catch(e) {
+            L.err(`${cid} · ${promptKind}: ${truncErr(e.message)}`);
+            out.innerHTML = `<span class="text-red-400 text-xs">Fehler: ${ed23Esc(truncErr(e.message))}</span>`;
+        }
+        finally { loader.style.display = 'none'; }
+    };
+
+    // ============================================================
+    // SSP EXPORT
+    // ============================================================
+    window.handleFileSave = () => {
+        updateSSPFromDOM();
+        const dataStr = JSON.stringify(sspData, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = sspFileName;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        const reqs = sspData?.['system-security-plan']?.['control-implementation']?.['implemented-requirements'] || [];
+        L.ok(`SSP exportiert: ${sspFileName} (${(dataStr.length / 1024).toFixed(1)} kB, ${reqs.length} implemented-requirement(s)).`);
+        // zusätzlich in den gemeinsamen Artefaktbestand (Übersicht in index.html)
+        gppArtefacts.save({
+            stage: 'implement', kind: 'ssp', tool: GPP_TOOL_ID,
+            title: `${sspData?.['system-security-plan']?.metadata?.title || sspFileName} — ausgefüllt`,
+            filename: sspFileName, data: sspData, meta: { requirements: reqs.length },
+        }).catch(e => L.warn('Artefakt nicht abgelegt: ' + e.message));
+    };
+
+</script>
+</body>
+</html>

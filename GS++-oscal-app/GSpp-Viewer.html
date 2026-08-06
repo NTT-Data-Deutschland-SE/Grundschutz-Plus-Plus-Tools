@@ -1,0 +1,2282 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GS++ Explorer v9.7 · Multi-Katalog &amp; Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+    /* Optionsliste zeichnet das OS — halbtransparente Flaechen greifen dort nicht */
+    select,option{background-color:#1b1b23;color:#e8e8ef}
+    select{color-scheme:dark}
+        /* ==================================================================
+           Design-System: "Glassmorphic Deep" (one-page-app-gemini)
+           Akzent ist Violett. Body-Text immer --text-primary.
+           ================================================================== */
+        :root {
+            --bg-deep:        oklch(0.13 0.02 280);
+            --bg-elev-1:      oklch(0.95 0.005 280 / 0.04);
+            --bg-elev-2:      oklch(0.95 0.005 280 / 0.06);
+            --bg-elev-3:      oklch(0.95 0.005 280 / 0.08);
+            --border-1:       oklch(0.95 0.005 280 / 0.06);
+            --border-2:       oklch(0.95 0.005 280 / 0.10);
+            --text-primary:   oklch(0.95 0.005 280);
+            --text-secondary: oklch(0.75 0.02 280);
+            --text-tertiary:  oklch(0.65 0.02 280);
+            --text-quiet:     oklch(0.55 0.02 280);
+            --accent:         oklch(0.7 0.18 300);
+            --accent-soft:    oklch(0.7 0.18 300 / 0.15);
+            --accent-glow:    oklch(0.7 0.18 300 / 0.4);
+            --red:            oklch(0.65 0.2 25);
+            --amber:          oklch(0.80 0.15 80);
+            --green:          oklch(0.75 0.18 145);
+            --blue:           oklch(0.70 0.15 240);
+
+            --font-ui:   'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+            --rail-w: 260px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html, body { height: 100%; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-ui);
+            font-size: 14px;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::selection { background: oklch(0.7 0.18 300 / 0.35); color: oklch(0.95 0.005 280); }
+
+        /* Scrollbar: 6px, transparente Spur, Glass-Thumb, Akzent beim Hover */
+        * { scrollbar-width: thin; scrollbar-color: var(--bg-elev-3) transparent; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--bg-elev-3); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        code { font-family: var(--font-mono); font-size: 0.92em; color: var(--text-secondary); }
+
+        /* ---------- Layout-Shell ---------- */
+        .topbar {
+            position: relative; z-index: 3; flex: 0 0 auto;
+            height: 64px; display: flex; align-items: center; gap: 16px; padding: 0 20px;
+            background: var(--bg-elev-1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-2);
+        }
+        .brand { display: flex; align-items: baseline; gap: 10px; }
+        .brand-glyph { color: var(--accent); font-size: 1.15rem; line-height: 1; }
+        .brand-mark { font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; letter-spacing: 0.14em; color: var(--text-primary); }
+        .brand-sub { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-quiet); }
+        .topbar-meta { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+        .pill {
+            font-family: var(--font-mono); font-size: 0.63rem; letter-spacing: 0.08em;
+            padding: 4px 10px; border-radius: 999px;
+            border: 1px solid var(--border-2); background: var(--bg-elev-1); color: var(--text-tertiary);
+            white-space: nowrap;
+        }
+        .pill.build-version { color: var(--accent); border-color: oklch(0.7 0.18 300 / 0.3); }
+        .pill.progress-pill { display: none; color: var(--amber); border-color: oklch(0.80 0.15 80 / 0.35); }
+        .pill.progress-pill.active { display: inline-block; }
+
+        /* 1px-Hairline-Progress-Bar (ersetzt jeden Spinner) */
+        .progress-track {
+            position: absolute; left: 0; right: 0; bottom: -1px;
+            height: 1px; background: var(--border-1); overflow: hidden;
+            opacity: 0; transition: opacity 0.2s ease;
+        }
+        .progress-track.active { opacity: 1; }
+        .progress-fill { height: 100%; width: 0%; background: var(--amber); transition: width 0.2s ease; }
+        .progress-fill.done { background: var(--green); }
+        .progress-fill.indet { width: 30%; animation: indet 1.1s ease-in-out infinite; }
+        @keyframes indet { 0% { transform: translateX(-110%); } 100% { transform: translateX(360%); } }
+
+        .shell { position: relative; z-index: 1; flex: 1 1 auto; display: flex; min-height: 0; }
+
+        .sidebar {
+            width: var(--rail-w); flex: 0 0 auto; min-width: 200px; max-width: 640px;
+            display: flex; flex-direction: column; gap: 18px;
+            padding: 18px 12px 26px 18px;
+            overflow-y: auto; min-height: 0;
+            background: var(--bg-elev-1);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border-1);
+        }
+
+        .splitter { flex: 0 0 5px; cursor: col-resize; position: relative; z-index: 2; }
+        .splitter::after { content: ''; position: absolute; top: 0; bottom: 0; left: 2px; width: 1px; background: var(--border-1); transition: background 0.15s ease; }
+        .splitter:hover::after, .splitter.dragging::after { background: var(--accent); }
+
+        .main-content {
+            flex: 1 1 auto; min-width: 0; min-height: 0;
+            overflow-y: auto; padding: 26px 28px 48px;
+            scroll-behavior: smooth;
+        }
+
+        /* ---------- Log-Konsole ---------- */
+        .logconsole {
+            position: relative; z-index: 2; flex: 0 0 auto;
+            height: 220px; display: flex; flex-direction: column; min-height: 0;
+            background: var(--bg-elev-1);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-2);
+        }
+        .log-head { flex: 0 0 auto; display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-bottom: 1px solid var(--border-1); }
+        .log-title { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-tertiary); }
+        .log-title .g { color: var(--accent); }
+        .log-count { font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-quiet); }
+        .log-actions { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+        .log-toggle { display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-tertiary); cursor: pointer; }
+        .log-toggle input { accent-color: var(--accent); width: 13px; height: 13px; margin: 0; cursor: pointer; }
+        .log-body {
+            flex: 1 1 auto; min-height: 0; overflow-y: auto;
+            padding: 8px 16px 12px;
+            font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.55;
+        }
+        .log-line { display: flex; gap: 10px; white-space: pre-wrap; word-break: break-word; }
+        .log-ts { flex: 0 0 auto; color: var(--text-quiet); }
+        .log-lvl { flex: 0 0 46px; letter-spacing: 0.1em; }
+        .log-msg { color: var(--text-secondary); min-width: 0; }
+        .log-line.info  .log-lvl { color: var(--blue); }
+        .log-line.ok    .log-lvl { color: var(--green); }
+        .log-line.warn  .log-lvl { color: var(--amber); }
+        .log-line.err   .log-lvl { color: var(--red); }
+        .log-line.debug .log-lvl { color: var(--text-quiet); }
+        .log-line.warn  .log-msg { color: var(--amber); }
+        .log-line.err   .log-msg { color: var(--red); }
+        .log-line.debug .log-msg { color: var(--text-tertiary); }
+
+        /* ---------- Rail-Navigation ---------- */
+        .rail-nav { display: flex; flex-direction: column; gap: 2px; }
+        .nav-item {
+            display: flex; align-items: center; gap: 10px;
+            width: 100%; text-align: left;
+            padding: 7px 10px; border-radius: 8px;
+            background: transparent; border: 1px solid transparent;
+            color: var(--text-secondary); font-family: var(--font-ui); font-size: 0.78rem;
+            cursor: pointer; transition: background 0.15s ease, color 0.15s ease;
+        }
+        .nav-item .nav-glyph { color: var(--text-quiet); font-size: 0.85rem; width: 14px; text-align: center; transition: color 0.15s ease; }
+        .nav-item:hover { background: var(--bg-elev-2); color: var(--text-primary); }
+        .nav-item.active { background: var(--accent-soft); color: var(--text-primary); }
+        .nav-item.active .nav-glyph { color: var(--accent); }
+
+        /* ---------- Rail-Sektionen ---------- */
+        .rail-sec { display: block; }
+        .rail-sec + .rail-sec { border-top: 1px solid var(--border-1); padding-top: 16px; }
+        .section-label {
+            display: block; margin-bottom: 8px;
+            font-family: var(--font-mono); font-size: 0.62rem; font-weight: 500;
+            letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-tertiary);
+        }
+        .section-label .g { color: var(--accent); margin-right: 5px; }
+        .rail-note { display: block; margin-top: 6px; font-size: 0.68rem; line-height: 1.5; color: var(--text-quiet); }
+        .rail-note.top-sep { margin-top: 10px; border-top: 1px solid var(--border-1); padding-top: 8px; }
+        .multi-hint { display: block; margin-top: 8px; font-size: 0.68rem; color: var(--text-quiet); }
+        .rail-foot { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-1); text-align: center; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em; color: var(--text-quiet); }
+
+        .meta-box {
+            font-size: 0.75rem; color: var(--text-secondary);
+            background: var(--bg-elev-1); border: 1px solid var(--border-2);
+            border-radius: 10px; padding: 10px 12px;
+            min-height: 54px; max-height: 150px; overflow-y: auto; min-height: 0;
+        }
+        .meta-item { border-bottom: 1px solid var(--border-1); padding: 5px 0; }
+        .meta-item:last-child { border-bottom: none; }
+        .meta-item strong { color: var(--text-primary); font-weight: 600; }
+        .meta-item small { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-quiet); }
+
+        body:not(.has-api-key) .ai-actions,
+        body:not(.has-api-key) .ai-dependent {
+            display: none !important;
+        }
+
+        .profile-info { display: block; margin-top: 6px; min-height: 16px; font-size: 0.7rem; line-height: 1.5; color: var(--text-secondary); }
+
+        /* ---------- Formularelemente ---------- */
+        .search-input, .filter-select, input[type="text"], input[type="password"], textarea, select {
+            width: 100%; padding: 9px 11px;
+            border-radius: 8px;
+            background: var(--bg-elev-1);
+            border: 1px solid var(--border-2);
+            color: var(--text-primary);
+            font-family: var(--font-ui); font-size: 0.82rem;
+            transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+        }
+        .filter-select { margin-bottom: 8px; }
+        .search-input:hover, .filter-select:hover, textarea:hover { background: var(--bg-elev-2); }
+        .search-input:focus, .filter-select:focus, input:focus, textarea:focus, select:focus {
+            outline: none; border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+            background: var(--bg-elev-2);
+        }
+        select option, select optgroup { background: oklch(0.18 0.02 280); color: oklch(0.95 0.005 280); }
+        textarea { resize: vertical; }
+        input::placeholder, textarea::placeholder { color: var(--text-quiet); }
+        input[type="file"] { font-family: var(--font-mono); font-size: 0.68rem; padding: 7px 9px; }
+        input[type="file"]::file-selector-button {
+            font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.06em;
+            margin-right: 10px; padding: 5px 10px; border-radius: 6px; cursor: pointer;
+            background: var(--bg-elev-2); border: 1px solid var(--border-2); color: var(--text-secondary);
+        }
+        input[type="file"]::file-selector-button:hover { background: var(--bg-elev-3); color: var(--text-primary); }
+
+        /* ---------- Buttons ---------- */
+        button { font-family: var(--font-ui); cursor: pointer; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease; }
+        .btn-primary {
+            width: 100%; padding: 10px 14px; border: none; border-radius: 8px;
+            background: var(--accent); color: oklch(0.13 0.02 280);
+            font-weight: 600; font-size: 0.82rem;
+            box-shadow: 0 6px 20px oklch(0.7 0.18 300 / 0.4);
+        }
+        .btn-primary:hover { background: oklch(0.76 0.18 300); }
+        .reset-btn {
+            width: 100%; padding: 9px; margin-top: 10px; border-radius: 8px;
+            background: var(--bg-elev-2); border: 1px solid var(--border-2); color: var(--text-secondary);
+            font-size: 0.78rem; font-weight: 500;
+        }
+        .reset-btn:hover { background: var(--bg-elev-3); color: var(--text-primary); border-color: var(--accent); }
+        .clear-btn {
+            width: 100%; padding: 8px; margin-top: 8px; border-radius: 8px;
+            background: transparent; border: 1px solid oklch(0.65 0.2 25 / 0.35); color: var(--red);
+            font-size: 0.72rem; font-weight: 500;
+        }
+        .clear-btn:hover { background: oklch(0.65 0.2 25 / 0.12); }
+        .btn-ghost {
+            padding: 5px 11px; border-radius: 7px;
+            background: var(--bg-elev-1); border: 1px solid var(--border-2); color: var(--text-secondary);
+            font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.06em;
+        }
+        .btn-ghost:hover { background: var(--bg-elev-3); color: var(--text-primary); border-color: var(--accent); }
+
+        /* ---------- Backend-Umschalter (Gemini | OpenRouter) ---------- */
+        .backend-switch {
+            display: flex; gap: 5px; padding: 4px; border-radius: 10px;
+            background: var(--bg-elev-1); border: 1px solid var(--border-2);
+        }
+        .backend-opt {
+            flex: 1 1 0; padding: 7px 6px; border-radius: 7px;
+            background: transparent; border: 1px solid transparent; color: var(--text-secondary);
+            font-family: var(--font-mono); font-size: 0.62rem; font-weight: 500;
+            letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap;
+        }
+        .backend-opt .g { margin-right: 5px; color: var(--text-quiet); transition: color 0.15s ease; }
+        .backend-opt:hover { background: var(--bg-elev-2); color: var(--text-primary); }
+        .backend-opt.active { background: var(--accent-soft); border-color: oklch(0.7 0.18 300 / 0.35); color: var(--text-primary); }
+        .backend-opt.active .g { color: var(--accent); }
+
+        .or-model-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+        .model-status {
+            flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-quiet);
+        }
+        .model-status.warn { color: var(--amber); }
+        .model-status.err  { color: var(--red); }
+
+        /* ---------- Willkommen ---------- */
+        .welcome { text-align: center; margin-top: 90px; color: var(--text-quiet); }
+        .welcome-glyph { font-size: 3.4rem; line-height: 1; color: var(--accent); opacity: 0.65; }
+        .welcome h2 { margin: 18px 0 6px; font-size: 1.15rem; font-weight: 600; color: var(--text-secondary); }
+        .welcome p { margin: 0; font-size: 0.85rem; }
+
+        /* ---------- Gruppen ---------- */
+        .group-item {
+            margin-bottom: 14px; border-radius: 12px; overflow: hidden;
+            background: var(--bg-elev-1);
+            border: 1px solid oklch(0.95 0.005 280 / 0.08);
+            backdrop-filter: blur(20px);
+        }
+        .group-header {
+            display: flex; justify-content: space-between; align-items: center; gap: 12px;
+            padding: 12px 16px; cursor: pointer; font-weight: 500; font-size: 0.9rem;
+            color: var(--text-primary); transition: background 0.15s ease;
+        }
+        .group-header:hover { background: var(--bg-elev-2); }
+        .group-id { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-quiet); margin-right: 8px; }
+        .group-header .toggle { color: var(--text-quiet); font-size: 0.7rem; }
+        .group-content { display: none; padding: 14px; border-top: 1px solid var(--border-1); }
+        .group-content.open { display: block; }
+
+        /* ---------- Control-Karte (Glass-Surface) ---------- */
+        .control-card {
+            position: relative;
+            margin: 16px 0; padding: 22px;
+            background: oklch(0.95 0.005 280 / 0.04);
+            border: 1px solid oklch(0.95 0.005 280 / 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            border-left: 3px solid oklch(0.7 0.18 300 / 0.55);
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+        .control-card:hover { background: var(--bg-elev-2); }
+
+        /* Verschachtelte Ebenen dürfen die Aufhellung NICHT stapeln — sonst wird
+           jede Ebene heller als die vorige. Innen wird abgedunkelt, die Gliederung
+           tragen Rahmen und Akzentkante. */
+        .control-nested-container {
+            margin: 20px -22px -22px -22px; padding: 14px 18px 6px;
+            border-top: 1px solid var(--border-1);
+            background: oklch(0.13 0.02 280 / 0.35);
+            border-radius: 0 0 12px 12px;
+        }
+        .nested-label { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 10px; }
+        .control-card.nested-card {
+            margin: 10px 0 14px; padding: 18px; font-size: 0.96em;
+            background: transparent;
+            backdrop-filter: none;
+            border-left: 3px solid oklch(0.70 0.15 240 / 0.55);
+        }
+        .control-card.nested-card:hover { background: oklch(0.95 0.005 280 / 0.03); }
+
+        .highlight-target { animation: highlight-pulse 2s ease-out; }
+        @keyframes highlight-pulse {
+            0%   { background: var(--accent-soft); border-color: var(--accent); }
+            100% { background: oklch(0.95 0.005 280 / 0.04); border-color: oklch(0.95 0.005 280 / 0.08); }
+        }
+
+        .id-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+        .badge-id {
+            font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em;
+            padding: 3px 9px; border-radius: 6px;
+            background: var(--bg-elev-3); border: 1px solid var(--border-2); color: var(--text-primary);
+        }
+        .badge-class {
+            font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase;
+            padding: 3px 8px; border-radius: 6px;
+            background: transparent; border: 1px solid var(--border-1); color: var(--text-tertiary);
+        }
+
+        .control-title { margin: 0 0 14px; font-size: 1.1rem; font-weight: 600; line-height: 1.4; color: var(--text-primary); }
+
+        .tag-list { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
+        .tag {
+            padding: 3px 9px; border-radius: 999px;
+            font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.02em;
+            border: 1px solid transparent;
+        }
+        .tag-sec     { background: oklch(0.80 0.15 80 / 0.12);  color: var(--amber);         border-color: oklch(0.80 0.15 80 / 0.3); }
+        .tag-effort  { background: oklch(0.75 0.18 145 / 0.12); color: var(--green);         border-color: oklch(0.75 0.18 145 / 0.3); }
+        .tag-uuid    { background: transparent;                 color: var(--text-quiet);    border-color: var(--border-1); font-size: 0.6rem; }
+        .tag-tags    { background: oklch(0.70 0.15 240 / 0.12); color: var(--blue);          border-color: oklch(0.70 0.15 240 / 0.28); }
+        .tag-modal   { background: var(--accent-soft);          color: var(--accent);        border-color: oklch(0.7 0.18 300 / 0.3); text-transform: uppercase; }
+        .tag-action  { background: oklch(0.70 0.15 240 / 0.12); color: var(--blue);          border-color: oklch(0.70 0.15 240 / 0.28); }
+        .tag-target  { background: var(--accent-soft);          color: var(--accent);        border-color: oklch(0.7 0.18 300 / 0.3); }
+        .tag-sz      { background: var(--bg-elev-2);            color: var(--text-tertiary); border-color: var(--border-2); }
+        .tag-sz-strong { background: oklch(0.7 0.18 300 / 0.28); color: var(--text-primary); border-color: oklch(0.7 0.18 300 / 0.5); }
+        .tag-threat  { background: oklch(0.65 0.2 25 / 0.12);   color: oklch(0.72 0.16 40);  border-color: oklch(0.65 0.2 25 / 0.3); }
+
+        /* ---------- Statement ---------- */
+        .statement-box {
+            margin: 14px 0; padding: 16px;
+            background: oklch(0.95 0.005 280 / 0.03);
+            border: 1px solid var(--border-1);
+            border-radius: 10px;
+        }
+        .statement-prose { font-size: 0.98rem; line-height: 1.65; color: var(--text-primary); margin-bottom: 16px; }
+        .statement-prose:last-child { margin-bottom: 0; }
+
+        .breakdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; border-top: 1px solid var(--border-1); padding-top: 14px; }
+        .bd-label { display: block; margin-bottom: 4px; font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-tertiary); }
+        .bd-value { display: block; padding: 6px 10px; border-radius: 6px; background: var(--bg-elev-1); border: 1px solid var(--border-1); color: var(--text-secondary); font-size: 0.82rem; }
+
+        .guidance-box {
+            margin-bottom: 14px; padding: 14px 16px;
+            background: oklch(0.70 0.15 240 / 0.07);
+            border: 1px solid oklch(0.70 0.15 240 / 0.22);
+            border-left: 3px solid oklch(0.70 0.15 240 / 0.7);
+            border-radius: 10px;
+            color: var(--text-secondary); font-size: 0.88rem; line-height: 1.6;
+        }
+
+        /* ---------- Reifegrade ---------- */
+        .maturity-box {
+            margin-bottom: 14px; padding: 10px 14px; border-radius: 10px;
+            background: oklch(0.7 0.18 300 / 0.07);
+            border: 1px solid oklch(0.7 0.18 300 / 0.22);
+            font-size: 0.88rem;
+        }
+        .maturity-box > summary { cursor: pointer; list-style: none; font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+        .maturity-box > summary::-webkit-details-marker { display: none; }
+        .maturity-level { border-top: 1px solid oklch(0.7 0.18 300 / 0.18); padding: 10px 0; }
+        .maturity-level:first-of-type { border-top: none; }
+        .maturity-level-head { margin-bottom: 5px; }
+        .maturity-badge { display: inline-block; padding: 1px 9px; border-radius: 5px; background: var(--accent-soft); border: 1px solid oklch(0.7 0.18 300 / 0.35); color: var(--accent); font-family: var(--font-mono); font-size: 0.65rem; font-weight: 600; text-transform: uppercase; }
+        .maturity-statement { color: var(--text-secondary); line-height: 1.6; }
+        .maturity-sub { margin-top: 6px; padding-left: 12px; border-left: 2px solid oklch(0.7 0.18 300 / 0.3); color: var(--text-tertiary); }
+        .maturity-sub-label { display: block; font-family: var(--font-mono); font-size: 0.58rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-quiet); }
+
+        /* ---------- KI-Bereich ---------- */
+        .ai-actions { display: flex; align-items: center; gap: 10px; margin: 14px 0; padding-top: 12px; border-top: 1px solid var(--border-1); flex-wrap: wrap; }
+        .ai-btn {
+            display: flex; align-items: center; gap: 7px;
+            padding: 7px 14px; border-radius: 8px; cursor: pointer;
+            background: transparent; border: 1px solid oklch(0.7 0.18 300 / 0.4); color: var(--accent);
+            font-family: var(--font-ui); font-size: 0.78rem; font-weight: 500;
+        }
+        .ai-btn:hover { background: var(--accent); color: oklch(0.13 0.02 280); box-shadow: 0 6px 20px oklch(0.7 0.18 300 / 0.4); }
+        .ed23-actions { margin: 10px 0; }
+        .ed23-btn {
+            padding: 6px 13px; border-radius: 8px; cursor: pointer;
+            background: var(--bg-elev-1); border: 1px solid var(--border-2); color: var(--text-secondary);
+            font-family: var(--font-ui); font-size: 0.76rem; font-weight: 500;
+        }
+        .ed23-btn:hover { background: var(--bg-elev-3); color: var(--text-primary); border-color: var(--accent); }
+
+        /* Kein Spinner: schmale, unbestimmte Hairline-Bar am Karten-Kopf. */
+        .ai-loader { display: none; position: relative; width: 110px; height: 1px; background: var(--border-2); overflow: hidden; }
+        .ai-loader::after { content: ''; position: absolute; top: 0; bottom: 0; width: 34%; background: var(--amber); animation: indet 1.1s ease-in-out infinite; }
+
+        .ai-response-area {
+            display: none; margin-top: 14px; padding: 14px 16px;
+            background: oklch(0.95 0.005 280 / 0.03);
+            border: 1px solid var(--border-1);
+            border-left: 3px solid oklch(0.7 0.18 300 / 0.7);
+            border-radius: 10px;
+            max-height: 560px; overflow-y: auto; min-height: 0;
+            animation: slideDown 0.16s ease-out;
+        }
+        .ai-response-area.active { display: block; }
+        .ai-response-content { font-size: 0.88rem; line-height: 1.65; color: var(--text-secondary); }
+        .ai-response-content h1, .ai-response-content h2, .ai-response-content h3, .ai-response-content h4 { color: var(--text-primary); font-size: 0.95rem; margin: 14px 0 6px; }
+        .ai-response-content strong { color: var(--text-primary); }
+        .ai-response-content ul, .ai-response-content ol { padding-left: 20px; }
+        .ai-response-content code { background: var(--bg-elev-2); padding: 1px 5px; border-radius: 4px; }
+        .ai-response-content pre { background: oklch(0.10 0.02 280); border: 1px solid var(--border-1); border-radius: 8px; padding: 12px; overflow-x: auto; }
+        .ai-refresh-row { margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-1); text-align: right; }
+        .ai-refresh-btn { background: none; border: none; color: var(--accent); cursor: pointer; font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; }
+        .ai-refresh-btn:hover { text-decoration: underline; }
+        .ai-error { color: var(--red); }
+        .ed23-head { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ---------- Footer der Karte ---------- */
+        .control-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-1); flex-wrap: wrap; }
+        .links-area { display: flex; gap: 8px; flex-wrap: wrap; }
+        .link-item {
+            padding: 4px 9px; border-radius: 6px; text-decoration: none;
+            background: var(--bg-elev-1); border: 1px solid var(--border-2); color: var(--text-secondary);
+            font-family: var(--font-mono); font-size: 0.68rem;
+        }
+        .link-item:hover { background: var(--accent-soft); color: var(--accent); border-color: oklch(0.7 0.18 300 / 0.4); text-decoration: none; }
+        .btn-json {
+            padding: 6px 12px; border-radius: 7px;
+            background: var(--bg-elev-1); border: 1px solid var(--border-2); color: var(--text-secondary);
+            font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em;
+        }
+        .btn-json:hover { background: var(--bg-elev-3); color: var(--text-primary); border-color: var(--accent); }
+
+        .hidden { display: none !important; }
+        u { text-decoration: underline dotted; text-underline-offset: 3px; color: var(--accent); cursor: help; font-weight: 500; }
+
+        .control-card.child-match-only > .tag-list,
+        .control-card.child-match-only > .statement-box,
+        .control-card.child-match-only > .ai-actions,
+        .control-card.child-match-only > .ed23-actions,
+        .control-card.child-match-only > .ai-response-area,
+        .control-card.child-match-only > .guidance-box,
+        .control-card.child-match-only > .maturity-box,
+        .control-card.child-match-only > .control-footer {
+            display: none !important;
+        }
+        .control-card.child-match-only {
+            border-left-color: var(--border-2) !important;
+            background: transparent;
+            padding-bottom: 6px;
+        }
+        .control-card.child-match-only > .control-title { color: var(--text-quiet); font-size: 0.95rem; }
+        .control-card.child-match-only > .control-title::after {
+            content: " (zeigt gefilterte Unter-Maßnahmen)";
+            margin-left: 10px; vertical-align: middle;
+            font-family: var(--font-mono); font-size: 0.65rem; color: var(--amber); font-weight: 500;
+        }
+
+        /* ---------- Modal ---------- */
+        .modal { display: none; position: fixed; inset: 0; z-index: 2000; background: oklch(0.08 0.02 280 / 0.72); backdrop-filter: blur(6px); }
+        .modal-content {
+            display: flex; flex-direction: column;
+            width: 85%; height: 85%; margin: 3% auto; padding: 22px;
+            background: oklch(0.16 0.02 280 / 0.92);
+            border: 1px solid oklch(0.95 0.005 280 / 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+        }
+        .modal-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+        .modal-head h3 { margin: 0; font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.1em; color: var(--text-secondary); }
+        pre {
+            flex: 1 1 auto; min-height: 0; overflow: auto; margin: 0;
+            padding: 14px; border-radius: 10px;
+            background: oklch(0.10 0.02 280); border: 1px solid var(--border-1);
+            color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.76rem; line-height: 1.55;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Atmosphäre: zwei Aurora-Blobs + Noise-Overlay (z-index 0) -->
+    <div style="position:fixed;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,oklch(0.4 0.18 300/.5),transparent 70%);top:-200px;left:-100px;filter:blur(60px);pointer-events:none;z-index:0"></div>
+    <div style="position:fixed;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,oklch(0.4 0.16 240/.4),transparent 70%);bottom:-300px;right:-200px;filter:blur(80px);pointer-events:none;z-index:0"></div>
+    <div style="position:fixed;inset:0;opacity:0.03;pointer-events:none;z-index:0;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><filter id=%22n%22><feTurbulence baseFrequency=%220.9%22/></filter><rect width=%22100%22 height=%22100%22 filter=%22url(%23n)%22/></svg>')"></div>
+
+    <header class="topbar">
+        <div class="brand">
+            <span class="brand-glyph">◈</span>
+            <span class="brand-mark">GS++ EXPLORER</span>
+            <span class="brand-sub">NTT DATA</span>
+        </div>
+        <div class="topbar-meta">
+            <span class="pill progress-pill" id="progressLabel"></span>
+            <span class="pill" id="catalogPill">0 Kataloge</span>
+            <span class="pill build-version" id="buildVersion">v9.7</span>
+        </div>
+        <div class="progress-track" id="progressTrack"><div class="progress-fill" id="progressFill"></div></div>
+    </header>
+
+    <div class="shell">
+
+    <aside class="sidebar" id="rail">
+
+        <nav class="rail-nav">
+            <button type="button" class="nav-item active" data-target="sec-catalogs"><span class="nav-glyph">◉</span>Kataloge</button>
+            <button type="button" class="nav-item" data-target="sec-profile"><span class="nav-glyph">⬡</span>Profile</button>
+            <button type="button" class="nav-item" data-target="sec-search"><span class="nav-glyph">⌕</span>Suche &amp; Filter</button>
+            <button type="button" class="nav-item" data-target="sec-load"><span class="nav-glyph">⤓</span>Katalog laden</button>
+        </nav>
+
+        <section class="rail-sec" id="sec-catalogs">
+            <span class="section-label"><span class="g">◉</span>Geladene Kataloge</span>
+            <div id="meta-container" class="meta-box">Kein Katalog geladen</div>
+            <button class="clear-btn" id="clearAllBtn" onclick="clearAllCatalogs()" style="display:none">Alle Kataloge entfernen</button>
+            <small class="multi-hint">◇ Mehrere Kataloge möglich — sie werden zusammengeführt.</small>
+        </section>
+
+        <section class="rail-sec" id="sec-profile">
+            <span class="section-label"><span class="g">⬡</span>Zielobjekt-Profile</span>
+            <select id="profileSelect" class="filter-select" onchange="handleProfileChange()" style="border-color: oklch(0.80 0.15 80 / 0.45);">
+                <option value="">Lade verfügbare Profile...</option>
+            </select>
+            <span id="profileInfo" class="profile-info"></span>
+        </section>
+
+        <section class="rail-sec" id="sec-search">
+            <span class="section-label"><span class="g">⌕</span>Globale Suche</span>
+            <input type="text" id="searchInput" class="search-input" placeholder="ID, Titel oder Inhalt..." oninput="applyFilters()">
+
+            <div id="filterControls" style="display:none">
+                <span class="section-label" style="margin-top:16px;"><span class="g">◇</span>Filterung</span>
+                <select id="filterClass" class="filter-select" onchange="applyFilters()"><option value="all">Alle Klassen</option></select>
+                <select id="filterSec" class="filter-select" onchange="applyFilters()"><option value="all">Alle Niveaus</option></select>
+                <select id="filterEffort" class="filter-select" onchange="applyFilters()"><option value="all">Jeder Aufwand</option></select>
+                <select id="filterModal" class="filter-select" onchange="applyFilters()"><option value="all">Jede Modalität</option></select>
+                <select id="filterHandlung" class="filter-select" onchange="applyFilters()"><option value="all">Alle Handlungen</option></select>
+                <select id="filterTag" class="filter-select" onchange="applyFilters()"><option value="all">Alle Tags</option></select>
+                <select id="filterThreat" class="filter-select" onchange="applyFilters()"><option value="all">Alle Gefährdungen</option></select>
+                <button class="reset-btn" onclick="resetFilters()">Filter zurücksetzen</button>
+            </div>
+        </section>
+
+        <section class="rail-sec ai-dependent" id="sec-context">
+            <span class="section-label"><span class="g">◬</span>KI-Kontext (Unternehmen)</span>
+            <!-- Der Unternehmenskontext steht zentral in config.html (gpp:cfg:ai:context)
+                 und gilt für alle Werkzeuge. Hier wird er nur angezeigt. -->
+            <div id="aiContextView" class="rail-note" style="white-space:pre-wrap"></div>
+            <small class="rail-note">Wird bei KI-Anfragen an den System-Prompt angehängt · gesetzt in <a href="config.html">Einstellungen</a>.</small>
+            <button class="reset-btn" onclick="exportAiCache()">⤓ KI-Antworten exportieren</button>
+            <button class="reset-btn" onclick="document.getElementById('aiCacheInput').click()">↗ KI-Antworten importieren</button>
+            <input type="file" id="aiCacheInput" accept=".json" style="display: none;" onchange="importAiCache(event)">
+        </section>
+
+        <section class="rail-sec" id="sec-load">
+            <span class="section-label"><span class="g">⤓</span>Katalog hinzufügen</span>
+
+            <select id="quickSelect" class="filter-select" onchange="updateUrlFromSelect()" style="border-color: oklch(0.7 0.18 300 / 0.4);">
+                <option value="">-- Schnellauswahl --</option>
+                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/47de2824a341812438ef3f044b3f65ce2cad6e32/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json">Anwenderkatalog (GS++, Pin 47de2824a341)</option>
+                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/d304c60c0ba37277a59fa40adf6e6be3d452878e/control_layer/Grundschutz%2B%2B/sources/catalogs/Methodik-Grundschutz%2B%2B/BSI-Methodik-Grundschutz%2B%2B-catalog.json">Methodik (GS++)</option>
+                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/d304c60c0ba37277a59fa40adf6e6be3d452878e/control_layer/Grundschutz%2B%2B/sources/catalogs/Kernel/BSI-Stand-der-Technik-Kernel-catalog.json">Kernel (SdT)</option>
+                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/d304c60c0ba37277a59fa40adf6e6be3d452878e/control_layer/Risikomanagement/BSI-Anforderungen-zum-Risikomanagement-catalog.json">Risikomanagement</option>
+                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9dbb6c505c9de510d2c2b97b712cbd837314df5f/kataloge/c5-2026-oscal-catalog.json">C5:2026</option>
+                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/kataloge/c3a_oscal_catalog.json">C3A - Criteria enabling Cloud Computing Autonomy</option>
+                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/beispiel-kataloge/kritis_oscal_catalog.json">KRITIS (Beispiel, Test-Katalog)</option>
+                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9dbb6c505c9de510d2c2b97b712cbd837314df5f/beispiel-kataloge/dsgvo_oscal_catalog.json">DSGVO (Beispiel, Test-Katalog)</option>
+            </select>
+
+            <input type="text" id="urlInput" class="filter-select" placeholder="URL zum OSCAL-Katalog..." value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/47de2824a341812438ef3f044b3f65ce2cad6e32/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json">
+
+            <button class="btn-primary" onclick="loadFromURL()">▶ Katalog hinzufügen</button>
+
+            <div style="text-align:center; padding: 12px 0 8px; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.16em; color: var(--text-quiet);">ODER DATEI WÄHLEN</div>
+            <input type="file" id="fileInput" accept=".json" onchange="loadFromFile()">
+        </section>
+
+        <!-- Unsichtbarer Shim: applyGppConfig spiegelt gpp:cfg:* (config.html) in diese Alt-ID-Felder. -->
+        <div id="gpp-cfg-shim" hidden aria-hidden="true">
+            <div id="backendSwitch">
+                <button type="button" id="backendGemini" data-backend="gemini"></button>
+                <button type="button" id="backendOpenrouter" data-backend="openrouter"></button>
+            </div>
+            <div id="cfg-gemini"><input type="password" id="apiKeyInput"><select id="modelSelect"></select></div>
+            <div id="cfg-openrouter" class="hidden">
+                <input type="password" id="orKeyInput">
+                <select id="orModelSelect"></select>
+                <input type="text" id="orModelCustom">
+                <button type="button" id="orModelsRefresh"></button>
+                <span id="orModelsStatus"></span>
+            </div>
+        </div>
+
+        <div class="rail-foot">&copy; 2026 NTT DATA DEUTSCHLAND SE</div>
+
+    </aside>
+
+    <div class="splitter" id="splitter"></div>
+
+    <main class="main-content" id="mainArea">
+        <div id="catalog-container">
+            <div id="welcome-msg" class="welcome">
+                <div class="welcome-glyph">⬡</div>
+                <h2>Multi-Katalog Explorer</h2>
+                <p>Über die linke Leiste einen oder mehrere OSCAL-Kataloge laden.</p>
+            </div>
+        </div>
+    </main>
+
+    </div><!-- /shell -->
+
+    <section class="logconsole">
+        <div class="log-head">
+            <span class="log-title"><span class="g">◈</span> LOG-KONSOLE</span>
+            <span class="log-count" id="logCount">0 Zeilen</span>
+            <div class="log-actions">
+                <label class="log-toggle"><input type="checkbox" id="logAutoscroll" checked> Autoscroll</label>
+                <button type="button" class="btn-ghost" id="logClear">⋯ LEEREN</button>
+            </div>
+        </div>
+        <div class="log-body" id="logBody"></div>
+    </section>
+
+    <div id="jsonModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-head">
+                <h3 id="modalTitle">JSON DATA</h3>
+                <button type="button" class="btn-ghost" onclick="closeModal()">SCHLIESSEN</button>
+            </div>
+            <pre id="modalBody"></pre>
+        </div>
+    </div>
+
+<script src="gpp-core.js?v=3.3"></script>
+    <script>
+        if (typeof gppCfg === 'undefined') {
+            document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
+                '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
+                '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) ' +
+                'statt einzelner Dateien.</p></div>';
+            throw new Error('gpp-core.js missing');
+        }
+        const GPP_TOOL_ID = 'GSpp-Viewer';
+        gppCollapsibleLog({ consoleEl: document.querySelector('.logconsole'),
+            headEl: document.querySelector('.logconsole .log-actions'), toolId: GPP_TOOL_ID });
+        /* Quellen für die Pin-Übersicht in config.html anmelden. Gepinnt ist der
+           Normalfall (Grundregel 8); die Update-Prüfung sitzt in config.html. */
+        const STDT_PIN = 'd304c60c0ba37277a59fa40adf6e6be3d452878e';
+        const GPPT_PIN = '2ab904b0099f560a06a68950d2b47a8ad019571a';
+        const GPP_SOURCES = [
+            { id: 'methodik-katalog', label: 'G++ Methodik-Katalog', repo: 'BSI-Bund/Stand-der-Technik-Bibliothek',
+              path: 'control_layer/Grundschutz++/sources/catalogs/Methodik-Grundschutz++/BSI-Methodik-Grundschutz++-catalog.json',
+              default: `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${STDT_PIN}/control_layer/Grundschutz%2B%2B/sources/catalogs/Methodik-Grundschutz%2B%2B/BSI-Methodik-Grundschutz%2B%2B-catalog.json` },
+            { id: 'kernel-katalog', label: 'Stand-der-Technik Kernel', repo: 'BSI-Bund/Stand-der-Technik-Bibliothek',
+              path: 'control_layer/Grundschutz++/sources/catalogs/Kernel/BSI-Stand-der-Technik-Kernel-catalog.json',
+              default: `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${STDT_PIN}/control_layer/Grundschutz%2B%2B/sources/catalogs/Kernel/BSI-Stand-der-Technik-Kernel-catalog.json` },
+            { id: 'risiko-katalog', label: 'BSI Risikomanagement', repo: 'BSI-Bund/Stand-der-Technik-Bibliothek',
+              path: 'control_layer/Risikomanagement/BSI-Anforderungen-zum-Risikomanagement-catalog.json',
+              default: `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${STDT_PIN}/control_layer/Risikomanagement/BSI-Anforderungen-zum-Risikomanagement-catalog.json` },
+            { id: 'ed23-anforderungen', label: 'G++/ED23 Anforderungen (Hilfsdatei)', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
+              path: 'hilfsdateien/gpp_ed23_anforderungen.json',
+              default: `https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/${GPPT_PIN}/hilfsdateien/gpp_ed23_anforderungen.json` },
+        ];
+        gppRegisterSources(GPP_TOOL_ID, GPP_SOURCES);
+        // Default-URL → Quell-ID, damit Repins aus config.html beim Laden greifen
+        // (Schnellauswahl und URL-Feld tragen die Default-URLs im Klartext).
+        const GPP_SOURCE_ID_BY_URL = Object.fromEntries(GPP_SOURCES.map(s => [s.default, s.id]));
+
+        // Spiegelt gpp:cfg:* in die ausgeblendeten Shim-Felder; dieses Tool schreibt nie zurück.
+        window.applyGppConfig = function (verbose) {
+            const backend = gppCfg.get('ai:backend') === 'openrouter' ? 'openrouter' : 'gemini';
+            const model = gppCfg.get('ai:model:' + backend);
+            const g = document.getElementById('apiKeyInput'), o = document.getElementById('orKeyInput');
+            if (g) g.value = gppCfg.get('ai:key:gemini');
+            if (o) o.value = gppCfg.get('ai:key:openrouter');
+            const ms = document.getElementById('modelSelect');
+            if (backend === 'gemini' && ms && model) {
+                if (![...ms.options].some(x => x.value === model)) ms.add(new Option(model, model));
+                ms.value = model;
+            }
+            const oc = document.getElementById('orModelCustom');
+            if (backend === 'openrouter' && oc && model) oc.value = model;
+            if (typeof setBackend === 'function') setBackend(backend, { silent: true });
+            else if (typeof state === 'object') state.backend = backend;
+            if (typeof toggleAiButtons === 'function') toggleAiButtons();
+            const ctxView = document.getElementById('aiContextView');
+            if (ctxView) {
+                const ctx = gppCfg.get('ai:context');
+                ctxView.textContent = ctx || 'kein Unternehmenskontext gesetzt';
+                ctxView.style.opacity = ctx ? '' : '.6';
+            }
+            if (verbose && typeof L === 'object') L.info('Einstellungen aus config.html neu übernommen.');
+        };
+
+        // Einzige Quelle der Build-Version. Titel und Topbar-Badge werden daraus gesetzt.
+        const BUILD_VERSION = "v9.7";
+
+        const byId = id => document.getElementById(id);
+
+        // ===================================================================
+        // Log-Konsole — fünf Level, Zeitstempel mit Millisekunden, Autoscroll,
+        // Leeren-Button, Zeilenzähler im Header.
+        // ===================================================================
+        const LOG_MAX_LINES = 1500;
+
+        function logStamp(d) {
+            const p2 = n => String(n).padStart(2, '0');
+            return `${p2(d.getHours())}:${p2(d.getMinutes())}:${p2(d.getSeconds())}.${String(d.getMilliseconds()).padStart(3, '0')}`;
+        }
+
+        function logWrite(level, msg) {
+            const body = byId('logBody');
+            if (!body) { console.log(`[${level}] ${msg}`); return; }
+            const line = document.createElement('div');
+            line.className = 'log-line ' + level;
+            const ts = document.createElement('span');  ts.className = 'log-ts';  ts.textContent = logStamp(new Date());
+            const lv = document.createElement('span');  lv.className = 'log-lvl'; lv.textContent = level.toUpperCase();
+            const ms = document.createElement('span');  ms.className = 'log-msg'; ms.textContent = String(msg);
+            line.append(ts, lv, ms);
+            body.appendChild(line);
+            while (body.childElementCount > LOG_MAX_LINES) body.removeChild(body.firstElementChild);
+            const cnt = byId('logCount');
+            if (cnt) cnt.textContent = `${body.childElementCount} Zeilen`;
+            const auto = byId('logAutoscroll');
+            if (!auto || auto.checked) body.scrollTop = body.scrollHeight;
+        }
+
+        const L = {
+            info:  m => logWrite('info', m),
+            ok:    m => logWrite('ok', m),
+            warn:  m => logWrite('warn', m),
+            err:   m => logWrite('err', m),
+            debug: m => logWrite('debug', m),
+        };
+
+        function initLogConsole() {
+            const clear = byId('logClear');
+            if (clear) clear.addEventListener('click', () => {
+                const body = byId('logBody');
+                if (body) body.innerHTML = '';
+                const cnt = byId('logCount');
+                if (cnt) cnt.textContent = '0 Zeilen';
+            });
+        }
+
+        // ===================================================================
+        // Progress-Bar (1px-Hairline statt Spinner): amber Füllung, schnappt
+        // bei Fertigstellung auf grün und blendet ~800ms danach aus.
+        // ===================================================================
+        let progressHideTimer = null;
+        let inflightTasks = 0;
+
+        function progressShow(label, indeterminate, done, total) {
+            const track = byId('progressTrack'), fill = byId('progressFill'), lab = byId('progressLabel');
+            if (!track || !fill) return;
+            clearTimeout(progressHideTimer);
+            track.classList.add('active');
+            fill.classList.remove('done');
+            if (indeterminate) {
+                fill.classList.add('indet');
+                fill.style.width = '';
+            } else {
+                fill.classList.remove('indet');
+                fill.style.width = (total > 0 ? Math.round((done / total) * 100) : 0) + '%';
+            }
+            if (lab) {
+                lab.textContent = indeterminate ? label : `${label} ${done}/${total}`;
+                lab.classList.add('active');
+            }
+        }
+
+        function progressEnd(label, ok = true) {
+            const track = byId('progressTrack'), fill = byId('progressFill'), lab = byId('progressLabel');
+            if (!track || !fill) return;
+            fill.classList.remove('indet');
+            fill.style.width = '100%';
+            if (ok) fill.classList.add('done');
+            if (lab) lab.textContent = label;
+            clearTimeout(progressHideTimer);
+            progressHideTimer = setTimeout(() => {
+                track.classList.remove('active');
+                fill.classList.remove('done');
+                fill.style.width = '0%';
+                if (lab) lab.classList.remove('active');
+            }, 800);
+        }
+
+        // Mehrere parallele Aufgaben teilen sich eine Bar.
+        function taskBegin(label) { inflightTasks++; progressShow(label, true); }
+        function taskEnd(label, ok = true) {
+            inflightTasks = Math.max(0, inflightTasks - 1);
+            if (inflightTasks === 0) progressEnd(label, ok);
+            else progressShow(`${inflightTasks} laufend`, true);
+        }
+
+        // ===================================================================
+        // Ziehbarer Splitter zwischen Rail und Main; Breite in localStorage.
+        // ===================================================================
+        const RAIL_WIDTH_KEY = 'gspp_rail_width';
+        const RAIL_MIN = 200, RAIL_MAX = 640;
+
+        function initSplitter() {
+            const rail = byId('rail'), sp = byId('splitter');
+            if (!rail || !sp) return;
+            const saved = parseInt(localStorage.getItem(RAIL_WIDTH_KEY) || '', 10);
+            if (saved >= RAIL_MIN && saved <= RAIL_MAX) rail.style.width = saved + 'px';
+            let dragging = false;
+            sp.addEventListener('mousedown', e => {
+                dragging = true;
+                sp.classList.add('dragging');
+                document.body.style.userSelect = 'none';
+                e.preventDefault();
+            });
+            window.addEventListener('mousemove', e => {
+                if (!dragging) return;
+                const w = Math.min(RAIL_MAX, Math.max(RAIL_MIN, e.clientX - rail.getBoundingClientRect().left));
+                rail.style.width = w + 'px';
+            });
+            window.addEventListener('mouseup', () => {
+                if (!dragging) return;
+                dragging = false;
+                sp.classList.remove('dragging');
+                document.body.style.userSelect = '';
+                const w = Math.round(rail.getBoundingClientRect().width);
+                localStorage.setItem(RAIL_WIDTH_KEY, String(w));
+                L.debug(`Rail-Breite gespeichert: ${w}px`);
+            });
+        }
+
+        // Rail-Navigation: springt zur Sektion und markiert den aktiven Eintrag.
+        function initRailNav() {
+            const items = Array.from(document.querySelectorAll('.nav-item'));
+            items.forEach(btn => btn.addEventListener('click', () => {
+                const target = byId(btn.dataset.target);
+                items.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }));
+        }
+
+        const apiKey = "";
+        let filterOptions ={ class: new Set(), sec_level: new Set(), effort_level: new Set(), modalverb: new Set(), handlung: new Set(), tags: new Set(), threat: new Set() };
+
+        // Elementare Gefährdungen (BSI basethreats.csv) — Namen für die threats-Prop-Badges.
+        const G0_THREATS = {'G 0.1':'Feuer','G 0.2':'Ungünstige klimatische Bedingungen','G 0.3':'Wasser','G 0.4':'Verschmutzung, Staub, Korrosion','G 0.5':'Naturkatastrophen','G 0.6':'Katastrophen im Umfeld','G 0.7':'Großereignisse im Umfeld','G 0.8':'Ausfall oder Störung der Stromversorgung','G 0.9':'Ausfall oder Störung von Kommunikationsnetzen','G 0.10':'Ausfall oder Störung von Versorgungsnetzen','G 0.11':'Ausfall oder Störung von Dienstleistern','G 0.12':'Elektromagnetische Störstrahlung','G 0.13':'Abfangen kompromittierender Strahlung','G 0.14':'Ausspähen von Informationen (Spionage)','G 0.15':'Abhören','G 0.16':'Diebstahl von Geräten, Datenträgern oder Dokumenten','G 0.17':'Verlust von Geräten, Datenträgern oder Dokumenten','G 0.18':'Fehlplanung oder fehlende Anpassung','G 0.19':'Offenlegung schützenswerter Informationen','G 0.20':'Informationen oder Produkte aus unzuverlässiger Quelle','G 0.21':'Manipulation von Hard- oder Software','G 0.22':'Manipulation von Informationen','G 0.23':'Unbefugtes Eindringen in IT-Systeme','G 0.24':'Zerstörung von Geräten oder Datenträgern','G 0.25':'Ausfall von Geräten oder Systemen','G 0.26':'Fehlfunktion von Geräten oder Systemen','G 0.27':'Ressourcenmangel','G 0.28':'Software-Schwachstellen oder -Fehler','G 0.29':'Verstoß gegen Gesetze oder Regelungen','G 0.30':'Unberechtigte Nutzung oder Administration von Geräten und Systemen','G 0.31':'Fehlerhafte Nutzung oder Administration von Geräten und Systemen','G 0.32':'Missbrauch von Berechtigungen','G 0.33':'Personalausfall','G 0.34':'Anschlag','G 0.35':'Nötigung, Erpressung oder Korruption','G 0.36':'Identitätsdiebstahl','G 0.37':'Abstreiten von Handlungen','G 0.38':'Missbrauch personenbezogener Daten','G 0.39':'Schadprogramme','G 0.40':'Verhinderung von Diensten (Denial of Service)','G 0.41':'Sabotage','G 0.42':'Social Engineering','G 0.43':'Einspielen von Nachrichten','G 0.44':'Unbefugtes Eindringen in Räumlichkeiten','G 0.45':'Datenverlust','G 0.46':'Integritätsverlust schützenswerter Informationen','G 0.47':'Schädliche Seiteneffekte IT-gestützter Angriffe'};
+        let loadedCatalogs = [];
+        // Pro geladenem Katalog: Quelle und SHA-256 der Rohbytes (für den Pin-Abgleich).
+        let loadedCatalogSources = [];
+        // Alle Control-IDs der geladenen Kataloge (für den Profil-Drift-Check).
+        let loadedControlIds = new Set();
+        let aiCache = {};
+
+        // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
+        // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Profile.
+        // Katalog-Update = bewusster Pin-Wechsel an allen Stellen zugleich.
+        const GPP_CATALOG_PIN_COMMIT = "47de2824a341812438ef3f044b3f65ce2cad6e32";
+        const GPP_CATALOG_PIN_SHA256 = "db3a1417d7e904315a0886f450129832e19c57324660358c830357349f552332";
+        const GPP_CATALOG_PINNED_URL = "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/" + GPP_CATALOG_PIN_COMMIT + "/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json";
+
+        async function sha256Hex(buf) {
+            const d = await crypto.subtle.digest("SHA-256", buf);
+            return Array.from(new Uint8Array(d)).map(b => b.toString(16).padStart(2, "0")).join("");
+        }
+
+        // Löst einen Profil-Import-href auf: Fragment ("#uuid") → back-matter-Resource
+        // mit rlink-URL und Soll-SHA-256; direkte URL → Alt-Muster ohne Hash.
+        function resolveImportHref(profileObj, href) {
+            if (!href) return null;
+            if (!href.startsWith("#")) return { url: href, sha256: null, pinned: false };
+            const res = ((profileObj["back-matter"] || {}).resources || []).find(r => r.uuid === href.slice(1));
+            const rlink = res && (res.rlinks || [])[0];
+            if (!rlink || !rlink.href) return null;
+            const hash = (rlink.hashes || []).find(h => h.algorithm === "SHA-256");
+            return { url: rlink.href, sha256: hash ? hash.value : null, pinned: true };
+        }
+        // Vorberechnetes Mapping G++-Control -> passende BSI ED2023-Anforderungen
+        // (erzeugt von Gpp-ai-tool stage_ed23_anforderungen, statt zur Laufzeit per KI).
+        let ED23_MAP = {};
+        const ED23_MAP_URL = "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/hilfsdateien/gpp_ed23_anforderungen.json";
+        // Flatten an OSCAL 1.2.2 mapping-collection (or the legacy bespoke map) into
+        // { controlId: [{id, name, begruendung}] } for the ED23 panel.
+        function buildEd23MapFromOscal(doc) {
+            if (doc && doc.gpp_ed23_anforderungen_map) return doc.gpp_ed23_anforderungen_map;
+            const out = {}, mc = doc && doc["mapping-collection"];
+            if (!mc) return out;
+            (mc.mappings || []).forEach(mp => (mp.maps || []).forEach(m => {
+                const src = (m.sources || [])[0];
+                if (!src) return;
+                const cid = src["id-ref"];
+                (m.targets || []).forEach(t => {
+                    const label = (t.props || []).find(p => p.name === "label" || p.name === "title");
+                    (out[cid] = out[cid] || []).push({ id: t["id-ref"], name: (label && label.value) || "", begruendung: m.remarks || "" });
+                });
+            }));
+            return out;
+        }
+        async function loadED23Map() {
+            const t0 = performance.now();
+            L.info("ED23-Mapping wird geladen …");
+            try {
+                const res = await fetch(gppSource("ed23-anforderungen", ED23_MAP_URL));
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                const data = await res.json();
+                ED23_MAP = buildEd23MapFromOscal(data);
+                const controls = Object.keys(ED23_MAP).length;
+                const refs = Object.values(ED23_MAP).reduce((s, v) => s + (v ? v.length : 0), 0);
+                L.ok(`ED23-Mapping geladen: ${controls} Controls, ${refs} Anforderungen (${Math.round(performance.now() - t0)}ms)`);
+            } catch (e) {
+                console.warn("BSI ED23-Anforderungen konnten nicht geladen werden:", e);
+                L.err(`ED23-Mapping konnte nicht geladen werden: ${truncateError(e.message)}`);
+                ED23_MAP = {};
+            }
+        }
+
+        function renderED23Table(list) {
+            if (!list || list.length === 0) {
+                return '<p style="color:var(--text-quiet); font-style:italic; margin:0;">Keine passenden BSI ED23-Anforderungen hinterlegt.</p>';
+            }
+            const rows = list.map(a => `<tr>
+                <td style="white-space:nowrap; font-weight:600; vertical-align:top; padding:6px 10px; border-bottom:1px solid var(--border-1); font-family:var(--font-mono); font-size:0.75rem; color:var(--text-primary);">${escapeHtml(a.id)}</td>
+                <td style="vertical-align:top; padding:6px 10px; border-bottom:1px solid var(--border-1); color:var(--text-secondary);">${escapeHtml(a.name)}</td>
+                <td style="vertical-align:top; padding:6px 10px; border-bottom:1px solid var(--border-1); color:var(--text-tertiary);">${escapeHtml(a.begruendung || '')}</td>
+            </tr>`).join('');
+            return `<table style="width:100%; border-collapse:collapse; font-size:0.82rem;">
+                <thead><tr style="text-align:left; color:var(--accent); font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase;">
+                    <th style="padding:6px 10px;">ID</th><th style="padding:6px 10px;">Name der Anforderung</th><th style="padding:6px 10px;">Begründung</th>
+                </tr></thead><tbody>${rows}</tbody></table>`;
+        }
+
+        function showED23(controlId, btn) {
+            const card = btn.closest('.control-card');
+            const responseArea = card.querySelector('.ai-response-area');
+            const contentArea = card.querySelector('.ai-response-content');
+            responseArea.classList.add('active');
+            contentArea.innerHTML =
+                '<div class="ed23-head">▣ BSI IT-Grundschutz Edition 2023 – passende Anforderungen</div>'
+                + renderED23Table(ED23_MAP[controlId]);
+            const n = (ED23_MAP[controlId] || []).length;
+            L.debug(`ED23-Anforderungen für ${controlId}: ${n} Treffer`);
+        }
+
+        let activeProfileIds = null; // Speichert Set mit Control-IDs des aktiven Profils
+        let activeProfileMaturity = null; // cid -> [{level, statement, guidance, assessment}] aus enhanced Profilen
+        let controlParamsById = {}; // cid -> control.params, für die Auflösung von {{ insert: param }} in Reifegraden
+
+        function updateUrlFromSelect() {
+            const select = document.getElementById('quickSelect');
+            const input = document.getElementById('urlInput');
+            if (select.value) {
+                input.value = select.value;
+            }
+        }
+
+        // ===================================================================
+        // Backend-Auswahl: Gemini | OpenRouter.
+        // Die eigentliche Weiche sitzt ganz unten im Stack (llmOnce); alles
+        // darüber — Prompts, Cache, Retry-Wrapper, Progress, Logging — bleibt
+        // backend-agnostisch. Key UND Modell werden je Backend getrennt in
+        // localStorage gehalten, die Auswahl selbst ebenfalls.
+        // ===================================================================
+        const BACKENDS = { gemini: "Gemini", openrouter: "OpenRouter" };
+        const BACKEND_STORAGE_KEY = "gspp_backend";
+        const GEMINI_KEY_STORAGE  = "gspp_gemini_apikey";
+        const OR_KEY_STORAGE      = "gspp_openrouter_apikey";
+
+        const state = { backend: "gemini" };
+
+        function backendLabel() { return BACKENDS[state.backend] || BACKENDS.gemini; }
+
+        // Modell des aktiven Backends — für Anzeige und Log.
+        function currentBackendModel() {
+            return state.backend === "openrouter" ? (currentOpenRouterModel() || "—") : currentModel();
+        }
+
+        function setBackend(name, opts = {}) {
+            const b = BACKENDS[name] ? name : "gemini";
+            const changed = state.backend !== b;
+            state.backend = b;
+            localStorage.setItem(BACKEND_STORAGE_KEY, b);
+            document.querySelectorAll('.backend-opt').forEach(btn =>
+                btn.classList.toggle('active', btn.dataset.backend === b));
+            const cfgG = byId('cfg-gemini'), cfgO = byId('cfg-openrouter');
+            if (cfgG) cfgG.classList.toggle('hidden', b !== 'gemini');
+            if (cfgO) cfgO.classList.toggle('hidden', b !== 'openrouter');
+            toggleAiButtons();
+            // Der Modellkatalog braucht keinen Key und wird geladen, sobald das
+            // OpenRouter-Backend zum ersten Mal aktiv ist (Cache: 24 h).
+            if (b === 'openrouter' && !openrouterModels.length) loadOpenRouterModels();
+            if (changed && !opts.silent) L.info(`Backend gewechselt: ${backendLabel()} · Modell ${currentBackendModel()}`);
+        }
+
+        function initBackendSelect() {
+            document.querySelectorAll('.backend-opt').forEach(btn =>
+                btn.addEventListener('click', () => setBackend(btn.dataset.backend)));
+            const refresh = byId('orModelsRefresh');
+            if (refresh) refresh.addEventListener('click', () => loadOpenRouterModels(true));
+            setBackend(localStorage.getItem(BACKEND_STORAGE_KEY) || 'gemini', { silent: true });
+        }
+
+        // Beide Keys werden getrennt gespeichert; die KI-Aktionen erscheinen,
+        // sobald das AKTIVE Backend einen Key hat.
+        function toggleAiButtons() {
+            const gEl = byId('apiKeyInput'), oEl = byId('orKeyInput');
+            const gKey = gEl ? gEl.value.trim() : "";
+            const oKey = oEl ? oEl.value.trim() : "";
+            // Keys werden nicht mehr hier gespeichert — sie kommen aus config.html.
+
+            const active = state.backend === "openrouter" ? oKey : gKey;
+            const had = document.body.classList.contains('has-api-key');
+            if (active) {
+                document.body.classList.add('has-api-key');
+                if (!had) L.ok(`API-Key gesetzt (${backendLabel()}) — KI-Aktionen sind aktiv.`);
+            } else {
+                document.body.classList.remove('has-api-key');
+                if (had) L.warn(`Kein API-Key für ${backendLabel()} — KI-Aktionen sind ausgeblendet.`);
+            }
+        }
+
+        // --- Modellauswahl -------------------------------------------------
+        // Nur lebende Gemini-3.x-Text-Modelle. Abgeschaltete Preview-IDs früherer
+        // Generationen sind hier bewusst nicht gelistet — sie liefern inzwischen 404.
+        const GEMINI_MODELS = [
+            { id: "gemini-3.6-flash",       label: "gemini-3.6-flash (Standard)" },
+            { id: "gemini-3.5-flash",       label: "gemini-3.5-flash" },
+            { id: "gemini-3.5-flash-lite",  label: "gemini-3.5-flash-lite (schnell, günstig)" },
+            { id: "gemini-3.1-pro-preview", label: "gemini-3.1-pro-preview (kostenpflichtig)" },
+        ];
+        const DEFAULT_GEMINI_MODEL = "gemini-3.6-flash";
+        const MODEL_STORAGE_KEY = "gspp_gemini_model";
+
+        function initModelSelect() {
+            const sel = document.getElementById('modelSelect');
+            if (!sel) return;
+            sel.innerHTML = '';
+            GEMINI_MODELS.forEach(m => {
+                const o = document.createElement('option');
+                o.value = m.id;
+                o.textContent = m.label;
+                sel.appendChild(o);
+            });
+            // Migration: ein gespeichertes Modell, das es nicht mehr gibt, fällt auf den Standard zurück.
+            let saved = localStorage.getItem(MODEL_STORAGE_KEY);
+            if (!GEMINI_MODELS.some(m => m.id === saved)) {
+                if (saved) console.warn(`Gespeichertes Modell "${saved}" existiert nicht mehr — zurückgesetzt auf ${DEFAULT_GEMINI_MODEL}.`);
+                saved = DEFAULT_GEMINI_MODEL;
+                localStorage.setItem(MODEL_STORAGE_KEY, saved);
+            }
+            sel.value = saved;
+        }
+
+        function saveModelChoice() {
+            const sel = document.getElementById('modelSelect');
+            if (sel && sel.value) localStorage.setItem(MODEL_STORAGE_KEY, sel.value);
+        }
+
+        function currentModel() {
+            const sel = document.getElementById('modelSelect');
+            const v = sel && sel.value;
+            // Zentral konfigurierte Modelle stehen nicht in GEMINI_MODELS (applyGppConfig
+            // ergänzt die Option) — der Wert gilt verbatim, kein stiller Fallback.
+            return v || DEFAULT_GEMINI_MODEL;
+        }
+
+        // --- OpenRouter: Modellkatalog live, nie hartkodiert -----------------
+        // GET /api/v1/models braucht keine Auth und füllt daher schon vor der
+        // Key-Eingabe. Ergebnis wird mit Zeitstempel gecacht und nach 24 h neu
+        // geladen; daneben nimmt ein Freitextfeld jeden beliebigen Slug.
+        const OPENROUTER_MODELS_URL = "https://openrouter.ai/api/v1/models";
+        const OPENROUTER_CHAT_URL   = "https://openrouter.ai/api/v1/chat/completions";
+        const OR_TITLE              = "GS++ Explorer";
+        const OR_MODEL_STORAGE_KEY  = "gspp_openrouter_model";
+        const OR_MODEL_CUSTOM_KEY   = "gspp_openrouter_model_custom";
+        const OR_MODELS_CACHE_KEY   = "gspp_openrouter_models_cache";
+        const OR_MODELS_TTL_MS      = 24 * 60 * 60 * 1000;
+
+        let openrouterModels = [];
+
+        // Optionaler Attribution-Header. Unter file:// ist location.origin "null".
+        function orReferer() {
+            const o = (typeof location !== 'undefined' && location.origin) || "";
+            return (o && o !== "null") ? o : "https://localhost";
+        }
+
+        function setOrModelsStatus(text, cls = "") {
+            const el = byId('orModelsStatus');
+            if (!el) return;
+            el.textContent = text;
+            el.className = 'model-status' + (cls ? ' ' + cls : '');
+        }
+
+        // Katalogeintrag → schlanker Datensatz (id, Kontextlänge, Schema-Fähigkeit).
+        function normalizeOrModel(m) {
+            const sp = m.supported_parameters || [];
+            return {
+                id: m.id,
+                ctx: m.context_length || 0,
+                structured: sp.includes("structured_outputs") || sp.includes("response_format"),
+            };
+        }
+
+        function fillOpenRouterSelect(models) {
+            const sel = byId('orModelSelect');
+            if (!sel) return;
+            const saved = localStorage.getItem(OR_MODEL_STORAGE_KEY) || "";
+            sel.innerHTML = '';
+            const empty = document.createElement('option');
+            empty.value = '';
+            empty.textContent = models.length ? '-- Modell wählen --' : 'Kein Modellkatalog geladen';
+            sel.appendChild(empty);
+            models.forEach(m => {
+                const o = document.createElement('option');
+                o.value = m.id;
+                const ctx = m.ctx ? ` · ${Math.round(m.ctx / 1000)}k` : '';
+                // ◈ markiert Modelle mit structured_outputs (für schemagebundene Aufgaben).
+                o.textContent = `${m.structured ? '◈ ' : ''}${m.id}${ctx}`;
+                sel.appendChild(o);
+            });
+            // Ein gespeicherter Slug, der (noch) nicht im Katalog steht, geht nicht verloren.
+            if (saved && !models.some(m => m.id === saved)) {
+                const o = document.createElement('option');
+                o.value = saved;
+                o.textContent = `${saved} (gespeichert)`;
+                sel.insertBefore(o, sel.children[1] || null);
+            }
+            sel.value = saved;
+        }
+
+        async function loadOpenRouterModels(force = false) {
+            let cached = null;
+            try { cached = JSON.parse(localStorage.getItem(OR_MODELS_CACHE_KEY) || 'null'); } catch (_) { cached = null; }
+            const hasCache = !!(cached && Array.isArray(cached.models) && cached.models.length);
+            const age = (hasCache && cached.ts) ? Date.now() - cached.ts : Infinity;
+
+            if (!force && hasCache && age < OR_MODELS_TTL_MS) {
+                openrouterModels = cached.models;
+                fillOpenRouterSelect(openrouterModels);
+                const hrs = Math.floor(age / 3600000);
+                setOrModelsStatus(`${openrouterModels.length} Modelle · Cache ${hrs}h`);
+                L.debug(`OpenRouter-Modellkatalog aus Cache: ${openrouterModels.length} Modelle (${hrs}h alt, TTL 24h).`);
+                return openrouterModels;
+            }
+
+            const t0 = performance.now();
+            L.info(`OpenRouter-Modellkatalog wird geladen …${force ? ' (erzwungen)' : ''}`);
+            setOrModelsStatus('lädt …');
+            taskBegin('OpenRouter-Modelle');
+            try {
+                const res = await fetch(OPENROUTER_MODELS_URL);
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                const json = await res.json();
+                const list = (json.data || []).filter(m => m && m.id).map(normalizeOrModel)
+                    .sort((a, b) => a.id.localeCompare(b.id));
+                if (!list.length) throw new Error("Katalog leer");
+                openrouterModels = list;
+                localStorage.setItem(OR_MODELS_CACHE_KEY, JSON.stringify({ ts: Date.now(), models: list }));
+                fillOpenRouterSelect(list);
+                const structured = list.filter(m => m.structured).length;
+                setOrModelsStatus(`${list.length} Modelle · ${structured}× ◈`);
+                L.ok(`OpenRouter-Modellkatalog geladen: ${list.length} Modelle, davon ${structured} mit structured_outputs (${Math.round(performance.now() - t0)}ms)`);
+                taskEnd('Modellkatalog geladen', true);
+                return list;
+            } catch (e) {
+                L.err(`OpenRouter-Modellkatalog konnte nicht geladen werden: ${truncateError(e.message)}`);
+                taskEnd('Modellkatalog Fehler', false);
+                if (hasCache) {
+                    openrouterModels = cached.models;
+                    fillOpenRouterSelect(openrouterModels);
+                    setOrModelsStatus(`${openrouterModels.length} Modelle · veralteter Cache`, 'warn');
+                    L.warn(`Fallback auf veralteten Modellkatalog aus dem Cache (${openrouterModels.length} Modelle).`);
+                } else {
+                    setOrModelsStatus('Katalog nicht verfügbar — Slug frei eintragen', 'err');
+                }
+                return openrouterModels;
+            }
+        }
+
+        function initOpenRouterModelInputs() {
+            const custom = byId('orModelCustom');
+            if (custom) custom.value = localStorage.getItem(OR_MODEL_CUSTOM_KEY) || "";
+            fillOpenRouterSelect(openrouterModels);
+        }
+
+        function saveOpenRouterModel() {
+            const sel = byId('orModelSelect'), custom = byId('orModelCustom');
+            if (sel) localStorage.setItem(OR_MODEL_STORAGE_KEY, sel.value || "");
+            if (custom) localStorage.setItem(OR_MODEL_CUSTOM_KEY, custom.value.trim());
+        }
+
+        // Ein eingetragener Freitext-Slug hat Vorrang vor der Dropdown-Auswahl.
+        function currentOpenRouterModel() {
+            const custom = byId('orModelCustom');
+            const typed = custom ? custom.value.trim() : "";
+            if (typed) return typed;
+            const sel = byId('orModelSelect');
+            return (sel && sel.value) ? sel.value : "";
+        }
+
+        // --- Editierbare Prompts -------------------------------------------
+        // Die Konstanten sind nur Default-Saat und Reset-Ziel; gesendet wird immer
+        // der Inhalt der zugehörigen <textarea>.
+        const DEFAULT_SYSTEM_PROMPT = `Du bist ein Experte für IT-Sicherheit, ISO 27001, IT-Grundschutz *und* den neuen BSI Grundschutz++. Wo passend referenzierst Du aktuelle Materialen des BSI: C5, Standards, B3S Profile, Technische Richtlinien (TR) und Mindestandards (*keine* Grundschutz Bausteine!)
+Antworte in strukturierter Markdown-Form (Listen, Fettgedrucktes). Wichtig: Dein Fokus liegt ausschließlich auf der in der User-Anfrage genannten Einzelmaßnahme.
+Verstehe: Der neue Grundschutz++ nutzt einen granularen Katalog, in dem jede Anforderung nur aus einem Satz besteht. Andere Aspekte des Themas stehen in anderen Anforderungen!
+Keine Einleitenden Worte über deine Rolle oder wie der GRundschutz++ aufgebaut ist. Fokus ist nur die Aufgabe ohne Ausschmückungen. Du Schreibst wie ein Experte, aber nicht wie
+eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präßise und du nutzt keine KI Floskeln. Heute ist der {heute}.`;
+
+        const DEFAULT_IMPLEMENTATION_PROMPT = `Erstelle einen Umsetzungsvorschlag für die BSI Maßnahme "{title}". Beschreibung: {prose}{guidance}. Nenne praktische Schritte. Drei sehr ausführliche Praxis Beispiele die alle Aspekte des Controls abdecken.`;
+
+        const DEFAULT_RISK_PROMPT = `Welche Risiken bestehen bei Nicht-Umsetzung von "{title}"? Beschreibung: {prose}. Nenne mindestens Gefahren mit kritischem Schadenspotential und mit hoher eintrittshäufigkeit.`;
+
+        const PROMPT_DEFS = [
+            { id: 'promptSystem',         storageKey: 'gspp_prompt_system',         def: DEFAULT_SYSTEM_PROMPT,         required: ['{heute}'] },
+            { id: 'promptImplementation', storageKey: 'gspp_prompt_implementation', def: DEFAULT_IMPLEMENTATION_PROMPT, required: ['{title}', '{prose}'] },
+            { id: 'promptRisk',           storageKey: 'gspp_prompt_risk',           def: DEFAULT_RISK_PROMPT,           required: ['{title}', '{prose}'] },
+        ];
+
+        function validatePrompt(p) {
+            const ta = document.getElementById(p.id);
+            const warn = document.getElementById('warn-' + p.id);
+            if (!ta || !warn) return;
+            const missing = p.required.filter(ph => !ta.value.includes(ph));
+            if (missing.length) {
+                warn.textContent = `◬ Platzhalter fehlt: ${missing.join(', ')} — wird beim Senden automatisch angehängt.`;
+                warn.classList.add('active');
+            } else {
+                warn.classList.remove('active');
+            }
+        }
+
+        const PROMPT_LABELS = {
+            promptSystem: 'System-Prompt (Rolle)',
+            promptImplementation: 'Umsetzungsvorschlag',
+            promptRisk: 'Risiken bei Nicht-Umsetzung',
+        };
+        // Prompts werden zentral in config.html bearbeitet; die Defaults bleiben hier.
+        function initPrompts() {
+            gppRegisterPrompts(GPP_TOOL_ID, PROMPT_DEFS.map(p => ({
+                id: p.id, label: PROMPT_LABELS[p.id] || p.id, placeholders: p.required || [], default: p.def,
+            })));
+            const custom = PROMPT_DEFS.filter(p => localStorage.getItem(`gpp:cfg:prompt:${GPP_TOOL_ID}:${p.id}`) !== null).length;
+            L.debug(`Prompts angemeldet (${custom} von ${PROMPT_DEFS.length} angepasst, bearbeitbar in config.html).`);
+        }
+
+        // Baut den finalen Prompt aus der Textarea. Fehlende Pflicht-Platzhalter
+        // werden defensiv angehängt, damit ein zerschossenes Template nie einen
+        // inhaltsleeren Prompt erzeugt.
+        function buildPrompt(id, vars) {
+            const p = PROMPT_DEFS.find(x => x.id === id);
+            // Prompttext zentral aus config.html; der Default bleibt hier im Tool.
+            let tpl = gppPrompt(GPP_TOOL_ID, id, p.def) || p.def;
+            p.required.forEach(ph => {
+                if (!tpl.includes(ph)) tpl += `\n${ph.slice(1, -1)}: ${ph}`;
+            });
+            Object.keys(vars).forEach(k => {
+                tpl = tpl.split('{' + k + '}').join(vars[k]);
+            });
+            return tpl;
+        }
+
+        // --- Gemini-Aufruf --------------------------------------------------
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+        // Rohe API-Fehlermeldungen können sehr lang werden — für die Anzeige kürzen.
+        function truncateError(msg) {
+            const s = String(msg == null ? "" : msg);
+            return s.length > 400 ? s.slice(0, 400) + " …" : s;
+        }
+
+        // Ein einzelner Aufruf. Regeln: Key ausschließlich im Header x-goog-api-key
+        // (nie als Query-Parameter in der URL), Grounding camelCase (googleSearch),
+        // Modell aus der Auswahl und KEINE Sampling-Parameter — die sind auf
+        // Gemini 3.x deprecated und werden auf künftigen Modellen mit 400 abgelehnt.
+        async function callGeminiOnce(prompt, systemPrompt = "", label = "call") {
+            let currentApiKey = document.getElementById('apiKeyInput').value.trim();
+            if (!currentApiKey) currentApiKey = apiKey;
+            if (!currentApiKey) {
+                const e = new Error("API Key fehlt.");
+                e.noRetry = true;
+                throw e;
+            }
+
+            const model = currentModel();
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+            const t0 = performance.now();
+            const grounding = (typeof gppCfg !== "undefined" && gppCfg.get("ai:grounding") === "1");
+            L.info(`${label} → [Gemini] ${model} · Prompt ${(prompt.length / 1024).toFixed(1)}kb · System ${(systemPrompt.length / 1024).toFixed(1)}kb · Grounding ${grounding ? "an" : "aus"}`);
+
+            const payload = {
+                contents: [{ role: "user", parts: [{ text: prompt }] }]
+            };
+            if (grounding) payload.tools = [{ googleSearch: {} }];
+            // Thinking-Level aus der zentralen Konfiguration; "off"/Unbekanntes → kein thinkingConfig.
+            const thinking = (typeof gppCfg !== "undefined" ? gppCfg.get("ai:thinking") : "medium");
+            if (["minimal", "low", "medium", "high"].includes(thinking)) {
+                payload.generationConfig = { thinkingConfig: { thinkingLevel: thinking } };
+            }
+
+            if (systemPrompt) {
+                payload.system_instruction = { parts: [{ text: systemPrompt }] };
+            }
+
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-goog-api-key': currentApiKey },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const raw = await res.text().catch(() => "");
+                let detail = raw;
+                try { detail = JSON.parse(raw).error?.message || raw; } catch (_) { /* kein JSON-Body */ }
+                console.error("API Fehler Details:", raw);
+                L.err(`${label} [Gemini] ${model} HTTP ${res.status} nach ${Math.round(performance.now() - t0)}ms — ${truncateError(detail || 'Unbekannt')}`);
+                const e = new Error(truncateError(`Status: ${res.status} - ${detail || 'Unbekannt'}`));
+                e.status = res.status;
+                throw e;
+            }
+
+            const json = await res.json();
+            const parts = json.candidates?.[0]?.content?.parts || [];
+            const text = parts.map(p => p.text || "").join("\n").trim();
+            L.ok(`${label} ← [Gemini] ${model} ${(text.length / 1024).toFixed(1)}kb in ${Math.round(performance.now() - t0)}ms`);
+            return text || "Keine Antwort.";
+        }
+
+        // Ein einzelner OpenRouter-Aufruf (OpenAI-kompatible Chat-Completions).
+        // Unterschiede zum Gemini-Pfad: Authorization: Bearer statt x-goog-api-key,
+        // Antworttext flach in choices[0].message.content (kein parts-Array),
+        // Fehler stehen in data.error.message — auch in 200-Bodies. Grounding-
+        // Analogon zu googleSearch ist das Web-Plugin. KEINE Sampling-Parameter:
+        // die Disziplin gilt hier genauso wie bei Gemini.
+        // Das optionale schema-Argument setzt response_format + provider
+        // require_parameters; die Prompts dieses Werkzeugs liefern Markdown-Prosa
+        // und brauchen es nicht.
+        async function openrouterOnce(prompt, systemPrompt = "", label = "call", schema = null) {
+            const keyEl = byId('orKeyInput');
+            const key = keyEl ? keyEl.value.trim() : "";
+            if (!key) {
+                const e = new Error("OpenRouter API Key fehlt.");
+                e.noRetry = true;
+                throw e;
+            }
+
+            const model = currentOpenRouterModel();
+            if (!model) {
+                const e = new Error("Kein OpenRouter-Modell gewählt.");
+                e.noRetry = true;
+                throw e;
+            }
+
+            const t0 = performance.now();
+            const grounding = (typeof gppCfg !== "undefined" && gppCfg.get("ai:grounding") === "1");
+            L.info(`${label} → [OpenRouter] ${model} · Prompt ${(prompt.length / 1024).toFixed(1)}kb · System ${(systemPrompt.length / 1024).toFixed(1)}kb · Web-Plugin ${grounding ? "an" : "aus"}`);
+
+            const messages = [];
+            if (systemPrompt) messages.push({ role: "system", content: systemPrompt });
+            messages.push({ role: "user", content: prompt });
+
+            const payload = {
+                model,
+                messages
+            };
+            if (grounding) payload.plugins = [{ id: "web" }];
+            if (schema) {
+                payload.response_format = { type: "json_schema", json_schema: { name: "result", strict: true, schema } };
+                payload.provider = { require_parameters: true };
+            }
+
+            const res = await fetch(OPENROUTER_CHAT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${key}`,
+                    'HTTP-Referer': orReferer(),
+                    'X-Title': OR_TITLE
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const raw = await res.text().catch(() => "");
+            let data = null;
+            try { data = raw ? JSON.parse(raw) : null; } catch (_) { /* kein JSON-Body */ }
+
+            const apiErr = data && data.error;
+            if (apiErr || !res.ok) {
+                const detail = (apiErr && (apiErr.message || JSON.stringify(apiErr))) || raw || 'Unbekannt';
+                const status = (apiErr && (apiErr.code || apiErr.status)) || res.status;
+                console.error("OpenRouter Fehler Details:", raw);
+                L.err(`${label} [OpenRouter] ${model} HTTP ${status} nach ${Math.round(performance.now() - t0)}ms — ${truncateError(detail)}`);
+                const e = new Error(truncateError(`Status: ${status} - ${detail}`));
+                e.status = Number(status) || res.status;
+                throw e;
+            }
+
+            const msg = (data && data.choices && data.choices[0] && data.choices[0].message) || {};
+            const content = msg.content;
+            const text = (typeof content === "string" ? content
+                : Array.isArray(content) ? content.map(p => (p && p.text) || "").join("\n")
+                : "").trim();
+            L.ok(`${label} ← [OpenRouter] ${model} ${(text.length / 1024).toFixed(1)}kb in ${Math.round(performance.now() - t0)}ms`);
+            return text || "Keine Antwort.";
+        }
+
+        // Die einzige Backend-Weiche. Alles darüber — Retry-Wrapper, Prompts,
+        // Cache, Progress, Logging — bleibt unverändert und backend-agnostisch.
+        async function llmOnce(prompt, systemPrompt = "", label = "call") {
+            return state.backend === "openrouter"
+                ? openrouterOnce(prompt, systemPrompt, label)
+                : callGeminiOnce(prompt, systemPrompt, label);
+        }
+
+        // Retries aus der zentralen Konfiguration (config.html), Fallback 2.
+        function cfgRetries() {
+            return (typeof gppCfg !== "undefined" ? parseInt(gppCfg.get("run:retries"), 10) : 2) || 2;
+        }
+
+        // Retry-Wrapper mit exponentiellem Backoff: 500ms → 1s → 2s.
+        // Permanente Client-Fehler (400/401/403/404) werden nicht wiederholt.
+        async function callLLM(prompt, systemPrompt = "", retries = 2, label = "call") {
+            let attempt = 0;
+            while (true) {
+                try {
+                    return await llmOnce(prompt, systemPrompt, label);
+                } catch (e) {
+                    const permanent = e.noRetry || (e.status && e.status < 500 && e.status !== 408 && e.status !== 429);
+                    attempt++;
+                    if (permanent || attempt > retries) {
+                        L.err(`${label} endgültig fehlgeschlagen${permanent ? ' (permanenter Fehler, kein Retry)' : ''}: ${truncateError(e.message)}`);
+                        throw e;
+                    }
+                    const wait = 500 * Math.pow(2, attempt - 1);
+                    console.warn(`${backendLabel()}-Aufruf fehlgeschlagen (${e.message}) — Versuch ${attempt}/${retries}, erneut in ${wait}ms`);
+                    L.warn(`${label} fehlgeschlagen (${truncateError(e.message)}) — Retry ${attempt}/${retries} in ${wait}ms`);
+                    await sleep(wait);
+                }
+            }
+        }
+
+		async function triggerAI(controlId, type, forceRefresh = false) {
+            const card = document.getElementById(controlId);
+            const responseArea = card.querySelector('.ai-response-area');
+            const contentArea = card.querySelector('.ai-response-content');
+            const loader = card.querySelector('.ai-loader');
+
+            responseArea.classList.add('active');
+
+            if (!forceRefresh && aiCache[controlId] && aiCache[controlId][type]) {
+                const cachedRes = aiCache[controlId][type];
+                contentArea.innerHTML = (typeof marked !== 'undefined' ? marked.parse(cachedRes) : cachedRes) +
+                    `<div class="ai-refresh-row">
+                        <button class="ai-refresh-btn" onclick="triggerAI('${controlId}', '${type}', true)">▶ Neu generieren</button>
+                    </div>`;
+                L.debug(`Cache-Treffer ${controlId} · ${type} (${(cachedRes.length / 1024).toFixed(1)}kb) — kein API-Aufruf`);
+                return;
+            }
+
+            const label = `${controlId} · ${type}`;
+            L.info(`KI-Anfrage gestartet: ${label} · Backend ${backendLabel()} · Modell ${currentBackendModel()}${forceRefresh ? ' (erzwungene Neugenerierung)' : ''}`);
+            taskBegin(`KI · ${controlId}`);
+            loader.style.display = 'block';
+            contentArea.innerHTML = '<i>KI analysiert …</i>';
+
+            const title = card.querySelector('.control-title').textContent;
+            const prose = card.querySelector('.statement-prose')?.textContent || "";
+			const guidance = card.querySelector('.guidance-box')?.textContent || "";
+
+            const prefix = controlId.substring(0, controlId.lastIndexOf('.') + 1);
+            let relatedControlsText = "";
+
+            if (prefix) {
+                const siblings = Array.from(document.querySelectorAll('.control-card'))
+                    .filter(c => c.id.startsWith(prefix) && c.id !== controlId)
+                    .map(c => {
+                        const siblingProse = c.querySelector('.statement-prose')?.textContent || '';
+                        return `- ${c.id}: ${siblingProse}`;
+                    });
+
+                if (siblings.length > 0) {
+                    L.debug(`${label}: ${siblings.length} Geschwister-Controls zur Abgrenzung angehängt`);
+                    relatedControlsText = `\n\nBeachte zur inhaltlichen Abgrenzung, dass es im selben Modul auch noch diese ähnlichen Controls gibt. Diese sind HIER NICHT THEMA! Bitte stelle sicher, dass sich deine Antwort inhaltlich nicht mit ihnen überschneidet:\n${siblings.join('\n')}`;
+                }
+            }
+
+			const heute = new Date().toLocaleDateString('de-DE');
+            let system = buildPrompt('promptSystem', { heute });
+
+            const userContext = (gppCfg.get('ai:context') || '').trim();
+            if (userContext) {
+                system += "\n\nBerücksichtige zwingend folgenden Unternehmenskontext für deine Antwort:\n" + userContext;
+            }
+            const guidanceText = guidance ? `\nZusätzliche Erläuterungen (Guidance): ${guidance}` : "";
+
+            const vars = { title, prose, guidance: guidanceText };
+            let prompt = buildPrompt(type === 'implementation' ? 'promptImplementation' : 'promptRisk', vars);
+
+            prompt += relatedControlsText;
+
+            try {
+                const response = await callLLM(prompt, system, cfgRetries(), label);
+
+                if (!aiCache[controlId]) aiCache[controlId] = {};
+                aiCache[controlId][type] = response;
+                localStorage.setItem('gspp_ai_cache', JSON.stringify(aiCache));
+
+                contentArea.innerHTML = (typeof marked !== 'undefined' ? marked.parse(response) : response) +
+                    `<div class="ai-refresh-row">
+                        <button class="ai-refresh-btn" onclick="triggerAI('${controlId}', '${type}', true)">▶ Neu generieren</button>
+                    </div>`;
+                L.ok(`KI-Antwort gespeichert: ${label} (${(response.length / 1024).toFixed(1)}kb, Cache-Einträge: ${Object.keys(aiCache).length})`);
+                taskEnd(`KI · ${controlId} fertig`, true);
+
+            } catch (e) {
+				contentArea.innerHTML = `<span class="ai-error">Fehler bei der KI-Anfrage (${escapeHtml(truncateError(e.message))}).</span>`;
+                L.err(`KI-Anfrage ${label} fehlgeschlagen: ${truncateError(e.message)}`);
+                taskEnd(`KI · ${controlId} Fehler`, false);
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        // --- NEU: Profil-Handling ---
+
+        /* Profilliste über EINEN Trees-Aufruf statt vieler contents-Aufrufe.
+           Die contents-API brauchte pro Unterverzeichnis eine eigene Anfrage; bei
+           60 Anfragen pro Stunde ohne Anmeldung war das Limit nach wenigen
+           Seitenaufrufen erschöpft (HTTP 403). Das Ergebnis wird 24 h im Browser
+           gehalten und bei Limit auch abgelaufen weiterverwendet. */
+        // Auflistung liegt im Core (ein trees-Aufruf je Repo, 24 h Cache).
+        const fetchProfileFiles = () => gppRepoList({
+            owner: 'NTT-Data-Deutschland-SE', repo: 'Grundschutz-Plus-Plus-Tools',
+            ref: GPPT_PIN, dir: 'Zielobjektkategorien/profile', ext: '.json', recursive: true,
+        });
+
+        // Praktik-Kürzel → Begriff. Quelle (in sync halten):
+        // https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/blob/main/documentation/namespaces/practices.csv
+        const PRACTICE_ABBREVIATIONS = {
+            GC: "Governance und Compliance", STM: "Strukturmodellierung", UMS: "Umsetzung",
+            VRB: "Verbesserung", PERF: "Monitoring-Evaluation", RISK: "Risikomanagement",
+            ASST: "Informationen und Assets", PERS: "Personal", BES: "Beschaffungsmanagement",
+            DLS: "Dienstleistersteuerung", TEST: "Änderungen und Tests", GEB: "Gebäudemanagement",
+            SENS: "Sensibilisierung", ARCH: "Architektur", BER: "Berechtigung", NOT: "Notfallplanung",
+            DET: "Detektion", REA: "Sicherheitsvorfallsbehandlung", KONF: "Konfiguration",
+            DEV: "Entwicklung", METHODIK: "Methodik"
+        };
+
+        // Macht aus einem Profil-Dateinamen ein lesbares Label und löst Praktik-Kürzel auf.
+        // z.B. "arch_process_profile" → "Architektur (Prozess)", "administrierende_profile" → "Administrierende"
+        function prettifyProfileName(name) {
+            let n = name.replace(/\.json$/, '');
+            const enhanced = /_enhanced$/.test(n);
+            n = n.replace(/_enhanced$/, '');
+            if (/_process_profile$/.test(n)) {
+                const key = n.replace(/_process_profile$/, '').toUpperCase();
+                const label = PRACTICE_ABBREVIATIONS[key] || n.replace(/_process_profile$/, '');
+                return `${label} (Prozess)${enhanced ? ' – Enhanced' : ''}`;
+            }
+            n = n.replace(/_profile$/, '').replace(/[-_]/g, ' ').trim();
+            const label = n.charAt(0).toUpperCase() + n.slice(1);
+            return `${label}${enhanced ? ' – Enhanced' : ''}`;
+        }
+
+        async function fetchProfilesList() {
+            const select = document.getElementById('profileSelect');
+            const t0 = performance.now();
+            L.info("Profil-Liste wird von GitHub geladen …");
+            try {
+                const { files, from, stale } = await fetchProfileFiles();
+                select.innerHTML = '<option value="">-- Kein Profil-Filter --</option>';
+                files.forEach(f => {
+                    const opt = document.createElement('option');
+                    opt.value = f.url;              // gepinnte Raw-URL
+                    opt.textContent = prettifyProfileName(f.name);
+                    select.appendChild(opt);
+                });
+                L[stale ? 'warn' : 'ok'](`${files.length} Zielobjekt-Profile verfügbar · ${from} (${Math.round(performance.now() - t0)}ms)`);
+            } catch (e) {
+                select.innerHTML = '<option value="">Profilliste nicht abrufbar</option>';
+                L.warn(`Profil-Liste nicht geladen: ${truncateError(e.message)}. `
+                     + `Der Katalog und alle übrigen Funktionen laufen davon unberührt weiter.`);
+            }
+        }
+
+        async function handleProfileChange() {
+            const url = document.getElementById('profileSelect').value;
+            const infoSpan = document.getElementById('profileInfo');
+
+            if (!url) {
+                activeProfileIds = null;
+                activeProfileMaturity = null;
+                infoSpan.textContent = "";
+                L.info("Profil-Filter deaktiviert.");
+                refreshMaturityDisplay();
+                applyFilters();
+                return;
+            }
+
+            const t0 = performance.now();
+            try {
+                infoSpan.textContent = "Lade Profil...";
+                infoSpan.style.color = "var(--text-quiet)";
+                L.info(`Profil wird geladen: ${url.split('/').pop()}`);
+                taskBegin("Profil");
+                const res = await fetch(url);
+                const data = await res.json();
+                const ids = new Set();
+
+                // Extrahiere IDs aus der OSCAL Profile Struktur
+                if (data.profile && data.profile.imports) {
+                    data.profile.imports.forEach(imp => {
+                        if (imp['include-controls']) {
+                            imp['include-controls'].forEach(inc => {
+                                if (inc['with-ids']) {
+                                    inc['with-ids'].forEach(id => ids.add(id));
+                                }
+                            });
+                        }
+                    });
+                }
+
+                // Reifegrade aus angereicherten Profilen (modify.alters[].adds[].parts).
+                // Neue Form (issue 3.1): Statement = pt.prose, Guidance/Assessment als
+                // verschachtelte parts. Alte Form: Text in props. Siehe
+                // Gpp-ai-tool/docs/profile-maturity-contract.md.
+                const maturity = new Map();
+                ((data.profile?.modify?.alters) || []).forEach(alt => {
+                    const cid = alt['control-id']; if (!cid) return;
+                    ids.add(cid);
+                    const list = maturity.get(cid) || [];
+                    (alt.adds || []).forEach(add => (add.parts || []).filter(pt => pt && pt.name === 'statement').forEach(pt => {
+                        const props = Object.fromEntries((pt.props || []).map(p => [p.name, p.value]));
+                        const sub = Object.fromEntries((pt.parts || []).map(np => [np.name, np.prose]));
+                        const statement = (pt.prose != null && props.statement == null) ? pt.prose : (props.statement || pt.prose || '');
+                        list.push({
+                            level: props.label || '',
+                            statement,
+                            guidance: sub.guidance || props.guidance || '',
+                            assessment: sub.assessment || props['assessment-method'] || ''
+                        });
+                    }));
+                    maturity.set(cid, list);
+                });
+                activeProfileMaturity = maturity.size ? maturity : null;
+
+                activeProfileIds = ids;
+                const matNote = activeProfileMaturity ? ` (inkl. Reifegrade für ${activeProfileMaturity.size} Controls)` : '';
+
+                // Pin-Prüfung: Fragment-Import → back-matter-Resource (Commit-URL + SHA-256).
+                // Abgleich gegen die Hashes der tatsächlich geladenen Kataloge, dazu der
+                // Drift-Check über die Control-ID-Schnittmenge.
+                const imp0 = (data.profile.imports || [])[0];
+                const pin = imp0 ? resolveImportHref(data.profile, imp0.href) : null;
+                const matched = loadedControlIds.size ? [...ids].filter(id => loadedControlIds.has(id)).length : null;
+                let msg = `${ids.size} Maßnahmen im Profil aktiv${matNote}.`;
+                let color = "var(--green)";
+                L.ok(`Profil geladen: ${ids.size} Control-IDs${activeProfileMaturity ? `, Reifegrade für ${activeProfileMaturity.size} Controls` : ''} (${Math.round(performance.now() - t0)}ms)`);
+                if (matched !== null && matched < ids.size) {
+                    msg = `${matched} von ${ids.size} Profil-Maßnahmen im geladenen Katalog gefunden${matNote}.`;
+                    color = "var(--amber)";
+                    L.warn(`Profil-Drift: nur ${matched} von ${ids.size} Profil-IDs sind im geladenen Katalog vorhanden.`);
+                } else if (matched !== null) {
+                    L.debug(`Profil-Drift-Check ok: alle ${ids.size} Profil-IDs im geladenen Katalog vorhanden.`);
+                }
+                if (pin && pin.pinned && pin.sha256) {
+                    const hashMatch = loadedCatalogSources.some(s => s.sha256 === pin.sha256);
+                    L.debug(`Pin-Prüfung: Profil verlangt SHA-256 ${pin.sha256.slice(0, 12)}… (${pin.url})`);
+                    if (hashMatch) {
+                        msg += " Katalog entspricht dem Pin des Profils (SHA-256 geprüft).";
+                        L.ok("Pin-Prüfung bestanden: geladener Katalog entspricht dem Profil-Pin (SHA-256).");
+                    } else if (loadedCatalogSources.length) {
+                        msg += ` Achtung: Kein geladener Katalog entspricht der gepinnten Version (Commit ${pin.url.includes('/') ? (pin.url.split('/')[5] || '').slice(0, 12) : '?'}). Gepinnte Quelle wurde ins URL-Feld übernommen.`;
+                        color = "var(--amber)";
+                        document.getElementById('urlInput').value = pin.url;
+                        L.warn("Pin-Prüfung: kein geladener Katalog passt zum Profil-Pin — gepinnte Quelle ins URL-Feld übernommen.");
+                    } else {
+                        msg += " Profil ist gepinnt; gepinnte Katalog-Quelle wurde ins URL-Feld übernommen — per „Katalog hinzufügen“ laden.";
+                        document.getElementById('urlInput').value = pin.url;
+                        L.info("Profil ist gepinnt; noch kein Katalog geladen — gepinnte Quelle ins URL-Feld übernommen.");
+                    }
+                } else if (pin && !pin.pinned) {
+                    msg += " Hinweis: Profil nutzt noch den ungepinnten Branch-Import (kein SHA-256).";
+                    color = "var(--amber)";
+                    L.warn("Profil nutzt einen ungepinnten Branch-Import (kein SHA-256 hinterlegt).");
+                }
+                infoSpan.textContent = msg;
+                infoSpan.style.color = color;
+                refreshMaturityDisplay();
+                applyFilters();
+                taskEnd("Profil geladen", true);
+            } catch (e) {
+                infoSpan.textContent = "Fehler beim Laden des Profils.";
+                infoSpan.style.color = "var(--red)";
+                console.error("OSCAL Profil Parsing Fehler:", e);
+                L.err(`Profil konnte nicht geladen/geparst werden: ${truncateError(e.message)}`);
+                activeProfileIds = null;
+                activeProfileMaturity = null;
+                applyFilters();
+                taskEnd("Profil Fehler", false);
+            }
+        }
+
+        async function loadFromURL() {
+            const t0 = performance.now();
+            let url = document.getElementById('urlInput').value;
+            // Registrierte Quelle? Dann greift ein evtl. Repin aus config.html.
+            const srcId = GPP_SOURCE_ID_BY_URL[url];
+            if (srcId) {
+                const resolved = gppSource(srcId, url);
+                if (resolved !== url) {
+                    L.info(`Quelle „${srcId}" ist in config.html umgepinnt — lade ${resolved}`);
+                    url = resolved;
+                }
+            }
+            try {
+                L.info(`Katalog wird geladen: ${url}`);
+                taskBegin("Katalog");
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("Netzwerkantwort war nicht ok");
+                const buf = await res.arrayBuffer();
+                const hash = await sha256Hex(buf);
+                L.debug(`Katalog übertragen: ${(buf.byteLength / 1024).toFixed(1)}kb in ${Math.round(performance.now() - t0)}ms · SHA-256 ${hash.slice(0, 16)}…`);
+                // Pin-Prüfung: Die gepinnte Quelle muss exakt den bekannten Hash liefern.
+                if (url === GPP_CATALOG_PINNED_URL && hash !== GPP_CATALOG_PIN_SHA256) {
+                    L.err(`Pin-Verletzung: erwartet ${GPP_CATALOG_PIN_SHA256.slice(0, 16)}…, erhalten ${hash.slice(0, 16)}… — Katalog wird NICHT geladen.`);
+                    taskEnd("Pin-Verletzung", false);
+                    alert("Pin-Verletzung: Der Katalog von der gepinnten URL hat nicht den erwarteten SHA-256.\nErwartet: " + GPP_CATALOG_PIN_SHA256 + "\nErhalten: " + hash + "\nDer Katalog wird NICHT geladen.");
+                    return;
+                }
+                if (url === GPP_CATALOG_PINNED_URL) L.ok(`Pin-Prüfung bestanden (Commit ${GPP_CATALOG_PIN_COMMIT.slice(0, 12)}, SHA-256 geprüft).`);
+                processCatalog(JSON.parse(new TextDecoder().decode(buf)), { url, sha256: hash });
+                taskEnd("Katalog geladen", true);
+            } catch (e) {
+                L.err(`Katalog konnte nicht geladen werden: ${truncateError(e.message)}`);
+                taskEnd("Katalog Fehler", false);
+                alert("Fehler beim Laden: " + e.message);
+            }
+        }
+
+        function loadFromFile() {
+            const file = document.getElementById('fileInput').files[0];
+            if (!file) return;
+            L.info(`Katalog-Datei wird gelesen: ${file.name} (${(file.size / 1024).toFixed(1)}kb)`);
+            const r = new FileReader();
+            r.onload = async e => {
+                try {
+                    const buf = e.target.result;
+                    const hash = await sha256Hex(buf);
+                    L.debug(`Datei-SHA-256: ${hash.slice(0, 16)}…`);
+                    processCatalog(JSON.parse(new TextDecoder().decode(buf)), { url: "file://" + file.name, sha256: hash });
+                } catch (err) {
+                    L.err(`Katalog-Datei konnte nicht verarbeitet werden: ${truncateError(err.message)}`);
+                    alert("Fehler beim Laden: " + err.message);
+                }
+            };
+            r.readAsArrayBuffer(file);
+        }
+
+        function clearAllCatalogs() {
+            // Nur die Katalogkarten entfernen — #welcome-msg ist ein Kind von
+            // #catalog-container und würde von innerHTML='' mitgelöscht.
+            const cc = document.getElementById('catalog-container');
+            const welcome = document.getElementById('welcome-msg');
+            if (cc) [...cc.children].forEach(el => { if (el !== welcome) el.remove(); });
+            const setStyle = (id, disp) => { const el = document.getElementById(id); if (el) el.style.display = disp; };
+            const mc = document.getElementById('meta-container');
+            if (mc) mc.innerHTML = 'Kein Katalog geladen';
+            setStyle('welcome-msg', 'block');
+            setStyle('clearAllBtn', 'none');
+            setStyle('filterControls', 'none');
+            const n = loadedCatalogs.length;
+            loadedCatalogs = [];
+            loadedCatalogSources = [];
+            loadedControlIds = new Set();
+            filterOptions = { class: new Set(), sec_level: new Set(), effort_level: new Set(), modalverb: new Set(), handlung: new Set(), tags: new Set(), threat: new Set() };
+            populateFilterUI();
+            updateCatalogPill();
+            L.warn(`${n} Katalog(e) entfernt — Ansicht zurückgesetzt.`);
+        }
+
+        // Zählt die geladenen Kataloge in der Topbar-Pille.
+        function updateCatalogPill() {
+            const pill = byId('catalogPill');
+            if (!pill) return;
+            pill.textContent = `${loadedCatalogs.length} Kataloge · ${loadedControlIds.size} Controls`;
+        }
+
+        function collectControlIds(node, ids) {
+            (node.controls || []).forEach(c => { if (c.id) ids.add(c.id); collectControlIds(c, ids); });
+            (node.groups || []).forEach(g => collectControlIds(g, ids));
+        }
+
+        function processCatalog(data, source) {
+            const container = document.getElementById('catalog-container');
+            const welcome = document.getElementById('welcome-msg');
+            if (welcome) welcome.style.display = 'none';
+            document.getElementById('clearAllBtn').style.display = 'block';
+
+            const catMeta = data.catalog.metadata;
+            const idsBefore = loadedControlIds.size;
+            const t0 = performance.now();
+            loadedCatalogs.push(catMeta);
+            if (source) loadedCatalogSources.push(source);
+            collectControlIds(data.catalog, loadedControlIds);
+            updateMetaDisplay();
+
+            const fragment = document.createDocumentFragment();
+            if (data.catalog.groups) data.catalog.groups.forEach(g => fragment.appendChild(createGroupElement(g)));
+            if (data.catalog.controls) data.catalog.controls.forEach(c => fragment.appendChild(createControlElement(c, false)));
+
+            container.appendChild(fragment);
+            populateFilterUI();
+            document.getElementById('filterControls').style.display = 'block';
+            updateCatalogPill();
+            L.ok(`Katalog "${catMeta.title}" v${catMeta.version} gerendert: ${loadedControlIds.size - idsBefore} neue Controls, ${(data.catalog.groups || []).length} Top-Level-Gruppen (${Math.round(performance.now() - t0)}ms)`);
+            L.debug(`Filter-Dimensionen: ${filterOptions.class.size} Klassen · ${filterOptions.sec_level.size} Niveaus · ${filterOptions.tags.size} Tags · ${filterOptions.threat.size} Gefährdungen`);
+            if (source) L.debug(`Quelle: ${source.url} · SHA-256 ${String(source.sha256).slice(0, 16)}…`);
+
+            // Wende aktive Filter (z.B. ein geladenes Profil) direkt auf den neuen Katalog an
+            applyFilters();
+        }
+
+        function updateMetaDisplay() {
+            const metaBox = document.getElementById('meta-container');
+            metaBox.innerHTML = loadedCatalogs.map(m => `
+                <div class="meta-item">
+                    <strong>${m.title}</strong><br><small>v${m.version}</small>
+                </div>
+            `).join('');
+        }
+
+        function createGroupElement(group) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'group-item filterable-container';
+            const header = document.createElement('div');
+            header.className = 'group-header';
+            header.innerHTML = `<span><small class="group-id">${group.id}</small> ${escapeHtml(group.title)}</span> <span class="toggle">▼</span>`;
+            const content = document.createElement('div');
+            content.className = 'group-content';
+            header.onclick = () => {
+                const isOpen = content.classList.toggle('open');
+                header.querySelector('.toggle').innerText = isOpen ? '▲' : '▼';
+            };
+            if (group.groups) group.groups.forEach(g => content.appendChild(createGroupElement(g)));
+            if (group.controls) group.controls.forEach(c => content.appendChild(createControlElement(c, false)));
+            wrapper.append(header, content);
+            return wrapper;
+        }
+
+        function createControlElement(control, isNested = false) {
+            const card = document.createElement('div');
+            card.className = isNested ? 'control-card nested-card filterable-item' : 'control-card filterable-item';
+            card.id = control.id;
+            if (control.id) controlParamsById[control.id] = control.params || null;
+
+            const cClass = control.class || "";
+            const sec = control.props?.find(p => p.name === 'sec_level')?.value || "";
+            const effort = control.props?.find(p => p.name === 'effort_level')?.value || "";
+            const uuid = control.props?.find(p => p.name === 'alt-identifier')?.value || "";
+
+            const tagsRaw = control.props?.find(p => p.name === 'tags')?.value || "";
+            const tagsArray = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(t => t.length > 0) : [];
+
+            // BSI-Schutzziel-Props (Werte 0/1/2); 0 = wirkt nicht -> kein Badge, 2 = im Zentrum -> hervorheben
+            const schutzziele = [
+                ['confidentiality', 'Vertraulichkeit'],
+                ['integrity', 'Integrität'],
+                ['availability', 'Verfügbarkeit'],
+                ['authenticity', 'Authentizität'],
+            ].map(([name, label]) => ({ label, value: control.props?.find(p => p.name === name)?.value || '0' }))
+             .filter(sz => sz.value !== '0');
+
+            // Elementare Gefährdungen (threats-Prop, kommaseparierte G 0.x-IDs aus basethreats.csv)
+            const threatsRaw = control.props?.find(p => p.name === 'threats')?.value || "";
+            const threatIds = threatsRaw ? threatsRaw.split(',').map(t => t.trim()).filter(t => t) : [];
+            threatIds.forEach(t => filterOptions.threat.add(t));
+
+            if(cClass) filterOptions.class.add(cClass);
+            if(sec) filterOptions.sec_level.add(sec);
+            if(effort) filterOptions.effort_level.add(effort);
+            tagsArray.forEach(t => filterOptions.tags.add(t));
+
+            const stmtPart = control.parts?.find(p => p.name === 'statement') || (control.parts ? control.parts[0] : null);
+            const guidance = control.parts?.find(p => p.name === 'guidance')?.prose || "";
+            const modal = stmtPart?.props?.find(p => p.name === 'modal_verb')?.value || "";
+			const action = stmtPart?.props?.find(p => p.name === 'action_word')?.value || "";
+			const result = stmtPart?.props?.find(p => p.name === 'result')?.value || "";
+			const precision = stmtPart?.props?.find(p => p.name === 'result_specification' || p.name === 'precision')?.value || "";
+			const targetObj = stmtPart?.props?.find(p => p.name === 'target_object_categories')?.value || "";
+
+            if(modal) filterOptions.modalverb.add(modal);
+            if(action) filterOptions.handlung.add(action);
+
+            card.dataset.searchText = `${control.id} ${uuid} ${control.title} ${stmtPart?.prose || ""} ${modal} ${action} ${targetObj} ${tagsArray.join(' ')} ${threatIds.map(t => `${t} ${G0_THREATS[t] || ''}`).join(' ')}`.toLowerCase();
+            card.dataset.class = cClass;
+            card.dataset.sec = sec;
+            card.dataset.effort = effort;
+            card.dataset.modal = modal;
+            card.dataset.handlung = action;
+            card.dataset.tags = JSON.stringify(tagsArray);
+            card.dataset.threats = JSON.stringify(threatIds);
+
+            card.innerHTML = `
+                <div class="id-row"><span class="badge-id">${control.id}</span><span class="badge-class">${escapeHtml(cClass)}</span></div>
+                <h3 class="control-title">${escapeHtml(control.title)}</h3>
+                <div class="tag-list">
+                    ${sec ? `<span class="tag tag-sec">Niveau: ${sec}</span>` : ''}
+                    ${effort ? `<span class="tag tag-effort">Aufwand: ${effort}</span>` : ''}
+                    ${uuid ? `<span class="tag tag-uuid">UUID: ${uuid}</span>` : ''}
+                    ${modal ? `<span class="tag tag-modal">${escapeHtml(modal)}</span>` : ''}
+                    ${action ? `<span class="tag tag-action">${escapeHtml(action)}</span>` : ''}
+                    ${targetObj ? `<span class="tag tag-target">◈ ${escapeHtml(targetObj)}</span>` : ''}
+                    ${schutzziele.map(sz => `<span class="tag ${sz.value === '2' ? 'tag-sz-strong' : 'tag-sz'}" title="${sz.label}: ${sz.value === '2' ? 'steht im Zentrum der Anforderung' : 'Anforderung wirkt auf dieses Schutzziel'}">⬡ ${sz.label}${sz.value === '2' ? ' ●●' : ''}</span>`).join('')}
+                    ${threatIds.map(t => `<span class="tag tag-threat" title="${escapeHtml(G0_THREATS[t] || 'Elementare Gefährdung')}">◬ ${escapeHtml(t)}</span>`).join('')}
+                    ${tagsArray.map(t => `<span class="tag tag-tags">Tag: ${escapeHtml(t)}</span>`).join('')}
+                </div>
+                <div class="statement-box">
+                    <div class="statement-prose">${convertOscal(stmtPart?.prose, control.params)}</div>
+                    ${(result || precision) ? `
+                    <div class="breakdown-grid">
+                        ${result ? `<div class="bd-item"><span class="bd-label">Ergebnis</span><span class="bd-value">${result}</span></div>` : ''}
+                        ${precision ? `<div class="bd-item"><span class="bd-label">Präzisierung</span><span class="bd-value">${precision}</span></div>` : ''}
+                    </div>
+                    ` : ''}
+                </div>
+                <div class="ai-actions">
+                    <button class="ai-btn" onclick="triggerAI('${control.id}', 'implementation')">▶ Umsetzung</button>
+                    <button class="ai-btn" onclick="triggerAI('${control.id}', 'risk')">▶ Risiko</button>
+                    <div class="ai-loader"></div>
+                </div>
+                <div class="ed23-actions">
+                    <button class="ed23-btn" onclick="showED23('${control.id}', this)">▣ Zeige BSI ED23 Anforderungen</button>
+                </div>
+                <div class="ai-response-area"><div class="ai-response-content"></div></div>
+                ${guidance ? `<div class="guidance-box">${convertOscal(guidance, control.params)}</div>` : ''}
+                ${renderMaturity(control.id, control.params)}
+                <div class="control-footer">
+                    <div class="links-area">
+                        ${control.links ? control.links.filter(l => l.rel === 'related').map(l => {
+                            const tid = l.href.startsWith('#') ? l.href.substring(1) : l.href;
+                            return `<a href="${l.href}" class="link-item" onclick="scrollToControl('${tid}', event)">↗ ${tid}</a>`;
+                        }).join('') : ''}
+                    </div>
+                    <button class="btn-json" onclick="openModalById('${control.id}')">JSON Details</button>
+                </div>
+            `;
+
+            card.dataset.jsonData = JSON.stringify(control);
+
+            if (control.controls && control.controls.length > 0) {
+                card.classList.add('filterable-container');
+
+                const nestedContainer = document.createElement('div');
+                nestedContainer.className = 'control-nested-container';
+                nestedContainer.innerHTML = '<div class="nested-label">◇ Unter-Maßnahmen</div>';
+
+                control.controls.forEach(nestedCtrl => {
+                    nestedContainer.appendChild(createControlElement(nestedCtrl, true));
+                });
+
+                card.appendChild(nestedContainer);
+            }
+
+            return card;
+        }
+
+        function applyFilters() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const fClass = document.getElementById('filterClass').value;
+            const fSec = document.getElementById('filterSec').value;
+            const fEff = document.getElementById('filterEffort').value;
+            const fMod = document.getElementById('filterModal').value;
+            const fHandlung = document.getElementById('filterHandlung').value;
+            const fTag = document.getElementById('filterTag').value;
+            const fThreat = document.getElementById('filterThreat').value;
+
+            // Prüfe, ob überhaupt ein Filter (inkl. Profil) aktiv ist
+            const anyFilterActive = (query !== "" || fClass !== "all" || fSec !== "all" || fEff !== "all" || fMod !== "all" || fHandlung !== "all" || fTag !== "all" || fThreat !== "all" || activeProfileIds !== null);
+
+            document.querySelectorAll('.filterable-item, .filterable-container').forEach(el => {
+                el.classList.add('hidden');
+                if (el.classList.contains('control-card')) {
+                    el.classList.add('child-match-only');
+                }
+            });
+
+            if (!anyFilterActive) {
+                collapseAll();
+                document.querySelectorAll('.filterable-item, .filterable-container').forEach(el => {
+                    el.classList.remove('hidden');
+                    el.classList.remove('child-match-only');
+                });
+                return;
+            }
+
+            document.querySelectorAll('.control-card').forEach(card => {
+                const cardTags = card.dataset.tags ? JSON.parse(card.dataset.tags) : [];
+                const cardThreats = card.dataset.threats ? JSON.parse(card.dataset.threats) : [];
+
+                // Beinhaltet jetzt die Prüfung gegen das Set activeProfileIds
+                const match = (!query || card.dataset.searchText.includes(query)) &&
+                              (fClass === 'all' || card.dataset.class === fClass) &&
+                              (fSec === 'all' || card.dataset.sec === fSec) &&
+                              (fEff === 'all' || card.dataset.effort === fEff) &&
+                              (fMod === 'all' || card.dataset.modal === fMod) &&
+                              (fHandlung === 'all' || card.dataset.handlung === fHandlung) &&
+                              (fTag === 'all' || cardTags.includes(fTag)) &&
+                              (fThreat === 'all' || cardThreats.includes(fThreat)) &&
+                              (!activeProfileIds || activeProfileIds.has(card.id)); // NEU: Profil-Filter
+
+                if (match) {
+                    card.classList.remove('hidden');
+                    card.classList.remove('child-match-only');
+                    revealParents(card);
+                }
+            });
+        }
+
+        function revealParents(el) {
+            let p = el.parentElement;
+            while (p && p.id !== 'catalog-container') {
+                if (p.classList.contains('filterable-container')) {
+                    p.classList.remove('hidden');
+                }
+                if (p.classList.contains('group-content')) {
+                    p.classList.add('open');
+                    p.style.display = '';
+                    const header = p.previousElementSibling;
+                    if(header && header.classList.contains('group-header')) header.querySelector('.toggle').innerText = '▲';
+                }
+                p = p.parentElement;
+            }
+        }
+
+        function collapseAll() {
+            document.querySelectorAll('.group-content').forEach(p => {
+                p.classList.remove('open');
+                p.style.display = '';
+                const header = p.previousElementSibling;
+                if(header && header.classList.contains('group-header')) header.querySelector('.toggle').innerText = '▼';
+            });
+        }
+
+        function populateFilterUI() {
+            fillSelect('filterClass', filterOptions.class, "Klasse");
+            fillSelect('filterSec', filterOptions.sec_level, "Niveau");
+            fillSelect('filterEffort', filterOptions.effort_level, "Aufwand");
+            fillSelect('filterModal', filterOptions.modalverb, "Modalität");
+            fillSelect('filterHandlung', filterOptions.handlung, "Handlung");
+            fillSelect('filterTag', filterOptions.tags, "Tag");
+            // Numerisch nach G 0.x sortieren, Anzeige mit Gefährdungsnamen
+            fillSelect('filterThreat', filterOptions.threat, "Gefährdung", {
+                sortFn: (a, b) => (parseFloat(a.replace('G 0.', '')) || 0) - (parseFloat(b.replace('G 0.', '')) || 0),
+                displayFn: t => `${t} — ${G0_THREATS[t] || 'Elementare Gefährdung'}`,
+            });
+        }
+
+        function fillSelect(id, set, label, opts = {}) {
+            const sel = document.getElementById(id);
+            if (!sel) return;
+            const currentVal = sel.value;
+            Array.from(set).sort(opts.sortFn).forEach(v => {
+                if (!v) return;
+                const o = document.createElement('option');
+                o.value = v; o.textContent = opts.displayFn ? opts.displayFn(v) : v; sel.appendChild(o);
+            });
+            if (set.has(currentVal)) sel.value = currentVal;
+            else sel.value = 'all';
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            ['filterClass', 'filterSec', 'filterEffort', 'filterModal', 'filterHandlung', 'filterTag', 'filterThreat'].forEach(id => document.getElementById(id).value = 'all');
+
+            document.getElementById('profileSelect').value = '';
+            document.getElementById('profileInfo').textContent = '';
+            activeProfileIds = null;
+            activeProfileMaturity = null;
+
+            L.info("Filter und Profil-Auswahl zurückgesetzt.");
+            applyFilters();
+        }
+
+        function convertOscal(text, params) {
+            if (!text || !params) return text || "";
+            return text.replace(/\{\{\s*insert:\s*param,\s*([a-zA-Z0-9_.-]+)\s*\}\}/g, (m, id) => {
+                const p = params.find(x => x.id === id);
+                return p?.values ? `<u>${p.values[0]}</u>` : (p?.label ? `[${p.label}]` : id);
+            });
+        }
+        function escapeHtml(text) { return text ? text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;") : ""; }
+
+        // Rendert die Reifegrade (ED2023) eines Controls, sofern ein angereichertes
+        // Profil geladen ist. Quelle: activeProfileMaturity (siehe loadProfile).
+        function renderMaturity(cid, params) {
+            if (!activeProfileMaturity) return '';
+            const levels = activeProfileMaturity.get(cid);
+            if (!levels || !levels.length) return '';
+            const order = { m1: 1, m2: 2, m3: 3, m4: 4, m5: 5 };
+            const sorted = [...levels].sort((a, b) => (order[a.level] || 99) - (order[b.level] || 99));
+            const rows = sorted.map(l => `
+                <div class="maturity-level">
+                    <div class="maturity-level-head"><span class="maturity-badge">${escapeHtml(l.level || '?')}</span></div>
+                    <div class="maturity-statement">${convertOscal(l.statement, params)}</div>
+                    ${l.guidance ? `<div class="maturity-sub"><span class="maturity-sub-label">Hinweis</span>${convertOscal(l.guidance, params)}</div>` : ''}
+                    ${l.assessment ? `<div class="maturity-sub"><span class="maturity-sub-label">Prüfung</span>${convertOscal(l.assessment, params)}</div>` : ''}
+                </div>`).join('');
+            return `<details class="maturity-box"><summary>▣ Reifegrade (ED2023) · ${sorted.length}</summary>${rows}</details>`;
+        }
+
+        // Aktualisiert die Reifegrad-Anzeige auf bereits gerenderten Control-Karten,
+        // ohne den gesamten Katalog neu aufzubauen. Wird bei Profilwechsel aufgerufen.
+        function refreshMaturityDisplay() {
+            document.querySelectorAll('.control-card').forEach(card => {
+                const cid = card.id;
+                card.querySelector(':scope > .maturity-box')?.remove();
+                if (!cid) return;
+                const html = renderMaturity(cid, controlParamsById[cid]);
+                if (!html) return;
+                const footer = card.querySelector(':scope > .control-footer');
+                const tmp = document.createElement('template');
+                tmp.innerHTML = html.trim();
+                const box = tmp.content.firstChild;
+                if (footer) card.insertBefore(box, footer); else card.appendChild(box);
+            });
+        }
+        function scrollToControl(id, event) {
+            if(event) event.preventDefault();
+            const target = document.getElementById(id);
+            if(!target) return;
+            target.classList.remove('hidden');
+            revealParents(target);
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            target.classList.add('highlight-target');
+            setTimeout(() => target.classList.remove('highlight-target'), 2000);
+        }
+        window.openModalById = (id) => {
+            const el = document.getElementById(id);
+            const data = JSON.parse(el.dataset.jsonData);
+            document.getElementById('modalTitle').textContent = `JSON: ${data.id}`;
+            document.getElementById('modalBody').textContent = JSON.stringify(data, null, 2);
+            document.getElementById('jsonModal').style.display = 'block';
+        };
+		function closeModal() { document.getElementById('jsonModal').style.display = 'none'; }
+
+        function exportAiCache() {
+            if (Object.keys(aiCache).length === 0) {
+                alert("Der KI-Cache ist noch leer. Generiere zuerst ein paar Antworten.");
+                return;
+            }
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(aiCache, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "gspp_ai_cache_export.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            L.ok(`KI-Cache exportiert: ${Object.keys(aiCache).length} Controls.`);
+        }
+        function importAiCache(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+
+                    if (typeof importedData !== 'object' || importedData === null) {
+                        throw new Error("Ungültiges JSON-Format.");
+                    }
+
+                    aiCache = { ...aiCache, ...importedData };
+                    localStorage.setItem('gspp_ai_cache', JSON.stringify(aiCache));
+
+                    L.ok(`KI-Cache importiert: ${Object.keys(importedData).length} Controls übernommen (Cache jetzt ${Object.keys(aiCache).length}).`);
+                    alert("KI-Antworten erfolgreich importiert!");
+                    event.target.value = '';
+                } catch (error) {
+                    L.err(`KI-Cache-Import fehlgeschlagen: ${truncateError(error.message)}`);
+                    alert("Fehler beim Importieren: " + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Build-Version aus einer Quelle (BUILD_VERSION) in Titel und Topbar spiegeln.
+            document.title = `GS++ Explorer ${BUILD_VERSION} · Multi-Katalog & Profile`;
+            const versionBadge = document.getElementById('buildVersion');
+            if (versionBadge) versionBadge.textContent = BUILD_VERSION;
+
+            // Shell-Infrastruktur: Log-Konsole, Splitter, Rail-Navigation.
+            initLogConsole();
+            initSplitter();
+            initRailNav();
+            updateCatalogPill();
+            L.info(`GS++ Explorer ${BUILD_VERSION} gestartet.`);
+            L.debug(`Protokoll: ${location.protocol} — bei file:// kann die API-Anfrage (Gemini wie OpenRouter) an CORS scheitern (python -m http.server nutzen).`);
+
+            // Keys je Backend getrennt wiederherstellen.
+            const savedKey = localStorage.getItem(GEMINI_KEY_STORAGE);
+            if (savedKey) document.getElementById('apiKeyInput').value = savedKey;
+            const savedOrKey = localStorage.getItem(OR_KEY_STORAGE);
+            if (savedOrKey) document.getElementById('orKeyInput').value = savedOrKey;
+            if (!savedKey && !savedOrKey) L.debug("Kein API-Key gespeichert — KI-Aktionen bleiben ausgeblendet.");
+
+            initModelSelect();
+            initOpenRouterModelInputs();
+            initBackendSelect();   // setzt state.backend, tauscht die Config-Felder, ruft toggleAiButtons()
+            initPrompts();
+            // Ab hier gilt die zentrale Konfiguration aus config.html.
+            applyGppConfig(false);
+            window.addEventListener('storage', e => { if (e.key && e.key.startsWith('gpp:cfg:')) applyGppConfig(false); });
+            L.debug(`Aktives Backend: ${backendLabel()} · Modell: ${currentBackendModel()}`);
+
+            // KI-Cache aus dem localStorage zurückholen — sonst gehen die
+            // bereits generierten Antworten bei jedem Reload verloren.
+            try {
+                const cached = JSON.parse(localStorage.getItem('gspp_ai_cache') || '{}');
+                if (cached && typeof cached === 'object' && !Array.isArray(cached)) aiCache = cached;
+                L.debug(`KI-Cache aus localStorage: ${Object.keys(aiCache).length} Controls.`);
+            } catch (e) {
+                console.warn("KI-Cache im localStorage ist beschädigt und wird ignoriert:", e);
+                L.warn("KI-Cache im localStorage ist beschädigt und wird ignoriert.");
+            }
+
+            // Lade die Liste der verfügbaren Profile initial
+            fetchProfilesList();
+
+            // Lade das vorberechnete BSI ED2023-Anforderungen-Mapping
+            loadED23Map();
+        });
+    </script>
+</body>
+</html>

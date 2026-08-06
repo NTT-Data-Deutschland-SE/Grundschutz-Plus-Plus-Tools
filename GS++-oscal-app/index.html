@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grundschutz++ OSCAL Tools · v1.3</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    select,option{background-color:#1b1b23;color:#e8e8ef}
+    select{color-scheme:dark}
+    :root {
+      --bg-deep:      oklch(0.13 0.02 280);
+      --bg-elev-1:    oklch(0.95 0.005 280 / 0.04);
+      --bg-elev-2:    oklch(0.95 0.005 280 / 0.06);
+      --bg-elev-3:    oklch(0.95 0.005 280 / 0.08);
+      --border-1:     oklch(0.95 0.005 280 / 0.06);
+      --border-2:     oklch(0.95 0.005 280 / 0.10);
+      --text-primary: oklch(0.95 0.005 280);
+      --text-secondary: oklch(0.75 0.02 280);
+      --text-quiet:   oklch(0.55 0.02 280);
+      --accent:       oklch(0.7 0.18 300);
+      --accent-soft:  oklch(0.7 0.18 300 / 0.15);
+      --accent-glow:  oklch(0.7 0.18 300 / 0.4);
+      --green:        oklch(0.75 0.18 145);
+      --mono: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      display: flex; flex-direction: column; height: 100vh;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-deep); color: var(--text-primary);
+    }
+    ::selection { background: oklch(0.7 0.18 300 / 0.35); color: var(--text-primary); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    /* Aurora atmosphere */
+    .aurora { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
+    .aurora-1 {
+      width: 600px; height: 600px; top: -200px; left: -100px;
+      background: radial-gradient(circle, oklch(0.4 0.18 300 / .5), transparent 70%);
+      filter: blur(60px);
+    }
+    .aurora-2 {
+      width: 700px; height: 700px; bottom: -300px; right: -200px;
+      background: radial-gradient(circle, oklch(0.4 0.16 240 / .4), transparent 70%);
+      filter: blur(80px);
+    }
+    .noise {
+      position: fixed; inset: 0; opacity: 0.03; pointer-events: none; z-index: 0;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="n"><feTurbulence baseFrequency="0.9"/></filter><rect width="100" height="100" filter="url(%23n)"/></svg>');
+    }
+
+    header, nav, .frame-wrap { position: relative; z-index: 1; }
+
+    header {
+      display: flex; align-items: center; gap: 12px;
+      height: 62px; padding: 0 20px;
+      background: var(--bg-elev-1);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-1);
+    }
+    header .brand { font-weight: 600; font-size: 0.95rem; white-space: nowrap; }
+    header .brand span { color: var(--accent); }
+    header .spacer { flex: 1; }
+    .build-pill {
+      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em;
+      color: var(--text-quiet); border: 1px solid var(--border-1);
+      border-radius: 6px; padding: 2px 7px; white-space: nowrap;
+    }
+    header .btn {
+      color: var(--text-secondary); text-decoration: none; cursor: pointer;
+      background: transparent;
+      font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em;
+      padding: 6px 11px; border: 1px solid var(--border-2); border-radius: 8px;
+      white-space: nowrap; transition: all .15s ease;
+    }
+    header .btn:hover {
+      color: var(--text-primary); border-color: var(--accent);
+      background: var(--bg-elev-2);
+    }
+    /* Aktiver Zustand: die Fläche überlagert die App — das muss man am Knopf sehen */
+    header .btn.on {
+      color: var(--text-primary); border-color: var(--accent);
+      background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent-glow) inset;
+    }
+
+    nav {
+      display: flex; gap: 4px; padding: 8px 14px;
+      background: var(--bg-elev-1);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-1);
+      overflow-x: auto; scrollbar-width: thin;
+    }
+    nav button {
+      flex: 0 0 auto; cursor: pointer;
+      background: transparent; color: var(--text-secondary);
+      border: 1px solid transparent; border-radius: 8px;
+      padding: 7px 13px; font-size: 0.82rem; font-weight: 500;
+      display: flex; align-items: center; gap: 8px; white-space: nowrap;
+      transition: all .15s ease;
+    }
+    nav button:hover { color: var(--text-primary); background: var(--bg-elev-2); }
+    nav button.active {
+      color: var(--text-primary); background: var(--accent-soft);
+      border-color: var(--border-2);
+    }
+    nav button.active .ico { color: var(--accent); }
+    nav button .ico { font-size: 0.95rem; color: var(--text-quiet); transition: color .15s ease; }
+    /* Artefakt-Zähler je Stufe: zeigt auf einen Blick, wo schon etwas liegt */
+    nav button .cnt {
+      font-family: var(--mono); font-size: 0.58rem; line-height: 1;
+      padding: 3px 5px; border-radius: 5px; min-width: 16px; text-align: center;
+      background: var(--green); color: oklch(0.15 0.02 280); font-weight: 700;
+    }
+    nav button .cnt.zero { display: none; }
+
+    /* ---- Artefakt-Panel ---- */
+    .sheet {
+      position: absolute; inset: 0; z-index: 3; overflow: auto;
+      background: var(--bg-deep); padding: 22px; display: none;
+    }
+    .sheet.open { display: block; }
+    .sheet h2 { margin: 0 0 4px; font-size: 1rem; }
+    .sheet .sub { margin: 0 0 18px; font-size: .78rem; color: var(--text-quiet); line-height: 1.55; max-width: 70ch; }
+    .stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(122px, 1fr)); gap: 10px; margin-bottom: 20px; }
+    .stage-card {
+      border: 1px solid var(--border-1); border-radius: 10px; padding: 11px 12px;
+      background: var(--bg-elev-1); display: flex; flex-direction: column; gap: 3px;
+    }
+    .stage-card.has { border-color: var(--green); }
+    .stage-card .ic { font-size: 1.1rem; color: var(--text-quiet); }
+    .stage-card.has .ic { color: var(--green); }
+    .stage-card .lb { font-size: .72rem; color: var(--text-secondary); }
+    .stage-card .nb { font-family: var(--mono); font-size: 1.25rem; font-weight: 600; }
+    .art { border: 1px solid var(--border-1); border-radius: 10px; padding: 11px 13px; margin-bottom: 8px; }
+    .art .hd { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
+    .art .ti { font-weight: 600; font-size: .86rem; }
+    .art .meta { font-family: var(--mono); font-size: .64rem; color: var(--text-quiet); }
+    .art .acts { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .tag {
+      font-family: var(--mono); font-size: .58rem; letter-spacing: .07em; text-transform: uppercase;
+      padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-2); color: var(--text-quiet);
+    }
+    .btn-s {
+      background: transparent; color: var(--text-secondary); border: 1px solid var(--border-2);
+      border-radius: 7px; padding: 4px 9px; font-size: .7rem; cursor: pointer; font-family: var(--mono);
+    }
+    .btn-s:hover { color: var(--text-primary); border-color: var(--accent); }
+    .btn-s.danger:hover { color: var(--red, oklch(0.65 0.2 25)); border-color: oklch(0.65 0.2 25); }
+    .empty-art {
+      padding: 26px; text-align: center; color: var(--text-quiet); font-size: .82rem;
+      border: 1px dashed var(--border-2); border-radius: 10px;
+    }
+
+    .frame-wrap { flex: 1; position: relative; background: var(--bg-deep); }
+    iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+    #loading {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: var(--bg-deep); color: var(--text-quiet);
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em;
+      text-transform: uppercase; gap: 14px;
+      transition: opacity .2s; pointer-events: none;
+    }
+    #loading.hidden { opacity: 0; }
+    /* 1px hairline progress instead of a spinner */
+    .progress-track {
+      width: 180px; height: 1px; background: var(--border-2); overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; width: 30%; background: var(--accent);
+      animation: slide 1.1s ease-in-out infinite;
+    }
+    @keyframes slide {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(430%); }
+    }
+
+    /* ---- Doku-Panel (Hilfe / Handbuch) ---- */
+    #doc-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+    #doc-nav:empty { display: none; }
+    #doc-nav button {
+      background: transparent; color: var(--text-secondary); cursor: pointer;
+      border: 1px solid var(--border-2); border-radius: 7px;
+      padding: 4px 10px; font-size: .72rem; font-family: var(--mono);
+    }
+    #doc-nav button:hover { color: var(--text-primary); border-color: var(--accent); }
+    #doc-nav button.active { color: var(--text-primary); background: var(--accent-soft); border-color: var(--accent); }
+    .md { max-width: 86ch; line-height: 1.65; font-size: .88rem; color: var(--text-secondary); padding-bottom: 40px; }
+    .md h1, .md h2, .md h3, .md h4 { color: var(--text-primary); line-height: 1.3; margin: 1.6em 0 .5em; }
+    .md h1 { font-size: 1.3rem; } .md h2 { font-size: 1.08rem; } .md h3 { font-size: .95rem; } .md h4 { font-size: .88rem; }
+    .md h1:first-child { margin-top: 0; }
+    .md a { color: var(--accent); }
+    .md code { font-family: var(--mono); font-size: .82em; background: var(--bg-elev-2); border: 1px solid var(--border-1); border-radius: 4px; padding: 1px 4px; }
+    .md pre { background: var(--bg-elev-1); border: 1px solid var(--border-1); border-radius: 8px; padding: 12px 14px; overflow-x: auto; }
+    .md pre code { background: none; border: 0; padding: 0; font-size: .78rem; }
+    .md blockquote { margin: 1em 0; padding: 6px 14px; border-left: 2px solid var(--accent); background: var(--bg-elev-1); border-radius: 0 8px 8px 0; }
+    .md table { border-collapse: collapse; margin: 1em 0; font-size: .8rem; display: block; overflow-x: auto; }
+    .md th, .md td { border: 1px solid var(--border-2); padding: 5px 10px; text-align: left; vertical-align: top; }
+    .md th { color: var(--text-primary); background: var(--bg-elev-2); }
+    .md ul, .md ol { padding-left: 1.4em; }
+    .md li { margin: .25em 0; }
+    .md hr { border: 0; border-top: 1px solid var(--border-2); margin: 1.6em 0; }
+    .doc-err { padding: 22px; border: 1px dashed var(--border-2); border-radius: 10px; color: var(--text-quiet); font-size: .82rem; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="aurora aurora-1"></div>
+  <div class="aurora aurora-2"></div>
+  <div class="noise"></div>
+
+  <header>
+    <div class="brand">◈ Grundschutz<span>++</span> OSCAL Tools</div>
+    <span class="build-pill" id="build-pill"></span>
+    <div class="spacer"></div>
+    <button class="btn" id="btn-artefacts" title="Alle erzeugten Artefakte ansehen und exportieren">◱ ARTEFAKTE <span id="art-total"></span></button>
+    <button class="btn" id="btn-help" title="Anleitung der Sammlung (readme), formatiert">? HILFE</button>
+    <button class="btn" id="btn-handbuch" title="Grundschutz++ Handbuch mit Kapitelnavigation">▤ HANDBUCH</button>
+    <a class="btn" href="config.html" title="Zentrale Einstellungen: KI-Zugang, Prompts, Quellen-Pins">⚙ EINSTELLUNGEN</a>
+    <a class="btn" id="open-standalone" href="#" target="_blank" rel="noopener" title="Aktuelle App in neuem Tab öffnen">↗ STANDALONE</a>
+    <a class="btn" href="../one-page-apps/readme.md" target="_blank" rel="noopener" title="Einzelwerkzeuge außerhalb des Arbeitsablaufs: SSP-Generator Edition 2023, YAML→OSCAL">↗ EINZELWERKZEUGE</a>
+    <a class="btn" href="https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools" target="_blank" rel="noopener">GitHub</a>
+  </header>
+
+  <nav id="tabs" aria-label="Apps"></nav>
+
+  <div class="frame-wrap">
+    <div id="loading">
+      <span>Lade App…</span>
+      <span class="progress-track"><span class="progress-fill"></span></span>
+    </div>
+    <iframe id="app-frame" title="App" src="about:blank"></iframe>
+
+    <section class="sheet" id="art-sheet" aria-label="Artefakte">
+      <h2 id="art-h2">Artefakte</h2>
+      <p class="sub">Ein <b>Set</b> ist ein zusammengehöriger Arbeitsstand — Profil, SSP, Prüfung, POA&M. Alle Werkzeuge
+        lesen und schreiben immer das aktive Set (IndexedDB <code>gpp-artefacts</code>, im Browser dieses Rechners,
+        nicht auf einem Server). Hier wechselst du Sets, lädst sie als ZIP herunter oder ein exportiertes Set wieder hoch.</p>
+      <div class="btn-row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
+        <label for="set-select" style="font-size:.74rem;color:var(--text-quiet)">Aktives Set</label>
+        <select id="set-select" style="background:var(--bg-elev-2);color:var(--text-primary);border:1px solid var(--border-2);border-radius:8px;padding:6px 10px;font-size:.78rem"></select>
+        <button class="btn" id="btn-set-new">+ Neues Set</button>
+        <button class="btn" id="btn-set-upload" title="JSON-Dateien oder ein exportiertes Set-ZIP in ein Set laden">⤒ Hochladen</button>
+        <input type="file" id="set-upload-input" accept=".json,.zip" multiple hidden>
+        <span style="flex:1"></span>
+        <button class="btn" id="btn-set-delete">Set löschen</button>
+      </div>
+      <div class="stage-grid" id="stage-grid"></div>
+      <div class="btn-row" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+        <button class="btn" id="btn-export-files">⤓ Einzeldateien herunterladen</button>
+        <button class="btn" id="btn-export-zip">⤓ Set als ZIP</button>
+        <button class="btn" id="btn-refresh-art">⟳ Aktualisieren</button>
+        <span style="flex:1"></span>
+        <button class="btn" id="btn-clear-art">Set leeren</button>
+      </div>
+      <div id="export-note" class="sub" style="margin-bottom:14px"></div>
+      <div id="art-list"></div>
+    </section>
+
+    <section class="sheet" id="doc-sheet" aria-label="Dokumentation">
+      <h2 id="doc-title">Hilfe</h2>
+      <p class="sub" id="doc-sub"></p>
+      <div id="doc-nav"></div>
+      <article id="doc-body" class="md"></article>
+    </section>
+  </div>
+
+  <script src="gpp-core.js?v=3.3"></script>
+  <script>
+    // Workflow order: Explorer → Katalog/Profil-Erstellung → Modellierung → Umsetzung → Prüfung → Abarbeiten → Validierung.
+    // `stage` und `tool` verbinden die Kachel mit den Artefakten, die das Tool ablegt.
+    // `kinds` sind die Dokumentsorten, an denen das Werkzeug arbeitet — danach wird
+    // der Zähler gebildet, damit der SSP-Editor aufleuchtet, sobald ein SSP im Set
+    // liegt, gleich welches Werkzeug ihn erzeugt hat.
+    const APPS = [
+      { id: "explorer",  icon: "⌕", label: "Explorer",         file: "GSpp-Viewer.html",               stage: "explore",   tool: "GSpp-Viewer",              kinds: ["catalog"],            desc: "BSI Grundschutz++ Katalog-Explorer" },
+      { id: "bsi2gpp",   icon: "◈", label: "BSI → G++ Profil",  file: "Baustein_2_Profile.html",        stage: "author",    tool: "Baustein_2_Profile",       kinds: ["profile"],            desc: "BSI-Baustein (PDF) → OSCAL G++ Profil" },
+      { id: "sspgen",    icon: "▣", label: "SSP-Generator",     file: "ssp_generator.html",             stage: "model",     tool: "ssp_generator",            kinds: ["ssp"],                desc: "OSCAL Blaupausen & Risk Generator (G++)" },
+      { id: "sspedit",   icon: "✎", label: "SSP-Editor",        file: "ssp_ausfuellen.html",            stage: "implement", tool: "ssp_ausfuellen",           kinds: ["ssp"],                desc: "OSCAL SSP ausfüllen / Workspace" },
+      { id: "pruefung",  icon: "◉", label: "Prüfung (AP/AR)",   file: "pruefung_ap_ar.html",            stage: "assess",    tool: "pruefung_ap_ar",           kinds: ["ap", "ar"],           desc: "Assessment Plan & Results Generator" },
+      { id: "poam",      icon: "◬", label: "POA&M",             file: "abarbeiten_POAM_generator.html", stage: "remediate", tool: "abarbeiten_POAM_generator", kinds: ["poam"],               desc: "POA&M Generator – Feststellungen abarbeiten" },
+      { id: "validator", icon: "◐", label: "OSCAL-Validator",   file: "oscal-schema-validator.html",    stage: "validate",  tool: "oscal-schema-validator",   kinds: ["report"],             desc: "OSCAL-Artefakte gegen Schema & Regeln prüfen" },
+    ];
+    const CORE_OK = typeof gppArtefacts !== "undefined";
+
+    const APP_VERSION = "1.3";
+    document.getElementById("build-pill").textContent = `build ${APP_VERSION}`;
+
+    const nav = document.getElementById("tabs");
+    const frame = document.getElementById("app-frame");
+    const loading = document.getElementById("loading");
+    const standalone = document.getElementById("open-standalone");
+
+    APPS.forEach(app => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.dataset.id = app.id;
+      b.title = app.desc;
+      b.innerHTML = `<span class="ico">${app.icon}</span>${app.label}<span class="cnt zero" data-cnt="${app.id}">0</span>`;
+      b.addEventListener("click", () => select(app.id, true));
+      nav.appendChild(b);
+    });
+
+    function select(id, push) {
+      const app = APPS.find(a => a.id === id) || APPS[0];
+      [...nav.children].forEach(b => {
+        const on = b.dataset.id === app.id;
+        b.classList.toggle("active", on);
+        if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+      });
+      loading.classList.remove("hidden");
+      frame.src = app.file;
+      frame.title = app.desc;
+      standalone.href = app.file;
+      document.title = `${app.label} · Grundschutz++ OSCAL Tools · v${APP_VERSION}`;
+      if (push && location.hash.slice(1) !== app.id) {
+        history.replaceState(null, "", "#" + app.id);
+      }
+    }
+
+    frame.addEventListener("load", () => {
+      if (frame.src !== "about:blank") loading.classList.add("hidden");
+    });
+
+    window.addEventListener("hashchange", () => select(location.hash.slice(1) || APPS[0].id, false));
+    select(location.hash.slice(1) || APPS[0].id, false);
+
+    /* ================= Artefakte ================= */
+    const sheet = document.getElementById("art-sheet");
+    const STAGE_LABELS = {
+      explore: "Recherche", author: "Katalog & Profil", model: "Modellierung",
+      implement: "Umsetzung", assess: "Prüfung", remediate: "Abarbeitung", validate: "Validierung",
+    };
+    const STAGE_ICONS = {
+      explore: "⌕", author: "◈", model: "▣", implement: "✎", assess: "◉", remediate: "◬", validate: "◐",
+    };
+    const fmtBytes = n => n > 1e6 ? (n / 1e6).toFixed(1) + " MB" : n > 1e3 ? (n / 1e3).toFixed(0) + " kB" : n + " B";
+    /* Umlaute im DATEINAMEN transliterieren: der UTF-8-Flag im ZIP ist gesetzt,
+       aber ältere Entpacker ignorieren ihn und zeigen Buchstabensalat. */
+    const safeName = s => String(s || "artefakt")
+      .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue")
+      .replace(/Ä/g, "Ae").replace(/Ö/g, "Oe").replace(/Ü/g, "Ue").replace(/ß/g, "ss")
+      .replace(/[^A-Za-z0-9._-]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 120) || "artefakt";
+
+    let artefacts = [];
+    async function refreshArtefacts() {
+      if (!CORE_OK) return;
+      try { artefacts = await gppArtefacts.list(); }
+      catch (e) { artefacts = []; console.warn("Artefaktspeicher nicht lesbar", e); }
+      document.getElementById("art-h2").textContent = `Artefakte · Set „${gppArtefacts.activeSet()}"`;
+      await renderSets();
+      // Zähler an den Reitern — nach Dokumentsorte, nicht nach erzeugendem Werkzeug
+      const byKind = {};
+      artefacts.forEach(a => { byKind[a.kind] = (byKind[a.kind] || 0) + 1; });
+      document.querySelectorAll("[data-cnt]").forEach(el => {
+        const app = APPS.find(a => a.id === el.dataset.cnt);
+        const n = (app ? app.kinds : []).reduce((s, k) => s + (byKind[k] || 0), 0);
+        el.textContent = n;
+        el.classList.toggle("zero", n === 0);
+      });
+      document.getElementById("art-total").textContent = artefacts.length ? " " + artefacts.length : "";
+      renderSheet();
+    }
+    function renderSheet() {
+      const grid = document.getElementById("stage-grid");
+      const byStage = {};
+      artefacts.forEach(a => { byStage[a.stage] = (byStage[a.stage] || 0) + 1; });
+      grid.innerHTML = Object.keys(STAGE_LABELS).map(st => {
+        const n = byStage[st] || 0;
+        return `<div class="stage-card ${n ? "has" : ""}">
+          <span class="ic">${STAGE_ICONS[st]}</span>
+          <span class="nb">${n}</span>
+          <span class="lb">${STAGE_LABELS[st]}</span>
+        </div>`;
+      }).join("");
+
+      const list = document.getElementById("art-list");
+      if (!artefacts.length) {
+        list.innerHTML = `<div class="empty-art">Noch keine Artefakte. Sobald ein Tool ein OSCAL-Dokument erzeugt, erscheint es hier — zusätzlich zum gewohnten Download.</div>`;
+        return;
+      }
+      list.innerHTML = artefacts.map(a => {
+        const app = APPS.find(x => x.tool === a.tool);
+        return `<div class="art">
+          <div class="hd">
+            <span class="ti">${escapeHtml(a.title)}</span>
+            <span class="tag">${a.kind}</span>
+            <span class="tag">${STAGE_LABELS[a.stage] || a.stage}</span>
+            <span class="meta">${fmtBytes(a.size)} · ${(a.updatedAt || "").replace("T", " ").slice(0, 16)} · ${escapeHtml(a.tool)}</span>
+          </div>
+          <div class="meta" style="margin-top:3px">${escapeHtml(a.filename)} · sha256 ${(a.sha256 || "").slice(0, 12)}</div>
+          <div class="acts">
+            <button class="btn-s" data-dl="${escapeAttr(a.id)}">⤓ Download</button>
+            ${app ? `<button class="btn-s" data-open="${app.id}">↗ ${escapeHtml(app.label)} öffnen</button>` : ""}
+            <button class="btn-s danger" data-del="${escapeAttr(a.id)}">✕ Löschen</button>
+          </div>
+        </div>`;
+      }).join("");
+      list.querySelectorAll("[data-dl]").forEach(b => b.addEventListener("click", () => downloadOne(b.dataset.dl)));
+      list.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => removeOne(b.dataset.del)));
+      list.querySelectorAll("[data-open]").forEach(b => b.addEventListener("click", () => { closeSheet(); select(b.dataset.open, true); }));
+    }
+    function escapeHtml(s) { return String(s == null ? "" : s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
+    function escapeAttr(s) { return escapeHtml(s).replace(/"/g, "&quot;"); }
+
+    async function downloadOne(id) {
+      const rec = await gppArtefacts.get(id);
+      if (!rec) return;
+      gppDownloadBlob(safeName(rec.filename), new Blob([JSON.stringify(rec.data, null, 2)], { type: "application/json" }));
+    }
+    async function removeOne(id) {
+      const rec = artefacts.find(a => a.id === id);
+      if (!confirm(`Artefakt „${rec ? rec.title : id}" löschen? Bereits heruntergeladene Dateien bleiben davon unberührt.`)) return;
+      await gppArtefacts.remove(id);
+      refreshArtefacts();
+    }
+    /* Eindeutige Dateinamen — zwei Tools dürfen dieselbe filename liefern */
+    function exportNames(records) {
+      const used = new Map();
+      return records.map(r => {
+        let name = safeName(r.filename);
+        if (!/\.json$/i.test(name)) name += ".json";
+        if (used.has(name)) {
+          const n = used.get(name) + 1;
+          used.set(name, n);
+          name = name.replace(/\.json$/i, `_${n}.json`);
+        } else used.set(name, 1);
+        return { rec: r, name };
+      });
+    }
+    document.getElementById("btn-export-files").addEventListener("click", async () => {
+      const all = await gppArtefacts.all();
+      if (!all.length) return;
+      const note = document.getElementById("export-note");
+      const named = exportNames(all);
+      note.textContent = `${named.length} Dateien werden einzeln heruntergeladen — der Browser fragt beim ersten Mal nach der Erlaubnis für mehrere Downloads.`;
+      // gestaffelt, sonst verwirft Chrome alles nach der ersten Datei
+      for (let i = 0; i < named.length; i++) {
+        gppDownloadBlob(named[i].name, new Blob([JSON.stringify(named[i].rec.data, null, 2)], { type: "application/json" }));
+        await new Promise(r => setTimeout(r, 220));
+      }
+      note.textContent = `${named.length} Dateien heruntergeladen.`;
+    });
+    document.getElementById("btn-export-zip").addEventListener("click", async () => {
+      const all = await gppArtefacts.all();
+      if (!all.length) return;
+      const named = exportNames(all);
+      const manifest = {
+        tool: "Grundschutz++ OSCAL Tools",
+        set: gppArtefacts.activeSet(),
+        exportedAt: new Date().toISOString(),
+        count: named.length,
+        artefacts: named.map(({ rec, name }) => ({
+          file: name, id: rec.id, title: rec.title, kind: rec.kind, stage: rec.stage,
+          tool: rec.tool, createdAt: rec.createdAt, updatedAt: rec.updatedAt,
+          size: rec.size, sha256: rec.sha256,
+        })),
+      };
+      const files = named.map(({ rec, name }) => ({ name, text: JSON.stringify(rec.data, null, 2), date: rec.updatedAt }));
+      files.unshift({ name: "manifest.json", text: JSON.stringify(manifest, null, 2) });
+      const stamp = new Date().toISOString().slice(0, 10);
+      gppDownloadBlob(`gpp-set_${safeName(gppArtefacts.activeSet())}_${stamp}.zip`, gppZip(files));
+      document.getElementById("export-note").textContent =
+        `ZIP mit ${named.length} Artefakten und manifest.json erzeugt (Prüfsummen im Manifest).`;
+    });
+    document.getElementById("btn-refresh-art").addEventListener("click", refreshArtefacts);
+    document.getElementById("btn-clear-art").addEventListener("click", async () => {
+      if (!artefacts.length) return;
+      const set = gppArtefacts.activeSet();
+      if (!confirm(`Alle ${artefacts.length} Artefakte des Sets „${set}" löschen? Heruntergeladene Dateien bleiben erhalten. Vorher exportieren?`)) return;
+      await gppArtefacts.removeSet(set);
+      refreshArtefacts();
+    });
+
+    /* ================= Sets ================= */
+    async function renderSets() {
+      const sel = document.getElementById("set-select");
+      const active = gppArtefacts.activeSet();
+      let sets = [];
+      try { sets = await gppArtefacts.sets(); } catch (e) { /* Store nicht lesbar */ }
+      if (!sets.some(s => s.name === active)) sets.push({ name: active, count: 0, bytes: 0 });
+      if (!sets.some(s => s.name === "standard")) sets.push({ name: "standard", count: 0, bytes: 0 });
+      sets.sort((a, b) => a.name.localeCompare(b.name));
+      sel.innerHTML = sets.map(s =>
+        `<option value="${escapeAttr(s.name)}" ${s.name === active ? "selected" : ""}>${escapeHtml(s.name)} (${s.count})</option>`).join("");
+    }
+    document.getElementById("set-select").addEventListener("change", e => {
+      gppArtefacts.setActiveSet(e.target.value);
+      refreshArtefacts();
+    });
+    document.getElementById("btn-set-new").addEventListener("click", () => {
+      const name = (prompt("Name des neuen Sets:", "") || "").trim();
+      if (!name) return;
+      gppArtefacts.setActiveSet(name);
+      refreshArtefacts();
+    });
+    document.getElementById("btn-set-delete").addEventListener("click", async () => {
+      const set = gppArtefacts.activeSet();
+      const n = artefacts.length;
+      if (!confirm(`Set „${set}" mit ${n} Artefakt(en) komplett löschen?`)) return;
+      await gppArtefacts.removeSet(set);
+      gppArtefacts.setActiveSet("standard");
+      refreshArtefacts();
+    });
+
+    /* Hochladen: JSON-Dateien einzeln oder ein exportiertes Set-ZIP (manifest.json
+       liefert dann Stage/Kind/Tool zurück; fremde JSONs werden am Wurzelschlüssel
+       erkannt). */
+    function guessMeta(doc) {
+      if (doc && doc.catalog) return { stage: "author", kind: "catalog" };
+      if (doc && doc.profile) return { stage: "author", kind: "profile" };
+      if (doc && doc["system-security-plan"]) return { stage: "model", kind: "ssp" };
+      if (doc && doc["assessment-plan"]) return { stage: "assess", kind: "ap" };
+      if (doc && doc["assessment-results"]) return { stage: "assess", kind: "ar" };
+      if (doc && doc["plan-of-action-and-milestones"]) return { stage: "remediate", kind: "poam" };
+      if (doc && doc["component-definition"]) return { stage: "author", kind: "component" };
+      return { stage: "model", kind: "workspace" };
+    }
+    document.getElementById("btn-set-upload").addEventListener("click", () =>
+      document.getElementById("set-upload-input").click());
+    document.getElementById("set-upload-input").addEventListener("change", async e => {
+      const files = [...e.target.files];
+      e.target.value = "";
+      if (!files.length) return;
+      const note = document.getElementById("export-note");
+      try {
+        // Zielset abfragen — Vorschlag: ZIP-Name ohne Endung, sonst aktives Set
+        const zipFile = files.find(f => /\.zip$/i.test(f.name));
+        const suggestion = zipFile
+          ? zipFile.name.replace(/\.zip$/i, "").replace(/^gpp-set_/, "").replace(/_\d{4}-\d{2}-\d{2}$/, "")
+          : gppArtefacts.activeSet();
+        const target = (prompt("In welches Set laden?", suggestion) || "").trim();
+        if (!target) return;
+        let imported = 0;
+        /* Prüfsummen aus dem Manifest: Ein Export schreibt je Datei den SHA-256
+           mit. Beim Einlesen wird er nachgerechnet — sonst steht im Manifest
+           eine Zusicherung, die nie jemand einlöst. Abweichungen brechen den
+           Import nicht ab (eine von Hand nachbearbeitete Datei ist ein
+           legitimer Fall), werden aber benannt. */
+        const hash = { geprueft: 0, abweichend: [], ohneEintrag: [] };
+        for (const f of files) {
+          if (/\.zip$/i.test(f.name)) {
+            const entries = await gppUnzip(f);
+            const manifest = (() => {
+              const m = entries.find(x => x.name === "manifest.json");
+              try { return m ? JSON.parse(m.text) : null; } catch { return null; }
+            })();
+            for (const ent of entries) {
+              if (ent.name === "manifest.json") continue;
+              let doc; try { doc = JSON.parse(ent.text); } catch { note.textContent = `Übersprungen (kein JSON): ${ent.name}`; continue; }
+              const m = manifest && (manifest.artefacts || []).find(a => a.file === ent.name);
+              if (manifest) {
+                if (m && m.sha256) {
+                  hash.geprueft++;
+                  if (await gppSha256(ent.text) !== m.sha256) hash.abweichend.push(ent.name);
+                } else {
+                  hash.ohneEintrag.push(ent.name);
+                }
+              }
+              const g = guessMeta(doc);
+              await gppArtefacts.save({
+                set: target,
+                stage: (m && m.stage) || g.stage, kind: (m && m.kind) || g.kind,
+                title: (m && m.title) || ent.name.replace(/\.json$/i, ""),
+                filename: ent.name, tool: (m && m.tool) || "import", data: doc,
+              });
+              imported++;
+            }
+          } else {
+            let doc; try { doc = JSON.parse(await f.text()); } catch { note.textContent = `Übersprungen (kein JSON): ${f.name}`; continue; }
+            const g = guessMeta(doc);
+            await gppArtefacts.save({
+              set: target, stage: g.stage, kind: g.kind,
+              title: f.name.replace(/\.json$/i, ""), filename: f.name, tool: "import", data: doc,
+            });
+            imported++;
+          }
+        }
+        gppArtefacts.setActiveSet(target);
+        await refreshArtefacts();
+        let pruefsumme = "";
+        if (hash.geprueft || hash.abweichend.length || hash.ohneEintrag.length) {
+          const teile = [];
+          if (hash.geprueft) teile.push(`${hash.geprueft - hash.abweichend.length} von ${hash.geprueft} Prüfsummen stimmen`);
+          if (hash.abweichend.length) teile.push(`abweichend: ${hash.abweichend.join(", ")} (nach dem Export verändert)`);
+          if (hash.ohneEintrag.length) teile.push(`ohne Manifest-Eintrag: ${hash.ohneEintrag.join(", ")}`);
+          pruefsumme = " — " + teile.join(" · ") + ".";
+        }
+        note.textContent = `${imported} Artefakt(e) in Set „${target}" geladen — es ist jetzt das aktive Set.${pruefsumme}`;
+      } catch (err) {
+        note.textContent = `Hochladen fehlgeschlagen: ${err.message}`;
+      }
+    });
+
+    /* Hält die Kopfzeilen-Knöpfe im Gleichklang mit den überlagernden Flächen */
+    function syncOverlayButtons() {
+      document.getElementById("btn-artefacts").classList.toggle("on", sheet.classList.contains("open"));
+      document.getElementById("btn-help").classList.toggle("on", docMode === "help");
+      document.getElementById("btn-handbuch").classList.toggle("on", docMode === "handbuch");
+    }
+    function openSheet() { closeDoc(); sheet.classList.add("open"); syncOverlayButtons(); refreshArtefacts(); }
+    function closeSheet() { sheet.classList.remove("open"); syncOverlayButtons(); }
+    document.getElementById("btn-artefacts").addEventListener("click", () => {
+      sheet.classList.contains("open") ? closeSheet() : openSheet();
+    });
+
+    /* ================= Hilfe & Handbuch =================
+       Markdown wird mit einem kleinen eigenen Renderer dargestellt — die
+       Sammlung bindet keine externen Bibliotheken ein. Geladen wird zuerst
+       relativ (Repo/entpacktes ZIP über http://); scheitert das (typisch
+       file:// wegen CORS oder ZIP ohne Repo drumherum), kommt der Text von
+       GitHub (main — Dokumentation, kein ergebnisrelevanter Katalog). */
+    const docSheet = document.getElementById("doc-sheet");
+    const RAW_DOCS = "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/refs/heads/main/";
+    const HANDBUCH = [
+      "01_einleitung.md", "02_ueberblick.md", "03_oscal.md", "04_gc.md", "05_stm.md",
+      "06_ums.md", "07_vrb.md", "08_perf.md", "09_audit_zert.md", "10_vergleich.md",
+      "anhang_a_control_register.md", "anhang_b_dokumentenlandkarte.md",
+      "anhang_c_glossar.md", "anhang_d_offene_fragen.md",
+    ];
+    const chapterLabel = f => f.replace(/\.md$/, "").replace(/_/g, " ")
+      .replace(/^(\d+) /, "$1 · ").replace(/^anhang (\w) /, (m, c) => "Anhang " + c.toUpperCase() + " · ")
+      .replace(/(^|· )(\w)/g, (m, p, c) => p + c.toUpperCase());
+
+    function md2html(md) {
+      const fences = [];
+      md = md.replace(/```[^\n]*\n([\s\S]*?)```/g, (m, code) => {
+        fences.push(code);
+        return "\u0000FENCE" + (fences.length - 1) + "\u0000";
+      });
+      const inline = s => escapeHtml(s)
+        .replace(/`([^`]+)`/g, "<code>$1</code>")
+        .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+        .replace(/(^|[\s(])\*([^*\n]+)\*/g, "$1<em>$2</em>")
+        .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, t, href) => {
+          const h = href.replace(/&amp;/g, "&");
+          if (/^[\w./-]+\.md(#[\w-]*)?$/.test(h)) {
+            const file = h.split("/").pop().split("#")[0];
+            if (HANDBUCH.includes(file)) return `<a href="#" data-chapter="${file}">${t}</a>`;
+          }
+          if (/^(https?:)/.test(h)) return `<a href="${escapeAttr(h)}" target="_blank" rel="noopener">${t}</a>`;
+          return t;
+        });
+      const out = [];
+      const lines = md.split(/\r?\n/);
+      let para = [], list = null, table = null, quote = [];
+      const flushPara = () => { if (para.length) { out.push("<p>" + inline(para.join(" ")) + "</p>"); para = []; } };
+      const flushList = () => { if (list) { out.push(`<${list.tag}>` + list.items.map(i => "<li>" + inline(i) + "</li>").join("") + `</${list.tag}>`); list = null; } };
+      const flushTable = () => {
+        if (!table) return;
+        const rows = table.filter(r => !/^[\s|:-]+$/.test(r));
+        const cells = r => r.replace(/^\||\|$/g, "").split("|").map(c => inline(c.trim()));
+        let html = "<table>";
+        rows.forEach((r, i) => {
+          const tag = i === 0 ? "th" : "td";
+          html += "<tr>" + cells(r).map(c => `<${tag}>${c}</${tag}>`).join("") + "</tr>";
+        });
+        out.push(html + "</table>"); table = null;
+      };
+      const flushQuote = () => { if (quote.length) { out.push("<blockquote>" + inline(quote.join(" ")) + "</blockquote>"); quote = []; } };
+      const flushAll = () => { flushPara(); flushList(); flushTable(); flushQuote(); };
+      for (const raw of lines) {
+        const line = raw.replace(/\s+$/, "");
+        const fence = line.match(/^\u0000FENCE(\d+)\u0000$/);
+        if (fence) { flushAll(); out.push("<pre><code>" + escapeHtml(fences[+fence[1]]) + "</code></pre>"); continue; }
+        if (!line.trim()) { flushAll(); continue; }
+        const h = line.match(/^(#{1,4})\s+(.*)/);
+        if (h) { flushAll(); out.push(`<h${h[1].length}>` + inline(h[2]) + `</h${h[1].length}>`); continue; }
+        if (/^(---+|\*\*\*+)$/.test(line.trim())) { flushAll(); out.push("<hr>"); continue; }
+        if (/^\s*\|/.test(line)) { flushPara(); flushList(); flushQuote(); (table = table || []).push(line.trim()); continue; }
+        const li = line.match(/^\s*([-*]|\d+\.)\s+(.*)/);
+        if (li) {
+          flushPara(); flushTable(); flushQuote();
+          const tag = /\d/.test(li[1]) ? "ol" : "ul";
+          if (!list || list.tag !== tag) { flushList(); list = { tag, items: [] }; }
+          list.items.push(li[2]); continue;
+        }
+        const q = line.match(/^>\s?(.*)/);
+        if (q) { flushPara(); flushList(); flushTable(); quote.push(q[1]); continue; }
+        if (list) { list.items[list.items.length - 1] += " " + line.trim(); continue; }
+        flushTable(); flushQuote(); para.push(line.trim());
+      }
+      flushAll();
+      return out.join("\n");
+    }
+
+    /* Erst lokal (Repo oder entpacktes ZIP über http://), sonst GitHub.
+       repoPaths ist eine Liste, weil der Ordner umbenannt wurde: solange die
+       Umbenennung nicht auf main liegt, trägt nur der alte Pfad die Datei. */
+    async function fetchDoc(localPath, repoPaths) {
+      const paths = Array.isArray(repoPaths) ? repoPaths : [repoPaths];
+      try {
+        const r = await fetch(localPath, { cache: "no-store" });
+        if (r.ok) return await r.text();
+      } catch (e) { /* file:// oder offline — unten weiter */ }
+      const fails = [];
+      for (const p of paths) {
+        try {
+          const r = await fetch(RAW_DOCS + p);
+          if (r.ok) return await r.text();
+          fails.push(`${p} → HTTP ${r.status}`);
+        } catch (e) { fails.push(`${p} → ${e.message}`); }
+      }
+      throw new Error(`lokal nicht lesbar; GitHub: ${fails.join(", ")}`);
+    }
+
+    let docMode = null;
+    async function openDoc(mode, chapter) {
+      closeSheet();
+      docMode = mode;
+      docSheet.classList.add("open");
+      syncOverlayButtons();
+      const title = document.getElementById("doc-title");
+      const sub = document.getElementById("doc-sub");
+      const navBox = document.getElementById("doc-nav");
+      const body = document.getElementById("doc-body");
+      if (mode === "help") {
+        title.textContent = "Hilfe";
+        sub.textContent = "Die Anleitung der Sammlung (readme.md), direkt hier gerendert.";
+        navBox.innerHTML = "";
+      } else {
+        title.textContent = "Grundschutz++ Handbuch";
+        sub.textContent = "Kapitel aus dem Repository-Ordner handbuch/.";
+        navBox.innerHTML = HANDBUCH.map(f =>
+          `<button data-ch="${f}" class="${f === chapter ? "active" : ""}">${escapeHtml(chapterLabel(f))}</button>`).join("");
+        navBox.querySelectorAll("button").forEach(b => b.addEventListener("click", () => openDoc("handbuch", b.dataset.ch)));
+      }
+      body.innerHTML = '<div class="doc-err">Lade …</div>';
+      try {
+        const text = mode === "help"
+          ? await fetchDoc("readme.md", ["GS++-oscal-app/readme.md", "One-Page-Apps/readme.md"])
+          : await fetchDoc("../handbuch/" + chapter, ["handbuch/" + chapter]);
+        body.innerHTML = md2html(text);
+        body.querySelectorAll("a[data-chapter]").forEach(a =>
+          a.addEventListener("click", ev => { ev.preventDefault(); openDoc("handbuch", a.dataset.chapter); }));
+        docSheet.scrollTop = 0;
+      } catch (e) {
+        body.innerHTML = `<div class="doc-err">Dokument nicht ladbar: ${escapeHtml(e.message)}.<br>
+          Offline und per <code>file://</code> geöffnet? Dann hilft ein lokaler Server
+          (<code>python -m http.server</code> im entpackten Ordner) — oder online gehen,
+          dann kommt der Text von GitHub.</div>`;
+      }
+    }
+    function closeDoc() { docSheet.classList.remove("open"); docMode = null; syncOverlayButtons(); }
+    document.getElementById("btn-help").addEventListener("click", () =>
+      (docMode === "help") ? closeDoc() : openDoc("help"));
+    document.getElementById("btn-handbuch").addEventListener("click", () =>
+      (docMode === "handbuch") ? closeDoc() : openDoc("handbuch", HANDBUCH[0]));
+    if (!CORE_OK) {
+      document.getElementById("btn-artefacts").disabled = true;
+      document.getElementById("btn-artefacts").title = "gpp-core.js fehlt — bitte die komplette Sammlung entpacken";
+    } else {
+      window.addEventListener("gpp:artefacts-changed", refreshArtefacts);
+      // Tools laufen im iframe und lösen das Event dort aus — deshalb zusätzlich
+      // auf den localStorage-Marker hören, der über Fenstergrenzen hinweg feuert.
+      window.addEventListener("storage", e => { if (e.key === "gpp:cfg:artefacts:touch") refreshArtefacts(); });
+      refreshArtefacts();
+      if (location.hash === "#artefacts") openSheet();
+    }
+  </script>
+</body>
+</html>

@@ -82,6 +82,11 @@ body{
 .field{margin-bottom:10px}
 .field label{display:block;font-size:11px;color:var(--text-tertiary);margin-bottom:4px;
   font-weight:500}
+/* Die aufgeklappte Optionsliste zeichnet das Betriebssystem — dort greifen
+   halbtransparente Flächen nicht. Ohne deckende Farbe steht helle Schrift auf
+   hellem Grund. */
+select,option{background-color:#1b1b23;color:var(--text-primary)}
+select{color-scheme:dark}
 .field input,.field select,.field textarea{
   width:100%;background:var(--bg-elev-2);border:1px solid var(--border-1);
   color:var(--text-primary);font-family:'JetBrains Mono',monospace;font-size:11px;
@@ -96,6 +101,18 @@ body{
 .toggle:hover{background:var(--bg-elev-3)}
 .toggle input{margin:0;accent-color:var(--accent)}
 .toggle .desc{color:var(--text-tertiary);font-size:10px;margin-top:2px;display:block}
+
+/* Backend-Umschalter (Gemini | OpenRouter) — gleiche Glass-Sprache wie .toggle */
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:3px;background:var(--bg-elev-2);
+  border:1px solid var(--border-1);border-radius:8px;margin-bottom:10px}
+.seg-btn{padding:6px 8px;border:0;border-radius:6px;background:transparent;
+  color:var(--text-tertiary);font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all .15s ease}
+.seg-btn:hover{background:var(--bg-elev-3);color:var(--text-primary)}
+.seg-btn.active{background:var(--accent-soft);color:var(--accent);
+  box-shadow:inset 0 0 0 1px var(--accent-soft)}
+.cfg-note{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--text-quiet);
+  line-height:1.5;letter-spacing:0.02em;margin:-4px 0 12px}
 
 .splitter{width:4px;flex:0 0 4px;background:transparent;cursor:col-resize;
   transition:background .15s ease;position:relative}
@@ -207,6 +224,10 @@ body{
   padding:10px 12px;background:var(--bg-elev-2);border:1px solid var(--border-1);
   border-radius:8px;margin-bottom:6px;font-size:11.5px;line-height:1.5}
 .req-row.miss{border-color:oklch(0.65 0.2 25 / 0.3);background:oklch(0.65 0.2 25 / 0.04)}
+/* Chunk fehlgeschlagen/abgebrochen — Control wurde NIE bewertet.
+   Bewusst anders als .miss (echter Kein-Treffer), damit beides unterscheidbar bleibt. */
+.req-row.failed{border-color:oklch(0.80 0.15 80 / 0.45);background:oklch(0.80 0.15 80 / 0.05);
+  border-left-width:3px;border-left-color:var(--amber)}
 .req-row.pending{opacity:.6}
 .req-id{font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:10.5px;
   letter-spacing:0.05em;display:flex;align-items:center;gap:5px}
@@ -256,8 +277,12 @@ body{
 .hbar-fill{height:100%;border-radius:3px;transition:width .25s ease}
 .hbar-value{font-family:'JetBrains Mono',monospace;color:var(--text-primary);text-align:right}
 
-.console{flex:0 0 220px;background:var(--bg-elev-1);border-top:1px solid var(--border-1);
+/* min-height:0 ist zwingend: Flex-Elemente haben sonst min-height:auto und
+   wachsen mit dem Inhalt, statt den Log scrollen zu lassen. */
+.console{flex:0 0 220px;min-height:0;background:var(--bg-elev-1);border-top:1px solid var(--border-1);
   display:flex;flex-direction:column;backdrop-filter:blur(20px)}
+.console.collapsed{flex:0 0 auto}
+.console.collapsed .console-body,.console.collapsed .log-ta-wrap{display:none}
 .console-head{padding:8px 16px;border-bottom:1px solid var(--border-1);display:flex;
   align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;
   font-size:10px;letter-spacing:0.15em;color:var(--text-quiet);text-transform:uppercase}
@@ -317,93 +342,56 @@ body{
       <div>
         <div class="brand-name">Baustein_2_Profile</div>
       </div>
-      <span class="brand-sub">build 0.8.1 · LLM-Klassifikation → G++-Pool (chunked, cached prefix) → Satz-Mapping → OSCAL-Profil mit alters · Token-Tracking · v5-chunked prompt</span>
+      <span class="brand-sub"><span id="app-build">build …</span> · LLM-Klassifikation → G++-Pool (chunked, cached prefix) → Satz-Mapping → OSCAL-Profil mit alters · Token-Tracking · <span id="app-prompt-ver">…</span> prompt</span>
     </div>
     <div class="meta-pills">
       <span id="token-pill" class="pill" title="Token-Verbrauch (kumuliert pro Run)">Σ 0 tok · cache 0 (0%)</span>
       <span id="status-pill" class="pill">bereit</span>
-      <span class="pill live">● Gemini 3</span>
+      <span class="pill live" id="backend-pill">● Gemini 3</span>
     </div>
   </div>
 
   <div class="main">
 
-    <div class="rail">
-      <div class="rail-scroll">
-
-        <div class="rail-section">
-          <div class="rail-label"><span><span class="glyph">◇</span> Modell</span></div>
-          <div class="field">
-            <label>API-Key</label>
-            <input id="api-key" type="password" placeholder="x-goog-api-key">
-          </div>
-          <div class="field">
-            <label>Modell</label>
-            <select id="model">
-              <option value="gemini-3.1-pro-preview">gemini-3.1-pro-preview</option>
-              <option value="gemini-3-flash-preview">gemini-3-flash-preview</option>
-              <option value="gemini-3.1-flash-lite-preview">gemini-3.1-flash-lite-preview</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Thinking-Level</label>
-            <select id="thinking">
-              <option value="minimal">minimal</option>
-              <option value="low">low</option>
-              <option value="medium" selected>medium</option>
-              <option value="high">high</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="rail-section">
-          <div class="rail-label"><span><span class="glyph">◈</span> Pool</span></div>
-          <div class="field-row">
-            <div class="field">
-              <label>Parallel</label>
-              <input id="concurrency" type="number" min="1" max="12" value="4">
+        <!-- KI-Konfiguration lebt zentral in config.html — hier nur der versteckte Shim -->
+        <div id="gpp-cfg-shim" hidden aria-hidden="true">
+            <div class="seg" id="backend-seg">
+              <button type="button" class="seg-btn active" data-backend="gemini">Gemini</button>
+              <button type="button" class="seg-btn" data-backend="openrouter">OpenRouter</button>
             </div>
-            <div class="field">
-              <label>Retries</label>
-              <input id="retries" type="number" min="0" max="5" value="2">
+            <div id="cfg-gemini">
+              <input id="api-key" type="password">
+              <select id="model"></select>
+              <select id="thinking">
+                <option value="minimal">minimal</option><option value="low">low</option>
+                <option value="medium" selected>medium</option><option value="high">high</option>
+              </select>
             </div>
-          </div>
-          <div class="field-row">
-            <div class="field">
-              <label>Controls/Chunk (S2)</label>
-              <input id="ctrl-chunk" type="number" min="10" max="400" value="100">
+            <div id="cfg-openrouter">
+              <input id="or-key" type="password">
+              <select id="or-model"></select>
+              <input id="or-model-free" type="text">
+              <select id="or-effort">
+                <option value="off">off</option><option value="low">low</option>
+                <option value="medium">medium</option><option value="high">high</option>
+              </select>
+              <input type="checkbox" id="or-only-structured">
             </div>
-            <div class="field">
-              <label>Chunk (Checker)</label>
-              <input id="chunk-size" type="number" min="1" max="30" value="8">
-            </div>
-          </div>
-        </div>
-
-        <div class="rail-section">
-          <div class="rail-label"><span><span class="glyph">⬡</span> Modus</span></div>
-          <label class="toggle">
-            <input type="checkbox" id="maker-checker">
-            <span>Maker-Checker
-              <span class="desc">Zweite Prüfung der Matches</span>
-            </span>
-          </label>
-          <label class="toggle">
+            <input id="concurrency" type="number" value="4">
+            <input id="retries" type="number" value="2">
+            <input id="chunk-size" type="number" value="8">
+            <input id="ctrl-chunk" type="number" value="100">
+            <!-- maker-checker und testdrive sind sichtbare Run-Optionen (Run-Bar),
+                 keine Shim-Felder — doppelte IDs machen die sichtbaren tot -->
             <input type="checkbox" id="grounding">
-            <span>Google-Search-Grounding
-              <span class="desc">Recherche-Tools für Modell</span>
-            </span>
-          </label>
+            <select id="checker-backend">
+              <option value="same" selected>same</option><option value="gemini">Gemini</option><option value="openrouter">OpenRouter</option>
+            </select>
+            <input id="checker-model" type="text">
         </div>
 
-        <div class="rail-section">
-          <div class="rail-label"><span><span class="glyph">▣</span> Output</span></div>
-        </div>
-
-      </div>
-    </div>
-
-    <div class="splitter" id="splitter"></div>
+    <!-- Die Seitenleiste ist entfallen: Konfiguration liegt in config.html,
+         die Quell-URLs sind gepinnt — es blieb nichts zu bedienen. -->
 
     <div class="work">
       <div class="work-scroll">
@@ -423,9 +411,8 @@ body{
           </div>
 
           <div style="margin-top:14px">
-            <label style="display:block;font-size:11px;color:var(--text-tertiary);margin-bottom:4px;font-weight:500">G++ Anwenderkatalog (raw JSON-URL · Prose-Quelle für beide Pfade)</label>
+            <label style="display:block;font-size:11px;color:var(--text-tertiary);margin-bottom:4px;font-weight:500">G++ Anwenderkatalog (gepinnte Quelle · Prose-Quelle für beide Pfade)</label>
             <div class="url-row">
-              <input id="cat-url" type="text" value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/47de2824a341812438ef3f044b3f65ce2cad6e32/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json">
               <button class="btn sm" id="btn-load-cat">⤓ laden</button>
               <button class="btn sm ghost" id="btn-upload-cat">⤴ upload</button>
               <input id="cat-file" type="file" accept="application/json" style="display:none">
@@ -438,7 +425,6 @@ body{
           <div style="margin-top:14px">
             <label style="display:block;font-size:11px;color:var(--text-tertiary);margin-bottom:4px;font-weight:500">Zielobjektkategorien (CSV) + Pools werden automatisch geladen</label>
             <div class="url-row">
-              <input id="pi-url" type="text" value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/refs/heads/main/documentation/namespaces/target_object_categories.csv">
               <button class="btn sm" id="btn-load-pi">⤓ laden</button>
               <button class="btn sm ghost" id="btn-upload-pi">⤴ upload</button>
               <input id="pi-file" type="file" accept=".csv,text/csv" style="display:none">
@@ -456,58 +442,10 @@ body{
           </div>
         </div>
 
-        <!-- PROMPTS CARD -->
-        <div class="card">
-          <div class="card-head">
-            <div class="card-title"><span class="num">02 · prompts</span> Editierbare Prompts pro Stage</div>
-            <div class="muted" style="font-size:10.5px">alle Änderungen werden in localStorage gespeichert</div>
-          </div>
-          <div class="card-desc">Defaults sind produktiv nutzbar. Felder unten lassen sich frei umformulieren — Platzhalter wie <code>{baustein_id}</code> müssen erhalten bleiben.</div>
-
-          <!-- STAGE 1 PROMPT -->
-          <div class="prompt-block">
-            <div class="prompt-head">
-              <div class="prompt-label"><span class="stage">▶ STAGE 1</span> Klassifikation — PDF → Zielobjektkategorie / Prozess</div>
-              <div class="prompt-actions">
-                <button class="btn sm ghost" data-reset="s1">Reset</button>
-              </div>
-            </div>
-            <textarea class="prompt-ta" id="prompt-s1" data-placeholders="{baustein_id},{baustein_title},{baustein_summary},{categories}"></textarea>
-            <div class="prompt-warn" id="warn-s1"></div>
-          </div>
-
-          <!-- STAGE 2 PROMPT (sentence mapping) -->
-          <div class="prompt-block">
-            <div class="prompt-head">
-              <div class="prompt-label"><span class="stage">▶ STAGE 2</span> Satz-Mapping — PDF-Sätze → G++-Controls aus dem Pool</div>
-              <div class="prompt-actions">
-                <button class="btn sm ghost" data-reset="s2">Reset</button>
-              </div>
-            </div>
-            <textarea class="prompt-ta" id="prompt-s2" data-placeholders="{baustein_id},{baustein_title},{controls},{anforderungen_with_sentences}"></textarea>
-            <div class="prompt-warn" id="warn-s2"></div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-quiet);margin-top:6px;letter-spacing:0.05em">
-              Fallback (kein Pool auflösbar) erzeugt Custom-Controls deterministisch aus den Anforderungen — kein Modell-Call.
-            </div>
-          </div>
-
-          <!-- CHECKER PROMPT -->
-          <div class="prompt-block" id="checker-block" style="display:none">
-            <div class="prompt-head">
-              <div class="prompt-label"><span class="stage" style="color:var(--amber)">▶ CHECKER</span> Validierung der Stage-2-Implementation-Descriptions</div>
-              <div class="prompt-actions">
-                <button class="btn sm ghost" data-reset="check">Reset</button>
-              </div>
-            </div>
-            <textarea class="prompt-ta" id="prompt-check" data-placeholders="{pairs}"></textarea>
-            <div class="prompt-warn" id="warn-check"></div>
-          </div>
-        </div>
-
         <!-- RUN CARD -->
         <div class="card">
           <div class="card-head">
-            <div class="card-title"><span class="num">03 · run</span> Pipeline starten</div>
+            <div class="card-title"><span class="num">02 · run</span> Pipeline starten</div>
           </div>
 
           <div class="stage-line">
@@ -524,6 +462,10 @@ body{
             <label class="testdrive">
               <input type="checkbox" id="testdrive">
               <span>Test drive (5%)</span>
+            </label>
+            <label class="testdrive" title="Vier-Augen-Prüfung: zweiter LLM-Pass validiert das Control-Mapping">
+              <input type="checkbox" id="maker-checker">
+              <span>Checker</span>
             </label>
             <span class="grow"></span>
             <button class="btn sm ghost" id="btn-clear">⌕ clear results</button>
@@ -563,12 +505,14 @@ body{
             <div class="filter-bar">
               <span class="chip ok"><span id="s2-ok">0</span> generated</span>
               <span class="chip err"><span id="s2-miss">0</span> missing-coverage</span>
+              <span class="chip warn hidden" id="s2-fail-chip"><span id="s2-fail">0</span> chunk-fehler / abgebrochen</span>
               <span class="chip warn hidden" id="s2-val-chip"><span id="s2-val">0</span> validation issues</span>
               <select id="s2-filter" class="btn sm">
                 <option value="all">alle anzeigen</option>
                 <option value="ok">nur coverage=full</option>
                 <option value="partial">nur partial</option>
-                <option value="missing">nur missing</option>
+                <option value="missing">nur missing (echter Kein-Treffer)</option>
+                <option value="failed">nur chunk-fehler / abgebrochen</option>
                 <option value="issues">nur validation issues</option>
               </select>
             </div>
@@ -582,6 +526,7 @@ body{
             <div class="card-title"><span class="num">▸ stage 3</span> OSCAL Profile</div>
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
               <span class="chip accent" id="s3-chip">—</span>
+              <button class="btn sm" id="btn-save-set" title="Profil unter einem Namen im aktiven Arbeitsstand ablegen">⌸ Im Set speichern…</button>
               <button class="btn sm" id="btn-download">⤓ Profile</button>
               <button class="btn sm hidden" id="btn-download-cat">⤓ Custom-Catalog (C.2)</button>
               <button class="btn sm ghost" id="btn-copy">⌕ copy</button>
@@ -616,8 +561,39 @@ body{
 
 </div>
 
+<script src="gpp-core.js?v=3.3"></script>
 <script>
 "use strict";
+if (typeof gppCfg === "undefined") {
+  document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#111">' +
+    '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
+    '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) ' +
+    'statt einzelner Dateien.</p></div>';
+  throw new Error("gpp-core.js missing");
+}
+const GPP_TOOL_ID = "Baustein_2_Profile";
+
+/* ════════════════════════════════════════════════════════════════════════
+   Build-Version — EINE Quelle der Wahrheit. Topbar, Log-Init und die
+   OSCAL-Artefakte (party-name im Custom Catalog) referenzieren nur diese
+   Konstante; keine handgepflegten Versionsstrings mehr im File.
+   ════════════════════════════════════════════════════════════════════════ */
+
+const APP_VERSION  = "0.9.1";
+const APP_NAME     = "Baustein_2_Profile";
+
+// Fallback, wenn zentral kein Gemini-Modell gesetzt ist (config.html).
+const DEFAULT_MODEL = "gemini-3.6-flash";
+
+/* ── OpenRouter (zweites Backend) ─────────────────────────────────────────
+   Ein Key, ein Endpoint, Modelle mehrerer Anbieter hinter einer
+   OpenAI-kompatiblen Chat-Completions-Fläche. Modellwahl (inkl. Katalog-
+   Browser) liegt zentral in config.html; hier kommt nur der Slug an.        */
+const OR_CHAT_URL      = "https://openrouter.ai/api/v1/chat/completions";
+// Optionale Attributions-Header. file:// liefert origin "null" — dann der
+// dokumentierte Platzhalter.
+const OR_REFERER = (location.origin && location.origin !== "null")
+  ? location.origin : "https://localhost";
 
 /* ════════════════════════════════════════════════════════════════════════
    Default prompts — production-quality. Editable in the UI; reset restores.
@@ -689,7 +665,7 @@ WICHTIG — CHUNKING:
 
 REGELN:
 - mapped_control_ids: mindestens eine, nur IDs aus der unten gelieferten Control-Liste (diesem Chunk). KEINE Halluzination, KEIN Erfinden von Control-IDs.
-- sentence_text: VERBATIM aus der Eingabe zurückgeben — Wort für Wort, kein Umformulieren (dient nur der Zuordnung; anforderung_id + sentence_idx sind maßgeblich).
+- Identifiziere jeden Satz AUSSCHLIESSLICH über anforderung_id + sentence_idx. Gib den Satztext NICHT zurück — das Tool setzt ihn deterministisch aus der Eingabe ein. Ein Satz mit unbekannter id/idx-Kombination wird verworfen.
 - rationale: ein kurzer Satz Deutsch, was den Satz mit dem/den Control(s) verbindet.
 
 BAUSTEIN: {baustein_id} – {baustein_title}
@@ -703,7 +679,6 @@ OUTPUT-JSON:
     {
       "anforderung_id": string,
       "sentence_idx": integer,
-      "sentence_text": string,
       "mapped_control_ids": string[],
       "rationale": string
     }
@@ -754,13 +729,33 @@ const DEFAULTS = {
      `target_object_categories` prop govern processes/ISMS (see determinePool).
    ════════════════════════════════════════════════════════════════════════ */
 
-const ZOK_CSV_URL     = "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/refs/heads/main/documentation/namespaces/target_object_categories.csv";
-const ZO_CONTROLS_URL = "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/main/hilfsdateien/zielobjekt_controls.json";
-
 // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
 // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
 // Katalog-Update = bewusster Pin-Wechsel an allen Stellen zugleich.
 const GPP_CATALOG_PIN_COMMIT = "47de2824a341812438ef3f044b3f65ce2cad6e32";
+// Pin des eigenen Repos für die Hilfsdateien (zielobjekt_controls.json).
+const GPP_TOOLS_PIN_COMMIT = "2ab904b0099f560a06a68950d2b47a8ad019571a";
+
+// Beide Quelldateien hingen bis zuletzt an refs/heads/main bzw. /main/ — damit war
+// der Katalog gepinnt, seine Zielobjektkategorien-Tabelle aber nicht: ein Upstream-
+// Commit konnte die Zuordnung unter einem unveränderten Katalog verschieben.
+// Die CSV liegt im selben Repo wie der Katalog und wird deshalb auf denselben
+// Commit genagelt; die Hilfsdatei auf den Stand des eigenen Repos.
+const ZOK_CSV_URL     = gppSource("zok-csv", `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/documentation/namespaces/target_object_categories.csv`);
+const ZO_CONTROLS_URL = gppSource("zielobjekt-controls", `https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/${GPP_TOOLS_PIN_COMMIT}/hilfsdateien/zielobjekt_controls.json`);
+// Quellen für die Pin-Übersicht in config.html anmelden (Update-Prüfung dort).
+gppRegisterSources(GPP_TOOL_ID, [
+  /* fixed: der Katalog ist gegen GPP_CATALOG_PIN_SHA256 inhaltsgepinnt und die
+     Resource-UUID aus der URL abgeleitet — Umpinnen über config.html würde die
+     Integritätsprüfung brechen, daher wird dort keins angeboten. */
+  { id: "gpp-catalog", label: "G++ resolved catalog", repo: "BSI-Bund/Stand-der-Technik-Bibliothek",
+    path: "control_layer/Grundschutz++/Grundschutz++-resolved_catalog.json", fixed: true,
+    default: `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json` },
+  { id: "zok-csv", label: "Zielobjektkategorien (CSV)", repo: "BSI-Bund/Stand-der-Technik-Bibliothek",
+    path: "documentation/namespaces/target_object_categories.csv", default: ZOK_CSV_URL },
+  { id: "zielobjekt-controls", label: "Zielobjekt-Controls (Hilfsdatei)", repo: "NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools",
+    path: "hilfsdateien/zielobjekt_controls.json", default: ZO_CONTROLS_URL },
+]);
 const GPP_CATALOG_PIN_SHA256 = "db3a1417d7e904315a0886f450129832e19c57324660358c830357349f552332";
 const GPP_CATALOG_PINNED_URL = `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json`;
 // uuid5(NAMESPACE_URL, GPP_CATALOG_PINNED_URL) — identisch zu den vom Pin-Skript
@@ -805,8 +800,13 @@ const state = {
   categoriesByName: null,   // Map name(lower) → category
   zoControlsMap: null,      // Map zielobjekt-UUID → [control-id]
 
-  // token accounting (Gemini usageMetadata, accumulated per run)
+  // token accounting (Gemini usageMetadata / OpenRouter usage, accumulated per run)
   tokens: { prompt: 0, cached: 0, candidates: 0, thoughts: 0, total: 0, calls: 0 },
+
+  // backend ("gemini" | "openrouter") und die tatsächlich verwendeten
+  // Engines pro Pass (Log + Export-Nachweis).
+  backend: "gemini",
+  engines: { maker: null, checker: null },
 
   // pipeline outputs
   classification: null,     // { object_type, zielobjekt_name, zielobjekt_uuid, confidence, rationale, alternatives }
@@ -834,6 +834,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const logBody = $("log-body");
 const logTA = $("log-ta");
 let logCount = 0;
+gppCollapsibleLog({ consoleEl: document.querySelector(".console"),
+  headEl: document.querySelector(".console-actions"), toolId: GPP_TOOL_ID });
 
 const l = {
   _add(level, msg) {
@@ -859,7 +861,8 @@ const l = {
   debug(m) { this._add("debug", m) },
 };
 
-l.info("init · build 0.8.2 · pdf → klassifikation → pool-chunk-mapping → oscal-profil mit alters · Prozess-Pool aus Katalog (target_object_categories)");
+l.info(`init · ${APP_NAME} build ${APP_VERSION} · pdf → klassifikation → pool-chunk-mapping → oscal-profil mit alters · Prozess-Pool aus Katalog (target_object_categories)`);
+$("app-build").textContent = `build ${APP_VERSION}`;
 
 $("btn-clear-log").addEventListener("click", () => {
   logBody.innerHTML = "";
@@ -881,7 +884,12 @@ $("btn-copy-log").addEventListener("click", async () => {
    Persistence + prompt textareas
    ════════════════════════════════════════════════════════════════════════ */
 
-const PROMPT_VERSION = "v5-chunked";  // bumps when DEFAULTS change shape — invalidates user overrides
+// bumps when DEFAULTS change shape — invalidates user overrides.
+// v6: sentence_text ist aus S2-Prompt und -Schema entfernt (Text kommt deterministisch aus dem JS-State).
+const PROMPT_VERSION = "v6-idx-merge";
+// Bei jedem Pin-Wechsel hochzählen — verwirft gespeicherte Quell-URLs (siehe loadPrefs).
+const SOURCES_PIN_VERSION = "pin-47de2824";
+$("app-prompt-ver").textContent = PROMPT_VERSION;
 
 function loadPrefs() {
   // Migration: if stored prompt-version differs, clear stored prompt overrides so new defaults load
@@ -890,112 +898,109 @@ function loadPrefs() {
     for (const k of ["s1","s2","check"]) {
       localStorage.removeItem(`gpp.prompt.${k}`);
     }
-    // v4-gpp also retargets the data sources — drop stale Kernel/GitHub-API URLs
-    localStorage.removeItem("gpp.caturl");
-    localStorage.removeItem("gpp.piurl");
     localStorage.setItem("gpp.prompt.version", PROMPT_VERSION);
-    if (storedVer) l.info(`prompt-version migration ${storedVer} → ${PROMPT_VERSION} · stored prompts + URLs gelöscht, defaults aktiv`);
+    if (storedVer) l.info(`prompt-version migration ${storedVer} → ${PROMPT_VERSION} · stored prompts gelöscht, defaults aktiv`);
   }
 
-  $("api-key").value         = localStorage.getItem("gpp.apikey")    || "";
-  $("model").value           = localStorage.getItem("gpp.model")     || "gemini-3.1-pro-preview";
-  $("thinking").value        = localStorage.getItem("gpp.thinking")  || "medium";
-  $("concurrency").value     = localStorage.getItem("gpp.conc")      || "4";
-  $("retries").value         = localStorage.getItem("gpp.retries")   || "2";
-  $("chunk-size").value      = localStorage.getItem("gpp.chunk")     || "8";
+  // Quellen sind fest gepinnt (config.html verwaltet Overrides); die früheren
+  // gpp.caturl/gpp.piurl-Keys werden nicht mehr gelesen.
+  localStorage.setItem("gpp.sources.version", SOURCES_PIN_VERSION);
+
+  // KI-Zugang, Modelle und Laufzeit kommen zentral aus config.html (applyGppConfig
+  // unten überschreibt die Shim-Felder). Hier bleiben nur die tool-eigenen Prefs.
   $("ctrl-chunk").value      = localStorage.getItem("gpp.ctrlchunk") || "100";
   $("maker-checker").checked = localStorage.getItem("gpp.mc")        === "1";
-  $("grounding").checked     = localStorage.getItem("gpp.ground")    === "1";
   $("testdrive").checked     = localStorage.getItem("gpp.td")        === "1";
-  $("cat-url").value         = localStorage.getItem("gpp.caturl")    || $("cat-url").value;
-  $("pi-url").value          = localStorage.getItem("gpp.piurl")     || $("pi-url").value;
-  for (const k of ["s1","s2","check"]) {
-    $(`prompt-${k}`).value = localStorage.getItem(`gpp.prompt.${k}`) || DEFAULTS[k];
-  }
+  // Katalog- und CSV-Quelle sind gepinnt und werden in config.html gepflegt.
   toggleCheckerUI();
+  // Ab hier gilt die zentrale Konfiguration aus config.html.
+  applyGppConfig(false);
+  window.addEventListener("storage", e => { if (e.key && e.key.startsWith("gpp:cfg:")) applyGppConfig(false); });
 }
+
+/* Spiegelt gpp:cfg:* in die ausgeblendeten Shim-Felder; dieses Tool schreibt nie zurück. */
+window.applyGppConfig = function (verbose) {
+  const backend = gppCfg.get("ai:backend") === "openrouter" ? "openrouter" : "gemini";
+  const set = (id, v) => { const el = $(id); if (el && v != null) el.value = v; };
+  /* Selects im Shim haben keine vordefinierten Optionen — Wert erst als Option
+     anlegen, sonst bleibt value "" und jeder Gemini-Call liefe gegen models/: */
+  const setSel = (id, v) => {
+    const el = $(id); if (!el || !v) return;
+    if (![...el.options].some(o => o.value === v)) el.add(new Option(v, v));
+    el.value = v;
+  };
+  set("api-key", gppCfg.get("ai:key:gemini"));
+  set("or-key", gppCfg.get("ai:key:openrouter"));
+  setSel("model", gppCfg.get("ai:model:gemini") || DEFAULT_MODEL);
+  set("or-model-free", gppCfg.get("ai:model:openrouter"));
+  set("thinking", gppCfg.get("ai:thinking"));
+  /* or-effort kennt kein "minimal" — auf "low" abbilden statt stumm zu scheitern */
+  set("or-effort", ({ minimal: "low" })[gppCfg.get("ai:thinking")] || gppCfg.get("ai:thinking"));
+  set("checker-backend", gppCfg.get("ai:checker:backend"));
+  set("checker-model", gppCfg.get("ai:checker:model"));
+  set("concurrency", gppCfg.get("run:concurrency"));
+  set("retries", gppCfg.get("run:retries"));
+  set("chunk-size", gppCfg.get("run:chunk"));
+  const g = $("grounding"); if (g) g.checked = gppCfg.getBool("ai:grounding");
+  const os = $("or-only-structured"); if (os) os.checked = gppCfg.getBool("ai:or:structuredonly");
+  setBackend(backend, false);
+  if (verbose) l.ok("Einstellungen aus config.html neu übernommen.");
+};
 
 function bindPersist(id, key) {
   $(id).addEventListener("input",  () => localStorage.setItem(key, $(id).value));
   $(id).addEventListener("change", () => localStorage.setItem(key, $(id).value));
 }
 
-bindPersist("api-key", "gpp.apikey");
-bindPersist("model", "gpp.model");
-bindPersist("thinking", "gpp.thinking");
-bindPersist("concurrency", "gpp.conc");
-bindPersist("retries", "gpp.retries");
-bindPersist("chunk-size", "gpp.chunk");
+/* Nur tool-eigene Prefs persistieren — KI-Zugang/Laufzeit kommen aus config.html
+   und werden von diesem Tool nie zurückgeschrieben. */
 bindPersist("ctrl-chunk", "gpp.ctrlchunk");
-bindPersist("cat-url", "gpp.caturl");
-bindPersist("pi-url", "gpp.piurl");
 
 $("maker-checker").addEventListener("change", e => {
   localStorage.setItem("gpp.mc", e.target.checked ? "1" : "0");
   toggleCheckerUI();
-});
-$("grounding").addEventListener("change", e => {
-  localStorage.setItem("gpp.ground", e.target.checked ? "1" : "0");
 });
 $("testdrive").addEventListener("change", e => {
   localStorage.setItem("gpp.td", e.target.checked ? "1" : "0");
   updateRunLabel();
 });
 
-for (const k of ["s1","s2","check"]) {
-  const ta = $(`prompt-${k}`);
-  const warn = $(`warn-${k}`);
-  const expected = ta.dataset.placeholders.split(",");
-  const validate = () => {
-    const missing = expected.filter(p => !ta.value.includes(p));
-    if (missing.length) {
-      warn.classList.add("show");
-      warn.textContent = `⚠ fehlende Platzhalter: ${missing.join(", ")} — werden zur Laufzeit defensiv ergänzt`;
-    } else {
-      warn.classList.remove("show");
-    }
-  };
-  ta.addEventListener("input", () => {
-    localStorage.setItem(`gpp.prompt.${k}`, ta.value);
-    validate();
-  });
-  validate();
-}
-
-document.querySelectorAll("[data-reset]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const key = btn.dataset.reset;
-    $(`prompt-${key}`).value = DEFAULTS[key];
-    localStorage.removeItem(`gpp.prompt.${key}`);
-    $(`prompt-${key}`).dispatchEvent(new Event("input"));
-    l.info(`prompt-${key} → default`);
-  });
-});
-
+/* Prompts werden zentral in config.html bearbeitet; die Defaults bleiben hier
+   und werden beim Start angemeldet. */
+const PROMPT_LABELS = { s1: "Stufe 1 — Baustein-Analyse", s2: "Stufe 2 — Control-Mapping", check: "Checker — Vier-Augen-Prüfung" };
+/* Muss zu den vars der buildPrompt-Aufrufe passen — config.html warnt anhand
+   dieser Liste, wenn ein Platzhalter im bearbeiteten Prompt fehlt. */
+const PROMPT_PLACEHOLDERS = {
+  s1: ["{baustein_id}", "{baustein_title}", "{baustein_summary}", "{categories}"],
+  s2: ["{baustein_id}", "{baustein_title}", "{anforderungen_with_sentences}", "{controls}"],
+  check: ["{pairs}"],
+};
+gppRegisterPrompts(GPP_TOOL_ID, ["s1", "s2", "check"].map(k => ({
+  id: k, label: PROMPT_LABELS[k], placeholders: PROMPT_PLACEHOLDERS[k] || [], default: DEFAULTS[k],
+})));
 function toggleCheckerUI() {
-  const on = $("maker-checker").checked;
-  $("checker-block").style.display = on ? "block" : "none";
-  $("pip-s4").classList.toggle("hidden", !on);
+  $("pip-s4").classList.toggle("hidden", !$("maker-checker").checked);
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   Backend-Umschaltung — die Wahl kommt zentral aus gpp:cfg (config.html).
+   ════════════════════════════════════════════════════════════════════════ */
+
+function setBackend(b) {
+  state.backend = (b === "openrouter") ? "openrouter" : "gemini";
+  const pill = $("backend-pill");
+  if (pill) pill.textContent = state.backend === "openrouter" ? "● OpenRouter" : "● Gemini 3";
+}
+/* Der frühere OpenRouter-Modellkatalog (Fetch + 24h-Cache + Dropdown) ist mit
+   der Konfiguration nach config.html gewandert; das Modell kommt als Slug aus
+   gpp:cfg und steht in #or-model-free. */
 
 /* ════════════════════════════════════════════════════════════════════════
    Splitter
    ════════════════════════════════════════════════════════════════════════ */
 
-(() => {
-  const sp = $("splitter");
-  let drag = false;
-  const saved = parseInt(localStorage.getItem("gpp.rail") || "260");
-  document.documentElement.style.setProperty("--rail-w", saved + "px");
-  sp.addEventListener("mousedown", () => { drag = true; sp.classList.add("dragging"); document.body.style.cursor = "col-resize"; });
-  window.addEventListener("mouseup", () => { if (drag) { drag = false; sp.classList.remove("dragging"); document.body.style.cursor = ""; } });
-  window.addEventListener("mousemove", e => {
-    if (!drag) return;
-    const w = Math.max(200, Math.min(420, e.clientX));
-    document.documentElement.style.setProperty("--rail-w", w + "px");
-    localStorage.setItem("gpp.rail", String(w));
-  });
-})();
+/* Splitter entfallen — es gibt keine Seitenleiste mehr zum Verbreitern. */
+try { localStorage.removeItem("gpp.rail"); } catch (e) { }
 
 /* ════════════════════════════════════════════════════════════════════════
    PDF.js setup
@@ -1258,8 +1263,8 @@ $("cat-file").addEventListener("change", async e => {
 });
 
 $("btn-load-cat").addEventListener("click", async () => {
-  const url = $("cat-url").value.trim();
-  if (!url) return l.warn("keine Katalog-URL angegeben");
+  // Inhaltsgepinnt (SHA-256, Grundregel 8) — keine freie URL-Eingabe mehr.
+  const url = GPP_CATALOG_PINNED_URL;
   l.info(`fetch catalog · ${url}`);
   try {
     const t0 = performance.now();
@@ -1322,11 +1327,17 @@ function parseCsv(text) {
 function setCategories(csvText, src) {
   const rows = parseCsv(csvText);
   const header = rows.shift() || [];
-  const col = name => header.findIndex(h => h.trim().toLowerCase() === name.toLowerCase());
+  const col = (...names) => header.findIndex(h =>
+    names.some(n => h.trim().toLowerCase() === n.toLowerCase()));
   const ci = {
-    name: col("Zielobjektkategorie"), def: col("Definition"), typ: col("Typ"),
+    // Upstream heißt die Spalte "Zielobjekt"; "Zielobjektkategorie" bleibt als
+    // Alternative stehen, falls die Bibliothek wieder umbenennt.
+    name: col("Zielobjekt", "Zielobjektkategorie"), def: col("Definition"), typ: col("Typ"),
     kat: col("Kategorie"), syn: col("Synonyme"), child: col("ChildOfUUID"), uuid: col("UUID"),
   };
+  if (ci.name < 0 || ci.uuid < 0) {
+    l.err(`Kategorien-CSV: erwartete Spalten fehlen (gefunden: ${header.join(", ")})`);
+  }
   const cats = rows.map(r => ({
     name: (r[ci.name] || "").trim(),
     definition: (r[ci.def] || "").trim(),
@@ -1361,7 +1372,7 @@ $("pi-file").addEventListener("change", async e => {
 });
 
 $("btn-load-pi").addEventListener("click", async () => {
-  const url = $("pi-url").value.trim() || ZOK_CSV_URL;
+  const url = ZOK_CSV_URL;   // gepinnt, Pflege in config.html
   l.info(`fetch Zielobjektkategorien · ${url}`);
   try {
     const t0 = performance.now();
@@ -1432,28 +1443,75 @@ function extractJson(text) {
   throw new Error("JSON aus Modellantwort nicht extrahierbar");
 }
 
-async function llmOnce(prompt, schema) {
-  const apiKey = $("api-key").value.trim();
-  if (!apiKey) throw new Error("API-Key fehlt");
-  const model    = $("model").value;
-  const thinking = $("thinking").value;
+/* ── Route-Auflösung ──────────────────────────────────────────────────────
+   Eine Route bündelt alles Backend-Spezifische für EINEN Pass (Maker oder
+   Checker): Backend, Modell, Key, Denk-Tiefe, Grounding. Alles oberhalb von
+   llmOnce() reicht sie nur durch und bleibt damit backend-agnostisch.        */
+
+function orSelectedModel() {
+  // Freitext-Slug schlägt das Dropdown — beliebige Modelle bleiben erreichbar,
+  // auch wenn der Katalog sie (noch) nicht listet.
+  return ($("or-model-free").value.trim() || $("or-model").value || "").trim();
+}
+
+function backendConfig(backend) {
+  return backend === "openrouter"
+    ? { key: $("or-key").value.trim(),  model: orSelectedModel(), effort: $("or-effort").value, thinking: null }
+    : { key: $("api-key").value.trim(), model: $("model").value,  effort: null, thinking: $("thinking").value };
+}
+
+function resolveRoute(pass = "maker") {
+  let backend = state.backend;
+  if (pass === "checker") {
+    const cb = $("checker-backend").value;
+    if (cb === "gemini" || cb === "openrouter") backend = cb;
+  }
+  const cfg = backendConfig(backend);
+  let model = cfg.model;
+  if (pass === "checker") {
+    const cm = $("checker-model").value.trim();
+    if (cm) model = cm;
+  }
   const grounded = $("grounding").checked;
+  return {
+    pass, backend, model,
+    key: cfg.key,
+    thinking: cfg.thinking,
+    effort: cfg.effort,
+    grounded,
+    // Prosa-trotz-Schema-Fallback (siehe llmJson): bei Grounding auf beiden
+    // Backends — und generell auf OpenRouter, wo die Schema-Treue je Provider
+    // schwankt, auch wenn require_parameters gesetzt ist.
+    schemaFallback: grounded || backend === "openrouter",
+    label: `${backend}:${model || "?"}`,
+  };
+}
+
+/* ── Gemini ──────────────────────────────────────────────────────────────── */
+
+async function geminiOnce(prompt, schema, r) {
+  if (!r.key) throw new Error("Gemini API-Key fehlt");
 
   const body = {
     contents: [{ role: "user", parts: [{ text: prompt }] }],
-    generationConfig: { thinkingConfig: { thinkingLevel: thinking } },
+    generationConfig: { thinkingConfig: { thinkingLevel: r.thinking } },
   };
-  if (grounded) {
-    body.tools = [{ googleSearch: {} }];
-  } else if (schema) {
-    body.generationConfig.responseMimeType  = "application/json";
+  // Structured Outputs sind auf Gemini 3.x offiziell mit Google-Search-Grounding
+  // kombinierbar — das Schema bleibt also AUCH bei aktivem Grounding gesetzt.
+  // Absicherung gegen gelegentliche Prosa-Antworten: extractJson() beim Parsen
+  // plus der einmalige Schema-lose Fallback in llmJson().
+  if (schema) {
+    body.generationConfig.responseMimeType   = "application/json";
     body.generationConfig.responseJsonSchema = schema;
   }
+  if (r.grounded) {
+    body.tools = [{ googleSearch: {} }];
+  }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${r.model}:generateContent`;
   const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+    headers: { "Content-Type": "application/json", "x-goog-api-key": r.key },
     body: JSON.stringify(body),
   });
   if (!res.ok) {
@@ -1466,6 +1524,69 @@ async function llmOnce(prompt, schema) {
   const text = (data?.candidates?.[0]?.content?.parts || []).map(p => p.text || "").join("\n");
   if (!text) throw new Error("leere Modellantwort");
   return text;
+}
+
+/* ── OpenRouter ──────────────────────────────────────────────────────────── */
+
+async function openrouterOnce(prompt, schema, r) {
+  if (!r.key)   throw new Error("OpenRouter API-Key fehlt");
+  if (!r.model) throw new Error("kein OpenRouter-Modell gewählt (Dropdown oder Slug-Feld)");
+
+  const body = {
+    model: r.model,
+    messages: [{ role: "user", content: prompt }],
+  };
+  if (schema) {
+    body.response_format = {
+      type: "json_schema",
+      json_schema: { name: "result", strict: true, schema },
+    };
+    // Ohne require_parameters routet OpenRouter auch zu Providern, die
+    // response_format schlicht ignorieren — dann kommt Prosa statt JSON zurück.
+    body.provider = { require_parameters: true };
+  }
+  // Grounding-Analogon zu googleSearch: das web-Plugin (äquivalent zum
+  // :online-Suffix am Slug).
+  if (r.grounded) body.plugins = [{ id: "web" }];
+  // thinkingConfig gibt es hier nicht — die Entsprechung ist reasoning.effort,
+  // und nur wenn der Anwender sie explizit anfordert.
+  if (r.effort && r.effort !== "off") body.reasoning = { effort: r.effort };
+  // Bewusst KEINE Sampling-Parameter (temperature/top_p/top_k) — gleiche
+  // Disziplin wie auf dem Gemini-Pfad.
+
+  const res = await fetch(OR_CHAT_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${r.key}`,
+      "HTTP-Referer": OR_REFERER,
+      "X-Title": APP_NAME,
+    },
+    body: JSON.stringify(body),
+  });
+  let data = null;
+  try { data = await res.json(); } catch {}
+  // OpenRouter liefert Fehler auch in 200er-Bodies — data.error zuerst prüfen.
+  if (data?.error) {
+    const msg = data.error.message || JSON.stringify(data.error);
+    throw new Error(String(msg).slice(0, 400));
+  }
+  if (!res.ok) throw new Error(`HTTP ${res.status} · ${JSON.stringify(data || {}).slice(0, 400)}`);
+  addOrTokens(data?.usage);
+  const text = data?.choices?.[0]?.message?.content ?? "";
+  if (!text) throw new Error("leere Modellantwort");
+  return text;
+}
+
+/* ── Die EINE Weiche. Alles darüber ist backend-agnostisch. ──────────────── */
+
+async function llmOnce(prompt, schema, route) {
+  const r = route || resolveRoute("maker");
+  // Unternehmenskontext aus config.html — gilt für jeden Aufruf dieses Werkzeugs.
+  const p = gppWithContext(prompt);
+  return r.backend === "openrouter"
+    ? openrouterOnce(p, schema, r)
+    : geminiOnce(p, schema, r);
 }
 
 /* ── Token accounting (Gemini usageMetadata) ─────────────────────────────── */
@@ -1484,6 +1605,18 @@ function addTokens(u) {
   t.calls      += 1;
   updateTokenPill();
 }
+// OpenRouter meldet OpenAI-Feldnamen — deterministisch auf die Gemini-Form
+// abbilden, damit Pill und Statistik über beide Backends hinweg zählen.
+function addOrTokens(u) {
+  if (!u) return;
+  addTokens({
+    promptTokenCount:        u.prompt_tokens     || 0,
+    cachedContentTokenCount: u.prompt_tokens_details?.cached_tokens || 0,
+    candidatesTokenCount:    u.completion_tokens || 0,
+    thoughtsTokenCount:      u.completion_tokens_details?.reasoning_tokens || 0,
+    totalTokenCount:         u.total_tokens      || 0,
+  });
+}
 const fmtTok = n => n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1) + "k" : String(n);
 function updateTokenPill() {
   const t = state.tokens;
@@ -1495,23 +1628,49 @@ function updateTokenPill() {
   pill.classList.toggle("live", t.cached > 0);
 }
 
-async function llm(prompt, label, schema) {
+/* Retry-Wrapper — backend-agnostisch: die Route wird nur durchgereicht.
+   Jeder Call protokolliert Backend + Modell, damit gemischte Läufe
+   (Maker auf Gemini, Checker auf OpenRouter) auditierbar bleiben. */
+async function llm(prompt, label, schema, route) {
+  const r = route || resolveRoute("maker");
   const retries = Math.max(0, parseInt($("retries").value) || 0);
   let attempt = 0;
   while (true) {
     if (state.cancel) throw new Error("cancelled");
     const t0 = performance.now();
+    l.debug(`${label} → ${r.label}${schema ? " · schema" : " · kein schema"}${r.grounded ? " · web" : ""}`);
     try {
-      const text = await llmOnce(prompt, schema);
-      l.debug(`${label} ← ${(text.length/1024).toFixed(1)}kb in ${Math.round(performance.now()-t0)}ms`);
+      const text = await llmOnce(prompt, schema, r);
+      l.debug(`${label} ← ${(text.length/1024).toFixed(1)}kb in ${Math.round(performance.now()-t0)}ms · ${r.label}`);
       return text;
     } catch (e) {
       attempt++;
       if (attempt > retries) throw e;
       const wait = 500 * Math.pow(2, attempt - 1);
-      l.warn(`${label} failed (${e.message.slice(0,200)}) — retry ${attempt}/${retries} in ${wait}ms`);
+      l.warn(`${label} failed via ${r.label} (${e.message.slice(0,200)}) — retry ${attempt}/${retries} in ${wait}ms`);
       await sleep(wait);
     }
+  }
+}
+
+/* Ein Call + toleranter Parse. Liefert ein Lauf trotz gesetztem Schema freie
+   Prosa, wird EINMALIG ohne Schema nachgefasst (dokumentierter Workaround) —
+   statt das Schema von vornherein wegzulassen. Wann das greift, entscheidet
+   route.schemaFallback (Grounding auf beiden Backends, plus OpenRouter
+   generell) — llmJson selbst kennt kein Backend. */
+async function llmJson(prompt, label, schema, route) {
+  const r = route || resolveRoute("maker");
+  const text = await llm(prompt, label, schema, r);
+  try {
+    return extractJson(text);
+  } catch (e) {
+    if (!schema || !r.schemaFallback) throw e;
+    l.warn(`${label} (${r.label}): Antwort trotz Schema kein JSON (${e.message}) — einmaliger Fallback ohne Schema`);
+    const fallbackPrompt = prompt +
+      "\n\nWICHTIG: Antworte AUSSCHLIESSLICH mit dem oben spezifizierten JSON-Objekt. " +
+      "Kein Fließtext, keine Markdown-Fences, keine Erklärung davor oder danach.";
+    const text2 = await llm(fallbackPrompt, `${label} · fallback ohne schema`, null, r);
+    return extractJson(text2);
   }
 }
 
@@ -1576,7 +1735,8 @@ function resetStages() {
    ════════════════════════════════════════════════════════════════════════ */
 
 function buildPrompt(key, vars) {
-  let tpl = $(`prompt-${key}`).value;
+  // Prompttext zentral aus config.html; der Default bleibt hier im Tool.
+  let tpl = gppPrompt(GPP_TOOL_ID, key, DEFAULTS[key]);
   if (!tpl.trim()) tpl = DEFAULTS[key];
   for (const [name, val] of Object.entries(vars)) {
     const ph = `{${name}}`;
@@ -1625,8 +1785,7 @@ async function runStage1Classify() {
     categories: catBlock || "(keine Kategorien geladen)",
   });
 
-  const text = await llm(prompt, "s1 klassifikation", $("grounding").checked ? null : SCHEMA_S1);
-  const parsed = extractJson(text);
+  const parsed = await llmJson(prompt, "s1 klassifikation", SCHEMA_S1);
 
   const cls = {
     object_type: parsed.object_type === "prozess" ? "prozess" : "zielobjekt",
@@ -1749,13 +1908,15 @@ const SCHEMA_S2 = {
       items: {
         type: "object",
         properties: {
+          // Deterministic-first: der Satztext liegt im JS-State und wird beim Merge
+          // über anforderung_id + sentence_idx eingesetzt — das Modell gibt ihn NICHT
+          // zurück (spart Output-Tokens und schließt verfälschte Verbatim-Texte aus).
           anforderung_id: { type: "string" },
           sentence_idx: { type: "integer" },
-          sentence_text: { type: "string" },
           mapped_control_ids: { type: "array", items: { type: "string" } },
           rationale: { type: "string" },
         },
-        required: ["anforderung_id","sentence_idx","sentence_text","mapped_control_ids"],
+        required: ["anforderung_id","sentence_idx","mapped_control_ids"],
       },
     },
   },
@@ -1890,7 +2051,10 @@ async function runStage2_SentenceMapping() {
   }
 
   // 6. Run pool — one call per control-chunk; merge mappings into sentMap.
+  //    Jeder Chunk-Ausgang wird protokolliert: ein fehlgeschlagener oder abgebrochener
+  //    Chunk darf NICHT als "kein Treffer" durchgehen — seine Controls wurden nie bewertet.
   const concurrency = Math.max(1, parseInt($("concurrency").value) || 4);
+  const chunkStatus = new Array(chunks.length).fill(null);  // null = ok · sonst {cancelled, message}
   const tasks = chunks.map((chunk, idx) => async () => {
     const prompt = buildPrompt("s2", {
       baustein_id: state.baustein.id || "?",
@@ -1900,10 +2064,11 @@ async function runStage2_SentenceMapping() {
     });
 
     try {
-      const text = await llm(prompt, `s2 chunk ${idx+1}/${chunks.length} (${chunk.length} Controls)`, $("grounding").checked ? null : SCHEMA_S2);
-      const parsed = extractJson(text);
+      const parsed = await llmJson(prompt, `s2 chunk ${idx+1}/${chunks.length} (${chunk.length} Controls)`, SCHEMA_S2);
       const validControlIds = new Set(chunk.map(c => c.id));
       for (const m of (parsed?.mappings || [])) {
+        // Halluzinations-Filter: nur id/idx-Kombinationen, die im vorab geseedeten
+        // sentMap existieren. Der Satztext kommt aus dem JS-State, nie vom Modell.
         const slot = sentMap.get(`${m.anforderung_id}#${m.sentence_idx}`);
         if (!slot) continue;  // unknown sentence — silently skip (chunk noise)
         const validIds = (m.mapped_control_ids || []).filter(id => validControlIds.has(id));
@@ -1911,13 +2076,40 @@ async function runStage2_SentenceMapping() {
         if (validIds.length && !slot.rationale) slot.rationale = m.rationale || "";
       }
     } catch (e) {
-      l.err(`chunk ${idx+1} failed: ${e.message}`);
+      const msg = (e?.message || String(e)).slice(0, 300);
+      const cancelled = state.cancel || /cancelled/i.test(msg);
+      chunkStatus[idx] = { cancelled, message: msg };
+      if (cancelled) l.warn(`s2 chunk ${idx+1}/${chunks.length} abgebrochen — ${chunk.length} Controls bleiben unbewertet`);
+      else           l.err(`s2 chunk ${idx+1}/${chunks.length} fehlgeschlagen (${chunk.length} Controls unbewertet): ${msg}`);
     }
   });
 
-  await runPool(tasks, concurrency, (d, t) => {
+  const poolResults = await runPool(tasks, concurrency, (d, t) => {
     showProgress(`stage 2 (${state.pipelineMode}) · chunk-mapping (${d}/${t} Chunks)`, d, t);
   });
+
+  // 6b. Post-Pool-Sweep: Chunks, die der Pool wegen Cancel gar nicht erst dispatcht
+  //     hat, tragen keinen eigenen Fehler — hier explizit als abgebrochen markieren.
+  poolResults.forEach((res, idx) => {
+    if (res?.cancelled && !chunkStatus[idx]) {
+      chunkStatus[idx] = { cancelled: true, message: "Chunk wurde wegen Abbruch nie ausgeführt" };
+      l.warn(`s2 chunk ${idx+1}/${chunks.length} nicht ausgeführt (cancel) — ${chunks[idx].length} Controls bleiben unbewertet`);
+    }
+    if (res?.error && !chunkStatus[idx]) {
+      const msg = (res.error?.message || String(res.error)).slice(0, 300);
+      chunkStatus[idx] = { cancelled: false, message: msg };
+      l.err(`s2 chunk ${idx+1}/${chunks.length} fehlgeschlagen (unerwartet): ${msg}`);
+    }
+  });
+
+  // Control-ID → Chunk-Index, damit betroffene Controls zugeordnet werden können.
+  const chunkOfControl = new Map();
+  chunks.forEach((chunk, idx) => { for (const c of chunk) chunkOfControl.set(c.id, idx); });
+  const badChunks = chunkStatus.filter(Boolean).length;
+  if (badChunks) {
+    const affected = chunkStatus.reduce((n, st, idx) => st ? n + chunks[idx].length : n, 0);
+    l.warn(`${badChunks}/${chunks.length} Chunks ohne Ergebnis · ${affected} Controls werden als error/cancelled markiert (NICHT als coverage=missing) · Satz-Recall ist entsprechend unvollständig`);
+  }
 
   // 7. Finalize sentence mappings (merged, one entry per PDF sentence).
   state.sentenceMappings = [...sentMap.values()].map(v => ({
@@ -1945,8 +2137,12 @@ async function runStage2_SentenceMapping() {
     l.info(`${unmappedSentences.length} Sätze ohne Control-Treffer (Kontext / kein passendes Control im Pool)`);
   }
 
-  // 9. Build implReqs from controls, attach mapped sentences
+  // 9. Build implReqs from controls, attach mapped sentences.
+  //    Controls aus einem gescheiterten/abgebrochenen Chunk bekommen coverage
+  //    "error" bzw. "cancelled" — sie sind NICHT dasselbe wie ein echter Kein-Treffer.
   state.implReqs = controls.map(c => {
+    const cIdx = chunkOfControl.get(c.id);
+    const st   = (cIdx != null) ? chunkStatus[cIdx] : null;
     const mapped = sentencesByControl.get(c.id) || [];
     const sourceNames = [...new Set(mapped.map(m => `${m.anforderung_id} ${m.anforderung_name || ""}`.trim()))];
     const description = sourceNames.length
@@ -1965,10 +2161,13 @@ async function runStage2_SentenceMapping() {
       statement_prose: statementProse,
       description,
       source_anforderungen: [...new Set(mapped.map(m => m.anforderung_id))],
-      coverage: mapped.length === 0 ? "missing" : mapped.length <= 2 ? "partial" : "full",
+      coverage: st ? (st.cancelled ? "cancelled" : "error")
+              : mapped.length === 0 ? "missing" : mapped.length <= 2 ? "partial" : "full",
       remarks: null,
       pending: false,
-      error: null,
+      error: st
+        ? `Chunk ${cIdx + 1}/${chunks.length} ${st.cancelled ? "abgebrochen" : "fehlgeschlagen"} — dieses Control wurde nie bewertet (kein Kein-Treffer): ${st.message}`
+        : null,
       validation: null,
     };
   });
@@ -1976,7 +2175,9 @@ async function runStage2_SentenceMapping() {
   // Log sentence-side accounting so the user sees recall at the sentence level
   const totalSent = state.sentenceMappings.length;
   const mappedSent = totalSent - state.unmappedSentences.length;
-  l.ok(`stage 2 (${state.pipelineMode}) done · ${mappedSent}/${totalSent} PDF-Sätze gemappt · ${state.unmappedSentences.length} ohne Treffer · ${state.implReqs.filter(r => r.coverage !== "missing").length}/${state.implReqs.length} Controls erhalten ≥1 Satz`);
+  const failedCtrls = state.implReqs.filter(r => r.coverage === "error" || r.coverage === "cancelled").length;
+  const hitCtrls    = state.implReqs.filter(r => r.coverage === "partial" || r.coverage === "full").length;
+  l.ok(`stage 2 (${state.pipelineMode}) done · ${mappedSent}/${totalSent} PDF-Sätze gemappt · ${state.unmappedSentences.length} ohne Treffer · ${hitCtrls}/${state.implReqs.length} Controls erhalten ≥1 Satz${failedCtrls ? ` · ${failedCtrls} Controls unbewertet (Chunk-Fehler/Abbruch)` : ""}`);
 }
 
 async function runStage2_C2_deterministic() {
@@ -2062,7 +2263,7 @@ function buildCustomCatalog(reqs) {
         parties: [{
           uuid: crypto.randomUUID(),
           type: "organization",
-          name: "Baustein_2_Profile (one-page-app) · build 0.7.1",
+          name: `${APP_NAME} (one-page-app) · build ${APP_VERSION}`,
           props: [{ name: "party-kind", ns: "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools", value: "tool" }],
         }],
       },
@@ -2108,11 +2309,14 @@ function renderStage2() {
   const body = $("s2-body");
   card.classList.remove("hidden");
 
+  const isFailed = r => r.coverage === "error" || r.coverage === "cancelled";
+
   const filter = $("s2-filter").value;
   const rows = state.implReqs.filter(r => {
     if (filter === "ok")      return r.coverage === "full";
     if (filter === "partial") return r.coverage === "partial";
-    if (filter === "missing") return r.coverage === "missing" || r.error;
+    if (filter === "missing") return r.coverage === "missing";       // echter Kein-Treffer
+    if (filter === "failed")  return isFailed(r);                    // Chunk nie ausgewertet
     if (filter === "issues")  return r.validation && ["minor_corrections","major_issues","incorrect"].includes(r.validation.verdict);
     return true;
   });
@@ -2120,12 +2324,18 @@ function renderStage2() {
   body.innerHTML = "";
   for (const r of rows) {
     const div = document.createElement("div");
-    const miss = r.coverage === "missing" || r.error;
-    div.className = "req-row" + (miss ? " miss" : "") + (r.pending ? " pending" : "");
+    const failed = isFailed(r);
+    const miss   = !failed && r.coverage === "missing";
+    div.className = "req-row" + (miss ? " miss" : "") + (failed ? " failed" : "") + (r.pending ? " pending" : "");
     const covColor = r.coverage === "full" ? "var(--green)"
                   : r.coverage === "partial" ? "var(--amber)"
                   : r.coverage === "missing" ? "var(--red)"
+                  : r.coverage === "error" ? "oklch(0.65 0.20 50)"
+                  : r.coverage === "cancelled" ? "var(--amber)"
                   : "var(--text-quiet)";
+    const covLabel = r.coverage === "error" ? "chunk-fehler"
+                  : r.coverage === "cancelled" ? "abgebrochen"
+                  : (r.coverage || "—");
 
     const srcList = (r.source_anforderungen || []).slice(0, 5).join(", ") + ((r.source_anforderungen || []).length > 5 ? "…" : "");
 
@@ -2140,7 +2350,7 @@ function renderStage2() {
         <div style="font-weight:500;margin-bottom:2px">${escapeHtml(r.control_title || "")}</div>
         ${r.pending ? '<div class="rationale"><span class="muted">pending…</span></div>'
           : r.error
-            ? `<div class="rationale" style="color:var(--red)">${escapeHtml(r.error)}</div>`
+            ? `<div class="rationale" style="color:${r.coverage === "cancelled" ? "var(--amber)" : "oklch(0.65 0.20 50)"}">${escapeHtml(r.error)}</div>`
             : `<div class="rationale">
                   <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-quiet);letter-spacing:0.04em;margin-bottom:3px">DESCRIPTION (Anforderungs-Namen):</div>
                   <div style="margin-bottom:8px">${escapeHtml(r.description || "—")}</div>
@@ -2151,7 +2361,7 @@ function renderStage2() {
                   ${r.remarks ? `<br><span style="color:var(--amber);font-size:10px;font-family:'JetBrains Mono',monospace">remarks: ${escapeHtml(r.remarks)}</span>` : ""}
               </div>`}
       </div>
-      <div class="req-ctrl" style="color:${covColor}">${r.pending ? "—" : escapeHtml(r.coverage || "—")}</div>
+      <div class="req-ctrl" style="color:${covColor}">${r.pending ? "—" : escapeHtml(covLabel)}</div>
       <div class="req-conf">
         <span style="color:var(--text-quiet);font-size:9.5px">src:</span>
         <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px">${escapeHtml(srcList || "—")}</span>
@@ -2200,10 +2410,13 @@ function renderStage2() {
   }
 
   const ok    = state.implReqs.filter(r => r.coverage === "full").length;
-  const miss  = state.implReqs.filter(r => r.coverage === "missing" || r.error).length;
+  const miss  = state.implReqs.filter(r => r.coverage === "missing").length;   // echter Kein-Treffer
+  const fail  = state.implReqs.filter(isFailed).length;                        // Chunk nie ausgewertet
   const vIs   = state.implReqs.filter(r => r.validation && ["minor_corrections","major_issues","incorrect"].includes(r.validation.verdict)).length;
   $("s2-ok").textContent   = ok;
   $("s2-miss").textContent = miss;
+  $("s2-fail").textContent = fail;
+  $("s2-fail-chip").classList.toggle("hidden", fail === 0);
   $("s2-val").textContent  = vIs;
   $("s2-val-chip").classList.toggle("hidden", vIs === 0);
 }
@@ -2306,6 +2519,10 @@ async function assembleProfile() {
           { "name": "source-baustein", "ns": NS, "value": bId },
           { "name": "mapping-mode", "ns": NS, "value": state.pipelineMode || "?" },
           ...(state.classification?.zielobjekt_uuid ? [{ "name": "zielobjekt-uuid", "ns": NS, "value": state.classification.zielobjekt_uuid }] : []),
+          // Nachweis, welches Backend+Modell welchen Pass bedient hat — bei
+          // gemischten Maker/Checker-Läufen der eigentliche Audit-Beleg.
+          ...(state.engines.maker   ? [{ "name": "maker-engine",   "ns": NS, "value": state.engines.maker }]   : []),
+          ...(state.engines.checker ? [{ "name": "checker-engine", "ns": NS, "value": state.engines.checker }] : []),
         ],
       },
       "imports": [
@@ -2330,7 +2547,40 @@ function renderStage3() {
   const a = state.profileDef?.["profile"]?.["modify"]?.["alters"]?.length || 0;
   $("s3-chip").textContent = `${state.pipelineMode} · ${n} Controls · ${a} alters`;
   $("btn-download-cat").classList.toggle("hidden", state.pipelineMode !== "C2" || !state.customCatalog);
+  // Fertiges Profil sofort in den Arbeitsstand legen — nicht erst beim Download.
+  saveProfileToSet({ ask: false });
 }
+
+/* Legt das erzeugte Profil (und einen etwaigen eigenen Katalog) im aktiven Set ab.
+   `ask` fragt vorher nach einem Namen; ohne Rückfrage gilt die Baustein-ID. */
+async function saveProfileToSet({ ask } = { ask: true }) {
+  if (!state.profileDef) return;
+  const bId = state.baustein?.id || "baustein";
+  const vorschlag = state.profileName || `${bId} — G++ Profil (${state.pipelineMode || "?"})`;
+  let name = vorschlag;
+  if (ask) {
+    const eingabe = prompt("Name des Profils im Arbeitsstand:", vorschlag);
+    if (eingabe === null) return;
+    name = eingabe.trim() || vorschlag;
+  }
+  state.profileName = name;
+  const safe = name.replace(/[^A-Za-z0-9._-]+/g, "_").replace(/^_+|_+$/g, "") || "profil";
+  try {
+    await gppArtefacts.save({
+      stage: "author", kind: "profile", tool: GPP_TOOL_ID,
+      title: name, filename: `${safe}.json`, data: state.profileDef,
+    });
+    if (state.customCatalog) {
+      await gppArtefacts.save({
+        stage: "author", kind: "catalog", tool: GPP_TOOL_ID,
+        title: `${name} — eigener Katalog`, filename: `${safe}_catalog.json`, data: state.customCatalog,
+      });
+    }
+    l.ok(`Profil „${name}" im Set „${gppArtefacts.activeSet()}" gespeichert.`);
+  } catch (e) { l.warn("Profil nicht ins Set gelegt: " + e.message); }
+}
+
+$("btn-save-set").addEventListener("click", () => saveProfileToSet({ ask: true }));
 
 $("btn-download").addEventListener("click", () => {
   if (!state.profileDef) return;
@@ -2344,6 +2594,14 @@ $("btn-download").addEventListener("click", () => {
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
   l.ok(`download · ${a.download}`);
+  // zusätzlich in den gemeinsamen Artefaktbestand (Übersicht in index.html)
+  try {
+    gppArtefacts.save({
+      stage: "author", kind: "profile", tool: GPP_TOOL_ID,
+      title: `${bId} — G++ Profil (${state.pipelineMode || "?"})`,
+      filename: a.download, data: JSON.parse(text),
+    }).catch(e => l.warn("Artefakt nicht abgelegt: " + e.message));
+  } catch (e) { l.warn("Artefakt nicht abgelegt (kein gültiges JSON im Ausgabefeld)."); }
 });
 
 $("btn-download-cat").addEventListener("click", () => {
@@ -2358,6 +2616,10 @@ $("btn-download-cat").addEventListener("click", () => {
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
   l.ok(`download · ${a.download}`);
+  gppArtefacts.save({
+    stage: "author", kind: "catalog", tool: GPP_TOOL_ID,
+    title: `${bId} — eigener Katalog`, filename: a.download, data: state.customCatalog,
+  }).catch(e => l.warn("Artefakt nicht abgelegt: " + e.message));
 });
 
 $("btn-copy").addEventListener("click", async () => {
@@ -2417,6 +2679,21 @@ async function runChecker() {
 
   state.implReqs.forEach(r => { r.validation = null });
 
+  // Checker-Route: Backend UND Modell dürfen vom Maker abweichen — genau darin
+  // liegt der Audit-Wert (z. B. Gemini als Maker, Anthropic via OpenRouter als
+  // Checker). Einmal auflösen, protokollieren und für den Export festhalten.
+  const checkerRoute = resolveRoute("checker");
+  const makerLabel   = state.engines.maker || resolveRoute("maker").label;
+  state.engines.checker = checkerRoute.label;
+  l.info(`checker-engine · ${checkerRoute.label}${checkerRoute.label === makerLabel
+    ? " (identisch zum Maker — für ein unabhängiges Audit anderes Backend/Modell wählen)"
+    : ` · unabhängig vom Maker (${makerLabel})`}`);
+  if (!checkerRoute.key) {
+    l.err(`checker übersprungen · API-Key für Backend ${checkerRoute.backend} fehlt`);
+    doneStage("s4");
+    return;
+  }
+
   const chunkSize = Math.max(1, parseInt($("chunk-size").value) || 8);
   const chunks = chunk(items, chunkSize);
   const concurrency = Math.max(1, parseInt($("concurrency").value) || 4);
@@ -2445,8 +2722,7 @@ Beurteile, ob diese Sätze inhaltlich tatsächlich zu dem Kernel-Control passen:
     }).join("\n\n");
 
     const prompt = buildPrompt("check", { pairs: pairsBlock });
-    const text = await llm(prompt, `checker ${idx+1}/${chunks.length}`, $("grounding").checked ? null : SCHEMA_CHECK);
-    const parsed = extractJson(text);
+    const parsed = await llmJson(prompt, `checker ${idx+1}/${chunks.length}`, SCHEMA_CHECK, checkerRoute);
     for (const v of (parsed?.validations || [])) {
       const slot = state.implReqs.find(s => s.control_id === v.item_id);
       if (slot) slot.validation = v;
@@ -2475,26 +2751,30 @@ function renderStats() {
   $("stats-card").classList.remove("hidden");
   const grid = $("stats-grid");
 
-  // 1. Coverage distribution donut (Control-Seite)
-  const covBuckets = { full: 0, partial: 0, missing: 0, error: 0 };
+  // 1. Coverage distribution — DER Donut der Karte (primäre kategoriale Verteilung).
+  //    Genau ein Donut, nie zwei: alle weiteren Verteilungen laufen als h-Balken.
+  const covBuckets = { full: 0, partial: 0, missing: 0, error: 0, cancelled: 0 };
   for (const r of completed) {
-    if (r.error) covBuckets.error++;
+    if (r.coverage === "cancelled") covBuckets.cancelled++;
+    else if (r.coverage === "error" || r.error) covBuckets.error++;
     else covBuckets[r.coverage || "missing"]++;
   }
   const covSlices = [
-    { label: "full (3+ Sätze)",    value: covBuckets.full,    color: "oklch(0.75 0.18 145)" },
-    { label: "partial (1–2 Sätze)", value: covBuckets.partial, color: "oklch(0.80 0.15 80)"  },
-    { label: "missing (0 Sätze)",   value: covBuckets.missing, color: "oklch(0.65 0.20 25)"  },
-    { label: "error",               value: covBuckets.error,   color: "oklch(0.55 0.02 280)" },
+    { label: "full (3+ Sätze)",     value: covBuckets.full,      color: "oklch(0.75 0.18 145)" },
+    { label: "partial (1–2 Sätze)", value: covBuckets.partial,   color: "oklch(0.80 0.15 80)"  },
+    { label: "missing (0 Sätze)",   value: covBuckets.missing,   color: "oklch(0.65 0.20 25)"  },
+    { label: "chunk-fehler",        value: covBuckets.error,     color: "oklch(0.65 0.20 50)"  },
+    { label: "abgebrochen",         value: covBuckets.cancelled, color: "oklch(0.55 0.02 280)" },
   ];
 
-  // 1b. Sentence-side coverage (Anforderungs-Seite) — how many sentences found a Control home
+  // 1b. Sentence-side coverage (Anforderungs-Seite) — als horizontale Balken,
+  //     nicht als zweiter Donut.
   const totalSentenceMappings = state.sentenceMappings.length;
   const unmappedSentencesCnt  = state.unmappedSentences.length;
   const mappedSentencesCnt    = totalSentenceMappings - unmappedSentencesCnt;
-  const sentSlices = [
-    { label: "gemappt",              value: mappedSentencesCnt,    color: "oklch(0.75 0.18 145)" },
-    { label: "unmapped (Kontext)",   value: unmappedSentencesCnt,  color: "oklch(0.65 0.20 25)"  },
+  const sentRows = [
+    { label: "gemappt",            value: mappedSentencesCnt,   color: "oklch(0.75 0.18 145)" },
+    { label: "unmapped (Kontext)", value: unmappedSentencesCnt, color: "oklch(0.65 0.20 25)"  },
   ];
 
   // 2. Modalverb distribution (of the Kernel controls)
@@ -2510,17 +2790,14 @@ function renderStats() {
       color: label === "MUSS" ? "oklch(0.7 0.18 300)" : label === "SOLLTE" ? "oklch(0.80 0.15 80)" : "var(--text-quiet)",
     }));
 
-  // 3. Top source-anforderungen referenced (how many controls cite each Anforderung)
+  // 3. Per-Anforderung recall (mapped vs unmapped Sätze). Die frühere separate
+  //    "Top-Anforderungen"-Karte ist hier als Sublabel absorbiert (wie viele
+  //    Controls die Anforderung zitieren) — spart eine Chart-Slot.
   const srcBuckets = {};
   for (const r of completed) {
     for (const aId of (r.source_anforderungen || [])) srcBuckets[aId] = (srcBuckets[aId] || 0) + 1;
   }
-  const srcRows = Object.entries(srcBuckets)
-    .sort(([,a],[,b]) => b - a)
-    .slice(0, 8)
-    .map(([label, value]) => ({ label, value, color: "oklch(0.7 0.15 240)" }));
 
-  // 3b. Per-Anforderung sentence breakdown (mapped vs unmapped for each Anforderung)
   const anfStats = new Map();  // anfId → {mapped: n, unmapped: n}
   for (const m of state.sentenceMappings) {
     const slot = anfStats.get(m.anforderung_id) || { mapped: 0, unmapped: 0 };
@@ -2535,12 +2812,12 @@ function renderStats() {
       value: s.mapped,
       max: s.mapped + s.unmapped,
       color: s.unmapped === 0 ? "oklch(0.75 0.18 145)" : s.mapped === 0 ? "oklch(0.65 0.20 25)" : "oklch(0.80 0.15 80)",
-      sub: `${s.mapped}/${s.mapped + s.unmapped} Sätze gemappt`,
+      sub: `${s.mapped}/${s.mapped + s.unmapped} Sätze · ${srcBuckets[id] || 0} Controls`,
     }));
 
-  // 4. Validation distribution
+  // 4. Validation distribution (höchstes Signal, sobald der Checker gelaufen ist)
   const validations = completed.filter(r => r.validation).map(r => r.validation);
-  let valSection = "";
+  let valSection = null;
   if (validations.length) {
     const VAL_COLORS = {
       confirmed:         "oklch(0.75 0.18 145)",
@@ -2561,13 +2838,17 @@ function renderStats() {
       </div>`;
   }
 
-  grid.innerHTML = `
-    <div class="stat-sub">
+  // Chart-Budget: EIN Donut + max. 3 h-Balken-Karten. Die Liste ist nach
+  // Signalstärke sortiert und wird hart auf 4 gekappt, damit die Karte kein
+  // Dashboard wird und nicht mit den Ergebnissen um Aufmerksamkeit konkurriert.
+  const cards = [
+    // 1 — der einzige Donut: primäre kategoriale Verteilung
+    `<div class="stat-sub">
       <div class="stat-head">Coverage-Verteilung (Control-Seite)</div>
       <div class="donut-wrap">
         ${donutChart(covSlices, 140, 0.6)}
         <div class="donut-legend">
-          ${covSlices.map(s => `
+          ${covSlices.filter(s => s.value > 0).map(s => `
             <div class="legend-row">
               <span class="legend-dot" style="background:${s.color}"></span>
               <span class="legend-label">${s.label}</span>
@@ -2575,42 +2856,38 @@ function renderStats() {
             </div>`).join("")}
         </div>
       </div>
-    </div>
-    ${totalSentenceMappings ? `
+    </div>`,
+
+    // 2 — verdrängte Verteilung: gleicher Inhalt wie früher, jetzt als Balken
+    totalSentenceMappings ? `
     <div class="stat-sub">
       <div class="stat-head">Satz-Verteilung (Anforderungs-Seite)</div>
-      <div class="donut-wrap">
-        ${donutChart(sentSlices, 140, 0.6)}
-        <div class="donut-legend">
-          ${sentSlices.map(s => `
-            <div class="legend-row">
-              <span class="legend-dot" style="background:${s.color}"></span>
-              <span class="legend-label">${s.label}</span>
-              <span class="legend-val">${s.value}</span>
-            </div>`).join("")}
-        </div>
-      </div>
+      ${hBarRows(sentRows)}
       <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--text-quiet);margin-top:8px;letter-spacing:0.05em">
         ${mappedSentencesCnt} von ${totalSentenceMappings} Sätzen wurden auf mindestens 1 Control verteilt.
         ${unmappedSentencesCnt > totalSentenceMappings * 0.3 ? "⚠ Hohe Unmapped-Quote — Modell evtl. zu konservativ" : ""}
       </div>
-    </div>` : ""}
+    </div>` : null,
+
+    // 3 — Checker-Verdict, sobald vorhanden
+    valSection,
+
+    // 4 — Per-Anforderung Recall (inkl. absorbierter Control-Zitat-Zahl)
+    anfRows.length ? `
+    <div class="stat-sub" style="grid-column: 1 / -1">
+      <div class="stat-head">Per-Anforderung Recall (Sätze gemappt · zitierende Controls)</div>
+      ${hBarRowsWithSub(anfRows)}
+    </div>` : null,
+
+    // 5 — Modalverben, nur wenn oben noch ein Slot frei bleibt
+    mvRows.length ? `
     <div class="stat-sub">
       <div class="stat-head">Modalverben (Kernel-Side)</div>
       ${hBarRows(mvRows)}
-    </div>
-    ${srcRows.length ? `
-    <div class="stat-sub">
-      <div class="stat-head">Top-Anforderungen (in Controls referenziert)</div>
-      ${hBarRows(srcRows)}
-    </div>` : ""}
-    ${anfRows.length ? `
-    <div class="stat-sub" style="grid-column: 1 / -1">
-      <div class="stat-head">Per-Anforderung Recall (Satz-Mapping)</div>
-      ${hBarRowsWithSub(anfRows)}
-    </div>` : ""}
-    ${valSection}
-  `;
+    </div>` : null,
+  ].filter(Boolean).slice(0, 4);
+
+  grid.innerHTML = cards.join("\n");
 }
 
 // Variant of hBarRows that shows mapped/total via `max` and adds a per-row sublabel
@@ -2683,12 +2960,30 @@ function updateRunLabel() {
 
 async function run() {
   if (state.running) return;
-  if (!$("api-key").value.trim()) { l.err("API-Key fehlt"); return; }
+
+  // Backend-Vorprüfung: Key/Modell des Maker-Pfads — und, wenn der Checker auf
+  // einem ANDEREN Backend läuft, auch dessen Zugangsdaten. Ein erst nach dem
+  // Maker-Pass auffallender fehlender Key würde die ganze Pass-1-Arbeit entwerten.
+  const makerRoute = resolveRoute("maker");
+  if (!makerRoute.key) { l.err(`API-Key fehlt (Backend ${makerRoute.backend})`); return; }
+  if (makerRoute.backend === "openrouter" && !makerRoute.model) {
+    l.err("kein OpenRouter-Modell gewählt — Dropdown oder Slug-Feld füllen"); return;
+  }
+  if ($("maker-checker").checked) {
+    const cr = resolveRoute("checker");
+    if (cr.backend !== makerRoute.backend) {
+      if (!cr.key)   { l.err(`Checker-Backend ${cr.backend}: API-Key fehlt`); return; }
+      if (cr.backend === "openrouter" && !cr.model) { l.err("Checker-Backend openrouter: kein Modell gewählt"); return; }
+    }
+  }
   if (!state.baustein) { l.err("kein PDF geladen"); return; }
   if (!state.catalogControls.length) { l.err("kein G++ Anwenderkatalog geladen"); return; }
 
   state.running = true;
   state.cancel = false;
+  state.engines = { maker: makerRoute.label, checker: null };
+  l.info(`engine · maker ${makerRoute.label}${makerRoute.grounded ? " · grounding/web an" : ""}` +
+    ($("maker-checker").checked ? ` · checker ${resolveRoute("checker").label}` : ""));
   resetTokens();
   $("btn-run").disabled = true;
   $("btn-cancel").classList.remove("hidden");
@@ -2732,7 +3027,7 @@ async function run() {
 
     await runStage3();
     showProgress("done", 1, 1);
-    l.ok(`pipeline done in ${Math.round((performance.now()-tAll)/100)/10}s · mode=${state.pipelineMode} · ${state.tokens.calls} calls · ${state.tokens.total} tok (cached ${state.tokens.cached})`);
+    l.ok(`pipeline done in ${Math.round((performance.now()-tAll)/100)/10}s · mode=${state.pipelineMode} · maker ${state.engines.maker}${state.engines.checker ? ` · checker ${state.engines.checker}` : ""} · ${state.tokens.calls} calls · ${state.tokens.total} tok (cached ${state.tokens.cached})`);
     $("status-pill").textContent = "fertig";
   } catch (e) {
     l.err(`pipeline aborted: ${e.message}`);
@@ -2765,6 +3060,7 @@ $("btn-clear").addEventListener("click", () => {
   state.unmappedSentences = [];
   state.customCatalog = null;
   state.profileDef = null;
+  state.engines = { maker: null, checker: null };
   $("s1-result").classList.add("hidden");
   $("s2-result").classList.add("hidden");
   $("s3-result").classList.add("hidden");
@@ -2782,17 +3078,14 @@ $("btn-clear").addEventListener("click", () => {
 
 loadPrefs();
 updateRunLabel();
+l.info(`backend · ${state.backend} aktiv · Maker-Route ${resolveRoute("maker").label}`);
 
 // Auto-load G++ Anwenderkatalog + Zielobjektkategorien + Pools on startup
 window.addEventListener("load", () => {
-  if ($("cat-url").value.trim()) {
-    l.info("auto-loading G++ Anwenderkatalog…");
-    $("btn-load-cat").click();
-  }
-  if ($("pi-url").value.trim()) {
-    l.info("auto-loading Zielobjektkategorien…");
-    setTimeout(() => $("btn-load-pi").click(), 200);  // stagger to not collide
-  }
+  l.info("auto-loading G++ Anwenderkatalog…");
+  $("btn-load-cat").click();
+  l.info("auto-loading Zielobjektkategorien…");
+  setTimeout(() => $("btn-load-pi").click(), 200);  // stagger to not collide
   l.info("auto-loading Control-Pools…");
   setTimeout(loadPools, 400);
 });

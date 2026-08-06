@@ -1,7 +1,7 @@
 # Code Review Issues and Recommendations
 
 This document outlines issues identified during the end-to-end review of the OSCAL
-generation pipeline (`Gpp-ai-tool`) **and** its downstream consumers (`One-Page-Apps`),
+generation pipeline (`Gpp-ai-tool`) **and** its downstream consumers (`GS++-oscal-app`),
 categorized by severity.
 
 > **Status (branch `fix/oscal-issues`):** Most items are resolved and marked
@@ -72,8 +72,8 @@ copy; it falls back to the AI value only if no original prose exists. Applied id
 both enhancement stages and covered by an isolated function test (L3 == original prose,
 other levels still AI-generated, guard edge-cases hold).
 
-### 2.3. Inconsistent Profile Consumption in One-Page-Apps — ✅ RESOLVED
-**Location:** `One-Page-Apps/GSpp-Viewer.html` (and the documented contract)
+### 2.3. Inconsistent Profile Consumption in GS++-oscal-app — ✅ RESOLVED
+**Location:** `GS++-oscal-app/GSpp-Viewer.html` (and the documented contract)
 **Re-assessment:** The original framing was partly overstated. Of the three "imports-only"
 apps, two **should** read only control IDs by design: `ssp_generator.html` *generates* an SSP
 that references the profile (the maturity is consumed downstream in `ssp_ausfuellen.html`),
@@ -92,7 +92,7 @@ helper would be cleaner, but each app is a standalone single-file tool, so the c
 (3.9) is the pragmatic single source of truth for now.
 
 ### 2.4. Apps Do Not Resolve the Imported Catalog — ✅ RESOLVED (re-assessed)
-**Location:** `One-Page-Apps/{pruefung_ap_ar,ssp_ausfuellen,GSpp-Viewer}.html`
+**Location:** `GS++-oscal-app/{pruefung_ap_ar,ssp_ausfuellen,GSpp-Viewer}.html`
 **Re-assessment:** Also overstated. Every app that actually **displays** control content
 already resolves a catalog: `pruefung_ap_ar.html` fetches the G++ catalog (`CATALOG_URL`,
 building a `cid → {title, prose}` map); `ssp_ausfuellen.html` follows `import-profile.href` →
@@ -106,7 +106,7 @@ never fetch the catalog" did not hold on inspection. Documented here so it isn't
 ## 3. Medium Priority Issues
 
 ### 3.1. Primary Maturity Content Hidden in Custom `props` Instead of `prose` — ✅ RESOLVED
-**Location:** both `stage_*_enhanced.py` (`build_oscal_maturity_statements`), `scripts/migrate_maturity_parts_to_prose.py`, `One-Page-Apps/{pruefung_ap_ar,ssp_ausfuellen}.html`
+**Location:** both `stage_*_enhanced.py` (`build_oscal_maturity_statements`), `scripts/migrate_maturity_parts_to_prose.py`, `GS++-oscal-app/{pruefung_ap_ar,ssp_ausfuellen}.html`
 **Was:** Each maturity part's `prose` was the *original* control description (identical for
 all five levels, prefixed `(BSI Baustein X)`), while the real per-level text sat in custom
 props (`statement`, `guidance`, `assessment-method`). A generic OSCAL renderer shows
@@ -209,7 +209,7 @@ attempt, local-file path unaffected).
 renamed/moved — a 404 is still a hard failure. Consider bundling a last-known-good copy.
 
 ### 3.9. Undocumented Pipeline ↔ App Contract — ✅ RESOLVED (documented); automated roundtrip test still open
-**Location:** `docs/profile-maturity-contract.md`, both `stage_*_enhanced.py`, `One-Page-Apps/*.html`
+**Location:** `docs/profile-maturity-contract.md`, both `stage_*_enhanced.py`, `GS++-oscal-app/*.html`
 **Was:** The structure the apps depend on (prop names, part names, `by-id` convention,
 namespace, which text lives in prose vs props) was an implicit contract with no shared
 documentation — a rename on either side broke consumption silently.
@@ -270,7 +270,7 @@ injected automatically (it may omit `level_3_*`), removing the misleading "exact
 instruction. This eliminates the chunk-discard data-loss path and dovetails with 2.2.
 
 ### 4.6. Leftover Component-Definition Wording in Apps — ✅ RESOLVED
-**Location:** `One-Page-Apps/ssp_ausfuellen.html`, `ssp_generator.html`
+**Location:** `GS++-oscal-app/ssp_ausfuellen.html`, `ssp_generator.html`
 **Was:** After the migration the function `processComponentDefinitions()`, the
 `componentDefinitions` map, and several "Komponentendefinition" comments/labels remained
 even though the apps now consume profiles.

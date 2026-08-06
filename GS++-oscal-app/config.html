@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Einstellungen · Grundschutz++ OSCAL Tools</title>
+<style>
+    select,option{background-color:#1b1b23;color:#e8e8ef}
+    select{color-scheme:dark}
+:root {
+  --bg-deep: oklch(0.13 0.02 280);
+  --bg-elev-1: oklch(0.95 0.005 280 / 0.04);
+  --bg-elev-2: oklch(0.95 0.005 280 / 0.06);
+  --border-1: oklch(0.95 0.005 280 / 0.06);
+  --border-2: oklch(0.95 0.005 280 / 0.10);
+  --text-primary: oklch(0.95 0.005 280);
+  --text-secondary: oklch(0.75 0.02 280);
+  --text-quiet: oklch(0.55 0.02 280);
+  --accent: oklch(0.7 0.18 300);
+  --accent-soft: oklch(0.7 0.18 300 / 0.15);
+  --green: oklch(0.75 0.18 145);
+  --amber: oklch(0.80 0.15 80);
+  --red: oklch(0.65 0.20 25);
+  --mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg-deep); color: var(--text-primary);
+  min-height: 100vh; padding: 0 0 60px;
+}
+.aurora { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
+.aurora-1 { width: 600px; height: 600px; top: -220px; left: -120px; background: radial-gradient(circle, oklch(0.4 0.18 300 / .45), transparent 70%); filter: blur(60px); }
+.aurora-2 { width: 700px; height: 700px; bottom: -320px; right: -220px; background: radial-gradient(circle, oklch(0.4 0.16 240 / .35), transparent 70%); filter: blur(80px); }
+header, main { position: relative; z-index: 1; }
+header {
+  display: flex; align-items: center; gap: 12px; height: 62px; padding: 0 20px;
+  background: var(--bg-elev-1); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-1); position: sticky; top: 0; z-index: 5;
+}
+header .brand { font-weight: 600; font-size: .95rem; }
+header .brand span { color: var(--accent); }
+header .spacer { flex: 1; }
+a.btn, button.btn {
+  color: var(--text-secondary); text-decoration: none; background: transparent;
+  font-family: var(--mono); font-size: .7rem; letter-spacing: .06em;
+  padding: 6px 11px; border: 1px solid var(--border-2); border-radius: 8px;
+  cursor: pointer; transition: all .15s ease; white-space: nowrap;
+}
+a.btn:hover, button.btn:hover { color: var(--text-primary); border-color: var(--accent); background: var(--bg-elev-2); }
+button.btn.primary { color: var(--text-primary); border-color: var(--accent); background: var(--accent-soft); }
+button.btn:disabled { opacity: .45; cursor: not-allowed; }
+main { max-width: 940px; margin: 0 auto; padding: 24px 20px; }
+.card {
+  background: var(--bg-elev-1); border: 1px solid var(--border-1);
+  border-radius: 14px; padding: 20px; margin-bottom: 18px; backdrop-filter: blur(20px);
+}
+.card > h2 { margin: 0 0 4px; font-size: 1rem; font-weight: 600; }
+.card > .sub { margin: 0 0 16px; font-size: .78rem; color: var(--text-quiet); line-height: 1.5; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+label.f { display: block; font-family: var(--mono); font-size: .62rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--text-quiet); margin: 0 0 5px; }
+input[type=text], input[type=password], select, textarea {
+  width: 100%; background: oklch(0.10 0.02 280); color: var(--text-primary);
+  border: 1px solid var(--border-2); border-radius: 8px; padding: 8px 10px;
+  font-size: .82rem; font-family: inherit;
+}
+textarea { font-family: var(--mono); font-size: .72rem; line-height: 1.5; min-height: 150px; resize: vertical; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+.note { font-size: .72rem; color: var(--text-quiet); margin-top: 6px; line-height: 1.5; }
+.row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 9px 0; border-bottom: 1px solid var(--border-1); font-size: .82rem; }
+.toggle:last-child { border-bottom: 0; }
+.pill { font-family: var(--mono); font-size: .6rem; letter-spacing: .08em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 5px; border: 1px solid var(--border-2); color: var(--text-quiet); }
+.pill.ok { color: var(--green); border-color: var(--green); }
+.pill.warn { color: var(--amber); border-color: var(--amber); }
+.pill.bad { color: var(--red); border-color: var(--red); }
+.saved { font-family: var(--mono); font-size: .6rem; letter-spacing: .1em; color: var(--green);
+  opacity: 0; transition: opacity .2s; }
+.saved.show { opacity: 1; }
+.tabs { display: flex; gap: 4px; margin-bottom: 14px; flex-wrap: wrap; }
+.tabs button { flex: 0 0 auto; background: transparent; color: var(--text-secondary);
+  border: 1px solid transparent; border-radius: 8px; padding: 6px 12px; font-size: .8rem;
+  cursor: pointer; font-family: inherit; }
+.tabs button.active { color: var(--text-primary); background: var(--accent-soft); border-color: var(--border-2); }
+.src { border: 1px solid var(--border-1); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+.src .hd { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.src .nm { font-weight: 600; font-size: .85rem; }
+.src code { font-family: var(--mono); font-size: .68rem; color: var(--text-secondary); word-break: break-all; }
+.empty { padding: 22px; text-align: center; color: var(--text-quiet); font-size: .82rem;
+  border: 1px dashed var(--border-2); border-radius: 10px; }
+.bar { height: 6px; background: var(--bg-elev-2); border-radius: 3px; overflow: hidden; margin: 8px 0 4px; }
+.bar > i { display: block; height: 100%; background: var(--accent); }
+</style>
+</head>
+<body>
+<div class="aurora aurora-1"></div>
+<div class="aurora aurora-2"></div>
+
+<header>
+  <div class="brand">◈ Grundschutz<span>++</span> · Einstellungen</div>
+  <span class="pill" id="core-pill">core –</span>
+  <div class="spacer"></div>
+  <span class="saved" id="saved-ind">GESPEICHERT</span>
+  <a class="btn" href="index.html">← Übersicht</a>
+</header>
+
+<main>
+  <div class="card">
+    <h2>KI-Zugang</h2>
+    <p class="sub">Gilt für alle Tools der Sammlung. Backend, Schlüssel und Modell werden hier einmal gesetzt; die einzelnen Anwendungen haben keine eigenen Felder mehr. Die Schlüssel bleiben ausschließlich im <code>localStorage</code> dieses Browsers und werden nie an einen Server dieser Sammlung geschickt — nur direkt an den gewählten Anbieter.</p>
+    <div class="grid">
+      <div>
+        <label class="f" for="backend">Backend</label>
+        <select id="backend">
+          <option value="gemini">Google Gemini</option>
+          <option value="openrouter">OpenRouter</option>
+          <option value="openai">OpenAI-kompatibel (eigener Endpoint)</option>
+        </select>
+      </div>
+      <div id="wrap-gemini">
+        <label class="f" for="key-gemini">Gemini API Key</label>
+        <input type="password" id="key-gemini" placeholder="AIza…" autocomplete="off">
+      </div>
+      <div id="wrap-or">
+        <label class="f" for="key-openrouter">OpenRouter API Key</label>
+        <input type="password" id="key-openrouter" placeholder="sk-or-…" autocomplete="off">
+      </div>
+      <div id="wrap-openai">
+        <label class="f" for="key-openai">API-Key des Endpoints</label>
+        <input type="password" id="key-openai" placeholder="sk-…" autocomplete="off">
+      </div>
+    </div>
+    <div class="grid" id="wrap-openai-url" style="margin-top:14px">
+      <div>
+        <label class="f" for="openai-base">Basis-URL (OpenAI-kompatibel)</label>
+        <input type="url" id="openai-base" placeholder="https://mein-host/v1" spellcheck="false">
+        <div class="note">Erwartet <code>POST &lt;Basis-URL&gt;/chat/completions</code> — also die übliche OpenAI-Schnittstelle,
+          wie sie etwa vLLM, LM Studio, Ollama, LiteLLM oder Azure-Proxys anbieten. Ohne abschließenden Schrägstrich.
+          Der Host muss CORS für diese Seite erlauben.</div>
+      </div>
+      <div>
+        <label class="f" for="model-openai">Modell</label>
+        <input type="text" id="model-openai" placeholder="z. B. llama-3.3-70b" spellcheck="false">
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="btn-openai-models">⟳ Modelle abfragen</button>
+          <span class="note" id="openai-note" style="margin:0">Nicht abgefragt.</span>
+        </div>
+      </div>
+    </div>
+    <div class="grid" style="margin-top:14px">
+      <div id="wrap-gemini-model">
+        <label class="f" for="model-gemini">Gemini-Modell</label>
+        <select id="model-gemini">
+          <option value="gemini-3.6-flash">gemini-3.6-flash (GA)</option>
+          <option value="gemini-3.5-flash">gemini-3.5-flash (GA)</option>
+          <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (GA)</option>
+          <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite (GA)</option>
+          <option value="gemini-3.1-pro-preview">gemini-3.1-pro-preview</option>
+          <option value="gemini-3-flash-preview">gemini-3-flash-preview</option>
+        </select>
+        <div class="note">Die Pro-Preview hat kein Free-Tier; die Flash-Modelle sind die freie Alternative.</div>
+      </div>
+      <div id="wrap-or-model">
+        <label class="f" for="model-openrouter">OpenRouter-Modell (vendor/slug)</label>
+        <input type="text" id="model-openrouter" placeholder="z. B. google/gemini-3-flash" spellcheck="false">
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="btn-or-refresh">⟳ Katalog laden</button>
+          <span class="note" id="or-note" style="margin:0">Katalog nicht geladen.</span>
+        </div>
+        <!-- Der Katalog hat weit über tausend Einträge — ohne Suche unbenutzbar. -->
+        <input type="search" id="or-search" placeholder="Modelle durchsuchen (Anbieter, Name, Teilwort) …"
+               spellcheck="false" style="margin-top:8px;display:none">
+        <select id="or-catalog" size="8" style="margin-top:8px;display:none"></select>
+        <div class="note" id="or-filter-note" style="display:none"></div>
+      </div>
+      <div>
+        <label class="f" for="thinking">Thinking / Reasoning</label>
+        <select id="thinking">
+          <option value="minimal">minimal</option>
+          <option value="low">low</option>
+          <option value="medium">medium</option>
+          <option value="high">high</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:16px">
+      <label class="f" for="ai-context">Unternehmenskontext</label>
+      <textarea id="ai-context" rows="3" placeholder="z. B. Wir sind KRITIS-Betreiber nach BSIG §8a, NIS2-pflichtig, Branche Energie …"
+                style="width:100%;background:var(--bg-elev-2);color:var(--text-primary);border:1px solid var(--border-2);border-radius:8px;padding:8px 10px;font-size:.82rem"></textarea>
+      <div class="note">Geht als Hintergrund in die KI-Aufrufe der Werkzeuge ein — beschreibt die Institution, nicht ein einzelnes Dokument.</div>
+    </div>
+    <div style="margin-top:16px">
+      <div class="toggle">
+        <span>Google-Search-Grounding <span class="note" style="display:block;margin:2px 0 0">Schaltet strukturierte Ausgaben ab — nur einschalten, wenn Belege wichtiger sind als Schema-Treue.</span></span>
+        <input type="checkbox" id="grounding">
+      </div>
+      <div class="toggle">
+        <span>OpenRouter: nur schemafähige Modelle <span class="note" style="display:block;margin:2px 0 0">Filtert den Katalog auf Modelle mit structured outputs.</span></span>
+        <input type="checkbox" id="or-structuredonly">
+      </div>
+    </div>
+    <div class="grid" style="margin-top:16px">
+      <div>
+        <label class="f" for="checker-backend">Checker-Route (2. Blick)</label>
+        <select id="checker-backend">
+          <option value="same">wie Maker</option>
+          <option value="gemini">Gemini</option>
+          <option value="openrouter">OpenRouter</option>
+        </select>
+        <div class="note">Ein anderer Anbieter macht die Zweitprüfung wirklich unabhängig.</div>
+      </div>
+      <div>
+        <label class="f" for="checker-model">Checker-Modell (leer = Backend-Standard)</label>
+        <input type="text" id="checker-model" placeholder="leer = Standardmodell des Backends" spellcheck="false">
+      </div>
+    </div>
+    <div class="grid" style="margin-top:16px">
+      <div><label class="f" for="run-concurrency">Parallele Aufrufe</label><input type="text" id="run-concurrency" inputmode="numeric"></div>
+      <div><label class="f" for="run-chunk">Chunk (Anzahl)</label><input type="text" id="run-chunk" inputmode="numeric">
+        <div class="note">Befunde bzw. Elemente je Aufruf — vom Validator und den Prüfwerkzeugen benutzt.</div></div>
+      <div><label class="f" for="run-chunkchars">Chunk (Zeichen)</label><input type="text" id="run-chunkchars" inputmode="numeric">
+        <div class="note">Dokumenttext je Aufruf — von den SSP-Generatoren bei der Dokumentanalyse benutzt.</div></div>
+      <div><label class="f" for="run-retries">Retries</label><input type="text" id="run-retries" inputmode="numeric"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Prompts</h2>
+    <p class="sub">Jedes Tool meldet seine Prompts beim Start hier an — samt Standardtext. Bearbeitet wird also immer der aktuelle Stand des jeweiligen Tools, ohne dass die Texte doppelt gepflegt werden müssten. Ein Tool, das noch nie geöffnet wurde, taucht erst nach dem ersten Start auf.</p>
+    <div class="tabs" id="prompt-tabs"></div>
+    <div id="prompt-body"></div>
+  </div>
+
+  <div class="card">
+    <h2>Quellen und Pins</h2>
+    <p class="sub">Kataloge und Hilfsdateien hängen an einem festen Commit, damit dieselbe Eingabe morgen dasselbe Ergebnis liefert (Handbuch 3.13/3.14, Grundregel 8). Aktuell bleiben Sie trotzdem: „Nach Updates suchen" holt den neuesten Commit der jeweiligen Datei, zeigt ihn an und übernimmt ihn erst auf Klick.</p>
+    <div class="row" style="margin-bottom:12px">
+      <button class="btn primary" id="btn-check-all">⟳ Alle Quellen prüfen</button>
+      <button class="btn" id="btn-reset-src">Alle auf Tool-Standard zurücksetzen</button>
+      <span class="note" id="src-summary" style="margin:0"></span>
+    </div>
+    <div style="margin-bottom:14px">
+      <label class="f" for="gh-token">GitHub-Token (optional)</label>
+      <input type="password" id="gh-token" placeholder="github_pat_… oder ghp_…" autocomplete="off">
+      <div class="note">Nur zum <b>Auflisten</b> von Verzeichnissen und zur Update-Prüfung — ein Token ohne Rechte
+        („public repo, read-only") genügt. Ohne Token erlaubt GitHub 60 Anfragen pro Stunde und meldet danach
+        <code>403</code>; mit Token sind es 5000. <b>Die Anmeldung im Browser hilft dabei nicht:</b>
+        <code>api.github.com</code> wertet keine Session-Cookies aus. Der Token bleibt im
+        <code>localStorage</code> dieses Browsers.</div>
+    </div>
+    <div id="src-body"></div>
+  </div>
+
+  <div class="card">
+    <h2>Speicher</h2>
+    <p class="sub">Artefakte liegen in der IndexedDB <code>gpp-artefacts</code>, Einstellungen im <code>localStorage</code> unter <code>gpp:cfg:</code>. Beides gehört diesem Browserprofil und verlässt es nicht.</p>
+    <div id="storage-body"></div>
+    <div class="row" style="margin-top:14px">
+      <a class="btn" href="index.html#artefacts">Artefakte ansehen und exportieren</a>
+      <button class="btn" id="btn-reset-cfg">Einstellungen zurücksetzen</button>
+      <button class="btn" id="btn-forget-keys">Nur API-Keys löschen</button>
+    </div>
+  </div>
+</main>
+
+<script src="gpp-core.js?v=3.3"></script>
+<script>
+if (typeof gppCfg === "undefined") {
+  document.querySelector("main").innerHTML =
+    '<div class="card"><h2 style="color:var(--red)">gpp-core.js fehlt</h2>' +
+    '<p class="sub">Diese Seite braucht <code>gpp-core.js</code> im selben Ordner. ' +
+    'Bitte die komplette Sammlung entpacken statt einzelner Dateien.</p></div>';
+  throw new Error("gpp-core.js missing");
+}
+const $ = id => document.getElementById(id);
+document.getElementById("core-pill").textContent = "core v" + GPP_CORE_VERSION;
+
+let saveTimer = null;
+function flashSaved() {
+  const s = $("saved-ind");
+  s.classList.add("show");
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => s.classList.remove("show"), 1100);
+}
+
+/* ---------- KI-Zugang ---------- */
+const FIELDS = [
+  ["backend", "ai:backend"], ["key-gemini", "ai:key:gemini"], ["key-openrouter", "ai:key:openrouter"],
+  ["key-openai", "ai:key:openai"], ["model-openai", "ai:model:openai"], ["openai-base", "ai:base:openai"],
+  ["model-gemini", "ai:model:gemini"], ["model-openrouter", "ai:model:openrouter"],
+  ["thinking", "ai:thinking"], ["checker-backend", "ai:checker:backend"], ["checker-model", "ai:checker:model"],
+  ["run-concurrency", "run:concurrency"], ["run-chunk", "run:chunk"],
+  ["run-chunkchars", "run:chunkchars"], ["run-retries", "run:retries"],
+  ["ai-context", "ai:context"], ["gh-token", "gh:token"],
+];
+const TOGGLES = [["grounding", "ai:grounding"], ["or-structuredonly", "ai:or:structuredonly"]];
+
+FIELDS.forEach(([id, key]) => {
+  const el = $(id);
+  el.value = gppCfg.get(key);
+  /* trim: Keys aus Passwortmanagern kommen gern mit Zeilenumbruch — der landet
+     sonst als ungültiger HTTP-Header in den Tools. Debounce, weil jeder Write
+     per storage-Event alle offenen Tabs neu rendern lässt. */
+  const write = () => { gppCfg.set(key, el.value.trim()); flashSaved(); if (key === "ai:backend") applyBackend(); };
+  let t;
+  el.addEventListener("input", () => { clearTimeout(t); t = setTimeout(write, 250); });
+  el.addEventListener("change", () => { clearTimeout(t); write(); });
+});
+TOGGLES.forEach(([id, key]) => {
+  const el = $(id);
+  el.checked = gppCfg.getBool(key);
+  el.addEventListener("change", () => { gppCfg.set(key, el.checked ? "1" : "0"); flashSaved(); });
+});
+function applyBackend() {
+  const be = gppCfg.get("ai:backend");
+  const dim = (id, aktiv) => { const el = $(id); if (el) el.style.opacity = aktiv ? "1" : ".45"; };
+  dim("wrap-gemini", be === "gemini");
+  dim("wrap-gemini-model", be === "gemini");
+  dim("wrap-or", be === "openrouter");
+  dim("wrap-or-model", be === "openrouter");
+  dim("wrap-openai", be === "openai");
+  dim("wrap-openai-url", be === "openai");
+}
+applyBackend();
+
+/* OpenRouter-Katalog mit Suche — die Liste ist zu lang zum Durchscrollen. */
+let orModels = [];
+function renderOrCatalog() {
+  const sel = $("or-catalog"), note = $("or-filter-note"), search = $("or-search");
+  const q = (search.value || "").trim().toLowerCase();
+  const hits = q ? orModels.filter(m => m.id.toLowerCase().includes(q) ||
+                                        (m.name || "").toLowerCase().includes(q)) : orModels;
+  sel.innerHTML = hits.slice(0, 300).map(m => `<option value="${m.id}">${m.id}</option>`).join("");
+  sel.style.display = hits.length ? "" : "none";
+  note.style.display = "";
+  note.textContent = q
+    ? `${hits.length} von ${orModels.length} Modellen passen${hits.length > 300 ? " — die ersten 300 werden gezeigt" : ""}.`
+    : `${orModels.length} Modelle${orModels.length > 300 ? " — die ersten 300 werden gezeigt; nutze die Suche" : ""}.`;
+}
+$("or-search").addEventListener("input", renderOrCatalog);
+$("or-catalog").addEventListener("change", () => {
+  const v = $("or-catalog").value;
+  if (!v) return;
+  $("model-openrouter").value = v;
+  gppCfg.set("ai:model:openrouter", v);
+  flashSaved();
+});
+$("btn-or-refresh").addEventListener("click", async () => {
+  const note = $("or-note");
+  note.textContent = "lade …";
+  try {
+    const r = await fetch("https://openrouter.ai/api/v1/models");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const data = await r.json();
+    let models = (data.data || []);
+    if (gppCfg.getBool("ai:or:structuredonly")) {
+      models = models.filter(m => (m.supported_parameters || []).includes("structured_outputs"));
+    }
+    orModels = models.sort((a, b) => a.id.localeCompare(b.id));
+    $("or-search").style.display = "";
+    renderOrCatalog();
+    note.textContent = `${orModels.length} Modelle${gppCfg.getBool("ai:or:structuredonly") ? " mit structured outputs" : ""}.`;
+  } catch (e) {
+    note.textContent = "Katalog nicht abrufbar: " + e.message;
+  }
+});
+
+/* Eigener OpenAI-kompatibler Endpoint: Modelle über /models abfragen. */
+$("btn-openai-models").addEventListener("click", async () => {
+  const note = $("openai-note");
+  const base = ($("openai-base").value || "").trim().replace(/\/+$/, "");
+  if (!base) { note.textContent = "Erst die Basis-URL eintragen."; return; }
+  note.textContent = "frage ab …";
+  try {
+    const key = gppCfg.get("ai:key:openai");
+    const r = await fetch(base + "/models", key ? { headers: { Authorization: "Bearer " + key } } : undefined);
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const data = await r.json();
+    const ids = (data.data || data.models || []).map(m => m.id || m.name).filter(Boolean).sort();
+    if (!ids.length) { note.textContent = "Antwort enthielt keine Modelle."; return; }
+    let list = document.getElementById("openai-models-list");
+    if (!list) { list = document.createElement("datalist"); list.id = "openai-models-list"; document.body.appendChild(list); }
+    list.innerHTML = ids.map(id => `<option value="${id}">`).join("");
+    $("model-openai").setAttribute("list", "openai-models-list");
+    note.textContent = `${ids.length} Modelle — im Feld tippen zum Filtern.`;
+  } catch (e) {
+    note.textContent = "Abfrage fehlgeschlagen: " + e.message + " (CORS des Hosts prüfen)";
+  }
+});
+
+/* Werkzeuge, die aus der Sammlung ausgezogen sind (one-page-apps/): sie laufen
+   eigenständig und lesen diese Konfiguration nicht mehr. Ihre alten
+   Registrierungen liegen aber noch im localStorage jedes Browsers, in dem sie
+   einmal liefen — und würden hier Prompts und Repin-Knöpfe anbieten, die
+   nirgends mehr ankommen. Deshalb einmalig entfernen. */
+const GPP_AUSGEZOGEN = ["ssp_generator_ed23", "c5-oscal-converter"];
+for (const tool of GPP_AUSGEZOGEN) {
+  localStorage.removeItem("gpp:cfg:srcdefaults:" + tool);
+  localStorage.removeItem("gpp:cfg:promptdefaults:" + tool);
+}
+
+/* ---------- Prompts (aus der Selbstregistrierung der Tools) ---------- */
+function promptRegistrations() {
+  const out = [];
+  for (const k of Object.keys(localStorage)) {
+    if (!k.startsWith("gpp:cfg:promptdefaults:")) continue;
+    try { out.push(JSON.parse(localStorage.getItem(k))); } catch (e) { /* kaputter Eintrag wird ignoriert */ }
+  }
+  return out.sort((a, b) => (a.tool || "").localeCompare(b.tool || ""));
+}
+let activeTool = null;
+function renderPrompts() {
+  const regs = promptRegistrations();
+  const tabs = $("prompt-tabs"), body = $("prompt-body");
+  if (!regs.length) {
+    tabs.innerHTML = "";
+    body.innerHTML = '<div class="empty">Noch kein Tool hat Prompts angemeldet. Öffne die Anwendungen einmal über die <a href="index.html" style="color:var(--accent)">Übersicht</a> — danach sind ihre Prompts hier bearbeitbar.</div>';
+    return;
+  }
+  if (!regs.find(r => r.tool === activeTool)) activeTool = regs[0].tool;
+  tabs.innerHTML = regs.map(r =>
+    `<button data-tool="${r.tool}" class="${r.tool === activeTool ? "active" : ""}">${r.tool} <span class="pill">${r.prompts.length}</span></button>`
+  ).join("");
+  tabs.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { activeTool = b.dataset.tool; renderPrompts(); }));
+  const reg = regs.find(r => r.tool === activeTool);
+  body.innerHTML = reg.prompts.map(p => {
+    const stored = localStorage.getItem("gpp:cfg:prompt:" + reg.tool + ":" + p.id);
+    const value = stored !== null ? stored : p.default;
+    const custom = stored !== null && stored !== p.default;
+    return `<div style="margin-bottom:18px">
+      <div class="row" style="margin-bottom:6px">
+        <b style="font-size:.85rem">${p.label || p.id}</b>
+        <span class="pill ${custom ? "warn" : ""}">${custom ? "angepasst" : "standard"}</span>
+        <span class="spacer" style="flex:1"></span>
+        <button class="btn" data-reset="${p.id}">Auf Standard zurücksetzen</button>
+      </div>
+      <textarea data-prompt="${p.id}" spellcheck="false">${value.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]))}</textarea>
+      <div class="note" data-ph="${p.id}"></div>
+    </div>`;
+  }).join("");
+  body.querySelectorAll("textarea[data-prompt]").forEach(ta => {
+    const id = ta.dataset.prompt;
+    const check = () => {
+      const p = reg.prompts.find(x => x.id === id);
+      const missing = (p.placeholders || []).filter(ph => !ta.value.includes(ph));
+      const el = body.querySelector(`[data-ph="${id}"]`);
+      el.innerHTML = missing.length
+        ? `<span style="color:var(--amber)">Platzhalter fehlt: ${missing.join(", ")} — wird zur Laufzeit angehängt.</span>`
+        : (p.placeholders || []).length ? `Platzhalter vollständig: ${p.placeholders.join(", ")}` : "";
+    };
+    check();
+    /* Debounced, und identisch-mit-Default löscht den Override wieder — sonst
+       friert ein Tipp-und-Undo den heutigen Standardtext dauerhaft ein und
+       spätere verbesserte Defaults kämen nie an. */
+    let t;
+    const persist = () => {
+      const p = reg.prompts.find(x => x.id === id);
+      if (p && ta.value === p.default) localStorage.removeItem("gpp:cfg:prompt:" + reg.tool + ":" + id);
+      else localStorage.setItem("gpp:cfg:prompt:" + reg.tool + ":" + id, ta.value);
+      flashSaved();
+    };
+    ta.addEventListener("input", () => { check(); clearTimeout(t); t = setTimeout(persist, 300); });
+  });
+  body.querySelectorAll("button[data-reset]").forEach(b => b.addEventListener("click", () => {
+    localStorage.removeItem("gpp:cfg:prompt:" + reg.tool + ":" + b.dataset.reset);
+    renderPrompts(); flashSaved();
+  }));
+}
+renderPrompts();
+
+/* ---------- Quellen und Pins ---------- */
+function sourceRegistrations() {
+  const out = [];
+  for (const k of Object.keys(localStorage)) {
+    if (!k.startsWith("gpp:cfg:srcdefaults:")) continue;
+    try {
+      const reg = JSON.parse(localStorage.getItem(k));
+      (reg.sources || []).forEach(s => out.push({ ...s, tool: reg.tool }));
+    } catch (e) { /* kaputter Eintrag wird ignoriert */ }
+  }
+  const byId = new Map();
+  out.forEach(s => {
+    if (!byId.has(s.id)) byId.set(s.id, { ...s, tools: [s.tool] });
+    else { const t = byId.get(s.id); t.tools.push(s.tool); t.fixed = t.fixed || s.fixed; }
+  });
+  return [...byId.values()].sort((a, b) => a.id.localeCompare(b.id));
+}
+/* Pin-Zerlegung liegt im Core, damit Tools und diese Seite dieselbe Regel nutzen */
+const commitOf = gppCommitOf;
+function renderSources() {
+  const regs = sourceRegistrations();
+  const body = $("src-body");
+  if (!regs.length) {
+    body.innerHTML = '<div class="empty">Noch keine Quellen angemeldet. Die Tools melden ihre Kataloge und Hilfsdateien beim ersten Start an.</div>';
+    $("src-summary").textContent = "";
+    return;
+  }
+  const unpinned = regs.filter(s => gppIsUnpinned(gppSource(s.id, s.default))).length;
+  $("src-summary").textContent = `${regs.length} Quellen · ${unpinned ? unpinned + " ungepinnt" : "alle gepinnt"}`;
+  body.innerHTML = regs.map(s => {
+    const url = gppSource(s.id, s.default);
+    const pinned = !gppIsUnpinned(url);
+    const commit = commitOf(url);
+    const overridden = !!localStorage.getItem("gpp:cfg:src:" + s.id);
+    return `<div class="src" data-src="${s.id}">
+      <div class="hd">
+        <span class="nm">${s.label || s.id}</span>
+        <span class="pill ${pinned ? "ok" : "bad"}">${pinned ? "gepinnt " + (commit || "").slice(0, 10) : "Branch — ungepinnt"}</span>
+        ${overridden ? '<span class="pill warn">abweichend vom Tool-Standard</span>' : ""}
+        ${s.fixed ? '<span class="pill">inhaltsgepinnt (SHA-256)</span>' : ""}
+        <span style="flex:1"></span>
+        ${s.fixed ? "" : `<button class="btn" data-check="${s.id}">Nach Updates suchen</button>`}
+      </div>
+      <div class="note" style="margin:0 0 4px">${s.repo || ""}${s.path ? " · " + s.path : ""} — genutzt von ${(s.tools || []).join(", ")}</div>
+      <code>${url}</code>
+      <div class="note" data-result="${s.id}"></div>
+    </div>`;
+  }).join("");
+  body.querySelectorAll("button[data-check]").forEach(b =>
+    b.addEventListener("click", () => checkSource(regs.find(s => s.id === b.dataset.check))));
+}
+async function checkSource(s) {
+  const box = $("src-body").querySelector(`[data-result="${s.id}"]`);
+  if (s.fixed) { box.textContent = "Inhaltsgepinnt: das Tool prüft diese Quelle gegen einen festen SHA-256 — Umpinnen würde die Integritätsprüfung brechen."; return; }
+  if (!s.repo || !s.path) { box.textContent = "Für diese Quelle ist kein Repository/Pfad hinterlegt — Update-Prüfung nicht möglich."; return; }
+  box.textContent = "frage GitHub …";
+  try {
+    const api = `https://api.github.com/repos/${s.repo}/commits?path=${encodeURIComponent(s.path)}&per_page=1`;
+    const tok = gppCfg.get("gh:token");
+    const r = await fetch(api, tok ? { headers: { Authorization: "Bearer " + tok } } : undefined);
+    if (!r.ok) throw new Error("HTTP " + r.status + (r.status === 403
+      ? (tok ? " (Token abgelehnt oder Limit erschöpft)" : " (API-Limit — oben einen GitHub-Token hinterlegen oder später erneut)")
+      : ""));
+    const [latest] = await r.json();
+    if (!latest) { box.textContent = "Keine Commits gefunden."; return; }
+    const cur = commitOf(gppSource(s.id, s.default));
+    if (cur === latest.sha) {
+      box.innerHTML = `<span style="color:var(--green)">Aktuell — der Pin zeigt bereits auf den neuesten Commit (${latest.sha.slice(0, 10)}, ${(latest.commit.author.date || "").slice(0, 10)}).</span>`;
+      return;
+    }
+    const newUrl = gppRepinUrl(gppSource(s.id, s.default), latest.sha);
+    box.innerHTML = `Neuer Commit <code>${latest.sha.slice(0, 10)}</code> vom ${(latest.commit.author.date || "").slice(0, 10)}: ${(latest.commit.message || "").split("\n")[0].slice(0, 90)}
+      <div class="row" style="margin-top:6px">
+        <button class="btn primary" id="apply-${s.id}">Auf diesen Commit umstellen</button>
+        <span class="note" style="margin:0">Änderungen an Katalogen können Ergebnisse verschieben — bewusst übernehmen.</span>
+      </div>`;
+    box.querySelector("#apply-" + s.id).addEventListener("click", () => {
+      localStorage.setItem("gpp:cfg:src:" + s.id, newUrl);
+      flashSaved(); renderSources();
+    });
+  } catch (e) {
+    box.innerHTML = `<span style="color:var(--amber)">Update-Prüfung fehlgeschlagen: ${e.message}</span>`;
+  }
+}
+$("btn-check-all").addEventListener("click", async () => {
+  /* parallel — jede Quelle schreibt in ihre eigene Ergebnisbox */
+  await Promise.allSettled(sourceRegistrations().map(s => checkSource(s)));
+});
+$("btn-reset-src").addEventListener("click", () => {
+  for (const k of Object.keys(localStorage)) if (k.startsWith("gpp:cfg:src:")) localStorage.removeItem(k);
+  renderSources(); flashSaved();
+});
+renderSources();
+
+/* ---------- Speicher ---------- */
+async function renderStorage() {
+  const body = $("storage-body");
+  let rows = [];
+  try { rows = await gppArtefacts.list(); } catch (e) { body.innerHTML = `<div class="empty">Artefaktspeicher nicht lesbar: ${e.message}</div>`; return; }
+  const bytes = rows.reduce((s, r) => s + (r.size || 0), 0);
+  const cfgKeys = Object.keys(localStorage).filter(k => k.startsWith("gpp:cfg:"));
+  const cfgBytes = cfgKeys.reduce((s, k) => s + k.length + (localStorage.getItem(k) || "").length, 0);
+  const byStage = {};
+  rows.forEach(r => { byStage[r.stage] = (byStage[r.stage] || 0) + 1; });
+  const fmt = n => n > 1e6 ? (n / 1e6).toFixed(1) + " MB" : n > 1e3 ? (n / 1e3).toFixed(0) + " kB" : n + " B";
+  body.innerHTML = `
+    <div class="grid">
+      <div><label class="f">Artefakte</label><div style="font-size:1.4rem;font-weight:600">${rows.length}</div>
+        <div class="note">${fmt(bytes)} in IndexedDB</div></div>
+      <div><label class="f">Einstellungen</label><div style="font-size:1.4rem;font-weight:600">${cfgKeys.length}</div>
+        <div class="note">${fmt(cfgBytes)} im localStorage · Limit ca. 5 MB</div></div>
+      <div><label class="f">Verteilung</label>
+        <div class="note">${Object.entries(byStage).map(([k, v]) => `${k}: ${v}`).join(" · ") || "noch nichts abgelegt"}</div></div>
+    </div>
+    <div class="bar"><i style="width:${Math.min(100, cfgBytes / 5e6 * 100).toFixed(1)}%"></i></div>
+    <div class="note">localStorage-Auslastung (Einstellungen). Artefakte zählen nicht hierauf — deshalb liegen sie in der IndexedDB.</div>`;
+}
+renderStorage();
+window.addEventListener("gpp:artefacts-changed", renderStorage);
+/* Tools laufen in anderen Fenstern/Tabs — dort kommt nur das storage-Event an */
+window.addEventListener("storage", e => { if (e.key === "gpp:cfg:artefacts:touch") renderStorage(); });
+
+$("btn-reset-cfg").addEventListener("click", () => {
+  if (!confirm("Alle Einstellungen dieser Sammlung zurücksetzen? API-Keys, Modelle, angepasste Prompts und Quellen-Overrides gehen verloren. Artefakte bleiben erhalten.")) return;
+  for (const k of Object.keys(localStorage)) if (k.startsWith("gpp:cfg:")) localStorage.removeItem(k);
+  location.reload();
+});
+$("btn-forget-keys").addEventListener("click", () => {
+  if (!confirm("Nur die API-Keys löschen? Alles andere bleibt.")) return;
+  gppCfg.remove("ai:key:gemini");
+  gppCfg.remove("ai:key:openrouter");
+  $("key-gemini").value = ""; $("key-openrouter").value = "";
+  flashSaved();
+});
+</script>
+</body>
+</html>

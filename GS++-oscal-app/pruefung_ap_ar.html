@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSCAL Assessment Plan & Results Generator v9 (build 9.5.1 — Backends Gemini | OpenRouter, editierbare Prompts, Structured Outputs)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/15.0.0/marked.min.js"></script>
+    <style>
+    /* Optionsliste zeichnet das OS — halbtransparente Flaechen greifen dort nicht */
+    select,option{background-color:#1b1b23;color:#e8e8ef}
+    select{color-scheme:dark}
+/* ============================================================
+   Design-System „Glassmorphic Deep" — handgeschriebenes CSS.
+   Kein Tailwind-CDN. Die im Markup (und in JS-Template-Literalen)
+   vorhandenen Utility-Klassennamen werden hier mit Design-Tokens
+   bedient; slate → Glas, emerald/cyan-Akzente → Violett.
+   ============================================================ */
+:root{
+  --bg-deep:      oklch(0.13 0.02 280);
+  --bg-elev-1:    oklch(0.95 0.005 280 / 0.04);
+  --bg-elev-2:    oklch(0.95 0.005 280 / 0.06);
+  --bg-elev-3:    oklch(0.95 0.005 280 / 0.08);
+  --border-1:     oklch(0.95 0.005 280 / 0.06);
+  --border-2:     oklch(0.95 0.005 280 / 0.10);
+  --text-primary:   oklch(0.95 0.005 280);
+  --text-secondary: oklch(0.75 0.02 280);
+  --text-tertiary:  oklch(0.65 0.02 280);
+  --text-quiet:     oklch(0.55 0.02 280);
+  --accent:         oklch(0.7  0.18 300);
+  --accent-soft:    oklch(0.7  0.18 300 / 0.15);
+  --accent-glow:    oklch(0.7  0.18 300 / 0.4);
+  --red:     oklch(0.65 0.20 25);
+  --amber:   oklch(0.80 0.15 80);
+  --yellow:  oklch(0.85 0.16 95);
+  --green:   oklch(0.75 0.18 145);
+  --blue:    oklch(0.70 0.15 240);
+  --magenta: oklch(0.68 0.19 330);
+  --rail-w: 240px;
+  --topbar-h: 64px;
+  --log-h: 220px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg-deep);
+  color:var(--text-primary);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+h1,h2,h3,h4,p,ul,ol,figure{margin:0}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+::selection{background:oklch(0.7 0.18 300 / 0.35);color:oklch(0.95 0.005 280)}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg-elev-3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent-soft)}
+.cscroll::-webkit-scrollbar{width:6px;height:6px}
+.cscroll::-webkit-scrollbar-track{background:transparent}
+.cscroll::-webkit-scrollbar-thumb{background:var(--bg-elev-3);border-radius:3px}
+.cscroll::-webkit-scrollbar-thumb:hover{background:var(--accent-soft)}
+
+/* --- Atmosphäre: Aurora-Blobs + Noise --- */
+.atmo{position:fixed;pointer-events:none;z-index:0}
+.atmo-a{width:600px;height:600px;border-radius:50%;top:-200px;left:-100px;filter:blur(60px);
+  background:radial-gradient(circle,oklch(0.4 0.18 300/.5),transparent 70%)}
+.atmo-b{width:700px;height:700px;border-radius:50%;bottom:-300px;right:-200px;filter:blur(80px);
+  background:radial-gradient(circle,oklch(0.4 0.16 240/.4),transparent 70%)}
+.atmo-noise{inset:0;opacity:.03;
+  background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><filter id=%22n%22><feTurbulence baseFrequency=%220.9%22/></filter><rect width=%22100%22 height=%22100%22 filter=%22url(%23n)%22/></svg>')}
+
+/* --- Layout-Shell --- */
+.shell{position:relative;z-index:1;display:flex;flex-direction:column;height:100%;min-height:0}
+.topbar{
+  flex:0 0 auto;height:var(--topbar-h);display:flex;align-items:center;gap:16px;
+  padding:0 20px;background:var(--bg-elev-1);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border-2);overflow:hidden;
+}
+.wordmark{display:flex;align-items:baseline;gap:10px;min-width:0}
+.wordmark .mark{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:15px;font-weight:600;
+  letter-spacing:.14em;color:var(--text-primary)}
+.wordmark .mark .glyph{color:var(--accent);margin-right:6px}
+.wordmark .sub{font-size:11px;color:var(--text-quiet);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-meta{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.pill{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid var(--border-2);
+  background:var(--bg-elev-1);color:var(--text-tertiary);white-space:nowrap;display:inline-flex;
+  align-items:center;gap:6px;max-width:38ch;overflow:hidden;text-overflow:ellipsis}
+.pill button{background:none;border:0;padding:0;font:inherit;cursor:pointer}
+.body-row{flex:1 1 auto;display:flex;min-height:0}
+.splitter{flex:0 0 5px;cursor:col-resize;background:transparent;position:relative;transition:background 120ms ease}
+.splitter::after{content:"";position:absolute;inset:0 2px;background:var(--border-1)}
+.splitter:hover::after,.splitter.dragging::after{background:var(--accent-soft)}
+main{flex:1 1 auto;overflow-y:auto;min-height:0;min-width:0;padding:24px}
+.sidebar{
+  flex:0 0 var(--rail-w);width:var(--rail-w);min-width:0;overflow-y:auto;min-height:0;
+  background:var(--bg-elev-1);backdrop-filter:blur(20px);border-right:1px solid var(--border-1);
+  padding:12px;display:flex;flex-direction:column;gap:8px;transition:opacity 160ms ease;
+}
+.sidebar.collapsed{display:none}
+.sb-toggle{
+  background:var(--bg-elev-2);border:1px solid var(--border-2);border-radius:8px;
+  padding:4px 9px;color:var(--text-secondary);cursor:pointer;font-size:14px;line-height:1.2;
+  transition:background 120ms ease,color 120ms ease;
+}
+.sb-toggle:hover{background:var(--bg-elev-3);color:var(--text-primary)}
+
+/* --- Progress (ersetzt den Spinner) --- */
+.progress-wrap{flex:0 0 auto;padding:6px 20px 0;background:transparent}
+.progress-head{display:flex;justify-content:space-between;align-items:center;
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--text-quiet);margin-bottom:4px}
+.progress-track{height:1px;background:var(--border-1);overflow:hidden}
+.progress-fill{height:100%;background:var(--amber);width:0%;transition:width .2s ease}
+.progress-fill.done{background:var(--green)}
+
+/* --- Log-Konsole --- */
+.logbox{flex:0 0 var(--log-h);height:var(--log-h);display:flex;flex-direction:column;min-height:0;
+  background:var(--bg-elev-1);backdrop-filter:blur(20px);border-top:1px solid var(--border-2)}
+.log-head{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:7px 16px;
+  border-bottom:1px solid var(--border-1);font-family:'JetBrains Mono',ui-monospace,monospace;
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-tertiary)}
+.log-head .log-title{color:var(--text-secondary)}
+.log-head .spacer{margin-left:auto}
+.log-btn{background:var(--bg-elev-1);border:1px solid var(--border-2);border-radius:6px;
+  padding:2px 8px;color:var(--text-tertiary);cursor:pointer;font-family:inherit;font-size:10px;
+  letter-spacing:.08em;text-transform:uppercase;transition:background 120ms ease,color 120ms ease}
+.log-btn:hover{background:var(--bg-elev-3);color:var(--text-primary)}
+.log-btn.on{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.log-body{flex:1 1 auto;overflow-y:auto;min-height:0;padding:6px 16px 10px;
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;line-height:1.55}
+.log-line{display:flex;gap:10px;white-space:pre-wrap;word-break:break-word}
+.log-line .ts{color:var(--text-quiet);flex:0 0 auto}
+.log-line .lv{flex:0 0 46px;text-transform:uppercase;font-weight:600}
+.log-info  .lv{color:var(--blue)}   .log-info  .msg{color:var(--text-secondary)}
+.log-ok    .lv{color:var(--green)}  .log-ok    .msg{color:var(--text-primary)}
+.log-warn  .lv{color:var(--amber)}  .log-warn  .msg{color:var(--amber)}
+.log-err   .lv{color:var(--red)}    .log-err   .msg{color:var(--red)}
+.log-debug .lv{color:var(--text-quiet)} .log-debug .msg{color:var(--text-quiet)}
+
+/* --- Glas-Basiskomponenten --- */
+.card,.glass{background:var(--bg-elev-1);border:1px solid var(--border-2);
+  backdrop-filter:blur(20px);border-radius:12px}
+.sb{display:inline-flex;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;
+  font-size:10px;padding:2px 8px;border-radius:999px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.06em;border:1px solid var(--border-2);background:var(--bg-elev-2);color:var(--text-secondary)}
+.lbl{display:block;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;font-weight:500;
+  color:var(--text-quiet);text-transform:uppercase;margin-bottom:.3rem;letter-spacing:.11em}
+.inp{padding:.45rem .6rem;background:var(--bg-elev-1);border:1px solid var(--border-2);
+  border-radius:8px;font-size:.8rem;color:var(--text-primary);outline:none;
+  transition:border-color 140ms ease,box-shadow 140ms ease,background 140ms ease}
+.inp:hover{background:var(--bg-elev-2)}
+.inp:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft);background:var(--bg-elev-2)}
+select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--text-quiet) 50%),linear-gradient(135deg,var(--text-quiet) 50%,transparent 50%);
+  background-position:calc(100% - 14px) 52%,calc(100% - 9px) 52%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:26px}
+select.inp option{background:oklch(0.18 0.02 280);color:var(--text-primary)}
+textarea{resize:vertical}
+textarea.inp{min-height:80px;line-height:1.55}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;
+  border-radius:8px;border:1px solid var(--border-2);background:var(--bg-elev-2);
+  color:var(--text-secondary);padding:.4rem .7rem;font-size:11px;font-weight:600;
+  transition:background 140ms ease,color 140ms ease,border-color 140ms ease}
+.btn:hover{background:var(--bg-elev-3);color:var(--text-primary)}
+.btn-primary{background:var(--accent);border-color:transparent;color:oklch(0.16 0.02 300);
+  box-shadow:0 6px 20px var(--accent-glow)}
+.btn-primary:hover{background:oklch(0.75 0.18 300);color:oklch(0.16 0.02 300)}
+.btn:disabled{opacity:.4;cursor:wait}
+
+/* --- Collapsibles / Chevrons --- */
+.coll-content{transition:max-height .3s ease-out,opacity .2s ease-in-out;overflow:hidden;max-height:0;opacity:0}
+.coll-content.open{max-height:50000px;opacity:1;overflow:visible}
+.chev{transition:transform .18s ease}.chev.open{transform:rotate(90deg)}
+.ctrl-detail{transition:max-height .3s ease-out,opacity .2s ease-in-out,padding .3s ease;
+  max-height:0;opacity:0;padding-top:0;padding-bottom:0;overflow:hidden}
+.ctrl-detail.open{max-height:1600px;opacity:1;padding-top:.75rem;padding-bottom:.75rem;overflow:visible}
+.comp-header{cursor:pointer;user-select:none;transition:background 140ms ease}
+.comp-header:hover .comp-title{color:var(--accent)}
+.ctrl-title{color:var(--text-tertiary);font-size:11px;max-width:280px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.ctrl-row{transition:border-color 140ms ease,background 140ms ease}
+.ctrl-row:hover{border-color:var(--border-2)}
+.dz{transition:border-color 140ms ease,background 140ms ease}
+.dz:hover{background:var(--bg-elev-2)}
+.drag-over{border-color:var(--accent)!important;background:var(--accent-soft)!important}
+.stat-bar{transition:width .6s cubic-bezier(.4,0,.2,1)}
+
+/* --- KI-Buttons + Markdown-Ausgabe --- */
+.ai-btn{background:var(--accent-soft);border:1px solid oklch(0.7 0.18 300 / 0.35);color:var(--accent);
+  font-weight:600;border-radius:7px;font-size:12px;padding:2px 9px;cursor:pointer;
+  transition:background 140ms ease,color 140ms ease}
+.ai-btn:hover{background:oklch(0.7 0.18 300 / 0.28);color:var(--text-primary)}
+.ai-btn:disabled{opacity:.4;cursor:wait}
+.ai-explain{background:var(--bg-elev-2);border-color:var(--border-2);color:var(--text-secondary)}
+.ai-explain:hover{background:var(--bg-elev-3);color:var(--text-primary)}
+.ai-out{background:var(--bg-elev-1);border:1px solid var(--border-2);border-radius:10px;
+  padding:.8rem;margin-top:.6rem;font-size:.8rem;color:var(--text-secondary);
+  max-height:400px;overflow-y:auto;min-height:0;line-height:1.65}
+.ai-out h2{font-size:.9rem;font-weight:600;color:var(--text-primary);margin:1rem 0 .4rem;
+  border-bottom:1px solid var(--border-1);padding-bottom:.25rem}
+.ai-out h3{font-size:.82rem;font-weight:600;color:var(--accent);margin:.8rem 0 .3rem}
+.ai-out strong{color:var(--text-primary)}.ai-out em{color:var(--accent)}
+.ai-out ul,.ai-out ol{margin:.3rem 0 .3rem 1.2rem}.ai-out li{margin:.15rem 0}
+.ai-out p{margin:.35rem 0}
+.ai-out code{font-family:'JetBrains Mono',ui-monospace,monospace;background:var(--bg-elev-3);
+  padding:1px 4px;border-radius:3px;font-size:.72rem}
+.prompt-ta{font-family:'JetBrains Mono',ui-monospace,monospace;resize:vertical;min-height:200px;
+  line-height:1.55;font-size:11px}
+
+/* --- Stats-Karte --- */
+.stats-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media(max-width:700px){.stats-grid{grid-template-columns:1fr}}
+.chart-card{background:var(--bg-elev-1);border:1px solid var(--border-2);border-radius:12px;padding:14px}
+.chart-head{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--text-quiet);margin-bottom:10px}
+.donut-wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.donut-legend{display:flex;flex-direction:column;gap:4px;font-size:11px;min-width:0}
+.donut-legend .row{display:flex;align-items:center;gap:7px;color:var(--text-secondary)}
+.donut-legend .dot{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
+.donut-legend .n{margin-left:auto;font-family:'JetBrains Mono',ui-monospace,monospace;color:var(--text-primary)}
+.hbar-row{display:grid;grid-template-columns:104px 1fr 40px;align-items:center;gap:9px;margin-bottom:6px}
+.hbar-label{font-size:11px;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbar-track{height:6px;background:var(--bg-elev-2);border-radius:3px;overflow:hidden}
+.hbar-fill{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.hbar-value{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;color:var(--text-primary);text-align:right}
+.kpi-row{display:flex;gap:22px;flex-wrap:wrap}
+.kpi{display:flex;flex-direction:column;gap:2px}
+.kpi .v{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:22px;font-weight:600;color:var(--text-primary)}
+.kpi .k{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:9px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--text-quiet)}
+
+/* ============================================================
+   Utility-Schicht — deckt exakt die im Markup/JS verwendeten
+   Klassennamen ab (Ex-Tailwind), mit Design-Token-Werten.
+   ============================================================ */
+.hidden{display:none!important}
+.block{display:block}.flex{display:flex}.grid{display:grid}
+.flex-1{flex:1 1 0%}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}
+.flex-shrink-0{flex-shrink:0}.flex-shrink-1{flex-shrink:1}
+.items-center{align-items:center}.items-start{align-items:flex-start}
+.justify-between{justify-content:space-between}.justify-end{justify-content:flex-end}
+.ml-auto{margin-left:auto}.mt-auto{margin-top:auto}
+.gap-0\.5{gap:2px}.gap-1{gap:4px}.gap-1\.5{gap:6px}.gap-2{gap:8px}.gap-3{gap:12px}.gap-5{gap:20px}
+.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}
+.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.space-y-1>*+*{margin-top:4px}.space-y-1\.5>*+*{margin-top:6px}.space-y-4>*+*{margin-top:16px}
+.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto;min-height:0}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.whitespace-nowrap{white-space:nowrap}.align-top{vertical-align:top}
+.border-collapse{border-collapse:collapse}
+.cursor-pointer{cursor:pointer}
+.text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}
+.italic{font-style:italic}.underline{text-decoration:underline}
+.uppercase{text-transform:uppercase}
+.transition-all{transition:all 160ms ease}.transition-colors{transition:color 160ms ease,background-color 160ms ease,border-color 160ms ease}
+.duration-300{transition-duration:200ms}
+.drop-shadow{filter:none}
+.shadow-lg{box-shadow:none}
+.bg-gradient-to-br,.from-slate-900,.to-slate-800{background-image:none}
+.animate-pulse{animation:gpp-pulse 2s cubic-bezier(.4,0,.6,1) infinite}
+@keyframes gpp-pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* Größen */
+.w-full{width:100%}.h-full{height:100%}
+.w-1\.5{width:6px}.w-2{width:8px}.w-3{width:12px}.w-3\.5{width:14px}.w-4{width:16px}
+.w-12{width:48px}.w-16{width:64px}.w-24{width:96px}.w-28{width:112px}.w-44{width:176px}
+.h-1\.5{height:6px}.h-2{height:8px}.h-3{height:12px}.h-3\.5{height:14px}.h-4{height:16px}
+/* Abstände */
+.p-1{padding:4px}.p-1\.5{padding:6px}.p-2{padding:8px}.p-2\.5{padding:10px}
+.p-3{padding:12px}.p-4{padding:16px}.p-5{padding:20px}
+.px-1{padding-left:4px;padding-right:4px}.px-2{padding-left:8px;padding-right:8px}
+.px-3{padding-left:12px;padding-right:12px}
+.py-0\.5{padding-top:2px;padding-bottom:2px}.py-1{padding-top:4px;padding-bottom:4px}
+.py-1\.5{padding-top:6px;padding-bottom:6px}
+.pr-2{padding-right:8px}.pt-1{padding-top:4px}.pt-1\.5{padding-top:6px}.pt-2{padding-top:8px}
+.mb-0{margin-bottom:0}.mb-0\.5{margin-bottom:2px}.mb-1{margin-bottom:4px}.mb-1\.5{margin-bottom:6px}
+.mb-2{margin-bottom:8px}.mb-3{margin-bottom:12px}.mb-4{margin-bottom:16px}
+.mt-0\.5{margin-top:2px}.mt-1{margin-top:4px}.mt-1\.5{margin-top:6px}.mt-2{margin-top:8px}
+.ml-1{margin-left:4px}.ml-2{margin-left:8px}.mr-1\.5{margin-right:6px}.mr-2{margin-right:8px}
+/* Typografie */
+.font-sans{font-family:'Inter',system-ui,sans-serif}
+.font-mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+.font-bold{font-weight:600}.font-semibold{font-weight:500}
+.text-\[8px\]{font-size:8px}.text-\[9px\]{font-size:9px}
+.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}
+.text-xs{font-size:11.5px}.text-sm{font-size:13px}.text-base{font-size:15px}
+.text-lg{font-size:17px}.text-xl{font-size:20px}
+.leading-tight{line-height:1.25}.leading-snug{line-height:1.38}.leading-relaxed{line-height:1.65}
+.tracking-wide{letter-spacing:.05em}.tracking-wider{letter-spacing:.09em}
+/* Radien + Rahmen */
+.rounded{border-radius:6px}.rounded-lg{border-radius:10px}.rounded-xl{border-radius:12px}
+.rounded-full{border-radius:999px}
+.border{border:1px solid var(--border-1)}
+.border-t{border-top:1px solid var(--border-1)}.border-b{border-bottom:1px solid var(--border-1)}
+.border-r{border-right:1px solid var(--border-1)}
+.border-l-2{border-left:2px solid var(--border-2)}
+.border-dashed{border-style:dashed}
+.ring-1{box-shadow:0 0 0 1px var(--border-2)}
+.ring-2{box-shadow:0 0 0 2px var(--accent-soft)}
+.ring-emerald-500,.ring-emerald-500\/30{box-shadow:0 0 0 2px var(--accent-soft)}
+/* Flächen: slate → Glas */
+.bg-slate-900,.bg-slate-900\/30,.bg-slate-900\/40,.bg-slate-900\/50,.bg-slate-900\/60,.bg-slate-900\/80{background-color:var(--bg-elev-1)}
+.bg-slate-800,.bg-slate-800\/60{background-color:var(--bg-elev-2)}
+.bg-slate-700{background-color:var(--bg-elev-3)}
+.border-slate-700,.border-slate-700\/50{border-color:var(--border-1)}
+.border-slate-600{border-color:var(--border-2)}
+.text-white,.text-slate-200{color:var(--text-primary)}
+.text-slate-300{color:var(--text-secondary)}
+.text-slate-400{color:var(--text-secondary)}
+.text-slate-500{color:var(--text-tertiary)}
+.text-slate-600{color:var(--text-quiet)}
+/* Akzentfamilien (emerald/cyan/indigo/violet/purple → Violett-Achse) */
+.bg-emerald-950\/30,.bg-emerald-950\/40{background-color:color-mix(in oklab,var(--green) 9%,transparent)}
+.bg-emerald-900\/30,.bg-emerald-900\/50{background-color:color-mix(in oklab,var(--green) 15%,transparent)}
+.bg-emerald-900{background-color:color-mix(in oklab,var(--green) 20%,transparent)}
+.bg-emerald-800{background-color:color-mix(in oklab,var(--green) 26%,transparent)}
+.bg-emerald-700{background-color:color-mix(in oklab,var(--green) 34%,transparent)}
+.bg-emerald-600{background-color:var(--green)}
+.bg-emerald-500{background-color:var(--green)}
+.border-emerald-800\/30,.border-emerald-800\/40{border-color:color-mix(in oklab,var(--green) 26%,transparent)}
+.border-emerald-700{border-color:color-mix(in oklab,var(--green) 38%,transparent)}
+.border-emerald-600,.border-emerald-500{border-color:color-mix(in oklab,var(--green) 58%,transparent)}
+.text-emerald-200,.text-emerald-200\/80,.text-emerald-200\/90{color:color-mix(in oklab,var(--green) 45%,var(--text-primary))}
+.text-emerald-300{color:color-mix(in oklab,var(--green) 72%,var(--text-primary))}
+.text-emerald-400,.text-emerald-500{color:var(--green)}
+.bg-cyan-950\/30{background-color:color-mix(in oklab,var(--accent) 8%,transparent)}
+.bg-cyan-900\/50{background-color:color-mix(in oklab,var(--accent) 15%,transparent)}
+.bg-cyan-500{background-color:var(--accent)}
+.border-cyan-800{border-color:color-mix(in oklab,var(--accent) 26%,transparent)}
+.border-cyan-700{border-color:color-mix(in oklab,var(--accent) 38%,transparent)}
+.text-cyan-200\/70{color:color-mix(in oklab,var(--accent) 45%,var(--text-primary))}
+.text-cyan-300{color:color-mix(in oklab,var(--accent) 72%,var(--text-primary))}
+.text-cyan-400{color:var(--accent)}
+.text-cyan-500{color:color-mix(in oklab,var(--accent) 80%,var(--text-quiet))}
+.bg-indigo-950,.bg-indigo-950\/20,.bg-indigo-950\/50{background-color:color-mix(in oklab,var(--accent) 9%,transparent)}
+.bg-indigo-900{background-color:color-mix(in oklab,var(--accent) 20%,transparent)}
+.bg-indigo-700{background-color:color-mix(in oklab,var(--accent) 34%,transparent)}
+.border-indigo-900\/60{border-color:color-mix(in oklab,var(--accent) 22%,transparent)}
+.border-indigo-800{border-color:color-mix(in oklab,var(--accent) 30%,transparent)}
+.border-indigo-700{border-color:color-mix(in oklab,var(--accent) 40%,transparent)}
+.text-indigo-300{color:color-mix(in oklab,var(--accent) 72%,var(--text-primary))}
+.bg-violet-900{background-color:color-mix(in oklab,var(--accent) 20%,transparent)}
+.border-violet-700{border-color:color-mix(in oklab,var(--accent) 40%,transparent)}
+.text-violet-300{color:color-mix(in oklab,var(--accent) 72%,var(--text-primary))}
+.text-violet-400{color:var(--accent)}
+.bg-purple-900{background-color:color-mix(in oklab,var(--magenta) 20%,transparent)}
+.bg-purple-700{background-color:color-mix(in oklab,var(--magenta) 34%,transparent)}
+.border-purple-700{border-color:color-mix(in oklab,var(--magenta) 40%,transparent)}
+.text-purple-300{color:color-mix(in oklab,var(--magenta) 72%,var(--text-primary))}
+/* Semantische Farben */
+.bg-blue-900{background-color:color-mix(in oklab,var(--blue) 20%,transparent)}
+.bg-blue-800{background-color:color-mix(in oklab,var(--blue) 26%,transparent)}
+.bg-blue-600{background-color:color-mix(in oklab,var(--blue) 42%,transparent)}
+.border-blue-700{border-color:color-mix(in oklab,var(--blue) 38%,transparent)}
+.text-blue-200{color:color-mix(in oklab,var(--blue) 45%,var(--text-primary))}
+.text-blue-300{color:color-mix(in oklab,var(--blue) 72%,var(--text-primary))}
+.text-blue-400,.text-blue-500{color:var(--blue)}
+.bg-amber-950\/40{background-color:color-mix(in oklab,var(--amber) 9%,transparent)}
+.bg-amber-900\/50{background-color:color-mix(in oklab,var(--amber) 15%,transparent)}
+.bg-amber-900{background-color:color-mix(in oklab,var(--amber) 20%,transparent)}
+.bg-amber-800{background-color:color-mix(in oklab,var(--amber) 26%,transparent)}
+.bg-amber-500{background-color:var(--amber)}
+.border-amber-800{border-color:color-mix(in oklab,var(--amber) 26%,transparent)}
+.border-amber-700{border-color:color-mix(in oklab,var(--amber) 38%,transparent)}
+.text-amber-200{color:color-mix(in oklab,var(--amber) 45%,var(--text-primary))}
+.text-amber-300{color:color-mix(in oklab,var(--amber) 75%,var(--text-primary))}
+.text-amber-400,.text-amber-500{color:var(--amber)}
+.text-yellow-300{color:color-mix(in oklab,var(--yellow) 80%,var(--text-primary))}
+.text-yellow-400{color:var(--yellow)}
+.bg-red-900\/50{background-color:color-mix(in oklab,var(--red) 15%,transparent)}
+.bg-red-500{background-color:var(--red)}
+.border-red-700{border-color:color-mix(in oklab,var(--red) 38%,transparent)}
+.text-red-300{color:color-mix(in oklab,var(--red) 72%,var(--text-primary))}
+.text-red-400{color:var(--red)}
+/* Hover-Varianten */
+.hover\:bg-slate-600:hover,.hover\:bg-slate-700:hover,.hover\:bg-slate-800:hover{background-color:var(--bg-elev-3)}
+.hover\:bg-emerald-500:hover{background-color:oklch(0.78 0.18 145)}
+.hover\:bg-blue-500:hover{background-color:color-mix(in oklab,var(--blue) 55%,transparent)}
+.hover\:bg-purple-600:hover{background-color:color-mix(in oklab,var(--magenta) 44%,transparent)}
+.hover\:bg-indigo-600:hover{background-color:color-mix(in oklab,var(--accent) 44%,transparent)}
+.hover\:bg-indigo-950\/80:hover{background-color:color-mix(in oklab,var(--accent) 16%,transparent)}
+.hover\:border-emerald-500:hover,.hover\:border-cyan-500:hover,.hover\:border-purple-500:hover{border-color:var(--accent)}
+.hover\:text-emerald-400:hover{color:var(--accent)}
+.hover\:text-white:hover{color:var(--text-primary)}
+/* Checkbox */
+.form-checkbox{appearance:none;-webkit-appearance:none;display:inline-block;flex:0 0 auto;
+  border:1px solid var(--border-2);border-radius:4px;background:var(--bg-elev-2);cursor:pointer;
+  position:relative;transition:background 120ms ease,border-color 120ms ease}
+.form-checkbox:checked{background:var(--accent);border-color:var(--accent)}
+.form-checkbox:checked::after{content:"";position:absolute;left:50%;top:46%;width:3px;height:6px;
+  border:solid oklch(0.16 0.02 300);border-width:0 1.6px 1.6px 0;transform:translate(-50%,-50%) rotate(45deg)}
+.form-checkbox:focus-visible{outline:2px solid var(--accent-soft);outline-offset:1px}
+/* Responsive */
+@media(min-width:768px){
+  .md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .md\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .md\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .md\:col-span-2{grid-column:span 2/span 2}
+  .md\:flex-row{flex-direction:row}
+  .md\:items-center{align-items:center}
+  .md\:p-6{padding:24px}
+}
+@media(min-width:1024px){.lg\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:768px){
+  .sidebar{position:fixed;top:var(--topbar-h);left:0;z-index:40;height:calc(100% - var(--topbar-h));
+    width:min(320px,86vw);flex-basis:auto}
+  .splitter{display:none}
+}
+    </style>
+</head>
+<body>
+
+<div class="atmo atmo-a"></div>
+<div class="atmo atmo-b"></div>
+<div class="atmo atmo-noise"></div>
+
+<div class="shell">
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <button id="sb-btn" class="sb-toggle" title="Seitenleiste ein-/ausblenden" onclick="document.getElementById('sidebar').classList.toggle('collapsed')">◧</button>
+    <div class="wordmark">
+        <span class="mark"><span class="glyph">◈</span>NTT&nbsp;DATA</span>
+        <span class="sub">OSCAL AP &amp; AR — SSP → Prüfung → Assessment Plan + Results</span>
+    </div>
+    <div class="topbar-meta">
+        <span class="pill">build 9.5.1</span>
+        <span id="cat-status" class="pill">Katalog wird geladen …</span>
+        <span id="ssp-status" class="pill">Kein SSP</span>
+        <span id="comp-status" class="pill hidden"></span>
+    </div>
+  </header>
+
+  <!-- PROGRESS (1px-Hairline statt Spinner) -->
+  <div class="progress-wrap hidden" id="prog-wrap">
+    <div class="progress-head"><span id="prog-label">bereit</span><span id="prog-count"></span></div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill"></div></div>
+  </div>
+
+  <div class="body-row">
+    <!-- LINKE RAIL -->
+    <aside id="sidebar" class="sidebar cscroll">
+
+        <!-- Backend, Key, Modell und Retries liegen zentral in config.html
+             (gpp:cfg:*); der ausgeblendete Shim hält die alten IDs für den
+             Bestandscode und wird nur von dort gefüllt. -->
+        <div id="gpp-cfg-shim" hidden aria-hidden="true">
+            <select id="ai-provider"><option value="">—</option><option value="gemini">Gemini</option><option value="openrouter">OpenRouter</option></select>
+            <input type="password" id="ai-key">
+            <div id="gm-model-wrap" class="hidden"><select id="ai-model"></select></div>
+            <div id="or-model-wrap" class="hidden">
+                <select id="or-model"></select>
+                <input type="text" id="or-slug">
+                <span id="or-cat-status"></span>
+                <button id="or-refresh-shim" onclick="refreshORModels()"></button>
+                <input type="checkbox" id="or-only-schema">
+            </div>
+            <input type="number" id="ai-retries" min="0" max="5" value="2">
+        </div>
+        <!-- Navigation -->
+        <div class="lbl mb-0 mt-1">◉ Navigation</div>
+        <!-- Terms Navigation -->
+        <div class="border border-slate-700 rounded overflow-hidden">
+            <button onclick="scrollToSec('sec-terms')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300 hover:text-emerald-400 transition-colors">◐ Rahmenbedingungen</button>
+        </div>
+        <!-- Meta Navigation -->
+        <div class="border border-slate-700 rounded overflow-hidden">
+            <button onclick="scrollToSec('sec-meta')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300 hover:text-emerald-400 transition-colors">◇ Metadaten &amp; Assessor</button>
+        </div>
+        <!-- Filters -->
+        <div class="border border-slate-700 rounded overflow-hidden">
+            <button onclick="tog('sb-flt')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300">⌕ Filter<svg id="icon-sb-flt" class="chev open w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg></button>
+            <div id="sb-flt-content" class="coll-content open p-2 bg-slate-900/30 space-y-1.5">
+                <input type="text" id="cf" oninput="fltC()" placeholder="Control / Titel..." class="inp text-[10px] font-mono">
+                <select id="flt-modal" onchange="fltC()" class="inp text-[10px]"><option value="">Modalverb: Alle</option><option value="MUSS">MUSS</option><option value="SOLL">SOLL</option><option value="KANN">KANN</option></select>
+                <select id="flt-class" onchange="fltC()" class="inp text-[10px]"><option value="">Klasse: Alle</option><option value="Technical">Technical</option><option value="Organizational">Organizational</option></select>
+                <select id="flt-sec" onchange="fltC()" class="inp text-[10px]"><option value="">Sicherheitsniv.: Alle</option><option value="normal-SdT">Normal</option><option value="hoch-SdT">Hoch</option><option value="sehr hoch-SdT">Sehr hoch</option></select>
+                <select id="flt-status" onchange="fltC()" class="inp text-[10px]"><option value="">Status: Alle</option><option value="implemented">Impl.</option><option value="partial">Teilw.</option><option value="planned">Geplant</option><option value="alternative">Altern.</option><option value="nicht-angegeben">Kein St.</option><option value="nur-komponente">Nur Def</option></select>
+            </div>
+        </div>
+        <!-- Component nav (populated dynamically) -->
+        <div id="sb-comp-nav" class="space-y-1 hidden"></div>
+        <!-- Bulk actions -->
+        <div id="sb-bulk" class="hidden space-y-1">
+            <div class="flex flex-wrap gap-1">
+                <button onclick="bulkM('EXAMINE')" class="text-[9px] px-2 py-1 bg-blue-800 text-blue-200 rounded font-bold">+EX</button>
+                <button onclick="bulkM('INTERVIEW')" class="text-[9px] px-2 py-1 bg-amber-800 text-amber-200 rounded font-bold">+IN</button>
+                <button onclick="bulkM('TEST')" class="text-[9px] px-2 py-1 bg-emerald-800 text-emerald-200 rounded font-bold">+TE</button>
+                <button onclick="bulkMC()" class="text-[9px] px-2 py-1 bg-slate-700 text-slate-300 rounded font-bold">Reset</button>
+            </div>
+            <div class="flex gap-1">
+                <button onclick="scopeAll(true)" class="text-[9px] px-2 py-1 bg-emerald-700 text-white rounded font-bold flex-1">Alle ✓</button>
+                <button onclick="scopeAll(false)" class="text-[9px] px-2 py-1 bg-slate-700 text-slate-300 rounded font-bold flex-1">Alle ✗</button>
+            </div>
+            <div class="text-[10px] text-slate-500">Scope: <strong class="text-white" id="scope-n">0</strong> · Bewertet: <strong class="text-emerald-400" id="rated-n">0</strong></div>
+        </div>
+        <!-- Export -->
+        <div class="mt-auto space-y-1.5 pt-2 border-t border-slate-700">
+            <div class="lbl mb-0">⤓ Export</div>
+            <button onclick="saveSession()" class="btn w-full">⤓ Session</button>
+            <button onclick="exportAP()" class="btn btn-primary w-full">⤓ Assessment Plan</button>
+            <button onclick="exportAR()" class="btn w-full">⤓ Assessment Results</button>
+        </div>
+
+        <div class="pt-2 text-center text-[9px] text-slate-600 font-mono">&copy; 2026 NTT DATA Deutschland SE</div>
+
+    </aside>
+    <div class="splitter" id="splitter" title="Breite der Seitenleiste ziehen"></div>
+    <!-- MAIN -->
+    <main id="main-area">
+
+        <!-- Rahmenbedingungen Section -->
+        <div id="sec-terms" class="hidden mb-4 bg-slate-800 border border-slate-700 rounded-xl p-4 transition-all duration-300">
+            <h2 class="text-sm font-bold text-white mb-3">◐ Rahmenbedingungen</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                <div><label class="lbl">Beginn</label><input type="date" id="sb-ds" onchange="S.dateStart=this.value" class="inp text-xs"></div>
+                <div><label class="lbl">Ende</label><input type="date" id="sb-de" onchange="S.dateEnd=this.value" class="inp text-xs"></div>
+                <div><label class="lbl">Rules of Engagement</label><textarea rows="2" id="sb-roe" onchange="S.terms.roe=this.value" class="inp text-xs"></textarea></div>
+                <div><label class="lbl">Disclosures</label><textarea rows="2" id="sb-disc" onchange="S.terms.disclosures=this.value" class="inp text-xs"></textarea></div>
+                <div class="md:col-span-2"><label class="lbl">Methodik</label><textarea rows="2" id="sb-meth" onchange="S.terms.methodology=this.value" class="inp text-xs"></textarea></div>
+            </div>
+            <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700">
+                <label class="lbl">Task hinzufügen</label>
+                <div class="flex gap-2 mb-2">
+                    <input type="text" id="task-t" placeholder="Titel" class="inp text-xs flex-1">
+                    <button onclick="addTask()" class="px-3 py-1.5 bg-indigo-700 text-white rounded text-xs font-bold hover:bg-indigo-600">+</button>
+                </div>
+                <ul id="task-list" class="space-y-1 text-xs"></ul>
+            </div>
+        </div>
+
+        <!-- Metadaten Section -->
+        <div id="sec-meta" class="hidden mb-4 bg-slate-800 border border-slate-700 rounded-xl p-4 transition-all duration-300">
+            <h2 class="text-sm font-bold text-white mb-3">◇ Metadaten &amp; Assessor</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div><label class="lbl">Titel</label><input type="text" id="sb-title" onchange="S.meta.title=this.value" class="inp text-xs"></div>
+                <div><label class="lbl">Version</label><input type="text" id="sb-ver" value="1.0.0" onchange="S.meta.version=this.value" class="inp text-xs"></div>
+                <div><label class="lbl">Beschreibung</label><input type="text" id="sb-desc" onchange="S.meta.desc=this.value" class="inp text-xs"></div>
+                <div><label class="lbl">Assessor Name</label><input type="text" id="sb-aname" onchange="S.assessor.name=this.value" class="inp text-xs"></div>
+                <div><label class="lbl">Typ</label><select id="sb-atype" onchange="S.assessor.type=this.value" class="inp text-xs"><option value="organization">Organisation</option><option value="person">Person</option></select></div>
+                <div><label class="lbl">E-Mail</label><input type="email" id="sb-aemail" onchange="S.assessor.email=this.value" class="inp text-xs"></div>
+            </div>
+        </div>
+
+        <div id="stats-dash" class="hidden mb-4"></div>
+        <div id="ctrl-area" class="hidden"></div>
+    </main>
+  </div>
+
+  <!-- LOG-KONSOLE -->
+  <section class="logbox">
+    <div class="log-head">
+        <span class="log-title">⌸ Konsole</span>
+        <span id="log-count">0 Zeilen</span>
+        <span class="spacer"></span>
+        <button id="log-autoscroll" class="log-btn on" onclick="toggleAutoscroll()" title="Automatisch zur neuesten Zeile scrollen">▼ Autoscroll</button>
+        <button class="log-btn" onclick="clearLog()" title="Konsole leeren">⌫ Leeren</button>
+    </div>
+    <div id="log-body" class="log-body cscroll"></div>
+  </section>
+</div>
+
+<script src="gpp-core.js?v=3.3"></script>
+<script>
+if(typeof gppCfg==='undefined'){
+    document.body.innerHTML='<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">'+
+        '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek '+
+        '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) '+
+        'statt einzelner Dateien.</p></div>';
+    throw new Error('gpp-core.js missing');
+}
+const GPP_TOOL_ID='pruefung_ap_ar';
+gppCollapsibleLog({consoleEl:document.querySelector('.logbox'),
+  headEl:document.querySelector('.logbox .log-head'),toolId:GPP_TOOL_ID});
+/* Quelle für die Pin-Übersicht in config.html anmelden (Grundregel 8). */
+gppRegisterSources(GPP_TOOL_ID,[{id:'ed23-anforderungen',label:'G++/ED23 Anforderungen (Hilfsdatei)',
+    repo:'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',path:'hilfsdateien/gpp_ed23_anforderungen.json',
+    default:'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/hilfsdateien/gpp_ed23_anforderungen.json'}]);
+// ============================================================
+// LOG-KONSOLE (fünf Level, ms-Timestamps, Autoscroll, Clear)
+// ============================================================
+const LOG={lines:0,auto:true,max:2000};
+function logTs(){const d=new Date(),p=(n,w=2)=>String(n).padStart(w,'0');
+    return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}.${p(d.getMilliseconds(),3)}`}
+function logLine(level,msg){
+    const body=document.getElementById('log-body');if(!body)return;
+    const el=document.createElement('div');
+    el.className='log-line log-'+level;
+    const t=document.createElement('span');t.className='ts';t.textContent=logTs();
+    const l=document.createElement('span');l.className='lv';l.textContent=level;
+    const m=document.createElement('span');m.className='msg';m.textContent=String(msg);
+    el.append(t,l,m);body.appendChild(el);LOG.lines++;
+    while(body.childElementCount>LOG.max)body.removeChild(body.firstChild);
+    const c=document.getElementById('log-count');if(c)c.textContent=LOG.lines+' Zeilen';
+    if(LOG.auto)body.scrollTop=body.scrollHeight;
+}
+const L={info:m=>logLine('info',m),ok:m=>logLine('ok',m),warn:m=>logLine('warn',m),
+         err:m=>logLine('err',m),debug:m=>logLine('debug',m)};
+window.toggleAutoscroll=()=>{LOG.auto=!LOG.auto;
+    const b=document.getElementById('log-autoscroll');if(b)b.classList.toggle('on',LOG.auto);
+    if(LOG.auto){const body=document.getElementById('log-body');if(body)body.scrollTop=body.scrollHeight}};
+window.clearLog=()=>{const body=document.getElementById('log-body');if(body)body.innerHTML='';
+    LOG.lines=0;const c=document.getElementById('log-count');if(c)c.textContent='0 Zeilen'};
+
+// ============================================================
+// PROGRESS (1px-Hairline: amber → grün, ~800ms später ausblenden)
+// ============================================================
+let _progHide=null;
+function showProgress(label,done,total){
+    const w=document.getElementById('prog-wrap'),f=document.getElementById('prog-fill');
+    if(!w||!f)return;
+    clearTimeout(_progHide);w.classList.remove('hidden');
+    const pct=total>0?Math.min(100,(done/total)*100):0;
+    f.style.width=pct+'%';
+    const fin=total>0&&done>=total;
+    f.classList.toggle('done',fin);
+    const lb=document.getElementById('prog-label');if(lb)lb.textContent=label;
+    const ct=document.getElementById('prog-count');if(ct)ct.textContent=total>0?`${done}/${total}`:'';
+    if(fin)_progHide=setTimeout(hideProgress,800);
+}
+function hideProgress(){const w=document.getElementById('prog-wrap'),f=document.getElementById('prog-fill');
+    if(!w||!f)return;w.classList.add('hidden');f.style.width='0%';f.classList.remove('done')}
+
+// ============================================================
+// STATUS-PILLS in der Top-Bar
+// ============================================================
+const PILL_TONE={ok:'var(--green)',warn:'var(--amber)',err:'var(--red)',
+                 info:'var(--accent)',quiet:'var(--text-tertiary)'};
+function setPill(id,tone,html){
+    const e=document.getElementById(id);if(!e)return;
+    const c=PILL_TONE[tone]||PILL_TONE.quiet;
+    e.className='pill';e.style.color=c;
+    e.style.borderColor=`color-mix(in oklab,${c} 38%,transparent)`;
+    e.style.background=`color-mix(in oklab,${c} 10%,transparent)`;
+    // Pills mit Aktion (z. B. „neu laden") dürfen nicht abgeschnitten werden.
+    e.style.maxWidth=html.includes('<button')?'none':'';
+    e.innerHTML=html;
+}
+
+// ============================================================
+// LAYOUT: ziehbarer Splitter, Rail-Breite in localStorage
+// ============================================================
+const RAIL_MIN=200,RAIL_MAX=420,RAIL_KEY='oscal_ap_rail_w';
+function setRailWidth(px){
+    const v=Math.max(RAIL_MIN,Math.min(RAIL_MAX,Math.round(px)));
+    document.documentElement.style.setProperty('--rail-w',v+'px');return v}
+function initSplitter(){
+    let stored=null;try{stored=localStorage.getItem(RAIL_KEY)}catch(e){}
+    if(stored)setRailWidth(parseInt(stored,10)||240);
+    const sp=document.getElementById('splitter'),sb=document.getElementById('sidebar');
+    if(!sp||!sb)return;
+    let dragging=false,w=240;
+    sp.addEventListener('mousedown',e=>{dragging=true;sp.classList.add('dragging');
+        document.body.style.userSelect='none';e.preventDefault()});
+    window.addEventListener('mousemove',e=>{if(!dragging)return;w=setRailWidth(e.clientX-sb.getBoundingClientRect().left)});
+    window.addEventListener('mouseup',()=>{if(!dragging)return;dragging=false;
+        sp.classList.remove('dragging');document.body.style.userSelect='';
+        try{localStorage.setItem(RAIL_KEY,w)}catch(e){}
+        L.debug(`Rail-Breite ${w}px gespeichert`)});
+}
+
+// ============================================================
+// STATE
+// ============================================================
+const S={
+    ssp:null,sspFilename:'',
+    catalog:new Map(), // cid -> {title, prose}
+    compMeta:new Map(), compGroups:new Map(), allCids:new Set(),
+    excluded:new Set(), methods:new Map(), findings:new Map(),
+    aiCache:new Map(), // cid -> {explain:'(markdown)'}
+    localDefs:new Map(), // filename -> parsed profile JSON (für local:// Referenzen)
+    meta:{title:'',version:'1.0.0',desc:''},
+    sspRisks:[], // detaillierte Risiken aus SSP back-matter (risk-analysis.json)
+    assessor:{name:'',type:'organization',email:''},
+    terms:{roe:'',disclosures:'',methodology:''},
+    tasks:[],dateStart:'',dateEnd:'',setParams:[]
+};
+
+// --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
+// Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
+const GPP_CATALOG_PIN_COMMIT='47de2824a341812438ef3f044b3f65ce2cad6e32';
+const GPP_CATALOG_PIN_SHA256='db3a1417d7e904315a0886f450129832e19c57324660358c830357349f552332';
+const CATALOG_URL=`https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json`;
+// uuid5(NAMESPACE_URL, CATALOG_URL) — identisch zu den gepinnten Repo-Profilen.
+const GPP_CATALOG_RESOURCE_UUID='944d9eb5-aa84-5c12-86d3-94ed8e2569f5';
+async function sha256Hex(buf){const d=await crypto.subtle.digest('SHA-256',buf);return Array.from(new Uint8Array(d)).map(b=>b.toString(16).padStart(2,'0')).join('')}
+// Back-matter-Resource für den gepinnten Katalog — feldidentisch zur Ausgabe von scripts/pin_profile_imports.py.
+function pinnedCatalogResource(){return{uuid:GPP_CATALOG_RESOURCE_UUID,title:`Grundschutz++-resolved_catalog.json @ ${GPP_CATALOG_PIN_COMMIT.slice(0,12)}`,rlinks:[{href:CATALOG_URL,hashes:[{algorithm:'SHA-256',value:GPP_CATALOG_PIN_SHA256}]}]}}
+// Backends. Der frühere Claude-Direktpfad (api.anthropic.com aus dem Browser) ist entfallen:
+// er scheitert außerhalb einer Artifact-Umgebung an CORS. Anthropic-Modelle bleiben über
+// OpenRouter erreichbar — ein Key, erlaubtes Browser-CORS, dieselben Modelle.
+const BACKEND_LABEL={gemini:'Gemini',openrouter:'OpenRouter'};
+// Nur lebende Modell-IDs. Erster Eintrag = Default (wird vorausgewählt).
+// OpenRouter bekommt bewusst KEINE fest verdrahtete Liste — sein Katalog wird live geladen.
+const GEMINI_DEFAULT_MODEL='gemini-3.6-flash';
+const MODELS={
+    gemini:[
+        {id:GEMINI_DEFAULT_MODEL,label:'Gemini 3.6 Flash (Default)'},
+        {id:'gemini-3.5-flash',label:'Gemini 3.5 Flash'},
+        {id:'gemini-3.5-flash-lite',label:'Gemini 3.5 Flash Lite (schnell/günstig)'},
+        {id:'gemini-3.1-pro-preview',label:'Gemini 3.1 Pro Preview (kostenpflichtig)'}
+    ]
+};
+// Eine einzige Farbquelle für Status-Badges UND Charts: STM[status].b.
+// `st` ist der daraus abgeleitete Inline-Style des Badges — Badge und Donut
+// zeigen damit garantiert denselben Farbwert.
+const STM={
+    'implemented':{l:'Implementiert',b:'oklch(0.75 0.18 145)'},
+    'partial':{l:'Teilweise',b:'oklch(0.80 0.15 80)'},
+    'planned':{l:'Geplant',b:'oklch(0.70 0.15 240)'},
+    'alternative':{l:'Alternativ',b:'oklch(0.68 0.19 330)'},
+    'not-applicable':{l:'N/A',b:'oklch(0.75 0.02 280)'},
+    'nicht-angegeben':{l:'Kein Status',b:'oklch(0.65 0.20 25)'},
+    'nur-komponente':{l:'Nur Komp.-Def.',b:'oklch(0.70 0.18 300)'}
+};
+function badgeStyle(col){return `color:${col};border-color:color-mix(in oklab,${col} 40%,transparent);background:color-mix(in oklab,${col} 14%,transparent)`}
+Object.values(STM).forEach(m=>{m.st=badgeStyle(m.b)});
+// Reihenfolge für Charts und Legenden.
+const STM_ORDER=['implemented','partial','planned','alternative','nicht-angegeben','nur-komponente','not-applicable'];
+// Befundstatus — Farben wie die Befund-Punkte in der Control-Liste.
+const FINDING_COL={satisfied:'oklch(0.75 0.18 145)','not-satisfied':'oklch(0.65 0.20 25)',
+                   other:'oklch(0.80 0.15 80)',offen:'oklch(0.55 0.02 280)'};
+const METHOD_COL={EXAMINE:'oklch(0.70 0.15 240)',INTERVIEW:'oklch(0.80 0.15 80)',TEST:'oklch(0.70 0.18 300)'};
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded',()=>{
+    initSplitter();
+    L.info('OSCAL AP & AR — build 9.5.1 gestartet');
+    L.debug('Bei CORS-Fehlern: Ordner mit `python -m http.server` bedienen und über http://localhost:8000/ öffnen.');
+    initPrompts();
+    loadAICfg();
+    loadED23Map();
+    // Katalog zuerst — die Set-Übernahme (initSSP) braucht den Control-Index.
+    loadCatalog().then(bootFromSet);
+});
+
+// ============================================================
+// CATALOG
+// ============================================================
+async function loadCatalog(){
+    const cs=document.getElementById('cat-status');
+    const t0=performance.now();
+    setPill('cat-status','info','Katalog wird geladen …');
+    showProgress('Katalog laden',0,1);
+    L.info(`G++-Katalog wird geladen (Pin ${GPP_CATALOG_PIN_COMMIT.slice(0,12)}…)`);
+    try{
+        const r=await fetch(CATALOG_URL);const buf=await r.arrayBuffer();
+        L.debug(`Katalog empfangen: ${(buf.byteLength/1024).toFixed(1)} kB in ${Math.round(performance.now()-t0)} ms`);
+        // Pin-Prüfung (Grundregel 8): Die gepinnte Quelle muss exakt den bekannten SHA-256 liefern.
+        const hash=await sha256Hex(buf);
+        if(hash!==GPP_CATALOG_PIN_SHA256){setPill('cat-status','err','Katalog: Pin-Verletzung');L.err(`Katalog-Pin verletzt: SHA-256 ${hash.slice(0,12)}… statt ${GPP_CATALOG_PIN_SHA256.slice(0,12)}…`);hideProgress();throw new Error(`Pin-Verletzung: ${hash.slice(0,12)}… statt ${GPP_CATALOG_PIN_SHA256.slice(0,12)}…`)}
+        L.ok(`Katalog-Pin verifiziert (SHA-256 ${hash.slice(0,12)}…)`);
+        const d=JSON.parse(new TextDecoder().decode(buf));
+        function idx(items){if(!items)return;items.forEach(i=>{
+            if(i.id){let prose='';if(i.parts){const p=i.parts.find(p=>p.name==='statement'||p.prose);if(p&&p.prose)prose=p.prose}
+                const secLvl=(i.props||[]).find(p=>p.name==='sec_level')?.value||'';
+                const ctrlClass=i.class||'';
+                S.catalog.set(i.id,{title:i.title||'',prose,secLevel:secLvl,ctrlClass})}
+            if(i.controls)idx(i.controls);if(i.groups)idx(i.groups);
+        })}
+        idx(d.catalog.groups);
+        setPill('cat-status','ok',`◉ Katalog: ${S.catalog.size} Controls`);
+        showProgress('Katalog laden',1,1);
+        L.ok(`Katalog indiziert: ${S.catalog.size} Controls in ${Math.round(performance.now()-t0)} ms`);
+    }catch(e){
+        setPill('cat-status','err','◬ Katalog-Fehler');
+        hideProgress();
+        L.err('Katalog konnte nicht geladen werden: '+shortErr(e.message));
+        console.error(e);
+    }
+}
+
+function catInfo(cid){return S.catalog.get(cid)||{title:'',prose:''}}
+
+// UTF-8-sicheres Base64-Decoding (atob liefert latin1) — wie in ssp_ausfuellen.
+function base64DecodeUnicode(str){
+    try{return new TextDecoder().decode(Uint8Array.from(atob(str),c=>c.charCodeAt(0)))}
+    catch(e){return null}
+}
+
+// Liest die detaillierte Risikoanalyse aus der SSP back-matter.
+// Standard-OSCAL: base64 direkt auf der Resource; Altformat: attachments[].base64
+// (filename "risk-analysis.json" bzw. decodiertes {risks:[...]}).
+function extractSSPRisks(ssp){
+    const out=[];
+    (ssp['back-matter']?.resources||[]).forEach(r=>{
+        const cands=[];
+        if(r.base64?.value)cands.push(r.base64);
+        (r.attachments||[]).forEach(att=>{
+            if(att?.base64?.value)cands.push({...att.base64,'media-type':att.base64['media-type']||att['media-type']});
+        });
+        cands.forEach(b64=>{
+            const isRisk=b64.filename==='risk-analysis.json'||(b64['media-type']||'').includes('json');
+            if(!isRisk)return;
+            try{
+                const json=JSON.parse(base64DecodeUnicode(b64.value)||'null');
+                if(json&&Array.isArray(json.risks))out.push(...json.risks);
+            }catch(e){}
+        });
+    });
+    return out;
+}
+
+// Parst ein OSCAL-Profil (das alte Format war eine component-definition).
+// Control-IDs stammen aus imports[].include-controls[].with-ids.
+// Die Reifegrade/Statements liegen in modify.alters[].adds[].parts (name:"statement"):
+// OSCAL erlaubt keine neuen statements in einer CDef — daher werden sie im Profil
+// per `adds` als neue `part` an das jeweilige Control angehängt.
+function parseProfileEntry(d){
+    const prof=(d&&d.profile)||{};
+    const ids=new Set();
+    (prof.imports||[]).forEach(imp=>(imp['include-controls']||[]).forEach(inc=>(inc['with-ids']||[]).forEach(id=>id&&ids.add(id))));
+    const stmtByCtrl=new Map();
+    ((prof.modify||{}).alters||[]).forEach(alt=>{
+        const cid=alt['control-id'];if(!cid)return;
+        const list=stmtByCtrl.get(cid)||[];
+        (alt.adds||[]).forEach(add=>(add.parts||[]).filter(pt=>pt.name==='statement').forEach(pt=>{
+            const p=Object.fromEntries((pt.props||[]).map(pp=>[pp.name,pp.value]));
+            // New shape (issue 3.1): per-level statement is pt.prose; guidance/assessment
+            // are nested parts. Old shape: text lived in props statement/guidance/
+            // assessment-method. Read new first, fall back to old for legacy profiles.
+            const sub=Object.fromEntries((pt.parts||[]).map(np=>[np.name,np.prose]));
+            const statement=(pt.prose!=null&&p.statement==null)?pt.prose:(p.statement||pt.prose||'');
+            const guidance=sub.guidance||p.guidance||'';
+            const assessMethod=sub.assessment||p['assessment-method']||'';
+            list.push({id:pt.id,desc:p.label||'',statement,guidance,assessMethod,prose:pt.prose||''});
+        }));
+        stmtByCtrl.set(cid,list);
+        ids.add(cid); // Control aufnehmen, auch wenn es nur via alter referenziert wird
+    });
+    return {ids,stmtByCtrl};
+}
+
+// ============================================================
+// REFERENZEN
+// SSP, Kataloge und Profile kommen aus dem aktiven Artefakt-Set
+// (bootFromSet); eigene Datei-Lader gibt es hier nicht mehr.
+// ============================================================
+
+// Wandelt eine local://-Referenz in einen Dateinamen um (sonst null).
+function localName(u){return /^local:\/\//i.test(u)?u.replace(/^local:\/\//i,'').split(/[\\/]/).pop():null}
+
+// Liefert das geparste Profil zu einer defUrl: local:// → erst aus geladenen
+// Dateien (S.localDefs), sonst relativer Fetch (nur über http-Server); http(s) → CORS-Fetch.
+async function fetchDef(u){
+    // Fragment-href (Pin-Muster, Grundregel 8): "#uuid" über die back-matter des SSP
+    // auf die Resource auflösen; deren rlink-URL laden und — falls die Resource einen
+    // SHA-256 trägt — den Inhalt gegen den Pin verifizieren.
+    if(/^#/.test(u)){
+        const res=(S.ssp?.['back-matter']?.resources||[]).find(r=>r.uuid===u.slice(1));
+        if(!res)throw new Error(`Back-matter-Resource ${u} nicht im SSP gefunden`);
+        const rl=(res.rlinks||[])[0];
+        if(!rl?.href)throw new Error(`Resource ${u} hat keinen rlink`);
+        const expected=(rl.hashes||[]).find(h=>h.algorithm==='SHA-256')?.value;
+        if(expected&&/^https?:/i.test(rl.href)){
+            const r=await fetch(rl.href,{mode:'cors',cache:'no-cache'});
+            if(!r.ok)throw new Error(`HTTP ${r.status} ${r.statusText}`);
+            const buf=await r.arrayBuffer();
+            const hash=await sha256Hex(buf);
+            if(hash!==expected){L.err(`Pin-Verletzung für ${rl.href}: ${hash.slice(0,12)}… statt ${expected.slice(0,12)}…`);throw new Error(`Pin-Verletzung für ${rl.href}: SHA-256 ${hash.slice(0,12)}… statt ${expected.slice(0,12)}…`)}
+            L.ok(`Pin verifiziert: ${rl.href.split('/').pop()} (SHA-256 ${hash.slice(0,12)}…)`);
+            return JSON.parse(new TextDecoder().decode(buf).replace(/^﻿/,''));
+        }
+        return fetchDef(rl.href);
+    }
+    const ln=localName(u);
+    if(ln!=null){
+        if(S.localDefs.has(ln))return S.localDefs.get(ln);
+        if(S.localDefs.has(u.replace(/^local:\/\//i,'')))return S.localDefs.get(u.replace(/^local:\/\//i,''));
+        let r;
+        try{r=await fetch(ln,{cache:'no-cache'})}
+        catch(e){throw new Error(`"${ln}" nicht gefunden — bitte über „⬡ Profile/Defs laden" wählen (oder Seite per Webserver öffnen)`)}
+        if(!r.ok)throw new Error(`"${ln}" nicht gefunden (HTTP ${r.status}) — bitte über „⬡ Profile/Defs laden" wählen`);
+        return JSON.parse((await r.text()).replace(/^﻿/,''));
+    }
+    const r=await fetch(u,{mode:'cors',cache:'no-cache'});
+    if(!r.ok)throw new Error(`HTTP ${r.status} ${r.statusText}`);
+    return JSON.parse((await r.text()).replace(/^﻿/,''));
+}
+
+// Wendet ein geparstes Profil auf eine Komponente an; gibt Anzahl neuer Controls zurück.
+function applyDefData(uuid,d){
+    const grp=S.compGroups.get(uuid)||new Map();let a=0;
+    const {ids,stmtByCtrl}=parseProfileEntry(d);
+    ids.forEach(cid=>{
+        if(!cid)return;
+        const ci=catInfo(cid);
+        const stmts=stmtByCtrl.get(cid)||[];
+        const defDesc=(stmts[0]&&stmts[0].prose)||ci.prose||'';
+        if(!grp.has(cid)){
+            grp.set(cid,{status:'nur-komponente',user:'',date:'',desc:'',stmtId:'',fromDef:true,defDesc:defDesc,defProps:[],statements:stmts});
+            a++;
+        } else {
+            const existing=grp.get(cid);
+            if((!existing.statements||!existing.statements.length)&&stmts.length)existing.statements=stmts;
+            if(!existing.defDesc)existing.defDesc=defDesc;
+        }
+        if(!S.allCids.has(cid)){S.allCids.add(cid);S.methods.set(cid,new Set(['EXAMINE']));S.findings.set(cid,{status:'',observation:'',risk:'',remarks:''})}
+    });
+    S.compGroups.set(uuid,grp);const m=S.compMeta.get(uuid);if(m){m.defLoaded=true;m.defN=grp.size}
+    return a;
+}
+
+// ============================================================
+// SESSION
+// ============================================================
+function ser(){return JSON.stringify({_v:9,sspFilename:S.sspFilename,meta:S.meta,sspRisks:S.sspRisks,assessor:S.assessor,terms:S.terms,tasks:S.tasks,dateStart:S.dateStart,dateEnd:S.dateEnd,excluded:[...S.excluded],methods:[...S.methods.entries()].map(([k,v])=>[k,[...v]]),findings:[...S.findings.entries()],aiCache:[...S.aiCache.entries()],compGroups:[...S.compGroups.entries()].map(([k,m])=>[k,[...m.entries()]]),compMeta:[...S.compMeta.entries()],allCids:[...S.allCids]})}
+
+function restoreSession(d){
+    if(!d._v||d._v<6){L.err(`Session-Format v${d._v||'?'} zu alt (v9 benötigt)`);return alert('Session-Format zu alt oder inkompatibel (v9 benötigt).')}
+    S.sspFilename=d.sspFilename||'';S.meta=d.meta||{title:'',version:'1.0.0',desc:''};S.sspRisks=d.sspRisks||[];S.assessor=d.assessor||{name:'',type:'organization',email:''};
+    S.terms=d.terms||{roe:'',disclosures:'',methodology:''};S.tasks=d.tasks||[];S.dateStart=d.dateStart||'';S.dateEnd=d.dateEnd||'';
+    S.excluded=new Set(d.excluded||[]);S.methods=new Map((d.methods||[]).map(([k,v])=>[k,new Set(v)]));
+    S.findings=new Map(d.findings||[]);S.aiCache=new Map(d.aiCache||[]);
+    S.compGroups=new Map((d.compGroups||[]).map(([k,arr])=>[k,new Map(arr)]));
+    S.compMeta=new Map(d.compMeta||[]);S.allCids=new Set(d.allCids||[]);
+    L.ok(`Session wiederhergestellt: ${S.allCids.size} Controls, ${S.compMeta.size} Komponenten, ${S.findings.size} Befunde`);
+    setSt('ssp-status',true,`Session: ${S.allCids.size} Controls`);showUI();
+}
+
+window.saveSession=()=>{const j=ser();L.ok(`Session exportiert: ${S.allCids.size} Controls, ${(j.length/1024).toFixed(1)} kB`);dl(JSON.parse(j),`${sn()}_session.json`)};
+// Der Arbeitsstand liegt im gemeinsamen Artefakt-Set, nicht mehr in einem
+// tool-eigenen localStorage-Schlüssel — so sieht jedes Werkzeug denselben Stand.
+function autoSave(){
+    if(typeof gppArtefacts==='undefined')return;
+    gppArtefacts.save({stage:'assess',kind:'workspace',title:'Prüfung Arbeitsstand',
+        filename:'pruefung-workspace.json',tool:GPP_TOOL_ID,data:JSON.parse(ser())})
+        .catch(e=>L.warn(`Arbeitsstand nicht gesichert: ${e.message}`));
+}
+setInterval(()=>{if(S.allCids.size>0)autoSave()},30000);
+
+// Übernimmt beim Start, was im aktiven Set liegt: eigener Arbeitsstand vor SSP.
+// Kataloge und Profile des Sets landen als local://-Referenzen im Speicher.
+async function bootFromSet(){
+    if(typeof gppArtefacts==='undefined')return;
+    try{
+        migrateLegacyAutosave();
+        const set=gppArtefacts.activeSet();
+        const ws=await gppArtefacts.latest('workspace');
+        if(ws&&ws.tool===GPP_TOOL_ID&&ws.data&&(ws.data.allCids||[]).length){
+            L.info(`Arbeitsstand aus Set „${set}" übernommen`);
+            restoreSession(ws.data);
+            await adoptDefsFromSet();
+            return;
+        }
+        await adoptDefsFromSet();
+        const ssp=await gppArtefacts.latest('ssp');
+        if(ssp&&ssp.data&&ssp.data['system-security-plan']){
+            S.ssp=ssp.data['system-security-plan'];S.sspFilename=ssp.filename||'ssp.json';
+            L.ok(`SSP aus Set „${set}" übernommen: ${ssp.title}`);
+            await initSSP();
+        }else{
+            L.info(`Set „${set}" enthält noch keinen SSP — im SSP-Generator erzeugen, er erscheint hier automatisch.`);
+        }
+    }catch(e){L.err(`Set-Übernahme fehlgeschlagen: ${e.message}`)}
+}
+// Kataloge/Profile des Sets als local://-Auflösung bereitstellen
+async function adoptDefsFromSet(){
+    const defs=(await gppArtefacts.all()).filter(r=>r.kind==='catalog'||r.kind==='profile');
+    defs.forEach(r=>S.localDefs.set(r.filename,r.data));
+    if(defs.length)L.debug(`${defs.length} Katalog/Profil-Artefakt(e) aus dem Set als Referenz bereit`);
+}
+// Einmalige Übernahme des alten tool-eigenen Autosaves
+function migrateLegacyAutosave(){
+    try{
+        const s=localStorage.getItem('oscal_ap_v9');
+        if(!s)return;
+        const d=JSON.parse(s);
+        if(d&&d._v>=9&&(d.allCids||[]).length){
+            gppArtefacts.save({stage:'assess',kind:'workspace',title:'Prüfung Arbeitsstand (übernommen)',
+                filename:'pruefung-workspace.json',tool:GPP_TOOL_ID,data:d});
+            L.info('Früherer Autosave in das Set übernommen.');
+        }
+        localStorage.removeItem('oscal_ap_v9');
+    }catch(e){}
+}
+// Ein anderes Fenster hat etwas abgelegt oder das Set gewechselt
+window.addEventListener('storage',e=>{
+    if(e.key!=='gpp:cfg:artefacts:touch')return;
+    if(S.allCids.size===0)bootFromSet();
+    else L.debug('Set-Änderung erkannt — laufender Stand bleibt unberührt.');
+});
+
+// ============================================================
+// INIT FROM SSP
+// ============================================================
+async function initSSP(){
+    const ssp=S.ssp,sn=ssp['system-characteristics']?.['system-name']||'System';
+    S.meta.title=`${sn} - Assessment Plan`;S.setParams=ssp['control-implementation']?.['set-parameters']||[];
+    S.compMeta.clear();S.compGroups.clear();S.allCids.clear();S.excluded.clear();S.methods.clear();S.findings.clear();
+
+    (ssp['system-implementation']?.components||[]).forEach(c=>{
+        const dl=(c.links||[]).find(l=>l.rel==='profile');
+        S.compMeta.set(c.uuid,{title:c.title,type:c.type,status:c.status?.state,defUrl:dl?.href||null,defLoaded:false,defN:0});
+        S.compGroups.set(c.uuid,new Map());
+    });
+
+    (ssp['control-implementation']?.['implemented-requirements']||[]).forEach(r=>{
+        const cid=r['control-id'];S.allCids.add(cid);
+        S.methods.set(cid,new Set(['EXAMINE']));S.findings.set(cid,{status:'',observation:'',risk:'',remarks:''});
+        const bcs=r['by-components']||[];
+        if(!bcs.length){ensureGrp('__none').set(cid,mkEntry('nicht-angegeben',r.description))}
+        bcs.forEach(bc=>{ensureGrp(bc['component-uuid']).set(cid,{
+            status:bc['implementation-status']?.state||'nicht-angegeben',
+            user:bc.props?.find(p=>p.name==='implementing-user')?.value||'',
+            date:bc.props?.find(p=>p.name==='implementation-date')?.value||'',
+            desc:bc.description||'',stmtId:bc.props?.find(p=>p.name==='implemented-statement-id')?.value||'',fromDef:false
+        })});
+    });
+
+    S.sspRisks=extractSSPRisks(ssp);
+    const riskTxt=S.sspRisks.length?`, ${S.sspRisks.length} Risiken`:'';
+    L.ok(`SSP "${sn}" geparst: ${S.allCids.size} Controls, ${S.compMeta.size} Komponenten${riskTxt}`);
+    if(S.sspRisks.length)L.debug(`${S.sspRisks.length} Risiken aus der back-matter-Risikoanalyse übernommen`);
+    setSt('ssp-status',true,`SSP: ${sn} — ${S.allCids.size} Controls${riskTxt}`);showUI();await loadCompDefs();
+}
+
+function ensureGrp(u){if(!S.compGroups.has(u))S.compGroups.set(u,new Map());return S.compGroups.get(u)}
+function mkEntry(st,desc){return{status:st,user:'',date:'',desc:desc||'',stmtId:'',fromDef:false}}
+
+function showUI(){
+    renderStats();renderControls();
+    document.getElementById('stats-dash').classList.remove('hidden');
+    document.getElementById('ctrl-area').classList.remove('hidden');
+    document.getElementById('sb-comp-nav').classList.remove('hidden');
+    document.getElementById('sb-bulk').classList.remove('hidden');
+
+    // Reveal top-level sections
+    const sm = document.getElementById('sec-meta'); if(sm) sm.classList.remove('hidden');
+    const st = document.getElementById('sec-terms'); if(st) st.classList.remove('hidden');
+
+    // Populate fields from state
+    document.getElementById('sb-title').value=S.meta.title;
+    document.getElementById('sb-ds').value=S.dateStart;
+    document.getElementById('sb-de').value=S.dateEnd;
+    document.getElementById('sb-roe').value=S.terms.roe;
+    document.getElementById('sb-disc').value=S.terms.disclosures;
+    document.getElementById('sb-meth').value=S.terms.methodology;
+    document.getElementById('sb-aname').value=S.assessor.name;
+    document.getElementById('sb-aemail').value=S.assessor.email;
+    document.getElementById('sb-desc').value=S.meta.desc;
+    document.getElementById('scope-n').textContent=S.allCids.size-S.excluded.size;
+
+    document.getElementById('task-list').innerHTML=tHTML();
+}
+
+// ============================================================
+// COMPONENT DEFINITIONS
+// ============================================================
+async function loadCompDefs(){
+    const toLoad=[];S.compMeta.forEach((m,u)=>{if(m.defUrl)toLoad.push({uuid:u,url:m.defUrl,title:m.title})});
+    if(!toLoad.length){L.debug('Keine Komponenten-Profile im SSP referenziert');return}
+    L.info(`${toLoad.length} Komponenten-Profil(e) werden aufgelöst`);
+    let done=0,newN=0,fails=[];
+    showProgress('Profile auflösen',0,toLoad.length);
+    for(const it of toLoad){
+        setPill('comp-status','info',`&#x22EF; ${esc(it.title)} (${done+1}/${toLoad.length})`);
+        const t0=performance.now();
+        try{
+            const txt=JSON.stringify(await fetchDef(it.url));
+            let d;try{d=JSON.parse(txt.replace(/^﻿/,''))}catch(pe){throw new Error('Kein gültiges JSON: '+pe.message)}
+            const a=applyDefData(it.uuid,d);newN+=a;
+            L.debug(`Profil "${it.title}": +${a} Controls, ${(txt.length/1024).toFixed(1)} kB in ${Math.round(performance.now()-t0)} ms`);
+        }catch(e){
+            console.error(`Fehler bei ${it.title}:`,e);
+            L.err(`Profil "${it.title}" nicht ladbar: ${shortErr(e.message)}`);
+            fails.push({title:it.title,err:e.message,url:it.url,uuid:it.uuid});
+        }done++;showProgress('Profile auflösen',done,toLoad.length)}
+    if(fails.length){
+        const hasLocal=fails.some(f=>/^local:\/\//i.test(f.url));
+        setPill('comp-status','warn',`&#x25EC; ${done-fails.length}/${done} Defs, +${newN} Controls <button onclick="retryFailedDefs()" class="ml-2 underline text-amber-200 hover:text-white font-bold">&#x27F3; ${fails.length} neu laden</button>${hasLocal?' &middot; local:// per &#x2B21; Profile/Defs laden':''}`);
+        L.warn(`${fails.length} von ${done} Profilen fehlgeschlagen${hasLocal?' — local://-Referenzen bitte über „⬡ Profile/Defs laden“ bereitstellen':''}`);
+        S._failedDefs=fails;
+    }else{
+        setPill('comp-status','ok',`&#x25C9; ${done} Defs → +${newN} Controls (${S.allCids.size} gesamt)`);
+        L.ok(`Alle ${done} Profile aufgelöst: +${newN} Controls, ${S.allCids.size} gesamt`);
+    }
+    renderStats();renderControls();
+}
+
+window.retryFailedDefs=async()=>{
+    const fails=S._failedDefs||[];if(!fails.length)return;
+    L.info(`Erneuter Versuch für ${fails.length} Profil(e)`);
+    let retried=0,newN=0,stillFailing=[];
+    showProgress('Profile erneut laden',0,fails.length);
+    for(const it of fails){
+        setPill('comp-status','info',`&#x22EF; Retry: ${esc(it.title)} (${retried+1}/${fails.length})`);
+        try{
+            const d=await fetchDef(it.url);
+            const a=applyDefData(it.uuid,d);newN+=a;
+            L.ok(`Profil "${it.title}" im zweiten Versuch geladen (+${a} Controls)`);
+        }catch(e){L.err(`Profil "${it.title}" weiterhin nicht ladbar: ${shortErr(e.message)}`);stillFailing.push({...it,err:e.message})}
+        retried++;showProgress('Profile erneut laden',retried,fails.length)}
+    S._failedDefs=stillFailing;
+    if(stillFailing.length){
+        setPill('comp-status','err',`&#x25EC; ${stillFailing.length} Defs nicht ladbar: ${esc(stillFailing.map(f=>f.title).join(', '))}`);
+        L.err(`${stillFailing.length} Profile weiterhin nicht ladbar`);
+    }else{
+        setPill('comp-status','ok',`&#x25C9; Alle Defs geladen (${S.allCids.size} gesamt)`);
+        L.ok(`Alle Profile geladen — ${S.allCids.size} Controls gesamt`);
+    }
+    renderStats();renderControls();
+};
+
+// ============================================================
+// AI CONFIG
+// ============================================================
+// Keys, Modelle und Backend kommen seit 9.4.1 ausschließlich zentral aus
+// config.html (gpp:cfg:*). Der alte 'oscal_ai'-Store wird weder gelesen noch
+// geschrieben; AI_KEYS/AI_MODELS sind reine In-Memory-Spiegel je Backend.
+const AI_KEYS={gemini:'',openrouter:''};
+const AI_MODELS={gemini:'',openrouter:''};
+
+// --- OpenRouter-Modellkatalog (live, kein Auth nötig, 24 h im localStorage) ---
+const OR_MODELS_URL='https://openrouter.ai/api/v1/models';
+const OR_CHAT_URL='https://openrouter.ai/api/v1/chat/completions';
+const OR_CAT_LS='oscal_or_catalog';
+const OR_CAT_TTL_MS=24*60*60*1000;
+const OR_TITLE='OSCAL AP & AR Generator';
+let OR_CATALOG=[];      // [{id,name,so}] — so = supported_parameters enthält structured_outputs
+let OR_CAT_TS=0;
+function orReferer(){return /^https?:$/.test(location.protocol)?location.origin:'https://localhost'}
+
+window.onProvChange=()=>{
+    const p=document.getElementById('ai-provider').value;
+    const s=document.getElementById('ai-model');s.innerHTML='';
+    (MODELS[p]||[]).forEach(m=>{const o=document.createElement('option');o.value=m.id;o.textContent=m.label;s.appendChild(o)});
+    document.getElementById('gm-model-wrap').classList.toggle('hidden',p!=='gemini');
+    document.getElementById('or-model-wrap').classList.toggle('hidden',p!=='openrouter');
+    const kf=document.getElementById('ai-key');
+    kf.placeholder=p==='openrouter'?'OpenRouter-Key (sk-or-…)':(p==='gemini'?'Gemini API-Key':'API-Key');
+    kf.value=AI_KEYS[p]||'';
+    if(p==='gemini'&&AI_MODELS.gemini){
+        // Zentral konfigurierte Modelle außerhalb der Festliste als Option ergänzen.
+        if(![...s.options].some(o=>o.value===AI_MODELS.gemini))s.add(new Option(AI_MODELS.gemini,AI_MODELS.gemini));
+        s.value=AI_MODELS.gemini;
+    }
+    if(p==='openrouter'){
+        document.getElementById('or-slug').value=AI_MODELS.openrouter||'';
+        ensureORCatalog();
+    }
+    saveAICfg();
+};
+
+// Spiegelt die Shim-Felder in den Arbeitszustand und pflegt das Badge —
+// persistiert wird nichts mehr (Konfiguration liegt zentral in config.html).
+window.saveAICfg=()=>{
+    const p=document.getElementById('ai-provider').value;
+    if(p){
+        AI_KEYS[p]=document.getElementById('ai-key').value;
+        AI_MODELS[p]=(p==='openrouter')
+            ? document.getElementById('or-slug').value.trim()
+            : document.getElementById('ai-model').value;
+    }
+};
+
+function loadAICfg(){
+    // Kein Lesen aus dem alten 'oscal_ai'-Store mehr — es gilt allein config.html.
+    if(!AI_MODELS.gemini)AI_MODELS.gemini=GEMINI_DEFAULT_MODEL;
+    applyGppConfig(false);
+    window.addEventListener('storage',e=>{if(e.key&&e.key.startsWith('gpp:cfg:'))applyGppConfig(false)});
+}
+
+// Spiegelt gpp:cfg:* in die ausgeblendeten Shim-Felder; dieses Tool schreibt nie zurück.
+window.applyGppConfig=function(verbose){
+    const backend=gppCfg.get('ai:backend')==='openrouter'?'openrouter':'gemini';
+    const model=gppCfg.get('ai:model:'+backend);
+    AI_KEYS[backend]=gppCfg.get('ai:key:'+backend);
+    // Leeres zentrales Modell löscht bewusst den Spiegel — onProvChange fällt dann
+    // auf den Kopf der Festliste zurück statt einen alten Slug weiterzuschleppen.
+    AI_MODELS[backend]=model||'';
+    const prov=document.getElementById('ai-provider');
+    const key=document.getElementById('ai-key');
+    const retries=document.getElementById('ai-retries');
+    if(prov)prov.value=backend;
+    if(key)key.value=AI_KEYS[backend]||'';
+    if(retries)retries.value=gppCfg.get('run:retries');
+    if(backend==='openrouter'){const slug=document.getElementById('or-slug');if(slug)slug.value=model||'';}
+    if(typeof onProvChange==='function')onProvChange();
+    if(verbose)L.info('Einstellungen aus config.html neu übernommen.');
+};
+
+// Freitext-Slug hat Vorrang; die Katalogauswahl trägt lediglich dort ein.
+window.onORPick=()=>{
+    const v=document.getElementById('or-model').value;
+    if(v)document.getElementById('or-slug').value=v;
+    saveAICfg();
+};
+
+window.renderORModels=()=>{
+    const sel=document.getElementById('or-model');if(!sel)return;
+    const only=document.getElementById('or-only-schema')?.checked!==false;
+    const list=only?OR_CATALOG.filter(m=>m.so):OR_CATALOG;
+    const cur=(document.getElementById('or-slug')?.value||'').trim();
+    sel.innerHTML='';
+    const ph=document.createElement('option');ph.value='';
+    ph.textContent=list.length?`— Modell wählen (${list.length}) —`:'— Katalog leer —';
+    sel.appendChild(ph);
+    list.forEach(m=>{
+        const o=document.createElement('option');o.value=m.id;
+        // ◈ = Structured Outputs bestätigt, ◇ = nicht ausgewiesen.
+        o.textContent=`${m.so?'◈':'◇'} ${m.id}`;
+        o.title=m.name||m.id;
+        sel.appendChild(o);
+    });
+    sel.value=list.some(m=>m.id===cur)?cur:'';
+    const st=document.getElementById('or-cat-status');
+    if(st)st.textContent=OR_CATALOG.length
+        ?`${list.length}/${OR_CATALOG.length} Modelle · Stand ${OR_CAT_TS?new Date(OR_CAT_TS).toLocaleDateString('de-DE'):'?'}`
+        :'Katalog noch nicht geladen';
+};
+
+// Katalog aus dem Cache anzeigen; erst nach 24 h (oder auf Wunsch) neu holen.
+function ensureORCatalog(force){
+    if(!OR_CATALOG.length){
+        try{
+            const c=JSON.parse(localStorage.getItem(OR_CAT_LS)||'null');
+            if(c&&Array.isArray(c.models)&&c.models.length){OR_CATALOG=c.models;OR_CAT_TS=c.ts||0}
+        }catch(e){}
+    }
+    renderORModels();
+    if(!force&&OR_CATALOG.length&&(Date.now()-OR_CAT_TS)<OR_CAT_TTL_MS)return Promise.resolve(OR_CATALOG);
+    return fetchORCatalog();
+}
+
+async function fetchORCatalog(){
+    const st=document.getElementById('or-cat-status');
+    if(st)st.textContent='Katalog wird geladen …';
+    try{
+        const r=await fetch(OR_MODELS_URL,{headers:{'Accept':'application/json'}});
+        const d=await r.json();
+        if(d.error)throw new Error(d.error.message||`HTTP ${r.status} ${r.statusText}`);
+        const list=(d.data||[])
+            .map(m=>({id:m.id,name:m.name||m.id,so:(m.supported_parameters||[]).includes('structured_outputs')}))
+            .filter(m=>m.id)
+            .sort((a,b)=>a.id.localeCompare(b.id));
+        if(!list.length)throw new Error('Katalog leer');
+        OR_CATALOG=list;OR_CAT_TS=Date.now();
+        try{localStorage.setItem(OR_CAT_LS,JSON.stringify({ts:OR_CAT_TS,models:list}))}catch(e){}
+        L.ok(`OpenRouter-Katalog geladen: ${list.length} Modelle, davon ${list.filter(m=>m.so).length} mit Structured Outputs`);
+        renderORModels();
+    }catch(e){
+        L.warn(`OpenRouter-Modellkatalog nicht ladbar: ${shortErr(e.message)} — Slug kann von Hand eingetragen werden.`);
+        if(st)st.textContent='Katalog nicht ladbar — Slug frei eintragen';
+    }
+    return OR_CATALOG;
+}
+window.refreshORModels=()=>ensureORCatalog(true);
+
+function getAI(){
+    const p=document.getElementById('ai-provider').value,k=document.getElementById('ai-key').value;
+    const m=(p==='openrouter')
+        ? ((document.getElementById('or-slug').value||'').trim()||document.getElementById('or-model').value)
+        : document.getElementById('ai-model').value;
+    return(p&&k)?{p,k,m}:null;
+}
+
+// ============================================================
+// AI CALLS
+// ============================================================
+const AI_RETRIES_DEFAULT=2;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+// Rohe API-Fehlermeldungen können sehr lang sein — vor der Anzeige kürzen.
+function shortErr(m){const s=String(m??'').replace(/\s+/g,' ').trim();return s.length>400?s.slice(0,400)+'…':s}
+
+// Toleranter Parser: erst direkt, dann ohne Code-Fence, dann größter {...}-Block.
+// Bei gesetztem responseJsonSchema greift meist schon der erste Versuch.
+function extractJson(text){
+    const t=String(text||'').trim();
+    try{return JSON.parse(t)}catch(e){}
+    const s=t.replace(/^\s*```(?:json)?/i,'').replace(/```\s*$/,'').trim();
+    try{return JSON.parse(s)}catch(e){}
+    const a=s.indexOf('{'),b=s.lastIndexOf('}');
+    if(a>=0&&b>a){try{return JSON.parse(s.slice(a,b+1))}catch(e){}}
+    throw new Error('Antwort enthielt kein verwertbares JSON.');
+}
+
+// Structured Output für den Befundvorschlag — ersetzt das frühere "Antworte NUR als JSON".
+const ASSESS_SCHEMA={
+    type:'object',
+    properties:{
+        status:{type:'string',enum:['satisfied','not-satisfied','other']},
+        observation:{type:'string'},
+        risk:{type:'string'},
+        remarks:{type:'string'}
+    },
+    required:['status','observation','risk','remarks']
+};
+
+// Ein einzelner Gemini-Aufruf. Keine Sampling-Parameter (temperature/topP/topK/
+// candidateCount) im Body — auf Gemini 3.x sind sie deprecated bzw. werden abgelehnt.
+// API-Key als Header, niemals ?key= in der URL.
+async function geminiOnce(ai,prompt,schema){
+    const body={contents:[{role:'user',parts:[{text:prompt}]}]};
+    if(schema)body.generationConfig={responseMimeType:'application/json',responseJsonSchema:schema};
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(ai.m)}:generateContent`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-goog-api-key':ai.k},
+        body:JSON.stringify(body)
+    });
+    const d=await r.json();
+    if(d.error)throw new Error(shortErr(d.error.message||`HTTP ${r.status} ${r.statusText}`));
+    return (d.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('\n');
+}
+
+// Ein einzelner OpenRouter-Aufruf (OpenAI-kompatible Chat Completions).
+// Structured Outputs laufen über response_format; require_parameters sorgt dafür,
+// dass OpenRouter nur zu Providern routet, die das Schema tatsächlich honorieren.
+// Ebenfalls keine Sampling-Parameter.
+async function openrouterOnce(ai,prompt,schema){
+    if(!ai.m)throw new Error('Kein OpenRouter-Modell gewählt — Slug eintragen oder aus dem Katalog wählen.');
+    const body={model:ai.m,messages:[{role:'user',content:prompt}]};
+    if(schema){
+        body.response_format={type:'json_schema',json_schema:{name:'befund',strict:true,schema}};
+        body.provider={require_parameters:true};
+    }
+    const r=await fetch(OR_CHAT_URL,{
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':`Bearer ${ai.k}`,
+            'HTTP-Referer':orReferer(),   // optionale Attribution
+            'X-Title':OR_TITLE
+        },
+        body:JSON.stringify(body)
+    });
+    const d=await r.json().catch(()=>({}));
+    // OpenRouter liefert Fehler auch in 200-Bodies.
+    if(d&&d.error)throw new Error(shortErr(d.error.message||JSON.stringify(d.error)));
+    if(!r.ok)throw new Error(shortErr(`HTTP ${r.status} ${r.statusText}`));
+    return d?.choices?.[0]?.message?.content??'';
+}
+
+// Backend-Weiche — die einzige Stelle, die das Backend kennt. Alles darüber
+// (callAI, extractJson, buildPrompt, Prompts, Progress, Logging, Stats) bleibt
+// backend-agnostisch.
+async function callAIOnce(ai,prompt,schema){
+    return ai.p==='openrouter'?openrouterOnce(ai,prompt,schema):geminiOnce(ai,prompt,schema);
+}
+
+// Retry-Wrapper mit exponentiellem Backoff (500ms → 1s → 2s), Default 2 Wiederholungen.
+async function callAI(prompt,schema,label='KI-Aufruf'){
+    prompt=gppWithContext(prompt);   // Unternehmenskontext aus config.html
+    const ai=getAI();if(!ai)throw new Error('Keine KI konfiguriert.');
+    const rv=parseInt(document.getElementById('ai-retries')?.value,10);
+    const retries=(Number.isFinite(rv)&&rv>=0)?rv:AI_RETRIES_DEFAULT;
+    let attempt=0;
+    // Jeder Aufruf protokolliert Backend und Modell — gemischte Läufe bleiben auditierbar.
+    const who=`${BACKEND_LABEL[ai.p]||ai.p} · ${ai.m||'(kein Modell)'}`;
+    L.info(`${label} → ${who} · Prompt ${(prompt.length/1024).toFixed(1)} kB${schema?' · Structured Output':''}`);
+    while(true){
+        const t0=performance.now();
+        try{
+            const out=await callAIOnce(ai,prompt,schema);
+            L.ok(`${label} ← ${who} · ${(String(out||'').length/1024).toFixed(1)} kB in ${Math.round(performance.now()-t0)} ms`);
+            return out;
+        }
+        catch(e){
+            attempt++;
+            if(attempt>retries){L.err(`${label} endgültig fehlgeschlagen nach ${attempt} Versuch(en): ${shortErr(e.message)}`);throw new Error(shortErr(e.message))}
+            const wait=500*Math.pow(2,attempt-1);
+            L.warn(`${label} fehlgeschlagen (${shortErr(e.message)}) — Retry ${attempt}/${retries} in ${wait} ms`);
+            console.warn(`KI-Aufruf fehlgeschlagen (${shortErr(e.message)}) — Retry ${attempt}/${retries} in ${wait}ms`);
+            await sleep(wait);
+        }
+    }
+}
+
+function sysCtx(){const sc=S.ssp?.['system-characteristics'];return sc?`System "${sc['system-name']||'?'}": ${sc.description||'keine Beschreibung'}`:'System unbekannt (Session ohne SSP)'}
+function findE(cid){for(const[cu,m]of S.compGroups){if(m.has(cid)){const e={...m.get(cid)};e._comp=S.compMeta.get(cu)?.title||cu;return e}}return null}
+function matCtx(e){if(!e?.statements?.length)return'';return'\nVorhandene Reifegrade aus Komponentendefinition:\n'+e.statements.map(st=>`- ${st.id} (${st.desc}): ${st.statement}${st.assessMethod?' [Prüfung: '+st.assessMethod+']':''}`).join('\n')}
+function sspCtx(e){if(!e||e.fromDef)return'';let s=`\nSSP-Eintrag der Organisation:\n- Status: ${e.status}`;if(e.date)s+=`\n- Datum: ${e.date}`;if(e.stmtId){s+=`\n- Gewählter Reifegrad: ${e.stmtId}`;const ml=(e.statements||[]).find(st=>st.id===e.stmtId);if(ml)s+=` → "${ml.desc}": ${ml.statement}`}if(e.desc)s+=`\n- Kommentar: "${e.desc}"`;return s}
+function siblingNote(cid){const parts=cid.split('.');if(parts.length<2)return'';const prefix=parts.slice(0,-1).join('.');return`\n\nWICHTIG: Bewerte NUR das Control ${cid} isoliert. Das BSI Grundschutz++ hat sehr granulare, detaillierte Controls. Andere Controls derselben Gruppe (${prefix}.*) werden separat geprüft und sind hier nicht Gegenstand.`}
+
+// ============================================================
+// PROMPTS (editierbar, in der UI unter „◉ KI-Prompts")
+// ============================================================
+// Die Control-Daten werden deterministisch zusammengesetzt und über {kontext}
+// in die vom Anwender editierbaren Templates eingesetzt.
+const PROMPT_PH='{kontext}';
+
+const DEFAULT_ASSESS_PROMPT=`Du bist ein erfahrener IT-Sicherheitsauditor mit BSI-Grundschutz-Erfahrung. Bewerte das folgende OSCAL-Control.
+
+${PROMPT_PH}
+
+Bewertungsregeln:
+- Beziehe den SSP-Eintrag der Organisation (Status, gewählter Reifegrad, Kommentar) und die Komponentendefinition in die Bewertung ein.
+- "satisfied" nur, wenn die Anforderung nachvollziehbar und vollständig erfüllt ist.
+- "not-satisfied" bei erkennbaren Lücken.
+- "other", wenn die Datenlage keine belastbare Aussage zulässt.
+- Keine Spekulation über nicht genannte Komponenten oder benachbarte Controls.
+
+Felder der Antwort:
+- status: satisfied | not-satisfied | other
+- observation: 1-2 Sätze, was konkret festgestellt wurde
+- risk: 1 Satz zum Risiko, falls nicht erfüllt — sonst leerer String
+- remarks: 1 Satz Hinweis für den Assessor (z. B. nächster Prüfschritt)`;
+
+const DEFAULT_EXPLAIN_ML_PROMPT=`Du bist ein IT-Sicherheitsexperte und unterstützt einen Auditor bei der Prüfvorbereitung.
+
+${PROMPT_PH}
+
+Antworte auf Deutsch in Markdown mit genau diesen Abschnitten:
+
+## Einordnung und Kontext
+(2-3 Sätze: Warum ist dieses Control wichtig? Typische Schwachstellen)
+
+## Bewertungshinweise je Reifegrad
+(Für jeden oben genannten Reifegrad: Worauf achten? Was sind Red Flags? Falls die Organisation bereits einen Reifegrad gewählt hat: Ist die Wahl für dieses System angemessen, und was muss geprüft werden, um sie zu bestätigen?)
+
+## Ergänzende Prüfungshandlungen
+- **EXAMINE**: (zusätzliche Dokumente/Nachweise über die Basis-Prüfung hinaus)
+- **INTERVIEW**: (spezifische Gesprächspartner und Fragen)
+- **TEST**: (konkrete technische Tests, Tool-Vorschläge)`;
+
+const DEFAULT_EXPLAIN_BASE_PROMPT=`Du bist ein IT-Sicherheitsexperte und erklärst einem Auditor ein Control.
+
+${PROMPT_PH}
+
+Antworte auf Deutsch in Markdown mit genau diesen Abschnitten:
+
+## Was fordert dieses Control?
+(2-3 Sätze)
+
+## 5 Reifegrade der Umsetzung
+1. **Initial**: (minimal nötig)
+2. **Managed**: (Prozesse definiert)
+3. **Defined**: (standardisiert, dokumentiert)
+4. **Quantitatively Managed**: (messbar gesteuert)
+5. **Optimizing**: (kontinuierlich verbessert)
+
+## Empfohlene Prüfungshandlungen
+- **EXAMINE**: (welche Dokumente/Nachweise prüfen)
+- **INTERVIEW**: (wen befragen, welche Fragen stellen)
+- **TEST**: (welche technischen Tests durchführen)`;
+
+const PROMPT_DEFS={
+    assess:{ta:'pr-assess',warn:'pw-assess',ls:'oscal_prompt_assess',def:DEFAULT_ASSESS_PROMPT},
+    explainML:{ta:'pr-explain-ml',warn:'pw-explain-ml',ls:'oscal_prompt_explain_ml',def:DEFAULT_EXPLAIN_ML_PROMPT},
+    explainBase:{ta:'pr-explain-base',warn:'pw-explain-base',ls:'oscal_prompt_explain_base',def:DEFAULT_EXPLAIN_BASE_PROMPT}
+};
+
+const PROMPT_LABELS={assess:'Befundvorschlag (aiAssess)',explainML:'Analyse mit Reifegraden (aiExplain)',explainBase:'Erklärung ohne Reifegrade (aiExplain)'};
+// Prompts werden zentral in config.html bearbeitet; die Defaults bleiben hier.
+function initPrompts(){
+    gppRegisterPrompts(GPP_TOOL_ID,Object.entries(PROMPT_DEFS).map(([k,c])=>({
+        id:k,label:PROMPT_LABELS[k]||k,placeholders:[PROMPT_PH],default:c.def
+    })));
+}
+// Baut den fertigen Prompt: Template zentral aus config.html, Default als Fallback,
+// fehlender Platzhalter wird defensiv angehängt statt den Kontext zu verlieren.
+function buildPrompt(k,ctx){
+    const c=PROMPT_DEFS[k];
+    let tpl=(gppPrompt(GPP_TOOL_ID,k,c.def)||'').trim();
+    if(!tpl)tpl=c.def;
+    if(!tpl.includes(PROMPT_PH))tpl=tpl+'\n\n'+PROMPT_PH;
+    return tpl.split(PROMPT_PH).join(ctx);
+}
+
+// Deterministisch aufgebauter Control-Kontext für {kontext}.
+function ctxAssess(cid){
+    const e=findE(cid),ci=catInfo(cid),f=S.findings.get(cid)||{};
+    return [
+        sysCtx(),
+        `Control: ${cid} — ${ci.title||'(Titel unbekannt)'}`,
+        ci.prose?'Anforderungstext: '+ci.prose.substring(0,500):'',
+        `Status laut SSP: ${e?.status||'unbekannt'}`,
+        `Komponente: ${e?._comp||'?'}`,
+        e?.desc?'SSP-Beschreibung: '+e.desc:'',
+        e?.defDesc?'Komp.-Def.: '+e.defDesc.substring(0,300):'',
+        sspCtx(e).trim(),
+        matCtx(e).trim(),
+        f.observation?'Bisherige Beobachtung des Assessors: '+f.observation:'',
+        siblingNote(cid).trim()
+    ].filter(x=>x&&x.trim()).join('\n');
+}
+function ctxExplain(cid){
+    const ci=catInfo(cid),e=findE(cid);
+    const sts=e?.statements||[];
+    const lines=[
+        sysCtx(),
+        `Control-ID: ${cid} — ${ci.title||'unbekannt'}`,
+        ci.prose?'Anforderungstext: '+ci.prose.substring(0,sts.length?600:800):'',
+        sspCtx(e).trim()
+    ];
+    if(sts.length){
+        lines.push(matCtx(e).trim());
+        lines.push(`Es gibt bereits ${sts.length} definierte Reifegrade.`+(e.stmtId?` Die Organisation hat Reifegrad ${e.stmtId} im SSP gewählt.`:' Die Organisation hat noch keinen Reifegrad im SSP gesetzt.'));
+    }
+    lines.push(siblingNote(cid).trim());
+    return {hasML:sts.length>0,ctx:lines.filter(x=>x&&x.trim()).join('\n')};
+}
+
+window.aiAssess=async(cid,rk)=>{
+    if(!getAI()){L.warn('Befundvorschlag angefordert, aber keine KI konfiguriert');return alert('KI konfigurieren (oben).')}
+    const btn=document.getElementById('ai-a-'+rk);if(btn){btn.disabled=true;btn.textContent='⋯'}
+    const prompt=buildPrompt('assess',ctxAssess(cid));
+    try{
+        const txt=await callAI(prompt,ASSESS_SCHEMA,`Befundvorschlag ${cid}`);const res=extractJson(txt);
+        if(res.status){const f2=S.findings.get(cid)||{status:'',observation:'',risk:'',remarks:''};
+            f2.status=res.status;f2.observation=res.observation||f2.observation;f2.risk=res.risk||'';f2.remarks=res.remarks||'';S.findings.set(cid,f2);
+            const s=document.getElementById('f-s-'+rk);if(s)s.value=f2.status;
+            const o=document.getElementById('f-o-'+rk);if(o)o.value=f2.observation;
+            const rk2=document.getElementById('f-r-'+rk);if(rk2)rk2.value=f2.risk;
+            const rm=document.getElementById('f-m-'+rk);if(rm)rm.value=f2.remarks;
+            setF(cid,'status',f2.status);L.ok(`Befundvorschlag ${cid} übernommen: status=${res.status}`)}
+        else L.warn(`Befundvorschlag ${cid}: Antwort ohne Feld "status"`);
+    }catch(e){L.err(`Befundvorschlag ${cid}: ${shortErr(e.message)}`);alert('KI: '+shortErr(e.message))}finally{if(btn){btn.disabled=false;btn.textContent='◈'}}
+};
+
+window.aiExplain=async(cid,rk)=>{
+    if(!getAI()){L.warn('Analyse angefordert, aber keine KI konfiguriert');return alert('KI konfigurieren (oben).')}
+    const cached=S.aiCache.get(cid);
+    const out=document.getElementById('ai-x-'+rk);
+    if(cached?.explain){out.innerHTML=marked.parse(cached.explain);out.style.display='block';L.debug(`Analyse ${cid} aus dem Cache angezeigt`);return}
+    const btn=document.getElementById('ai-e-'+rk);if(btn){btn.disabled=true;btn.textContent='⋯'}
+    const {hasML,ctx}=ctxExplain(cid);
+    const prompt=buildPrompt(hasML?'explainML':'explainBase',ctx);
+    try{
+        const txt=await callAI(prompt,null,`Analyse ${cid} (${hasML?'mit':'ohne'} Reifegrade)`);
+        S.aiCache.set(cid,{...(S.aiCache.get(cid)||{}),explain:txt});
+        if(out){out.innerHTML=marked.parse(txt);out.style.display='block'}
+        L.ok(`Analyse ${cid} gerendert (${(txt.length/1024).toFixed(1)} kB Markdown)`);
+    }catch(e){L.err(`Analyse ${cid}: ${shortErr(e.message)}`);alert('KI: '+shortErr(e.message))}finally{if(btn){btn.disabled=false;btn.textContent='▣'}}
+};
+
+// ============================================================
+// STATS
+// ============================================================
+// Reines SVG — keine Chart-Bibliothek. Ein Donut für die primäre
+// Statusverteilung, daneben horizontale Balken. Alle Zahlen werden hier
+// in JS berechnet (nie vom Modell), Farben kommen aus STM/FINDING_COL/METHOD_COL
+// und sind damit identisch mit den Status-Badges der Control-Liste.
+function donutChart(slices,size=150,innerRatio=0.62){
+    const total=slices.reduce((s,x)=>s+x.value,0);
+    if(total===0)return '';
+    const cx=size/2,cy=size/2,r=size/2-6,ri=r*innerRatio;
+    let a=-Math.PI/2;
+    const live=slices.filter(s=>s.value>0);
+    const paths=live.map(s=>{
+        let sweep=(s.value/total)*Math.PI*2;
+        if(live.length===1)sweep=Math.PI*2-0.0001; // Vollkreis zeichnbar halten
+        const a1=a,a2=a+sweep;a=a2;
+        const x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+        const x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+        const xi1=cx+ri*Math.cos(a1),yi1=cy+ri*Math.sin(a1);
+        const xi2=cx+ri*Math.cos(a2),yi2=cy+ri*Math.sin(a2);
+        const large=sweep>Math.PI?1:0;
+        return `<path d="M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} L ${xi2} ${yi2} A ${ri} ${ri} 0 ${large} 0 ${xi1} ${yi1} Z" fill="${s.color}" />`;
+    }).join('');
+    return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img" aria-label="Statusverteilung">${paths}
+        <text x="${cx}" y="${cy-2}" text-anchor="middle" dominant-baseline="central" fill="currentColor"
+              font-family="JetBrains Mono" font-size="22" font-weight="600">${total}</text>
+        <text x="${cx}" y="${cy+18}" text-anchor="middle" fill="currentColor" opacity="0.55"
+              font-family="JetBrains Mono" font-size="9" letter-spacing="1.5">EINTRÄGE</text></svg>`;
+}
+function donutLegend(slices){
+    const total=slices.reduce((s,x)=>s+x.value,0)||1;
+    return slices.filter(s=>s.value>0).map(s=>`<div class="row">
+        <span class="dot" style="background:${s.color}"></span>
+        <span class="truncate">${esc(s.label)}</span>
+        <span class="n">${s.value} · ${((s.value/total)*100).toFixed(0)}%</span></div>`).join('');
+}
+function hBarRows(items){
+    const max=Math.max(1,...items.map(i=>i.value));
+    return items.map(i=>`<div class="hbar-row">
+        <div class="hbar-label">${esc(i.label)}</div>
+        <div class="hbar-track"><div class="hbar-fill stat-bar" style="width:${(i.value/max)*100}%;background:${i.color}"></div></div>
+        <div class="hbar-value">${i.value}</div></div>`).join('');
+}
+function renderStats(){
+    const dash=document.getElementById('stats-dash');if(!dash)return;
+    // 1) Umsetzungsstatus je Komponenteneintrag (deterministisch aus S.compGroups)
+    const counts={};let total=0;
+    S.compGroups.forEach(m=>m.forEach(i=>{const k=i.status||'nicht-angegeben';counts[k]=(counts[k]||0)+1;total++}));
+    const statusSlices=STM_ORDER.filter(k=>counts[k]).map(k=>({label:STM[k].l,value:counts[k],color:STM[k].b}));
+    // 2) Befundstatus über die Controls im Prüf-Scope
+    const scope=[...S.allCids].filter(c=>!S.excluded.has(c));
+    const fc={satisfied:0,'not-satisfied':0,other:0,offen:0};
+    scope.forEach(c=>{const st=(S.findings.get(c)||{}).status;
+        if(st==='satisfied')fc.satisfied++;else if(st==='not-satisfied')fc['not-satisfied']++;
+        else if(st==='other')fc.other++;else fc.offen++});
+    const rated=fc.satisfied+fc['not-satisfied']+fc.other;
+    const findingRows=[
+        {label:'Erfüllt',value:fc.satisfied,color:FINDING_COL.satisfied},
+        {label:'Nicht erfüllt',value:fc['not-satisfied'],color:FINDING_COL['not-satisfied']},
+        {label:'Sonstig',value:fc.other,color:FINDING_COL.other},
+        {label:'Offen',value:fc.offen,color:FINDING_COL.offen}
+    ];
+    // 3) Geplante Prüfmethoden im Scope
+    const mc={EXAMINE:0,INTERVIEW:0,TEST:0};
+    scope.forEach(c=>(S.methods.get(c)||new Set()).forEach(m=>{if(mc[m]!=null)mc[m]++}));
+    const methodRows=[
+        {label:'EXAMINE',value:mc.EXAMINE,color:METHOD_COL.EXAMINE},
+        {label:'INTERVIEW',value:mc.INTERVIEW,color:METHOD_COL.INTERVIEW},
+        {label:'TEST',value:mc.TEST,color:METHOD_COL.TEST}
+    ];
+    // Ohne Daten keine Karte — leere Charts werden nicht als Platzhalter gezeigt.
+    if(!total&&!scope.length){dash.classList.add('hidden');dash.innerHTML='';return}
+    dash.classList.remove('hidden');
+    dash.innerHTML=`<div class="card p-4">
+        <div class="flex justify-between items-center mb-3 gap-3 flex-wrap">
+            <div class="lbl mb-0">▣ Kennzahlen</div>
+            <div class="kpi-row">
+                <div class="kpi"><span class="v">${S.allCids.size}</span><span class="k">Controls</span></div>
+                <div class="kpi"><span class="v">${scope.length}</span><span class="k">im Scope</span></div>
+                <div class="kpi"><span class="v" id="stat-rated">${rated}</span><span class="k">bewertet</span></div>
+                <div class="kpi"><span class="v">${S.compMeta.size}</span><span class="k">Komponenten</span></div>
+            </div>
+        </div>
+        <div class="stats-grid">
+            <div class="chart-card">
+                <div class="chart-head">Umsetzungsstatus (SSP + Komponentendefinitionen)</div>
+                <div class="donut-wrap">${donutChart(statusSlices)}<div class="donut-legend flex-1">${donutLegend(statusSlices)}</div></div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-head">Befundstatus im Prüf-Scope</div>
+                ${hBarRows(findingRows)}
+                <div class="chart-head" style="margin:14px 0 8px">Geplante Prüfmethoden</div>
+                ${hBarRows(methodRows)}
+            </div>
+        </div>
+    </div>`;
+}
+
+// ============================================================
+// EDITOR
+// ============================================================
+function renderControls(){
+    // 1. Component navigation in sidebar
+    let nav='';
+    S.compGroups.forEach((ctrls,cuuid)=>{
+        const meta=S.compMeta.get(cuuid)||{title:cuuid==='__none'?'Nicht zugewiesen':cuuid,type:'?'};
+        const tb={'this-system':'bg-emerald-900 text-emerald-300 border-emerald-700','service':'bg-indigo-900 text-indigo-300 border-indigo-700','process':'bg-purple-900 text-purple-300 border-purple-700'}[meta.type]||'bg-slate-700 text-slate-300 border-slate-600';
+        const sorted=[...ctrls.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
+        const sspN=sorted.filter(([,i])=>!i.fromDef).length,defN=sorted.filter(([,i])=>i.fromDef).length;
+        nav+=`<div class="border border-slate-700 rounded overflow-hidden">
+            <button onclick="togC('${cuuid}');document.getElementById('comp-${cuuid}')?.scrollIntoView({behavior:'smooth',block:'start'})" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 hover:bg-slate-800 text-[10px] font-bold text-slate-300">
+                <span class="flex items-center gap-1 truncate"><span class="sb ${tb}" style="font-size:8px;padding:1px 4px">${esc(meta.type).substring(0,4)}</span>${esc(meta.title)}</span>
+                <span class="text-slate-500 flex-shrink-0">${sspN}${defN?'+'+defN:''}</span>
+            </button></div>`;
+    });
+    document.getElementById('sb-comp-nav').innerHTML=nav;
+    document.getElementById('scope-n').textContent=S.allCids.size-S.excluded.size;
+
+    // 2. Control cards in main area
+    let h='';
+    S.compGroups.forEach((ctrls,cuuid)=>{
+        const meta=S.compMeta.get(cuuid)||{title:cuuid==='__none'?'Nicht zugewiesen':cuuid,type:'?'};
+        const tb={'this-system':'bg-emerald-900 text-emerald-300 border-emerald-700','service':'bg-indigo-900 text-indigo-300 border-indigo-700','process':'bg-purple-900 text-purple-300 border-purple-700'}[meta.type]||'bg-slate-700 text-slate-300 border-slate-600';
+        const sorted=[...ctrls.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
+        const sspN=sorted.filter(([,i])=>!i.fromDef).length,defN=sorted.filter(([,i])=>i.fromDef).length;
+
+        h+=`<div id="comp-${cuuid}" class="border border-slate-700 rounded-xl overflow-hidden mb-3">
+            <div class="comp-header flex justify-between items-center p-2.5 bg-slate-900/80 hover:bg-slate-800" onclick="togC('${cuuid}')">
+                <div class="flex items-center gap-2 flex-wrap"><svg id="cc-${cuuid}" class="chev open w-4 h-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg><span class="sb ${tb}">${esc(meta.type)}</span><h3 class="comp-title text-sm font-bold text-slate-200">${esc(meta.title)}</h3><span class="text-xs text-slate-500">(${sspN}${defN?' + '+defN+' Def':''})</span>${meta.defLoaded?'<span class="sb bg-cyan-900/50 text-cyan-300 border-cyan-700">Def</span>':''}</div>
+            </div>
+            <div id="cb-${cuuid}" class="coll-content open p-1.5 space-y-1">`;
+
+        sorted.forEach(([cid,info])=>{
+            const sm=STM[info.status]||STM['nicht-angegeben'];
+            const ci=catInfo(cid);
+            const excl=S.excluded.has(cid);
+            const mth=S.methods.get(cid)||new Set();
+            const f=S.findings.get(cid)||{};
+            // Unique row key to avoid duplicate IDs when same cid in multiple components
+            const rk=(cuuid.substring(0,8)+'_'+cid).replace(/[.\s]/g,'_');
+
+            const prose=ci.prose||'';
+            const modal=prose.match(/\bMUSS\b|\bMÜSSEN\b/)?'MUSS':prose.match(/\bSOLL\b|\bSOLLTE\b|\bSOLLTEN\b/)?'SOLL':prose.match(/\bKANN\b|\bKÖNNEN\b/)?'KANN':'';
+            const ctrlClass=(info.defProps||[]).find(p=>p.name==='control_class')?.value||'';
+            const secLevel=ci.secLevel||'';
+
+            const hasSSPData = !info.fromDef && (info.status!=='nur-komponente');
+            const hasStmtId = !!info.stmtId;
+            const selectedML = hasStmtId && (info.statements||[]).find(st=>st.id===info.stmtId);
+
+            let sspBlock = '';
+            if(hasSSPData) {
+                sspBlock = `<div class="mb-3 p-2.5 bg-emerald-950/30 border border-emerald-800/40 rounded-lg">
+                    <div class="flex items-center gap-1.5 mb-1.5"><span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">◇ SSP-Eintrag der Organisation</span></div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                        <div><span class="text-slate-500">Status:</span> <span class="sb" style="${sm.st}">${sm.l}</span></div>
+                        ${info.user?`<div><span class="text-slate-500">Bearbeiter:</span> <span class="text-white font-semibold">${esc(info.user)}</span></div>`:''}
+                        ${info.date?`<div><span class="text-slate-500">Datum:</span> <span class="text-white">${info.date}</span></div>`:''}
+                        ${hasStmtId?`<div><span class="text-slate-500">Reifegrad:</span> <span class="text-cyan-300 font-mono font-bold">${esc(info.stmtId)}</span></div>`:''}
+                    </div>
+                    ${info.desc?`<div class="mt-1.5 text-xs text-emerald-200/80 italic border-t border-emerald-800/30 pt-1.5">◇ „${esc(info.desc)}“</div>`:''}
+                    ${selectedML?`<div class="mt-1.5 p-2 bg-emerald-900/30 rounded border-l-2 border-emerald-500">
+                        <div class="text-[10px] text-emerald-400 font-bold mb-0.5">Gewählter Reifegrad: ${esc(selectedML.desc)}</div>
+                        ${selectedML.statement?`<div class="text-xs text-emerald-200/90">${esc(selectedML.statement)}</div>`:''}
+                    </div>`:''}
+                </div>`;
+            }
+
+            const params=(S.setParams||[]).filter(p=>p['param-id']?.toLowerCase().startsWith(cid.toLowerCase()));
+
+            h+=`<div class="ctrl-row bg-slate-900 border border-slate-700 rounded-lg" data-cid="${cid}" data-rk="${rk}" data-title="${esc(ci.title).toLowerCase()}" data-modal="${modal}" data-class="${ctrlClass}" data-sec="${secLevel}" data-status="${info.status}">
+                <div class="flex items-center gap-2 p-2 cursor-pointer" onclick="togD('${rk}')">
+                    <input type="checkbox" ${excl?'':'checked'} onclick="event.stopPropagation();togSc('${cid}',this.checked)" class="scb form-checkbox h-3.5 w-3.5 text-emerald-500 rounded border-slate-600 bg-slate-700 flex-shrink-0">
+                    <span class="font-mono font-bold text-white text-xs w-24 flex-shrink-0">${cid}</span>
+                    ${modal?`<span class="text-[9px] font-bold flex-shrink-0 ${modal==='MUSS'?'text-red-400':modal==='SOLL'?'text-yellow-400':'text-slate-400'}">${modal}</span>`:''}
+                    ${secLevel?`<span class="text-[9px] text-slate-500 flex-shrink-0">${esc(secLevel)}</span>`:''}
+                    <span class="ctrl-title flex-shrink-1">${esc(ci.title)||'<span class="text-slate-600 italic">—</span>'}</span>
+                    <span class="sb flex-shrink-0 ml-auto" style="${sm.st}">${sm.l}</span>
+                    ${hasStmtId?`<span class="text-[9px] text-cyan-400 font-mono flex-shrink-0">${esc(info.stmtId)}</span>`:''}
+                    <div class="flex gap-1 flex-shrink-0" onclick="event.stopPropagation()">
+                        <label class="flex items-center gap-0.5 cursor-pointer"><input type="checkbox" ${mth.has('EXAMINE')?'checked':''} onchange="togM('${cid}','EXAMINE',this.checked)" class="mcb form-checkbox h-3 w-3 text-blue-500 rounded border-slate-600 bg-slate-700"><span class="text-[9px] text-blue-400 font-bold">EX</span></label>
+                        <label class="flex items-center gap-0.5 cursor-pointer"><input type="checkbox" ${mth.has('INTERVIEW')?'checked':''} onchange="togM('${cid}','INTERVIEW',this.checked)" class="mcb form-checkbox h-3 w-3 text-amber-500 rounded border-slate-600 bg-slate-700"><span class="text-[9px] text-amber-400 font-bold">IN</span></label>
+                        <label class="flex items-center gap-0.5 cursor-pointer"><input type="checkbox" ${mth.has('TEST')?'checked':''} onchange="togM('${cid}','TEST',this.checked)" class="mcb form-checkbox h-3 w-3 text-emerald-500 rounded border-slate-600 bg-slate-700"><span class="text-[9px] text-emerald-400 font-bold">TE</span></label>
+                    </div>
+                    <span class="fp text-xs ml-1 ${f.status==='satisfied'?'text-emerald-400':f.status==='not-satisfied'?'text-red-400':f.status==='other'?'text-amber-400':'text-slate-600'}" data-fp="${cid}">${f.status==='satisfied'?'✓':f.status==='not-satisfied'?'✗':f.status==='other'?'◬':'○'}</span>
+                    <svg class="chev w-3.5 h-3.5 text-slate-500" id="cch-${rk}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+                </div>
+                <div class="ctrl-detail px-3 border-t border-slate-700/50" id="cbd-${rk}">
+                    ${ci.prose?`<div class="text-xs text-slate-400 mb-2 leading-relaxed bg-slate-800/60 p-2 rounded border-l-2 border-slate-600">${esc(ci.prose).substring(0,600)}${ci.prose.length>600?'…':''}</div>`:''}
+                    <div class="mb-2"><button onclick="event.stopPropagation();showED23('${cid}','${rk}')" class="text-xs font-semibold text-cyan-300 bg-slate-800 border border-slate-600 rounded px-2 py-1 hover:bg-slate-700">▣ Zeige BSI ED23 Anforderungen</button><div id="ed23-${rk}" class="hidden mt-2 bg-slate-800/60 p-2 rounded border-l-2 border-cyan-700"></div></div>
+                    ${sspBlock}
+                    ${info.defDesc?`<div class="text-xs text-cyan-200/70 mb-2 leading-relaxed bg-cyan-950/30 p-2 rounded border-l-2 border-cyan-800"><span class="text-[10px] text-cyan-500 font-bold uppercase">Komp.-Def.:</span> ${esc(info.defDesc).substring(0,500)}${(info.defDesc||'').length>500?'…':''}</div>`:''}
+                    ${(info.defProps||[]).length?`<div class="mb-2 flex flex-wrap gap-1">${(info.defProps||[]).map(p=>`<span class="text-[10px] bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-800">${esc(p.name)}: ${esc(p.value)}</span>`).join('')}</div>`:''}
+                    ${params.length?`<div class="mb-2 flex flex-wrap gap-1">${params.map(p=>`<span class="text-xs bg-slate-800 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-800 font-mono">${esc(p['param-id'])}="${esc(p.values?.[0]||'')}"</span>`).join('')}</div>`:''}
+                    ${info.fromDef&&!info.statements?.length?'<div class="text-xs text-cyan-400 mb-2">◇ Nur Komponentendefinition — kein SSP-Eintrag.</div>':''}
+                    ${(info.statements||[]).length?`
+                    <div class="mb-3 border border-indigo-900/60 rounded-lg overflow-hidden">
+                        <button onclick="event.stopPropagation();document.getElementById('ml-${rk}').classList.toggle('hidden')" class="w-full text-left px-3 py-1.5 bg-indigo-950/50 text-indigo-300 text-xs font-bold hover:bg-indigo-950/80 transition-colors flex items-center gap-2">
+                            <span>▤ ${info.statements.length} Reifegrade</span>${hasStmtId?`<span class="text-emerald-400 text-[10px]">✓ Org. hat ${esc(info.stmtId)} gewählt</span>`:`<span class="text-amber-400 text-[10px]">◬ Kein Reifegrad im SSP gesetzt</span>`}
+                        </button>
+                        <div id="ml-${rk}" class="${hasStmtId?'hidden':''} p-2 space-y-1.5 bg-indigo-950/20">
+                            ${info.statements.map((st,idx)=>{
+                                const mlColor=['text-red-400','text-amber-400','text-yellow-300','text-emerald-400','text-cyan-300'][idx]||'text-slate-300';
+                                const isSelected = hasStmtId && st.id===info.stmtId;
+                                return`<div class="p-2 rounded border ${isSelected?'bg-emerald-950/40 border-emerald-600 ring-1 ring-emerald-500/30':'bg-slate-900/80 border-slate-700/50'}">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        ${isSelected?'<span class="text-emerald-400 text-xs">▶</span>':''}
+                                        <span class="font-mono text-[10px] text-slate-500">${esc(st.id)}</span>
+                                        <span class="text-xs font-bold ${isSelected?'text-emerald-300':mlColor}">${esc(st.desc)}</span>
+                                        ${isSelected?'<span class="sb bg-emerald-900 text-emerald-300 border-emerald-700">Gewählt</span>':''}
+                                    </div>
+                                    ${st.statement?`<div class="text-xs ${isSelected?'text-emerald-200':'text-slate-300'} mb-1">${esc(st.statement)}</div>`:''}
+                                    ${st.guidance?`<div class="text-[10px] text-slate-500 italic">◇ ${esc(st.guidance)}</div>`:''}
+                                    ${st.assessMethod?`<div class="text-[10px] text-blue-400 mt-0.5">⌕ ${esc(st.assessMethod)}</div>`:''}
+                                </div>`;
+                            }).join('')}
+                        </div>
+                    </div>`:''}
+                    <div class="bg-slate-800 border border-slate-700 rounded-lg p-3">
+                        <div class="flex items-center gap-2 mb-2 flex-wrap">
+                            <span class="text-xs font-bold text-blue-300 uppercase">Befund</span>
+                            <select onchange="setF('${cid}','status',this.value)" id="f-s-${rk}" class="inp text-xs py-1 px-2 w-44"><option value="" ${!f.status?'selected':''}>— offen —</option><option value="satisfied" ${f.status==='satisfied'?'selected':''}>✓ Erfüllt</option><option value="not-satisfied" ${f.status==='not-satisfied'?'selected':''}>✗ Nicht erfüllt</option><option value="other" ${f.status==='other'?'selected':''}>◬ Sonstig</option></select>
+                            <button id="ai-a-${rk}" onclick="event.stopPropagation();aiAssess('${cid}','${rk}')" class="ai-btn" title="KI: Befundvorschlag">◈</button>
+                            <button id="ai-e-${rk}" onclick="event.stopPropagation();aiExplain('${cid}','${rk}')" class="ai-btn ai-explain" title="${(info.statements||[]).length?'KI: Ergänzende Analyse':'KI: Control erklären + Reifegrade'}">▣</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                            <div><label class="text-[10px] text-slate-500 uppercase font-bold">Beobachtung</label><textarea rows="2" id="f-o-${rk}" onchange="setF('${cid}','observation',this.value)" class="inp w-full text-xs mt-0.5">${esc(f.observation||'')}</textarea></div>
+                            <div><label class="text-[10px] text-slate-500 uppercase font-bold">Risiko</label><textarea rows="2" id="f-r-${rk}" onchange="setF('${cid}','risk',this.value)" class="inp w-full text-xs mt-0.5">${esc(f.risk||'')}</textarea></div>
+                            <div><label class="text-[10px] text-slate-500 uppercase font-bold">Bemerkungen</label><textarea rows="2" id="f-m-${rk}" onchange="setF('${cid}','remarks',this.value)" class="inp w-full text-xs mt-0.5">${esc(f.remarks||'')}</textarea></div>
+                        </div>
+                        <div id="ai-x-${rk}" class="ai-out cscroll" style="display:none"></div>
+                    </div>
+                </div>
+            </div>`;
+        });
+        h+=`</div></div>`;
+    });
+
+    document.getElementById('ctrl-area').innerHTML=h;
+    document.getElementById('scope-n').textContent=S.allCids.size-S.excluded.size;
+}
+
+window.addTask=()=>{const t=document.getElementById('task-t').value.trim();if(!t)return;S.tasks.push({uuid:crypto.randomUUID(),title:t,type:'action'});document.getElementById('task-t').value='';document.getElementById('task-list').innerHTML=tHTML()};
+function tHTML(){if(!S.tasks.length)return'';return S.tasks.map((t,i)=>`<li class="flex justify-between items-center p-1 bg-slate-900 border border-slate-700 rounded"><span class="text-white">${esc(t.title)}</span><button onclick="S.tasks.splice(${i},1);document.getElementById('task-list').innerHTML=tHTML()" class="text-red-400 text-xs px-1">✕</button></li>`).join('')}
+
+window.scrollToSec = id => {
+    const el = document.getElementById(id);
+    if(el) {
+        el.scrollIntoView({behavior: 'smooth', block: 'start'});
+        el.classList.add('ring-2', 'ring-emerald-500');
+        setTimeout(() => el.classList.remove('ring-2', 'ring-emerald-500'), 1500);
+    }
+};
+
+window.tog=id=>{document.getElementById(id+'-content')?.classList.toggle('open');document.getElementById('icon-'+id)?.classList.toggle('open')};
+window.togC=u=>{document.getElementById('cb-'+u)?.classList.toggle('open');document.getElementById('cc-'+u)?.classList.toggle('open')};
+window.togD=rk=>{document.getElementById('cbd-'+rk)?.classList.toggle('open');document.getElementById('cch-'+rk)?.classList.toggle('open')};
+window.togSc=(c,on)=>{if(on)S.excluded.delete(c);else S.excluded.add(c);document.getElementById('scope-n').textContent=S.allCids.size-S.excluded.size};
+window.scopeAll=on=>{if(on)S.excluded.clear();else S.allCids.forEach(c=>S.excluded.add(c));document.querySelectorAll('.scb').forEach(cb=>cb.checked=on);document.getElementById('scope-n').textContent=on?S.allCids.size:0};
+window.togM=(c,m,on)=>{let s=S.methods.get(c);if(!s){s=new Set();S.methods.set(c,s)}on?s.add(m):s.delete(m)};
+window.bulkM=m=>{const l=m==='EXAMINE'?'EX':m==='INTERVIEW'?'IN':'TE';S.allCids.forEach(c=>{if(S.excluded.has(c))return;let s=S.methods.get(c);if(!s){s=new Set();S.methods.set(c,s)}s.add(m)});document.querySelectorAll('.ctrl-row').forEach(r=>{const c=r.dataset.cid;if(!c||S.excluded.has(c))return;r.querySelectorAll('.mcb').forEach(cb=>{if(cb.parentElement.querySelector('span')?.textContent===l)cb.checked=true})})};
+window.bulkMC=()=>{S.allCids.forEach(c=>{if(S.excluded.has(c))return;S.methods.set(c,new Set())});document.querySelectorAll('.mcb').forEach(cb=>cb.checked=false)};
+window.setF=(c,k,v)=>{let f=S.findings.get(c);if(!f){f={status:'',observation:'',risk:'',remarks:''};S.findings.set(c,f)}f[k]=v;
+    document.querySelectorAll(`[data-fp="${c}"]`).forEach(p=>{p.textContent=f.status==='satisfied'?'✓':f.status==='not-satisfied'?'✗':f.status==='other'?'◬':'○';p.className=`fp text-xs ml-1 ${f.status==='satisfied'?'text-emerald-400':f.status==='not-satisfied'?'text-red-400':f.status==='other'?'text-amber-400':'text-slate-600'}`});
+    if(k==='status')document.querySelectorAll(`.ctrl-row[data-cid="${c}"] select`).forEach(s=>{if(s.id.startsWith('f-s-'))s.value=v});
+    let n=0;S.findings.forEach((f2,cc)=>{if(!S.excluded.has(cc)&&f2.status)n++});const rn=document.getElementById('rated-n');if(rn)rn.textContent=n;const sr=document.getElementById('stat-rated');if(sr)sr.textContent=n};
+window.fltC=()=>{
+    const t=(document.getElementById('cf')?.value||'').toLowerCase();
+    const fm=document.getElementById('flt-modal')?.value||'';
+    const fc=document.getElementById('flt-class')?.value||'';
+    const fsec=document.getElementById('flt-sec')?.value||'';
+    const fs=document.getElementById('flt-status')?.value||'';
+    document.querySelectorAll('.ctrl-row').forEach(r=>{
+        const cid=r.dataset.cid?.toLowerCase()||'';const title=r.dataset.title||'';
+        let show=true;
+        if(t&&!cid.includes(t)&&!title.includes(t))show=false;
+        if(fm&&r.dataset.modal!==fm)show=false;
+        if(fc&&r.dataset.class!==fc)show=false;
+        if(fsec&&r.dataset.sec!==fsec)show=false;
+        if(fs&&r.dataset.status!==fs)show=false;
+        r.style.display=show?'':'none';
+    })
+};
+
+// ============================================================
+// EXPORT AP / AR
+// ============================================================
+function exportAP(){
+    const ts=new Date().toISOString(),au=crypto.randomUUID();const cids=[...S.allCids].filter(c=>!S.excluded.has(c)).sort();
+    L.info(`Assessment Plan wird erzeugt (${cids.length} Controls im Scope)`);
+    if(!cids.length){L.err('AP-Export abgebrochen: keine Controls im Prüf-Scope');return alert('Keine Controls im Prüf-Scope — include-controls wäre leer (Schema-Verstoß).')}
+    const byM={};cids.forEach(c=>{(S.methods.get(c)||new Set(['EXAMINE'])).forEach(m=>{if(!byM[m])byM[m]={uuid:crypto.randomUUID(),cids:[]};byM[m].cids.push(c)})});
+    const acts=Object.entries(byM).map(([m,a])=>({uuid:a.uuid,title:`${m}-Prüfung`,description:`${m} für ${a.cids.length} Controls.`,props:[{name:"method",ns:"http://csrc.nist.gov/ns/oscal",value:m}],"related-controls":{"control-selections":[{"include-controls":a.cids.map(c=>({"control-id":c}))}]}}));
+    // Pin-Muster (Grundregel 8): import-ssp als Fragment auf eine back-matter-Resource;
+    // die Katalog-Resource dokumentiert, gegen welchen Katalogstand geprüft wird.
+    const sspResUuid=crypto.randomUUID();
+    const ap={"assessment-plan":{uuid:crypto.randomUUID(),metadata:{title:S.meta.title||'AP',version:S.meta.version||'1.0.0',"last-modified":ts,"oscal-version":"1.2.2",roles:[{id:"assessor",title:"Assessor"},{id:"system-owner",title:"System Owner"}]},"import-ssp":{href:`#${sspResUuid}`},"reviewed-controls":{"control-selections":[{"include-controls":cids.map(c=>({"control-id":c}))}]},"back-matter":{resources:[{uuid:sspResUuid,title:`System Security Plan (${S.sspFilename||'SSP'})`,rlinks:[{href:S.sspFilename||'SSP.json'}]},pinnedCatalogResource()]}}};
+    if(S.meta.desc)ap["assessment-plan"].metadata.remarks=S.meta.desc;
+    if(S.assessor.name){ap["assessment-plan"].metadata.parties=[{uuid:au,type:S.assessor.type,name:S.assessor.name}];if(S.assessor.email)ap["assessment-plan"].metadata.parties[0]["email-addresses"]=[S.assessor.email];ap["assessment-plan"].metadata["responsible-parties"]=[{"role-id":"assessor","party-uuids":[au]}]}
+    if(acts.length)ap["assessment-plan"]["local-definitions"]={activities:acts};
+    const tc=[];if(S.terms.roe)tc.push({name:"rules-of-engagement",prose:S.terms.roe});if(S.terms.disclosures)tc.push({name:"disclosures",prose:S.terms.disclosures});if(S.terms.methodology)tc.push({name:"methodology",prose:S.terms.methodology});if(tc.length)ap["assessment-plan"]["terms-and-conditions"]={parts:tc};
+    ap["assessment-plan"]["assessment-subjects"]=[{type:"component",description:"Systemkomponenten","include-all":{}}];
+    ap["assessment-plan"]["assessment-assets"]={"assessment-platforms":[{uuid:crypto.randomUUID(),title:"Assessment-Plattform"}]};
+    if(S.dateStart||S.dateEnd||S.tasks.length){const t=[];if(S.dateStart&&S.dateEnd)t.push({uuid:crypto.randomUUID(),type:"action",title:"Assessment-Durchführung",timing:{"within-date-range":{start:`${S.dateStart}T00:00:00Z`,end:`${S.dateEnd}T23:59:59Z`}},"associated-activities":Object.values(byM).map(a=>({"activity-uuid":a.uuid,subjects:[{type:"component","include-all":{}}]}))});S.tasks.forEach(tk=>t.push({uuid:tk.uuid,type:tk.type,title:tk.title}));if(t.length)ap["assessment-plan"].tasks=t}
+    L.ok(`Assessment Plan erzeugt: ${cids.length} Controls, ${acts.length} Aktivität(en), Katalog-Pin ${GPP_CATALOG_PIN_COMMIT.slice(0,12)}…`);
+    dl(ap,`${sn()}_AP.json`);autoSave();
+    // zusätzlich in den gemeinsamen Artefaktbestand (Übersicht in index.html)
+    gppArtefacts.save({stage:'assess',kind:'ap',tool:GPP_TOOL_ID,
+        title:`${sn()} — Assessment Plan`,filename:`${sn()}_AP.json`,data:ap})
+        .catch(e=>L.warn('Artefakt nicht abgelegt: '+e.message));
+}
+
+function exportAR(){
+    const ts=new Date().toISOString();const cids=[...S.allCids].filter(c=>!S.excluded.has(c)).sort();
+    L.info(`Assessment Results werden erzeugt (${cids.length} Controls im Scope)`);
+    const obs=[],fin=[],rsk=[];
+
+    cids.forEach(c=>{
+        const f=S.findings.get(c);
+        if(!f||!f.status)return;
+
+        const comps = [];
+        S.compGroups.forEach((ctrlMap, cuuid) => {
+            if(cuuid !== '__none' && ctrlMap.has(c)) {
+                comps.push({uuid: cuuid, title: S.compMeta.get(cuuid)?.title || cuuid});
+            }
+        });
+
+        if (comps.length === 0) {
+            addTriplet(c, f, null);
+        } else {
+            comps.forEach(comp => {
+                addTriplet(c, f, comp);
+            });
+        }
+
+        function addTriplet(cid, finding, comp) {
+            let ou=null;
+            if(finding.observation){
+                ou=crypto.randomUUID();
+                const meth=[...(S.methods.get(cid)||[])];
+                obs.push({
+                    uuid:ou,
+                    title:`Beobachtung ${cid}${comp ? ' (' + comp.title + ')' : ''}`,
+                    description:finding.observation,
+                    methods:meth.length?meth:['EXAMINE'],
+                    collected:ts,
+                    ...(comp ? { subjects: [{ "subject-uuid": comp.uuid, type: "component", title: comp.title }] } : {})
+                });
+            }
+
+            let ru=null;
+            if(finding.risk&&finding.status==='not-satisfied'){
+                ru=crypto.randomUUID();
+                rsk.push({
+                    uuid:ru,
+                    title:`Risiko ${cid}${comp ? ' (' + comp.title + ')' : ''}`,
+                    description:finding.risk,
+                    statement:finding.risk,
+                    status:"open"
+                });
+            }
+
+            const fd={
+                uuid:crypto.randomUUID(),
+                title:`Befund ${cid}${comp ? ' (' + comp.title + ')' : ''}`,
+                description:finding.remarks||`Bewertung ${cid}`,
+                // target.status.state kennt nur satisfied|not-satisfied — "Sonstig" wird
+                // als not-satisfied mit reason "other" abgebildet
+                target:{type:"objective-id","target-id":cid,status:finding.status==='satisfied'?{state:'satisfied'}:{state:'not-satisfied',...(finding.status!=='not-satisfied'?{reason:'other'}:{})}}
+            };
+
+            if(ou)fd["related-observations"]=[{"observation-uuid":ou}];
+            if(ru)fd["related-risks"]=[{"risk-uuid":ru}];
+            fin.push(fd);
+        }
+    });
+
+    // Detaillierte Risiken aus der SSP-Risikoanalyse (back-matter) als OSCAL-Risks übernehmen.
+    const NS="http://bsi.bund.de/ns/grundschutz";
+    S.sspRisks.forEach(r=>{
+        const props=[];
+        if(r.likelihood)props.push({name:"likelihood",ns:NS,value:r.likelihood});
+        if(r.impact)props.push({name:"impact",ns:NS,value:r.impact});
+        const oscalRisk={
+            // uuid aus der SSP-Risikoanalyse nur übernehmen, wenn es ein valides v4/v5-UUID ist
+            uuid:(typeof r.uuid==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[45][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(r.uuid))?r.uuid:crypto.randomUUID(),
+            title:r.title||'Risiko',
+            description:r.description||r.title||'Risiko aus SSP-Risikoanalyse',
+            statement:r.threat||r.description||r.title||'Risiko aus SSP-Risikoanalyse',
+            status:"open"
+        };
+        if(props.length)oscalRisk.props=props;
+        const notes=[];
+        if(r.targetComponent)notes.push('Betroffene Komponente: '+(S.compMeta.get(r.targetComponent)?.title||r.targetComponent));
+        if(Array.isArray(r.mitigatingControls)&&r.mitigatingControls.length)notes.push('Mitigierende Controls: '+r.mitigatingControls.map(m=>m&&m.id).filter(Boolean).join(', '));
+        // risk kennt kein remarks-Feld — Zusatzinfos in die description aufnehmen
+        if(notes.length)oscalRisk.description=[oscalRisk.description,notes.join('\n')].filter(Boolean).join('\n\n');
+        rsk.push(oscalRisk);
+    });
+
+    if(!fin.length){L.err('AR-Export abgebrochen: keine bewerteten Controls');return alert('Keine bewerteten Controls.')}
+    L.debug(`AR-Bestandteile: ${fin.length} findings, ${obs.length} observations, ${rsk.length} risks (davon ${S.sspRisks.length} aus der SSP-Risikoanalyse)`);
+    // Pin-Muster (Grundregel 8): import-ap als Fragment auf eine back-matter-Resource;
+    // die Katalog-Resource dokumentiert, gegen welchen Katalogstand geprüft wurde.
+    const apResUuid=crypto.randomUUID();
+    const ar={"assessment-results":{uuid:crypto.randomUUID(),metadata:{title:`${sn().replace(/_/g,' ')} - Assessment Results`,version:S.meta.version||'1.0.0',"last-modified":ts,"oscal-version":"1.2.2"},"import-ap":{href:`#${apResUuid}`},results:[{uuid:crypto.randomUUID(),title:"Assessment-Ergebnis",description:'Ergebnisse',start:S.dateStart?`${S.dateStart}T00:00:00Z`:ts,end:S.dateEnd?`${S.dateEnd}T23:59:59Z`:ts,"reviewed-controls":{"control-selections":[{"include-controls":cids.map(c=>({"control-id":c}))}]},...(obs.length?{observations:obs}:{}),findings:fin,...(rsk.length?{risks:rsk}:{})}],"back-matter":{resources:[{uuid:apResUuid,title:`Assessment Plan (${sn()}_AP.json)`,rlinks:[{href:`${sn()}_AP.json`}]},pinnedCatalogResource()]}}};
+    L.ok(`Assessment Results erzeugt: ${fin.length} Befunde, ${obs.length} Beobachtungen, ${rsk.length} Risiken`);
+    dl(ar,`${sn()}_AR.json`);autoSave();
+    gppArtefacts.save({stage:'assess',kind:'ar',tool:GPP_TOOL_ID,
+        title:`${sn()} — Assessment Results`,filename:`${sn()}_AR.json`,data:ar})
+        .catch(e=>L.warn('Artefakt nicht abgelegt: '+e.message));
+}
+
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// --- BSI ED2023 Anforderungen (vorberechnet von Gpp-ai-tool, ohne Laufzeit-KI) ---
+let ED23_MAP={};
+const ED23_MAP_URL="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/hilfsdateien/gpp_ed23_anforderungen.json";
+function buildEd23MapFromOscal(doc){if(doc&&doc.gpp_ed23_anforderungen_map)return doc.gpp_ed23_anforderungen_map;const out={},mc=doc&&doc["mapping-collection"];if(!mc)return out;(mc.mappings||[]).forEach(mp=>(mp.maps||[]).forEach(m=>{const src=(m.sources||[])[0];if(!src)return;const cid=src["id-ref"];(m.targets||[]).forEach(t=>{const label=(t.props||[]).find(p=>p.name==="label"||p.name==="title");(out[cid]=out[cid]||[]).push({id:t["id-ref"],name:(label&&label.value)||"",begruendung:m.remarks||""})})}));return out}
+async function loadED23Map(){try{const r=await fetch(gppSource('ed23-anforderungen',ED23_MAP_URL));if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();ED23_MAP=buildEd23MapFromOscal(d);L.ok(`BSI-ED23-Zuordnungen geladen: ${Object.keys(ED23_MAP).length} Controls`)}catch(e){console.warn('BSI ED23-Anforderungen nicht geladen:',e);L.warn('BSI-ED23-Anforderungen nicht geladen: '+shortErr(e.message));ED23_MAP={}}}
+function renderED23Table(list){
+    if(!list||!list.length)return '<p class="text-xs text-slate-500 italic">Keine passenden BSI ED23-Anforderungen hinterlegt.</p>';
+    const rows=list.map(a=>`<tr class="border-b border-slate-700/50 align-top"><td class="py-1 pr-2 font-mono font-bold text-cyan-300 whitespace-nowrap">${esc(a.id)}</td><td class="py-1 pr-2 text-slate-200">${esc(a.name)}</td><td class="py-1 text-slate-400">${esc(a.begruendung||'')}</td></tr>`).join('');
+    return `<table class="w-full text-xs border-collapse"><thead><tr class="text-left text-slate-500"><th class="py-1 pr-2">ID</th><th class="py-1 pr-2">Name der Anforderung</th><th class="py-1">Begründung</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function showED23(cid,rk){const box=document.getElementById('ed23-'+rk);if(!box)return;if(!box.classList.contains('hidden')){box.classList.add('hidden');return}box.innerHTML=renderED23Table(ED23_MAP[cid]);box.classList.remove('hidden')}
+function sn(){return(S.meta.title||'System').replace(/[^a-zA-Z0-9äöüÄÖÜß\-]/g,'_').replace(/_+/g,'_')}
+function dl(o,n){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(o,null,2)],{type:'application/json;charset=utf-8'}));a.download=n;document.body.appendChild(a);a.click();document.body.removeChild(a)}
+function setSt(id,ok,txt){setPill(id,ok?'ok':'warn',`${ok?'◉':'◐'} ${esc(txt)}`)}
+</script>
+</body>
+</html>

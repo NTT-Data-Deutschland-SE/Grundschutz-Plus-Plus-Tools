@@ -70,7 +70,7 @@ BAUSTEIN_ZIELOBJEKTKATEGORIE_JSON_PATH = os.path.join(SDT_HELPER_OUTPUT_DIR, "ba
 ZIELOBJEKTKATEGORIE_CONTROLS_JSON_PATH = os.path.join(SDT_HELPER_OUTPUT_DIR, "zielobjektkategorien_controls.json")
 PROZZESSBAUSTEINE_CONTROLS_JSON_PATH = os.path.join(SDT_HELPER_OUTPUT_DIR, "prozessbausteine_mapping.json")
 # Per-G++-control mapping to matching BSI Edition-2023 Anforderungen (stage_ed23_anforderungen).
-# Consumed by the One-Page-Apps to show the "Zeige BSI ED23 Anforderungen" panel.
+# Consumed by the GS++-oscal-app to show the "Zeige BSI ED23 Anforderungen" panel.
 GPP_ED23_ANFORDERUNGEN_JSON_PATH = os.path.join(SDT_HELPER_OUTPUT_DIR, "gpp_ed23_anforderungen.json")
 # A compact projection of the ED23 catalog (id | name | prose) used as the cached grounding corpus.
 ED23_ANFORDERUNGEN_STRIPPED_JSON_PATH = os.path.join(SDT_HELPER_OUTPUT_DIR, "ed23_anforderungen_stripped.json")
