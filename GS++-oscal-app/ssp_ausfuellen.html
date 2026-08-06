@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
+    select,option{background-color:#1b1b23;color:#e8e8ef}
+    select{color-scheme:dark}
     /* ==========================================================================
        DESIGN SYSTEM "Glassmorphic Deep" — handgeschrieben, kein Tailwind-CDN.
        Die Utility-Klassennamen im Markup bleiben erhalten und werden ausschliess-
@@ -806,7 +808,7 @@
     <div id="log-body" class="log-body cscroll"></div>
 </section>
 
-<script src="gpp-core.js"></script>
+<script src="gpp-core.js?v=3.1"></script>
 <script>
     if (typeof gppCfg === 'undefined') {
         document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
@@ -816,6 +818,8 @@
         throw new Error('gpp-core.js missing');
     }
     const GPP_TOOL_ID = 'ssp_ausfuellen';
+    gppCollapsibleLog({ consoleEl: document.getElementById('logbox'),
+        headEl: document.querySelector('#logbox .log-head'), toolId: GPP_TOOL_ID });
     /* Quelle für die Pin-Übersicht in config.html anmelden (Grundregel 8). */
     gppRegisterSources(GPP_TOOL_ID, [{ id: 'ed23-anforderungen', label: 'G++/ED23 Anforderungen (Hilfsdatei)',
         repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools', path: 'hilfsdateien/gpp_ed23_anforderungen.json',

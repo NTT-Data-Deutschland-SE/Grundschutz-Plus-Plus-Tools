@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
+    /* Optionsliste zeichnet das OS — halbtransparente Flaechen greifen dort nicht */
+    select,option{background-color:#1b1b23;color:#e8e8ef}
+    select{color-scheme:dark}
         /* ==================================================================
            Design-System: "Glassmorphic Deep" (one-page-app-gemini)
            Akzent ist Violett. Body-Text immer --text-primary.
@@ -668,7 +671,7 @@
         </div>
     </div>
 
-<script src="gpp-core.js"></script>
+<script src="gpp-core.js?v=3.1"></script>
     <script>
         if (typeof gppCfg === 'undefined') {
             document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
@@ -678,6 +681,8 @@
             throw new Error('gpp-core.js missing');
         }
         const GPP_TOOL_ID = 'GSpp-Viewer';
+        gppCollapsibleLog({ consoleEl: document.querySelector('.logconsole'),
+            headEl: document.querySelector('.logconsole .log-actions'), toolId: GPP_TOOL_ID });
         /* Quellen für die Pin-Übersicht in config.html anmelden. Gepinnt ist der
            Normalfall (Grundregel 8); die Update-Prüfung sitzt in config.html. */
         const STDT_PIN = 'd304c60c0ba37277a59fa40adf6e6be3d452878e';
@@ -1794,11 +1799,17 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präßise und du nutzt kei
         }
 
         function clearAllCatalogs() {
-            document.getElementById('catalog-container').innerHTML = '';
-            document.getElementById('meta-container').innerHTML = 'Kein Katalog geladen';
-            document.getElementById('welcome-msg').style.display = 'block';
-            document.getElementById('clearAllBtn').style.display = 'none';
-            document.getElementById('filterControls').style.display = 'none';
+            // Nur die Katalogkarten entfernen — #welcome-msg ist ein Kind von
+            // #catalog-container und würde von innerHTML='' mitgelöscht.
+            const cc = document.getElementById('catalog-container');
+            const welcome = document.getElementById('welcome-msg');
+            if (cc) [...cc.children].forEach(el => { if (el !== welcome) el.remove(); });
+            const setStyle = (id, disp) => { const el = document.getElementById(id); if (el) el.style.display = disp; };
+            const mc = document.getElementById('meta-container');
+            if (mc) mc.innerHTML = 'Kein Katalog geladen';
+            setStyle('welcome-msg', 'block');
+            setStyle('clearAllBtn', 'none');
+            setStyle('filterControls', 'none');
             const n = loadedCatalogs.length;
             loadedCatalogs = [];
             loadedCatalogSources = [];

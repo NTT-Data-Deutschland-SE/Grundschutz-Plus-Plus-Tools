@@ -11,6 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+    /* Optionsliste zeichnet das OS — halbtransparente Flaechen greifen dort nicht */
+    select,option{background-color:#1b1b23;color:#e8e8ef}
+    select{color-scheme:dark}
         /* =====================================================================
            Design-System "Glassmorphic Deep" — handgeschrieben, kein Tailwind.
            Die Klassennamen im Markup sind historisch (Tailwind-Utilities); sie
@@ -890,7 +893,7 @@
         </div>
     </div>
 
-<script src="gpp-core.js"></script>
+<script src="gpp-core.js?v=3.1"></script>
     <script>
         if (typeof gppCfg === 'undefined') {
             document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
@@ -1951,23 +1954,18 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             return normalizeAIBackend(document.getElementById('ai-doc-provider')?.value);
         }
 
-        // Modell je Backend getrennt aus localStorage. Für Gemini gilt die feste Liste
-        // (abgeschaltete IDs werden auf den Standard zurückgesetzt), für OpenRouter ist
-        // jeder vendor/slug zulässig — der Katalog ändert sich wöchentlich.
+        // Modell und Key kommen ausschließlich aus der zentralen Konfiguration
+        // (config.html, gpp:cfg:*). Frei gewählte Modelle werden NICHT gegen eine
+        // Festliste geprüft — sonst fiele eine zentral gesetzte ID stillschweigend
+        // auf den Standard zurück.
         function readStoredAIModel(backend) {
-            let stored = '';
-            try { stored = cleanAIString(localStorage.getItem(AI_MODEL_STORAGE_PREFIX + backend) || ''); } catch (e) { }
-            if (backend === 'gemini') {
-                const known = AI_DOCUMENT_MODELS.gemini.map(model => model.id);
-                if (known.includes(stored)) return stored;
-                if (stored) console.warn(`Gespeichertes Modell "${stored}" ist nicht mehr verfügbar — zurückgesetzt auf ${AI_DEFAULT_MODEL}.`);
-                return AI_DEFAULT_MODEL;
-            }
-            return stored || AI_OPENROUTER_DEFAULT_MODEL;
+            const central = cleanAIString(gppCfg.get('ai:model:' + backend) || '');
+            if (central) return central;
+            return backend === 'gemini' ? AI_DEFAULT_MODEL : AI_OPENROUTER_DEFAULT_MODEL;
         }
 
         function readStoredAIKey(backend) {
-            try { return sessionStorage.getItem(AI_KEY_STORAGE_PREFIX + backend) || ''; } catch (e) { return ''; }
+            return gppCfg.get('ai:key:' + backend) || '';
         }
 
         let aiBackendMigrationNotice = '';
@@ -2024,17 +2022,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             if (backend === 'openrouter') ensureOpenRouterCatalog();
         };
 
+        // Schreibt bewusst nichts mehr: Backend, Modell und Key gehören config.html.
         window.saveAIDocumentConfig = function () {
-            const backend = currentAIBackend();
-            const model = cleanAIString(document.getElementById('ai-doc-model')?.value || '');
-            const key = document.getElementById('ai-doc-key')?.value || '';
-            try {
-                localStorage.setItem(AI_BACKEND_STORAGE_KEY, backend);
-                if (model) localStorage.setItem(AI_MODEL_STORAGE_PREFIX + backend, model);
-                sessionStorage.setItem(AI_KEY_STORAGE_PREFIX + backend, key);
-            } catch (e) {
-                console.warn('KI-Konfiguration konnte nicht gespeichert werden:', e);
-            }
             syncOpenRouterCatalogSelection();
             updateAIKeyHint();
         };

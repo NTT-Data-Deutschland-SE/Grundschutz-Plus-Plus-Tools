@@ -600,7 +600,7 @@ input[type=date].inp{color-scheme:dark}
 
 </div><!-- /app -->
 
-<script src="gpp-core.js"></script>
+<script src="gpp-core.js?v=3.1"></script>
 <script>
 if(typeof gppCfg==='undefined'){
     document.body.innerHTML='<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">'+
@@ -610,6 +610,8 @@ if(typeof gppCfg==='undefined'){
     throw new Error('gpp-core.js missing');
 }
 const GPP_TOOL_ID='abarbeiten_POAM_generator';
+gppCollapsibleLog({consoleEl:document.querySelector('.logbox'),
+  headEl:document.querySelector('.logbox .log-tools'),toolId:GPP_TOOL_ID});
 const BUILD='v2.3';
 const P={arFilename:'',sspHref:'',sysName:'',catalog:new Map(),findings:[],observations:[],risks:[],items:[],meta:{title:'',version:'1.0.0',desc:''},responsible:{name:'',role:'system-owner',email:''}};
 // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---

@@ -6,6 +6,8 @@
   <title>Grundschutz++ OSCAL Tools · v1.2</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
   <style>
+    select,option{background-color:#1b1b23;color:#e8e8ef}
+    select{color-scheme:dark}
     :root {
       --bg-deep:      oklch(0.13 0.02 280);
       --bg-elev-1:    oklch(0.95 0.005 280 / 0.04);
@@ -79,6 +81,11 @@
     header .btn:hover {
       color: var(--text-primary); border-color: var(--accent);
       background: var(--bg-elev-2);
+    }
+    /* Aktiver Zustand: die Fläche überlagert die App — das muss man am Knopf sehen */
+    header .btn.on {
+      color: var(--text-primary); border-color: var(--accent);
+      background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent-glow) inset;
     }
 
     nav {
@@ -262,7 +269,7 @@
     </section>
   </div>
 
-  <script src="gpp-core.js"></script>
+  <script src="gpp-core.js?v=3.1"></script>
   <script>
     // Workflow order: Explorer → Katalog/Profil-Erstellung → Modellierung → Umsetzung → Prüfung → Abarbeiten → Validierung.
     // `stage` und `tool` verbinden die Kachel mit den Artefakten, die das Tool ablegt.
@@ -565,8 +572,14 @@
       }
     });
 
-    function openSheet() { closeDoc(); sheet.classList.add("open"); refreshArtefacts(); }
-    function closeSheet() { sheet.classList.remove("open"); }
+    /* Hält die Kopfzeilen-Knöpfe im Gleichklang mit den überlagernden Flächen */
+    function syncOverlayButtons() {
+      document.getElementById("btn-artefacts").classList.toggle("on", sheet.classList.contains("open"));
+      document.getElementById("btn-help").classList.toggle("on", docMode === "help");
+      document.getElementById("btn-handbuch").classList.toggle("on", docMode === "handbuch");
+    }
+    function openSheet() { closeDoc(); sheet.classList.add("open"); syncOverlayButtons(); refreshArtefacts(); }
+    function closeSheet() { sheet.classList.remove("open"); syncOverlayButtons(); }
     document.getElementById("btn-artefacts").addEventListener("click", () => {
       sheet.classList.contains("open") ? closeSheet() : openSheet();
     });
@@ -651,16 +664,24 @@
       return out.join("\n");
     }
 
-    async function fetchDoc(localPath, repoPath) {
+    /* Erst lokal (Repo oder entpacktes ZIP über http://), sonst GitHub.
+       repoPaths ist eine Liste, weil der Ordner umbenannt wurde: solange die
+       Umbenennung nicht auf main liegt, trägt nur der alte Pfad die Datei. */
+    async function fetchDoc(localPath, repoPaths) {
+      const paths = Array.isArray(repoPaths) ? repoPaths : [repoPaths];
       try {
         const r = await fetch(localPath, { cache: "no-store" });
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return await r.text();
-      } catch (e) {
-        const r2 = await fetch(RAW_DOCS + repoPath);
-        if (!r2.ok) throw new Error("lokal nicht lesbar, GitHub-Fallback HTTP " + r2.status);
-        return await r2.text();
+        if (r.ok) return await r.text();
+      } catch (e) { /* file:// oder offline — unten weiter */ }
+      const fails = [];
+      for (const p of paths) {
+        try {
+          const r = await fetch(RAW_DOCS + p);
+          if (r.ok) return await r.text();
+          fails.push(`${p} → HTTP ${r.status}`);
+        } catch (e) { fails.push(`${p} → ${e.message}`); }
       }
+      throw new Error(`lokal nicht lesbar; GitHub: ${fails.join(", ")}`);
     }
 
     let docMode = null;
@@ -668,6 +689,7 @@
       closeSheet();
       docMode = mode;
       docSheet.classList.add("open");
+      syncOverlayButtons();
       const title = document.getElementById("doc-title");
       const sub = document.getElementById("doc-sub");
       const navBox = document.getElementById("doc-nav");
@@ -686,8 +708,8 @@
       body.innerHTML = '<div class="doc-err">Lade …</div>';
       try {
         const text = mode === "help"
-          ? await fetchDoc("readme.md", "GS++-oscal-app/readme.md")
-          : await fetchDoc("../handbuch/" + chapter, "handbuch/" + chapter);
+          ? await fetchDoc("readme.md", ["GS++-oscal-app/readme.md", "One-Page-Apps/readme.md"])
+          : await fetchDoc("../handbuch/" + chapter, ["handbuch/" + chapter]);
         body.innerHTML = md2html(text);
         body.querySelectorAll("a[data-chapter]").forEach(a =>
           a.addEventListener("click", ev => { ev.preventDefault(); openDoc("handbuch", a.dataset.chapter); }));
@@ -699,7 +721,7 @@
           dann kommt der Text von GitHub.</div>`;
       }
     }
-    function closeDoc() { docSheet.classList.remove("open"); docMode = null; }
+    function closeDoc() { docSheet.classList.remove("open"); docMode = null; syncOverlayButtons(); }
     document.getElementById("btn-help").addEventListener("click", () =>
       (docMode === "help") ? closeDoc() : openDoc("help"));
     document.getElementById("btn-handbuch").addEventListener("click", () =>

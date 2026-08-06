@@ -415,6 +415,39 @@ function gppDownloadBlob(name, blob) {
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 }
 
+/* ---------- Log-Konsole ein- und ausklappen ----------
+   Jedes Werkzeug hat eine Log-Konsole; sie soll überall gleich bedienbar sein.
+   Erwartet den Konsolen-Container und ein Element in dessen Kopfzeile, an das
+   der Schalter gehängt wird. Der Zustand überlebt den Reload je Werkzeug. */
+function gppCollapsibleLog({ consoleEl, headEl, toolId, label = "Log" }) {
+  if (!consoleEl || !headEl) return null;
+  const key = GPP_CFG_PREFIX + "log:collapsed:" + (toolId || "tool");
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.title = `${label} ein-/ausklappen`;
+  btn.style.cssText = "background:transparent;border:1px solid currentColor;border-radius:5px;" +
+    "color:inherit;font:inherit;font-size:10px;line-height:1;padding:2px 7px;cursor:pointer;opacity:.75";
+  /* Alles außer der Kopfzeile ausblenden — so braucht kein Werkzeug eigenes CSS.
+     Die vorherige Flex-Vorgabe wird gemerkt und beim Aufklappen zurückgesetzt. */
+  const prevFlex = consoleEl.style.flex;
+  const others = () => [...consoleEl.children].filter(el => el !== headEl && !headEl.contains(el));
+  const apply = collapsed => {
+    others().forEach(el => { el.style.display = collapsed ? "none" : ""; });
+    consoleEl.style.flex = collapsed ? "0 0 auto" : prevFlex;
+    consoleEl.classList.toggle("collapsed", collapsed);
+    btn.textContent = collapsed ? "▲ " + label : "▼ " + label;
+    btn.setAttribute("aria-expanded", String(!collapsed));
+  };
+  apply(localStorage.getItem(key) === "1");
+  btn.addEventListener("click", () => {
+    const next = !consoleEl.classList.contains("collapsed");
+    apply(next);
+    try { localStorage.setItem(key, next ? "1" : "0"); } catch (e) { /* Quota egal */ }
+  });
+  headEl.appendChild(btn);
+  return btn;
+}
+
 /* ---------- Hinweisbanner, wenn die Konfiguration fehlt ----------
    Die Tools halten keine eigenen AI-Felder mehr; fehlt der Key, muss der Weg
    zur config.html unmissverständlich sein. */

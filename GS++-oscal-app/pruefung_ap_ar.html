@@ -9,6 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/15.0.0/marked.min.js"></script>
     <style>
+    /* Optionsliste zeichnet das OS — halbtransparente Flaechen greifen dort nicht */
+    select,option{background-color:#1b1b23;color:#e8e8ef}
+    select{color-scheme:dark}
 /* ============================================================
    Design-System „Glassmorphic Deep" — handgeschriebenes CSS.
    Kein Tailwind-CDN. Die im Markup (und in JS-Template-Literalen)
@@ -560,7 +563,7 @@ textarea.inp{min-height:80px;line-height:1.55}
   </section>
 </div>
 
-<script src="gpp-core.js"></script>
+<script src="gpp-core.js?v=3.1"></script>
 <script>
 if(typeof gppCfg==='undefined'){
     document.body.innerHTML='<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">'+
@@ -570,6 +573,8 @@ if(typeof gppCfg==='undefined'){
     throw new Error('gpp-core.js missing');
 }
 const GPP_TOOL_ID='pruefung_ap_ar';
+gppCollapsibleLog({consoleEl:document.querySelector('.logbox'),
+  headEl:document.querySelector('.logbox .log-head'),toolId:GPP_TOOL_ID});
 /* Quelle für die Pin-Übersicht in config.html anmelden (Grundregel 8). */
 gppRegisterSources(GPP_TOOL_ID,[{id:'ed23-anforderungen',label:'G++/ED23 Anforderungen (Hilfsdatei)',
     repo:'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',path:'hilfsdateien/gpp_ed23_anforderungen.json',

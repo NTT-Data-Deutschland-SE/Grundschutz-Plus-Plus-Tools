@@ -82,6 +82,11 @@ body{
 .field{margin-bottom:10px}
 .field label{display:block;font-size:11px;color:var(--text-tertiary);margin-bottom:4px;
   font-weight:500}
+/* Die aufgeklappte Optionsliste zeichnet das Betriebssystem — dort greifen
+   halbtransparente Flächen nicht. Ohne deckende Farbe steht helle Schrift auf
+   hellem Grund. */
+select,option{background-color:#1b1b23;color:var(--text-primary)}
+select{color-scheme:dark}
 .field input,.field select,.field textarea{
   width:100%;background:var(--bg-elev-2);border:1px solid var(--border-1);
   color:var(--text-primary);font-family:'JetBrains Mono',monospace;font-size:11px;
@@ -272,8 +277,12 @@ body{
 .hbar-fill{height:100%;border-radius:3px;transition:width .25s ease}
 .hbar-value{font-family:'JetBrains Mono',monospace;color:var(--text-primary);text-align:right}
 
-.console{flex:0 0 220px;background:var(--bg-elev-1);border-top:1px solid var(--border-1);
+/* min-height:0 ist zwingend: Flex-Elemente haben sonst min-height:auto und
+   wachsen mit dem Inhalt, statt den Log scrollen zu lassen. */
+.console{flex:0 0 220px;min-height:0;background:var(--bg-elev-1);border-top:1px solid var(--border-1);
   display:flex;flex-direction:column;backdrop-filter:blur(20px)}
+.console.collapsed{flex:0 0 auto}
+.console.collapsed .console-body,.console.collapsed .log-ta-wrap{display:none}
 .console-head{padding:8px 16px;border-bottom:1px solid var(--border-1);display:flex;
   align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;
   font-size:10px;letter-spacing:0.15em;color:var(--text-quiet);text-transform:uppercase}
@@ -561,7 +570,7 @@ body{
 
 </div>
 
-<script src="gpp-core.js"></script>
+<script src="gpp-core.js?v=3.1"></script>
 <script>
 "use strict";
 if (typeof gppCfg === "undefined") {
@@ -834,6 +843,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const logBody = $("log-body");
 const logTA = $("log-ta");
 let logCount = 0;
+gppCollapsibleLog({ consoleEl: document.querySelector(".console"),
+  headEl: document.querySelector(".console-actions"), toolId: GPP_TOOL_ID });
 
 const l = {
   _add(level, msg) {
@@ -1337,11 +1348,17 @@ function parseCsv(text) {
 function setCategories(csvText, src) {
   const rows = parseCsv(csvText);
   const header = rows.shift() || [];
-  const col = name => header.findIndex(h => h.trim().toLowerCase() === name.toLowerCase());
+  const col = (...names) => header.findIndex(h =>
+    names.some(n => h.trim().toLowerCase() === n.toLowerCase()));
   const ci = {
-    name: col("Zielobjektkategorie"), def: col("Definition"), typ: col("Typ"),
+    // Upstream heißt die Spalte "Zielobjekt"; "Zielobjektkategorie" bleibt als
+    // Alternative stehen, falls die Bibliothek wieder umbenennt.
+    name: col("Zielobjekt", "Zielobjektkategorie"), def: col("Definition"), typ: col("Typ"),
     kat: col("Kategorie"), syn: col("Synonyme"), child: col("ChildOfUUID"), uuid: col("UUID"),
   };
+  if (ci.name < 0 || ci.uuid < 0) {
+    l.err(`Kategorien-CSV: erwartete Spalten fehlen (gefunden: ${header.join(", ")})`);
+  }
   const cats = rows.map(r => ({
     name: (r[ci.name] || "").trim(),
     definition: (r[ci.def] || "").trim(),
