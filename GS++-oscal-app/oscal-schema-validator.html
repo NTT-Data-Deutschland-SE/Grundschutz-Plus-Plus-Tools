@@ -547,6 +547,11 @@ const APP_VERSION = "1.11.1";
 const GPP_TOOL_ID = "oscal-schema-validator";
 gppCollapsibleLog({ consoleEl: document.getElementById("logbar"),
   headEl: document.querySelector("#logbar .lh"), toolId: GPP_TOOL_ID });
+gppFloatingSave({ buttons: [
+    { el: "#btn-export-json", label: "Validierungsbericht als JSON abspeichern" },
+    { el: "#btn-export-md", label: "Validierungsbericht als Markdown abspeichern" },
+    { el: "#btn-rules-export", label: "Findings als JSON abspeichern" }
+  ], consoleEl: document.getElementById("logbar"), toolId: GPP_TOOL_ID });
 const OSCAL_SCHEMA_VERSION = "1.2.2";
 const $ = id => document.getElementById(id);
 const sleep = ms => new Promise(r => setTimeout(r, ms));

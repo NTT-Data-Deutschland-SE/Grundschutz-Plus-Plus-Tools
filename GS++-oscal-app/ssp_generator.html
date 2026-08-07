@@ -265,6 +265,12 @@
 
         .search-result-item { transition: background .15s ease; }
         .search-result-item:hover { background: var(--bg-elev-2); }
+        .tailoring-workspace { display:grid;grid-template-columns:minmax(190px,240px) minmax(0,1fr);gap:12px;align-items:start; }
+        .tailoring-source-nav { max-height:600px;overflow-y:auto;padding-right:4px; }
+        .tailoring-source-button { width:100%;min-height:42px;padding:8px 10px;text-align:left;border:1px solid var(--border-1);border-radius:6px;background:var(--bg-elev-1);color:var(--text-secondary); }
+        .tailoring-source-button:hover { border-color:var(--border-2);background:var(--bg-elev-2); }
+        .tailoring-source-button.active { border-color:var(--accent);background:var(--accent-soft);color:var(--text-primary); }
+        @media (max-width:700px) { .tailoring-workspace { grid-template-columns:1fr; } .tailoring-source-nav { max-height:220px; } }
 
         /* Unbestimmter Ladebalken (ersetzt den frueheren CSS-Spinner) */
         #loading-overlay { display: none; }
@@ -728,7 +734,7 @@
             </div>
         </section>
 
-        <div class="card p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div id="generator-save-actions" class="card p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <label class="flex items-center space-x-3 cursor-pointer">
                 <input type="checkbox" id="generate-ssp-checkbox" checked class="form-checkbox h-5 w-5">
                 <span>
@@ -736,9 +742,9 @@
                     <span class="text-xs text-slate-400 font-normal">Verknüpft Profil, Methodik, Prozesse und Assets.</span>
                 </span>
             </label>
-            <button onclick="generateBlueprintPackage()"
+            <button id="save-blueprint-button" onclick="generateBlueprintPackage()"
                 class="w-full md:w-auto bg-emerald-600 font-bold py-3 px-8 rounded-lg transition-all">
-                ▶ Blaupause-Paket generieren
+                Blaupause-Paket
             </button>
         </div>
 
@@ -747,7 +753,7 @@
 
     <!-- ============================ LOG-KONSOLE ============================ -->
     <div id="ai-log-console">
-        <div class="flex items-center justify-between gap-4 px-4 py-2 cursor-pointer select-none" onclick="toggleAILog()">
+        <div class="flex items-center justify-between gap-4 px-4 py-2 select-none">
             <div class="flex items-center gap-3 min-w-0">
                 <span class="font-bold text-slate-300 uppercase tracking-wider">Log</span>
                 <span id="ai-log-count" class="text-slate-500">0 Zeilen</span>
@@ -758,10 +764,9 @@
                     <input id="ai-log-autoscroll" type="checkbox" checked class="h-3 w-3"> Autoscroll
                 </label>
                 <button onclick="event.stopPropagation(); clearAILog()" class="text-slate-500 hover:text-slate-300">Leeren</button>
-                <span id="ai-log-chevron" class="text-slate-500">▲</span>
             </div>
         </div>
-        <div id="ai-log-body" class="hidden h-52 overflow-y-auto px-4 pb-3 space-y-0.5 custom-scroll border-t"></div>
+        <div id="ai-log-body" class="h-52 overflow-y-auto px-4 pb-3 space-y-0.5 custom-scroll border-t"></div>
     </div>
 
     <!-- ============================ OVERLAY / MODALS ============================ -->
@@ -903,6 +908,20 @@
             throw new Error('gpp-core.js missing');
         }
         const GPP_TOOL_ID = 'ssp_generator';
+        const aiLogToggle = gppCollapsibleLog({
+            consoleEl: document.getElementById('ai-log-console'),
+            headEl: document.querySelector('#ai-log-console > div > div:last-child'),
+            toolId: GPP_TOOL_ID
+        });
+        document.documentElement.classList.toggle('log-open', Boolean(aiLogToggle && !aiLogToggle.isCollapsed()));
+        window.addEventListener('gpp:log-resize', () => {
+            document.documentElement.classList.toggle('log-open', Boolean(aiLogToggle && !aiLogToggle.isCollapsed()));
+        });
+        gppFloatingSave({
+            buttons: [{ el: '#save-blueprint-button', label: 'Blaupause-Paket abspeichern' }],
+            consoleEl: document.getElementById('ai-log-console'),
+            toolId: GPP_TOOL_ID
+        });
         // Auswahlliste aus dem Arbeitsstand füllen und bei Änderungen nachziehen
         window.addEventListener('DOMContentLoaded', () => { if (typeof refreshSetSourceOptions === 'function') refreshSetSourceOptions(); });
         window.addEventListener('gpp:artefacts-changed', () => { if (typeof refreshSetSourceOptions === 'function') refreshSetSourceOptions(); });
@@ -1812,19 +1831,20 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             if (count) count.textContent = `${aiLogLineCount} Zeilen`;
             if (document.getElementById('ai-log-autoscroll')?.checked) body.scrollTop = body.scrollHeight;
             // Bei Fehlern/Warnungen die Konsole automatisch aufklappen
-            if ((level === 'err' || level === 'warn') && body.classList.contains('hidden')) toggleAILog(true);
+            if ((level === 'err' || level === 'warn') && aiLogToggle?.isCollapsed()) toggleAILog(true);
         }
 
         window.toggleAILog = function (forceOpen) {
-            const body = document.getElementById('ai-log-body');
-            const chevron = document.getElementById('ai-log-chevron');
-            if (!body) return;
-            const open = forceOpen === true || body.classList.contains('hidden');
-            body.classList.toggle('hidden', !open);
+            if (!aiLogToggle) return;
+            if (forceOpen === true) aiLogToggle.setCollapsed(false);
+            else aiLogToggle.toggle();
+            const open = !aiLogToggle.isCollapsed();
             // Der Main-Bereich endet an der Konsole (--dock-h), damit nichts verdeckt wird.
             document.documentElement.classList.toggle('log-open', open);
-            if (chevron) chevron.textContent = open ? '▼' : '▲';
-            if (open) body.scrollTop = body.scrollHeight;
+            if (open) {
+                const body = document.getElementById('ai-log-body');
+                if (body) body.scrollTop = body.scrollHeight;
+            }
         };
 
         window.clearAILog = function () {
@@ -4417,7 +4437,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 const schutzColor = SCHUTZBEDARF_COLORS[c.schutzbedarf] || SCHUTZBEDARF_COLORS['normal-SdT'];
                 list.innerHTML += `
                     <li class="flex justify-between items-center p-3 bg-slate-900 border border-slate-700 rounded-lg">
-                        <div>
+                        <button type="button" onclick="openTailoringSource('${encodeURIComponent(c.id)}')" class="flex-1 text-left min-w-0" title="Nur die Controls dieses Assets anzeigen">
                             <div class="flex items-center gap-2 font-bold text-slate-200 text-sm flex-wrap">
                                 ▣ ${c.name}
                                 <span class="px-2 py-0.5 rounded text-[10px] uppercase ${stateBadge} border border-slate-600">${c.state}</span>
@@ -4425,7 +4445,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                                 ${c.aiGenerated ? '<span class="px-2 py-0.5 rounded text-[10px] uppercase bg-purple-900 text-purple-300 border border-purple-700" title="Aus der KI-Dokumentanalyse zugeordnet">◉ KI</span>' : ''}
                             </div>
                             <div class="text-xs text-indigo-400 mt-1">+ ${c.controls.size} Controls importiert</div>
-                        </div>
+                        </button>
                         <button onclick="removeAsset(${i})" class="text-red-400 hover:text-red-300 font-bold p-2 text-sm">✕</button>
                     </li>
                 `;
@@ -4449,10 +4469,28 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     <button onclick="addManualControl()" class="px-6 py-2 bg-slate-700 text-white font-medium rounded-lg hover:bg-slate-600 transition-colors text-sm shadow-md">Hinzufügen</button>
                 </div>
                 <div class="mb-4">
-                    <input type="text" id="tailoring-search-input" oninput="renderTailoredList(this.value)" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-emerald-500 outline-none placeholder-slate-500" placeholder="⌕ Nach Control-ID oder Titel suchen...">
+                    <input type="text" id="tailoring-search-input" oninput="queueTailoringSearch(this.value)" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-emerald-500 outline-none placeholder-slate-500" placeholder="⌕ Nach Control-ID oder Titel suchen...">
                 </div>
-                <div id="tailored-list" class="max-h-[600px] overflow-y-auto custom-scroll pr-2 space-y-3"></div>
+                <div class="tailoring-workspace">
+                    <nav id="tailoring-source-nav" class="tailoring-source-nav custom-scroll space-y-2" aria-label="Control-Quellen"></nav>
+                    <div id="tailored-list" class="max-h-[600px] overflow-y-auto custom-scroll pr-2 space-y-3" aria-live="polite"></div>
+                </div>
             `;
+        }
+
+        const tailoringView = { selectedSourceId: '', limit: 120, searchTimer: null };
+
+        function tailoringSources() {
+            const sources = [];
+            const add = (id, title, type, badgeHtml, controls) => {
+                if (controls?.size) sources.push({ id: String(id || type), title, type, badgeHtml, controls });
+            };
+            add(bpState.methodik.uuid || 'methodik', 'Zwingende Basis Methodik', 'Basis', '<span class="px-2 py-0.5 rounded bg-emerald-900 text-emerald-300 text-[10px] font-bold">◼ BASE</span>', bpState.methodik.controls);
+            bpState.praktiken.forEach(p => add(p.id, `Prozess: ${p.name}${p.aiGenerated ? ' ◉' : ''}`, 'Praktik', '<span class="px-2 py-0.5 rounded bg-blue-900 text-blue-300 text-[10px] font-bold">◐ PRAKTIK</span>', p.controls));
+            bpState.components.forEach(c => add(c.id, `Asset: ${c.name}${c.aiGenerated ? ' ◉' : ''}`, 'Asset', '<span class="px-2 py-0.5 rounded bg-indigo-900 text-indigo-300 text-[10px] font-bold">▣ ASSET</span>', c.controls));
+            bpState.catalogs.slice(1).forEach(catalog => add(catalog.id, `Katalog: ${catalog.name}`, 'Katalog', '<span class="px-2 py-0.5 rounded bg-cyan-900 text-cyan-300 text-[10px] font-bold">▣ KATALOG</span>', catalog.controls));
+            add('manual', 'Manuell im Profil (Global)', 'Manuell', '<span class="px-2 py-0.5 rounded bg-slate-700 text-slate-300 text-[10px] font-bold">✎ MANUELL</span>', bpState.manualControls);
+            return sources;
         }
 
         window.addManualControl = function () {
@@ -4464,46 +4502,69 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             renderTailoredList(document.getElementById('tailoring-search-input')?.value || '');
         }
 
+        window.queueTailoringSearch = function (term) {
+            clearTimeout(tailoringView.searchTimer);
+            tailoringView.limit = 120;
+            tailoringView.searchTimer = setTimeout(() => renderTailoredList(term), 120);
+        };
+
+        window.selectTailoringSource = function (sourceId) {
+            tailoringView.selectedSourceId = sourceId;
+            tailoringView.limit = 120;
+            const search = document.getElementById('tailoring-search-input');
+            if (search) search.value = '';
+            renderTailoredList('');
+        };
+
+        window.openTailoringSource = function (encodedSourceId) {
+            navigateToSection('sec-tailoring');
+            selectTailoringSource(decodeURIComponent(encodedSourceId));
+        };
+
+        window.showMoreTailoringControls = function () {
+            tailoringView.limit += 120;
+            renderTailoredList(document.getElementById('tailoring-search-input')?.value || '');
+        };
+
         function renderTailoredList(filterTerm = '') {
             const list = document.getElementById('tailored-list');
             if (!list) return;
             list.innerHTML = '';
 
             const term = filterTerm.toLowerCase().trim();
+            const sources = tailoringSources();
+            if (!sources.some(source => source.id === tailoringView.selectedSourceId)) tailoringView.selectedSourceId = sources[0]?.id || '';
 
-            function renderGroup(title, badgeHtml, controlsSet, sourceId, isOpenDefault) {
-                if (!controlsSet || controlsSet.size === 0) return '';
+            const nav = document.getElementById('tailoring-source-nav');
+            if (nav) {
+                nav.innerHTML = sources.map(source => {
+                    const encodedId = encodeURIComponent(source.id);
+                    const active = !term && source.id === tailoringView.selectedSourceId;
+                    const shortTitle = source.title.replace(/^(Asset|Prozess|Katalog):\s*/, '');
+                    return `<button type="button" class="tailoring-source-button ${active ? 'active' : ''}" onclick="selectTailoringSource(decodeURIComponent('${encodedId}'))">
+                        <span class="block text-[10px] uppercase text-slate-500">${escapeHTML(source.type)}</span>
+                        <span class="block text-xs font-bold truncate">${escapeHTML(shortTitle)}</span>
+                        <span class="block text-[10px] text-slate-500 mt-0.5">${source.controls.size} Controls</span>
+                    </button>`;
+                }).join('') || '<p class="text-xs text-slate-500 p-2">Noch keine Control-Quellen vorhanden.</p>';
+            }
 
-                const filteredControls = Array.from(controlsSet).sort().filter(cid => {
-                    if (!term) return true;
-                    const info = bpState.controlsIndex.get(cid);
-                    return cid.toLowerCase().includes(term) || (info?.title || '').toLowerCase().includes(term) || (info?.text || '').toLowerCase().includes(term);
-                });
-
-                if (filteredControls.length === 0) return '';
-
-                const shouldBeOpen = term.length > 0 ? true : isOpenDefault;
-                const openClass = shouldBeOpen ? 'open' : '';
-                const displayClass = shouldBeOpen ? 'block' : 'hidden';
-
+            function renderGroup(source, filteredControls) {
                 let html = `
                     <div class="border border-slate-700 rounded-lg overflow-hidden">
-                        <button onclick="toggleSubSection('${sourceId}')" class="w-full flex justify-between items-center p-3 bg-slate-800 hover:bg-slate-700 transition-colors border-b border-slate-700">
+                        <div class="w-full flex justify-between items-center p-3 bg-slate-800 border-b border-slate-700">
                             <div class="flex items-center gap-2">
-                                ${badgeHtml}
-                                <h4 class="text-sm font-bold text-slate-300 uppercase">${title} (${filteredControls.length})</h4>
+                                ${source.badgeHtml}
+                                <h4 class="text-sm font-bold text-slate-300 uppercase">${escapeHTML(source.title)} (${filteredControls.length})</h4>
                             </div>
-                            <svg id="icon-${sourceId}" class="chevron-icon ${openClass} w-5 h-5 text-slate-400 transform transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                            </svg>
-                        </button>
-                        <ul id="content-${sourceId}" class="${displayClass} p-3 space-y-2 bg-slate-900/50">
+                        </div>
+                        <ul class="p-3 space-y-2 bg-slate-900/50">
                 `;
 
                 filteredControls.forEach(cid => {
                     const info = bpState.controlsIndex.get(cid);
-                    const modKey = `${sourceId}||${cid}`;
-                    const rk = `${sourceId}-${cid}`.replace(/[^a-zA-Z0-9]/g, '-');
+                    const modKey = `${source.id}||${cid}`;
+                    const rk = `${source.id}-${cid}`.replace(/[^a-zA-Z0-9]/g, '-');
                     const mods = bpState.modifications.get(modKey) || [];
                     const isMuss = info?.modalverb?.toUpperCase() === 'MUSS';
 
@@ -4512,25 +4573,27 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
                     // Hier wurde die Änderung vorgenommen: Hinzufügen des info.text (Statement) unter dem Titel
                     // Mit line-clamp-2 und title-Attribut, um UI sauber zu halten, aber kompletten Text per Hover anzubieten.
-                    const safeTextForTitle = info?.text ? info.text.replace(/"/g, '&quot;') : '';
+                    const safeTextForTitle = info?.text ? escapeHTML(info.text) : '';
+                    const safeSourceId = source.id.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+                    const safeSourceTitle = source.title.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
                     html += `
                         <li class="bg-slate-900 border border-slate-700 rounded-lg p-3 group hover:border-slate-500 transition-colors">
                           <div class="flex justify-between items-center">
                             <div class="flex-1 min-w-0 pr-4">
                                 <div class="flex items-center gap-2 mb-1">
-                                    <span class="font-bold text-white font-mono text-sm">${cid}</span>
+                                    <span class="font-bold text-white font-mono text-sm">${escapeHTML(cid)}</span>
                                     ${badges}
                                 </div>
-                                <div class="text-xs font-semibold text-slate-300 truncate">${info?.title || 'Titel nicht im Basis-Katalog'}</div>
-                                ${info?.text ? `<div class="text-[11px] text-slate-400 mt-1 line-clamp-2 leading-relaxed" title="${safeTextForTitle}">${info.text}</div>` : ''}
+                                <div class="text-xs font-semibold text-slate-300 truncate">${escapeHTML(info?.title || 'Titel nicht im Basis-Katalog')}</div>
+                                ${info?.text ? `<div class="text-[11px] text-slate-400 mt-1 line-clamp-2 leading-relaxed" title="${safeTextForTitle}">${escapeHTML(info.text)}</div>` : ''}
                             </div>
                             <div class="flex items-center gap-2 flex-shrink-0 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button onclick="showED23('${cid}', '${rk}')" class="px-3 py-1.5 bg-slate-700 text-blue-300 hover:bg-slate-600 rounded text-xs font-bold transition-colors">◇ ED23</button>
-                                <button onclick="openModifyModal('${cid}', '${sourceId}', '${title.replace(/'/g, "\\'")}')" class="px-3 py-1.5 bg-slate-700 text-blue-300 hover:bg-slate-600 rounded text-xs font-bold transition-colors">✎ Modify</button>
+                                <button onclick="openModifyModal('${cid}', '${safeSourceId}', '${safeSourceTitle}')" class="px-3 py-1.5 bg-slate-700 text-blue-300 hover:bg-slate-600 rounded text-xs font-bold transition-colors">✎ Modify</button>
                                 ${isMuss
                             ? `<button disabled class="px-3 py-1.5 bg-slate-800/50 text-slate-600 border border-slate-700 rounded text-xs font-bold cursor-not-allowed" title="MUSS-Anforderung kann nicht entfernt werden">◼</button>`
-                            : `<button onclick="removeControl('${cid}', '${sourceId}')" class="px-3 py-1.5 bg-slate-800 text-red-400 hover:bg-slate-700 border border-slate-700 rounded text-xs font-bold transition-colors">✕</button>`
+                            : `<button onclick="removeControl('${cid}', '${safeSourceId}')" class="px-3 py-1.5 bg-slate-800 text-red-400 hover:bg-slate-700 border border-slate-700 rounded text-xs font-bold transition-colors">✕</button>`
                         }
                             </div>
                           </div>
@@ -4542,37 +4605,29 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 return html;
             }
 
+            const activeSources = term ? sources : sources.filter(source => source.id === tailoringView.selectedSourceId);
+            const groups = activeSources.map(source => ({
+                source,
+                controls: Array.from(source.controls).sort().filter(cid => {
+                    if (!term) return true;
+                    const info = bpState.controlsIndex.get(cid);
+                    return cid.toLowerCase().includes(term) || (info?.title || '').toLowerCase().includes(term) || (info?.text || '').toLowerCase().includes(term);
+                })
+            })).filter(group => group.controls.length);
+            const total = groups.reduce((sum, group) => sum + group.controls.length, 0);
+            let remaining = tailoringView.limit;
             let fullHtml = '';
-            fullHtml += renderGroup('Zwingende Basis Methodik', '<span class="px-2 py-0.5 rounded bg-emerald-900 text-emerald-300 text-[10px] font-bold">◼ BASE</span>', bpState.methodik.controls, bpState.methodik.uuid, true);
-
-            bpState.praktiken.forEach(p => {
-                fullHtml += renderGroup(`Prozess: ${p.name}${p.aiGenerated ? ' ◉' : ''}`, '<span class="px-2 py-0.5 rounded bg-blue-900 text-blue-300 text-[10px] font-bold">◐ PRAKTIK</span>', p.controls, p.id, false);
+            groups.forEach(group => {
+                if (remaining <= 0) return;
+                const visible = group.controls.slice(0, remaining);
+                remaining -= visible.length;
+                if (visible.length) fullHtml += renderGroup(group.source, visible);
             });
-
-            bpState.components.forEach(c => {
-                fullHtml += renderGroup(`Asset: ${c.name}${c.aiGenerated ? ' ◉' : ''}`, '<span class="px-2 py-0.5 rounded bg-indigo-900 text-indigo-300 text-[10px] font-bold">▣ ASSET</span>', c.controls, c.id, false);
-            });
-
-            bpState.catalogs.slice(1).forEach(catalog => {
-                fullHtml += renderGroup(`Katalog: ${catalog.name}`, '<span class="px-2 py-0.5 rounded bg-cyan-900 text-cyan-300 text-[10px] font-bold">▣ KATALOG</span>', catalog.controls, catalog.id, false);
-            });
-
-            fullHtml += renderGroup('Manuell im Profil (Global)', '<span class="px-2 py-0.5 rounded bg-slate-700 text-slate-300 text-[10px] font-bold">✎ MANUELL</span>', bpState.manualControls, 'manual', true);
-
-            if (fullHtml === '') fullHtml = `<div class="text-slate-500 text-sm italic p-4 bg-slate-900 rounded-lg border border-slate-700 text-center">Keine Controls vorhanden oder Filter trifft nicht zu.</div>`;
-            list.innerHTML = fullHtml;
-        }
-
-        window.toggleSubSection = function (sourceId) {
-            const content = document.getElementById(`content-${sourceId}`);
-            const icon = document.getElementById(`icon-${sourceId}`);
-            if (content.classList.contains('hidden')) {
-                content.classList.remove('hidden');
-                icon.classList.add('open');
-            } else {
-                content.classList.add('hidden');
-                icon.classList.remove('open');
+            if (total > tailoringView.limit) {
+                fullHtml += `<button type="button" onclick="showMoreTailoringControls()" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-lg text-sm font-bold text-emerald-300 hover:bg-slate-700">Weitere Controls anzeigen (${tailoringView.limit} von ${total})</button>`;
             }
+            if (fullHtml === '') fullHtml = `<div class="text-slate-500 text-sm italic p-4 bg-slate-900 rounded-lg border border-slate-700 text-center">Keine Controls vorhanden oder Suche ohne Treffer.</div>`;
+            list.innerHTML = fullHtml;
         }
 
         window.removeControl = function (cid, sourceId) {

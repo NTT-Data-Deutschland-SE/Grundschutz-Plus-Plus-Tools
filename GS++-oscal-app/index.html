@@ -252,8 +252,8 @@
       </div>
       <div class="stage-grid" id="stage-grid"></div>
       <div class="btn-row" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
-        <button class="btn" id="btn-export-files">⤓ Einzeldateien herunterladen</button>
-        <button class="btn" id="btn-export-zip">⤓ Set als ZIP</button>
+        <button class="btn" id="btn-export-files">Einzeldateien</button>
+        <button class="btn" id="btn-export-zip">Set als ZIP</button>
         <button class="btn" id="btn-refresh-art">⟳ Aktualisieren</button>
         <span style="flex:1"></span>
         <button class="btn" id="btn-clear-art">Set leeren</button>
@@ -290,6 +290,10 @@
 
     const APP_VERSION = "1.3";
     document.getElementById("build-pill").textContent = `build ${APP_VERSION}`;
+    if (CORE_OK) gppFloatingSave({ buttons: [
+      { el: "#btn-export-zip", label: "Set als ZIP abspeichern" },
+      { el: "#btn-export-files", label: "Einzeldateien abspeichern" }
+    ], toolId: "index" });
 
     const nav = document.getElementById("tabs");
     const frame = document.getElementById("app-frame");
@@ -395,7 +399,7 @@
           </div>
           <div class="meta" style="margin-top:3px">${escapeHtml(a.filename)} · sha256 ${(a.sha256 || "").slice(0, 12)}</div>
           <div class="acts">
-            <button class="btn-s" data-dl="${escapeAttr(a.id)}">⤓ Download</button>
+            <button class="btn-s" data-dl="${escapeAttr(a.id)}">Abspeichern</button>
             ${app ? `<button class="btn-s" data-open="${app.id}">↗ ${escapeHtml(app.label)} öffnen</button>` : ""}
             <button class="btn-s danger" data-del="${escapeAttr(a.id)}">✕ Löschen</button>
           </div>

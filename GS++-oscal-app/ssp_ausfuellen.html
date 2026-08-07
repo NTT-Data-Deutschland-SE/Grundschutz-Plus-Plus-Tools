@@ -729,7 +729,7 @@
         <div id="sb-comp-nav" class="space-y-1 mt-1 hidden"></div>
 
         <!-- Export -->
-        <div class="mt-auto space-y-1.5 pt-2 border-t border-slate-700">
+        <div id="editor-save-actions" class="mt-auto space-y-1.5 pt-2 border-t border-slate-700">
             <button id="save-session-btn" onclick="saveSessionFile()" class="w-full bg-purple-700 text-white font-bold py-1.5 px-2 rounded text-[10px] hover:bg-purple-600 disabled:bg-slate-700">&#9635; Session (.json)</button>
             <button id="save-ssp-btn" onclick="handleFileSave()" class="w-full bg-emerald-600 text-white font-bold py-1.5 px-2 rounded text-[10px] hover:bg-emerald-500 disabled:bg-slate-700" disabled>&#10515; SSP Export</button>
             <div class="text-[9px] text-slate-500 text-center pt-2">&copy; 2026 NTT DATA Deutschland SE</div>
@@ -817,6 +817,15 @@
     const GPP_TOOL_ID = 'ssp_ausfuellen';
     gppCollapsibleLog({ consoleEl: document.getElementById('logbox'),
         headEl: document.querySelector('#logbox .log-head'), toolId: GPP_TOOL_ID });
+    gppFloatingSave({
+        buttons: [
+            { el: '#save-ssp-btn', label: 'SSP abspeichern' },
+            { el: '#save-session-btn', label: 'Session abspeichern' }
+        ],
+        consoleEl: document.getElementById('logbox'),
+        hideContainers: ['#editor-save-actions'],
+        toolId: GPP_TOOL_ID
+    });
     /* Quelle für die Pin-Übersicht in config.html anmelden (Grundregel 8). */
     gppRegisterSources(GPP_TOOL_ID, [{ id: 'ed23-anforderungen', label: 'G++/ED23 Anforderungen (Hilfsdatei)',
         repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools', path: 'hilfsdateien/gpp_ed23_anforderungen.json',
@@ -1170,11 +1179,18 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
             // Params
             const paramInputs = document.querySelectorAll('.param-input');
             const setParameters = [];
-            const paramMap = new Map();
+            // Bei der Asset-Ansicht ist nur ein Teil der Controls im DOM. Bereits
+            // gespeicherte Parameter bleiben deshalb erhalten und sichtbare Werte
+            // aktualisieren lediglich ihren Eintrag.
+            const paramMap = new Map((ssp['control-implementation']['set-parameters'] || [])
+                .filter(p => p?.['param-id'] && p.values?.length)
+                .map(p => [p['param-id'], p.values[0]]));
             paramInputs.forEach(input => {
                 const val = input.value.trim();
                 const paramId = input.dataset.paramId;
-                if (val && paramId) paramMap.set(paramId, val);
+                if (!paramId) return;
+                if (val) paramMap.set(paramId, val);
+                else paramMap.delete(paramId);
             });
             paramMap.forEach((value, paramId) => {
                 setParameters.push({ "param-id": paramId, "values": [ value ] });
@@ -2285,7 +2301,29 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         return h;
     }
 
+    const implementationView = { ssp: null, selectedUuid: '', term: '', filters: {}, limit: 120, timer: null };
+    const implEsc = value => String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+    function implementationControlMeta(cid, component, sReq, dReq) {
+        const cc = catalogControlMap.get(cid);
+        const values = [];
+        const addProps = props => (props || []).forEach(p => { if (p?.name && p.value != null) values.push([p.name.toLowerCase(), String(p.value).toLowerCase()]); });
+        addProps(cc?.props);
+        addProps(cc?.parts?.find(p => p?.name === 'statement')?.props);
+        addProps(dReq?.props);
+        (dReq?.statements || []).forEach(statement => addProps(statement?.props));
+        const status = sReq?.['implementation-status']?.state || 'open';
+        values.push(['status', status.toLowerCase()]);
+        if (cc?.class) values.push(['class', String(cc.class).toLowerCase()]);
+        const prose = cc?.parts?.find(p => p?.name === 'statement')?.prose || '';
+        return {
+            haystack: `${cid} ${cc?.title || ''} ${prose} ${component.title || ''} ${component.description || ''}`.toLowerCase(),
+            values
+        };
+    }
+
     function renderImplementation(ssp) {
+        implementationView.ssp = ssp;
         const comps = ssp['system-implementation']?.components || [];
         const reqs = ssp['control-implementation']?.['implemented-requirements'] || [];
         const setParams = ssp['control-implementation']?.['set-parameters'] || [];
@@ -2295,6 +2333,11 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
             document.getElementById('impl-area').innerHTML = '<p class="text-slate-400">Keine Systemkomponenten.</p>';
             return;
         }
+        if (!comps.some(c => c.uuid === implementationView.selectedUuid)) implementationView.selectedUuid = comps[0].uuid;
+        const activeFilters = Object.entries(implementationView.filters).filter(([, value]) => value);
+        const hasQuery = Boolean(implementationView.term.trim() || activeFilters.length);
+        let remaining = implementationView.limit;
+        let totalMatches = 0;
 
         let navHtml = '';
         let filterOpts = { status: new Set(['open', 'implemented', 'partial', 'planned', 'alternative', 'not-applicable']) };
@@ -2312,7 +2355,8 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         comps.forEach((c, idx) => {
             const sNiv = c.props?.find(p => p && p.name === 'sicherheitsniveau')?.value || '';
             const sNivTag = sNiv ? ` <span class="text-[8px] opacity-60">[${sNiv}]</span>` : '';
-            navHtml += `<button onclick="scrollToSec('comp-${c.uuid}')" class="w-full text-left p-1.5 text-[10px] font-bold text-slate-300 bg-slate-900/40 hover:bg-slate-800 rounded truncate border border-transparent hover:border-slate-700">◇ ${c.title}${sNivTag}</button>`;
+            const activeClass = !hasQuery && c.uuid === implementationView.selectedUuid ? 'border-emerald-600 bg-emerald-900/30 text-white' : 'border-transparent bg-slate-900/40 text-slate-300';
+            navHtml += `<button onclick="selectImplementationComponent('${encodeURIComponent(c.uuid)}')" class="w-full text-left p-1.5 text-[10px] font-bold hover:bg-slate-800 rounded truncate border ${activeClass}" title="Nur Controls dieses Assets anzeigen">◇ ${implEsc(c.title)}${sNivTag}</button>`;
 
             let dl = c.links?.find(l => l.rel === 'profile' || l.rel === 'source-profile');
             const cd = dl ? loadedProfiles.get(dl.href) : null;
@@ -2376,6 +2420,20 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
               } catch(filterErr) { console.warn('Filter-Fehler bei', cid, filterErr); }
             });
 
+            const matchedControls = sorted.filter(cid => {
+                if (!hasQuery) return c.uuid === implementationView.selectedUuid;
+                const meta = implementationControlMeta(cid, c, sMap.get(cid), dMap.get(cid));
+                const termMatch = !implementationView.term.trim() || meta.haystack.includes(implementationView.term.trim().toLowerCase());
+                const filterMatch = activeFilters.every(([key, value]) => meta.values.some(([metaKey, metaValue]) => metaKey === key && metaValue === String(value).toLowerCase()));
+                return termMatch && filterMatch;
+            });
+            if (hasQuery && matchedControls.length === 0) return;
+            if (!hasQuery && c.uuid !== implementationView.selectedUuid) return;
+            totalMatches += matchedControls.length;
+            const controlsForLayer = matchedControls.slice(0, Math.max(0, remaining));
+            remaining -= controlsForLayer.length;
+            if (hasQuery && controlsForLayer.length === 0) return;
+
             // FIX E & B: Sichtbare Component Level Props (Eigenschaften & Risiken)
             let compLevelHtml = '<div class="mb-4 space-y-4">';
             let hasCompLevelContent = false;
@@ -2437,7 +2495,7 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
             if(hasCompLevelContent) compLevelHtml += '<hr class="border-slate-700 mb-4">';
             else compLevelHtml = '';
 
-            const openCls = idx === 0 ? 'open' : '';
+            const openCls = 'open';
             const sichNiv = c.props?.find(p => p && p.name === 'sicherheitsniveau')?.value || '';
             const sichNivBadge = sichNiv ? (() => {
                 const nivColors = {
@@ -2459,7 +2517,7 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
                     ${compLevelHtml}
                     <div class="space-y-4">`;
 
-            if(sorted.length > 0) sorted.forEach(cid => {
+            if(controlsForLayer.length > 0) controlsForLayer.forEach(cid => {
                 try { compHtml += renderControlEntry(cid, c, sMap.get(cid), dMap.get(cid), pMap); }
                 catch(renderErr) {
                     console.warn('Render-Fehler bei Control', cid, renderErr);
@@ -2471,7 +2529,12 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
             compHtml += `</div></div></div>`;
         });
 
-        // Inject HTML
+        if (!compHtml) compHtml = '<p class="text-slate-400 text-sm p-4 border border-slate-700 rounded-lg">Keine Controls für die aktuelle Suche oder Filterauswahl.</p>';
+        if (totalMatches > implementationView.limit) {
+            compHtml += `<button type="button" onclick="showMoreImplementationControls()" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-lg text-sm font-bold text-emerald-300 hover:bg-slate-700">Weitere Controls anzeigen (${implementationView.limit} von ${totalMatches})</button>`;
+        }
+
+        // Nur der aktive Asset-Layer beziehungsweise die Suchtreffer kommen ins DOM.
         document.getElementById('impl-area').innerHTML = compHtml;
         document.getElementById('sb-comp-nav').innerHTML = navHtml;
         document.getElementById('sb-comp-nav').classList.remove('hidden');
@@ -2487,18 +2550,18 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
             'tag': 'Tags'
         };
 
-        let fHtml = `<input type="text" id="global-search" class="inp text-[10px] w-full mb-2 font-mono" placeholder="Suche (Text/ID)..." oninput="applyFilters()">`;
+        let fHtml = `<input type="text" id="global-search" value="${implEsc(implementationView.term)}" class="inp text-[10px] w-full mb-2 font-mono" placeholder="Suche (Text/ID)..." oninput="applyFilters(true)">`;
         Object.keys(filterOpts).sort().forEach(k => {
             const kl = k.toLowerCase();
             if(kl === 'alt-identifier') return;
             const label = configMap[kl] || getPropConfig(kl).label || kl.toUpperCase();
             fHtml += `<select data-filter="${kl}" class="flt-sel inp text-[10px] w-full mb-1.5" onchange="applyFilters()">
                 <option value="">${label}: Alle</option>
-                ${Array.from(filterOpts[k]).sort().map(v => `<option value="${v}">${v}</option>`).join('')}
+                ${Array.from(filterOpts[k]).sort().map(v => `<option value="${implEsc(v)}" ${implementationView.filters[kl] === v ? 'selected' : ''}>${implEsc(v)}</option>`).join('')}
             </select>`;
         });
         document.getElementById('sb-filters').innerHTML = fHtml;
-        L.ok(`Implementierung gerendert: ${comps.length} Komponente(n), ${document.querySelectorAll('.ctrl-entry').length} Control-Einträge, ${Object.keys(filterOpts).length} Filterdimension(en).`);
+        L.ok(`Implementierungs-Layer gerendert: ${document.querySelectorAll('.comp-card').length} von ${comps.length} Asset(s), ${document.querySelectorAll('.ctrl-entry').length} von ${totalMatches} passenden Controls.`);
     }
 
     function renderControlEntry(cid, comp, sReq, dReq, pMap) {
@@ -2685,24 +2748,37 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         L.debug(`ED23-Mapping für ${cid}: ${(ED23_MAP[cid] || []).length} Anforderung(en) — vorberechnet, ohne Laufzeit-KI.`);
     };
 
-    window.applyFilters = () => {
-        const term = document.getElementById('global-search')?.value.toLowerCase() || '';
-        const sels = Array.from(document.querySelectorAll('.flt-sel')).map(s => ({ k: s.dataset.filter, v: s.value })).filter(x => x.v);
+    window.selectImplementationComponent = encodedUuid => {
+        updateSSPFromDOM();
+        implementationView.selectedUuid = decodeURIComponent(encodedUuid);
+        implementationView.term = '';
+        implementationView.filters = {};
+        implementationView.limit = 120;
+        renderImplementation(implementationView.ssp);
+    };
 
-        document.querySelectorAll('.comp-card').forEach(cc => {
-            const cStr = cc.dataset.search || '';
-            let cMatch = !term || cStr.includes(term);
-            let hasVis = false;
+    window.showMoreImplementationControls = () => {
+        updateSSPFromDOM();
+        implementationView.limit += 120;
+        renderImplementation(implementationView.ssp);
+    };
 
-            cc.querySelectorAll('.ctrl-entry').forEach(ce => {
-                const sStr = ce.dataset.search || '';
-                const fStr = ce.dataset.filter || '';
-                let m = (!term || sStr.includes(term)) && sels.every(s => fStr.includes(`|${s.k}:${s.v}|`));
-                ce.style.display = m ? '' : 'none';
-                if (m) hasVis = true;
-            });
-            cc.style.display = (hasVis || cMatch) ? '' : 'none';
-        });
+    window.applyFilters = (debounced = false) => {
+        implementationView.term = document.getElementById('global-search')?.value || '';
+        implementationView.filters = Object.fromEntries(Array.from(document.querySelectorAll('.flt-sel')).map(select => [select.dataset.filter, select.value]));
+        implementationView.limit = 120;
+        updateSSPFromDOM();
+        const rerender = () => {
+            renderImplementation(implementationView.ssp);
+            if (debounced) {
+                const search = document.getElementById('global-search');
+                search?.focus();
+                search?.setSelectionRange(search.value.length, search.value.length);
+            }
+        };
+        clearTimeout(implementationView.timer);
+        if (debounced) implementationView.timer = setTimeout(rerender, 120);
+        else rerender();
     };
 
     // ============================================================

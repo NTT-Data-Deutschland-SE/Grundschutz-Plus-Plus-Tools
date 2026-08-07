@@ -836,6 +836,11 @@ const logTA = $("log-ta");
 let logCount = 0;
 gppCollapsibleLog({ consoleEl: document.querySelector(".console"),
   headEl: document.querySelector(".console-actions"), toolId: GPP_TOOL_ID });
+gppFloatingSave({ buttons: [
+    { el: "#btn-download", label: "Profil abspeichern" },
+    { el: "#btn-download-cat", label: "Custom-Catalog abspeichern" },
+    { el: "#btn-save-set", label: "Profil im Set abspeichern" }
+  ], consoleEl: document.querySelector(".console"), toolId: GPP_TOOL_ID });
 
 const l = {
   _add(level, msg) {

@@ -566,30 +566,160 @@ function gppDownloadBlob(name, blob) {
 function gppCollapsibleLog({ consoleEl, headEl, toolId, label = "Log" }) {
   if (!consoleEl || !headEl) return null;
   const key = GPP_CFG_PREFIX + "log:collapsed:" + (toolId || "tool");
+  /* Einige Werkzeuge reichen die komplette Kopfzeile ein, andere nur deren
+     Aktionsbereich. Fuer das Ein-/Ausblenden brauchen wir immer das direkte
+     Kind des Konsolen-Containers, der Schalter selbst bleibt aber bei den
+     vorhandenen Aktionen. */
+  const headerEl = [...consoleEl.children].find(el => el === headEl || el.contains(headEl)) || headEl;
   const btn = document.createElement("button");
   btn.type = "button";
+  btn.className = "gpp-log-toggle";
   btn.title = `${label} ein-/ausklappen`;
   btn.style.cssText = "background:transparent;border:1px solid currentColor;border-radius:5px;" +
     "color:inherit;font:inherit;font-size:10px;line-height:1;padding:2px 7px;cursor:pointer;opacity:.75";
   /* Alles außer der Kopfzeile ausblenden — so braucht kein Werkzeug eigenes CSS.
      Die vorherige Flex-Vorgabe wird gemerkt und beim Aufklappen zurückgesetzt. */
   const prevFlex = consoleEl.style.flex;
-  const others = () => [...consoleEl.children].filter(el => el !== headEl && !headEl.contains(el));
-  const apply = collapsed => {
+  const others = () => [...consoleEl.children].filter(el => el !== headerEl);
+  const apply = (collapsed, persist = false) => {
     others().forEach(el => { el.style.display = collapsed ? "none" : ""; });
     consoleEl.style.flex = collapsed ? "0 0 auto" : prevFlex;
     consoleEl.classList.toggle("collapsed", collapsed);
     btn.textContent = collapsed ? "▲ " + label : "▼ " + label;
     btn.setAttribute("aria-expanded", String(!collapsed));
+    if (persist) {
+      try { localStorage.setItem(key, collapsed ? "1" : "0"); } catch (e) { /* Quota egal */ }
+    }
+    window.dispatchEvent(new CustomEvent("gpp:log-resize"));
   };
   apply(localStorage.getItem(key) === "1");
-  btn.addEventListener("click", () => {
+  btn.addEventListener("click", event => {
+    event.stopPropagation();
     const next = !consoleEl.classList.contains("collapsed");
-    apply(next);
-    try { localStorage.setItem(key, next ? "1" : "0"); } catch (e) { /* Quota egal */ }
+    apply(next, true);
   });
+  btn.setCollapsed = collapsed => apply(Boolean(collapsed), true);
+  btn.toggle = () => apply(!consoleEl.classList.contains("collapsed"), true);
+  btn.isCollapsed = () => consoleEl.classList.contains("collapsed");
   headEl.appendChild(btn);
   return btn;
+}
+
+/* ---------- Einheitliche, schwebende Speicheraktion ----------
+   Die Original-Buttons bleiben an ihrem Platz und werden visuell ausgeblendet;
+   das Menue arbeitet mit Proxies. Dadurch bleiben spaeter registrierte Listener
+   sowie dynamische Disabled-/Hidden-Zustaende der Werkzeuge erhalten. */
+function gppFloatingSave({ buttons = [], consoleEl = null, hideContainers = [], label = "Abspeichern", toolId = "tool" } = {}) {
+  const entries = buttons.map(item => {
+    const cfg = typeof item === "object" && !(item instanceof Element) ? item : { el: item };
+    const el = typeof cfg.el === "string" ? document.querySelector(cfg.el) : cfg.el;
+    return el ? { el, label: cfg.label || el.dataset.saveLabel || el.textContent.trim() } : null;
+  }).filter(Boolean);
+  if (!entries.length) return null;
+
+  document.getElementById(`gpp-save-${toolId}`)?.remove();
+  const dock = document.createElement("div");
+  dock.id = `gpp-save-${toolId}`;
+  dock.style.cssText = "position:fixed;left:14px;bottom:14px;z-index:120;font:600 12px/1.2 system-ui,-apple-system,sans-serif";
+
+  const menu = document.createElement("div");
+  menu.hidden = true;
+  menu.setAttribute("role", "menu");
+  menu.style.cssText = "position:absolute;left:0;bottom:calc(100% + 8px);min-width:220px;max-width:min(360px,calc(100vw - 28px));" +
+    "padding:6px;background:rgba(15,23,42,.97);border:1px solid rgba(148,163,184,.35);border-radius:8px;" +
+    "box-shadow:0 16px 40px rgba(0,0,0,.42);backdrop-filter:blur(16px)";
+
+  const hiddenContainers = new Set(hideContainers.map(item => typeof item === "string" ? document.querySelector(item) : item).filter(Boolean));
+  const actionButtons = [];
+  const sourceAvailable = el => {
+    if (el.disabled || el.hidden || getComputedStyle(el).display === "none") return false;
+    for (let parent = el.parentElement; parent; parent = parent.parentElement) {
+      if (hiddenContainers.has(parent)) continue;
+      const style = getComputedStyle(parent);
+      if (style.display === "none" || style.visibility === "hidden") return false;
+    }
+    return true;
+  };
+
+  entries.forEach(({ el, label: actionLabel }) => {
+    el.dataset.saveLabel = actionLabel;
+    el.style.setProperty("position", "fixed", "important");
+    el.style.setProperty("left", "-10000px", "important");
+    el.style.setProperty("top", "0", "important");
+    el.style.setProperty("width", "1px", "important");
+    el.style.setProperty("height", "1px", "important");
+    el.style.setProperty("overflow", "hidden", "important");
+    el.style.setProperty("clip-path", "inset(50%)", "important");
+    el.style.setProperty("pointer-events", "none", "important");
+
+    const action = document.createElement("button");
+    action.type = "button";
+    action.setAttribute("role", "menuitem");
+    action.textContent = actionLabel;
+    action.title = actionLabel;
+    action.style.cssText = "display:block;width:100%;margin:0;padding:9px 10px;border:0;border-radius:5px;" +
+      "background:transparent;color:#e2e8f0;text-align:left;cursor:pointer;font:600 12px/1.25 system-ui,-apple-system,sans-serif";
+    const sync = () => {
+      const disabled = !sourceAvailable(el);
+      if (action.disabled !== disabled) action.disabled = disabled;
+      const opacity = disabled ? ".42" : "1";
+      const cursor = disabled ? "not-allowed" : "pointer";
+      if (action.style.opacity !== opacity) action.style.opacity = opacity;
+      if (action.style.cursor !== cursor) action.style.cursor = cursor;
+    };
+    sync();
+    action.addEventListener("mouseenter", () => { if (!action.disabled) action.style.background = "rgba(148,163,184,.16)"; });
+    action.addEventListener("mouseleave", () => { action.style.background = "transparent"; });
+    action.addEventListener("click", () => {
+      sync();
+      if (!action.disabled) el.click();
+      menu.hidden = true;
+      trigger.setAttribute("aria-expanded", "false");
+    });
+    actionButtons.push({ action, sync });
+    menu.appendChild(action);
+  });
+
+  const trigger = document.createElement("button");
+  trigger.type = "button";
+  trigger.textContent = label;
+  trigger.setAttribute("aria-haspopup", "menu");
+  trigger.setAttribute("aria-expanded", "false");
+  trigger.style.cssText = "min-width:132px;padding:10px 15px;border:1px solid rgba(52,211,153,.6);border-radius:7px;" +
+    "background:#059669;color:white;box-shadow:0 10px 28px rgba(0,0,0,.38);cursor:pointer;font:700 13px/1 system-ui,-apple-system,sans-serif";
+  trigger.addEventListener("click", event => {
+    event.stopPropagation();
+    actionButtons.forEach(item => item.sync());
+    menu.hidden = !menu.hidden;
+    trigger.setAttribute("aria-expanded", String(!menu.hidden));
+  });
+  menu.addEventListener("click", event => event.stopPropagation());
+  dock.append(menu, trigger);
+  document.body.appendChild(dock);
+
+  hiddenContainers.forEach(el => { el.style.display = "none"; });
+  if (typeof MutationObserver !== "undefined") {
+    const observer = new MutationObserver(() => actionButtons.forEach(item => item.sync()));
+    observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ["class", "style", "hidden", "disabled"] });
+  }
+
+  const placeAboveConsole = () => {
+    let bottom = 14;
+    if (consoleEl) {
+      const rect = consoleEl.getBoundingClientRect();
+      if (rect.height > 0 && rect.bottom >= window.innerHeight - 2) bottom = Math.ceil(window.innerHeight - rect.top + 12);
+    }
+    dock.style.bottom = `${bottom}px`;
+  };
+  placeAboveConsole();
+  window.addEventListener("resize", placeAboveConsole);
+  window.addEventListener("gpp:log-resize", () => requestAnimationFrame(placeAboveConsole));
+  if (consoleEl && typeof ResizeObserver !== "undefined") new ResizeObserver(placeAboveConsole).observe(consoleEl);
+  document.addEventListener("click", () => { menu.hidden = true; trigger.setAttribute("aria-expanded", "false"); });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") { menu.hidden = true; trigger.setAttribute("aria-expanded", "false"); }
+  });
+  return { dock, trigger, menu, actions: actionButtons.map(item => item.action), placeAboveConsole };
 }
 
 /* ---------- Hinweisbanner, wenn die Konfiguration fehlt ----------

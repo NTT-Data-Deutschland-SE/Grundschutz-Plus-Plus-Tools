@@ -595,7 +595,7 @@
                  und gilt für alle Werkzeuge. Hier wird er nur angezeigt. -->
             <div id="aiContextView" class="rail-note" style="white-space:pre-wrap"></div>
             <small class="rail-note">Wird bei KI-Anfragen an den System-Prompt angehängt · gesetzt in <a href="config.html">Einstellungen</a>.</small>
-            <button class="reset-btn" onclick="exportAiCache()">⤓ KI-Antworten exportieren</button>
+            <button id="save-ai-cache" class="reset-btn" onclick="exportAiCache()">KI-Antworten</button>
             <button class="reset-btn" onclick="document.getElementById('aiCacheInput').click()">↗ KI-Antworten importieren</button>
             <input type="file" id="aiCacheInput" accept=".json" style="display: none;" onchange="importAiCache(event)">
         </section>
@@ -691,6 +691,8 @@
         const GPP_TOOL_ID = 'GSpp-Viewer';
         gppCollapsibleLog({ consoleEl: document.querySelector('.logconsole'),
             headEl: document.querySelector('.logconsole .log-actions'), toolId: GPP_TOOL_ID });
+        gppFloatingSave({ buttons: [{ el: '#save-ai-cache', label: 'KI-Antworten abspeichern' }],
+            consoleEl: document.querySelector('.logconsole'), toolId: GPP_TOOL_ID });
         /* Quellen für die Pin-Übersicht in config.html anmelden. Gepinnt ist der
            Normalfall (Grundregel 8); die Update-Prüfung sitzt in config.html. */
         const STDT_PIN = 'd304c60c0ba37277a59fa40adf6e6be3d452878e';

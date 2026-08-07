@@ -536,7 +536,7 @@ input[type=date].inp{color-scheme:dark}
                 <svg id="icon-sb-flt" class="chev open w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
             </button>
             <div id="sb-flt-content" class="coll-content open p-2 bg-slate-900/30 space-y-2">
-                <input type="text" id="flt-txt" oninput="flt()" placeholder="Control / Titel…" class="inp text-xs font-mono">
+                <input type="text" id="flt-txt" oninput="queuePoamFilter()" placeholder="Control / Titel…" class="inp text-xs font-mono">
                 <select id="flt-comp" onchange="flt()" class="inp text-xs"><option value="">Komponente: Alle</option></select>
                 <select id="flt-pr" onchange="flt()" class="inp text-xs"><option value="">Prio: Alle</option><option value="high">Hoch</option><option value="medium">Mittel</option><option value="low">Niedrig</option></select>
                 <select id="flt-st" onchange="flt()" class="inp text-xs"><option value="">Status: Alle</option><option value="open">Offen</option><option value="in-progress">In Arbeit</option><option value="closed">Erledigt</option><option value="deviation-requested">Abw. beantragt</option><option value="deviation-approved">Abw. genehmigt</option><option value="risk-accepted">Risiko akzeptiert</option></select>
@@ -544,11 +544,13 @@ input[type=date].inp{color-scheme:dark}
             </div>
         </div>
 
+        <div id="poam-comp-nav" class="space-y-1" aria-label="Asset-Auswahl"></div>
+
         <!-- Export -->
-        <div class="mt-auto space-y-2 pt-3 border-t border-slate-700">
+        <div id="poam-save-actions" class="mt-auto space-y-2 pt-3 border-t border-slate-700">
             <div class="rail-label">Export</div>
-            <button onclick="saveSession()" class="w-full bg-purple-700 font-bold py-2 px-3 rounded-lg hover:bg-purple-600 text-xs">⤓ Session</button>
-            <button onclick="exportPOAM()" class="w-full bg-amber-600 font-bold py-2.5 px-3 rounded-lg hover:bg-amber-500 text-xs shadow-lg">⤓ POA&M Export</button>
+            <button id="save-poam-session" onclick="saveSession()" class="w-full bg-purple-700 font-bold py-2 px-3 rounded-lg hover:bg-purple-600 text-xs">Session</button>
+            <button id="save-poam-document" onclick="exportPOAM()" class="w-full bg-amber-600 font-bold py-2.5 px-3 rounded-lg hover:bg-amber-500 text-xs shadow-lg">POA&amp;M</button>
         </div>
 
         <div class="rail-foot">© 2026 NTT DATA Deutschland SE</div>
@@ -612,6 +614,10 @@ if(typeof gppCfg==='undefined'){
 const GPP_TOOL_ID='abarbeiten_POAM_generator';
 gppCollapsibleLog({consoleEl:document.querySelector('.logbox'),
   headEl:document.querySelector('.logbox .log-tools'),toolId:GPP_TOOL_ID});
+gppFloatingSave({buttons:[
+    {el:'#save-poam-document',label:'POA&M abspeichern'},
+    {el:'#save-poam-session',label:'Session abspeichern'}
+  ],consoleEl:document.querySelector('.logbox'),hideContainers:['#poam-save-actions'],toolId:GPP_TOOL_ID});
 const BUILD='v2.3.1';
 const P={arFilename:'',sspHref:'',sysName:'',catalog:new Map(),findings:[],observations:[],risks:[],items:[],meta:{title:'',version:'1.0.0',desc:''},responsible:{name:'',role:'system-owner',email:''}};
 // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
@@ -1249,12 +1255,35 @@ function renderStats(){
         </div></div>`;
 }
 
+const POAM_VIEW={limit:100,timer:null};
+function filteredPoamItems(){
+    const term=(document.getElementById('flt-txt')?.value||'').trim().toLowerCase();
+    const priority=document.getElementById('flt-pr')?.value||'';
+    const status=document.getElementById('flt-st')?.value||'';
+    const component=document.getElementById('flt-comp')?.value||'';
+    const overdueOnly=document.getElementById('flt-od')?.checked;
+    const today=new Date().toISOString().split('T')[0];
+    return P.items.map((it,index)=>({it,index})).filter(({it})=>{
+        const catalog=ct(it.controlId);
+        const haystack=`${it.controlId||''} ${it.title||''} ${catalog.title||''} ${catalog.prose||''} ${it.component||''} ${it.observationText||''} ${it.riskText||''}`.toLowerCase();
+        if(term&&!haystack.includes(term))return false;
+        if(priority&&it.priority!==priority)return false;
+        if(status&&it.status!==status)return false;
+        if(component&&encodeURIComponent(it.component||'')!==component)return false;
+        if(overdueOnly&&!(it.deadline&&it.status!=='closed'&&it.deadline<today))return false;
+        return true;
+    });
+}
+
 function renderItems(){
-    document.getElementById('items-heading').textContent=`POA&M Items (${P.items.length})`;
+    updateCompFilter();
+    const matches=filteredPoamItems();
+    document.getElementById('items-heading').textContent=`POA&M Items (${matches.length} von ${P.items.length})`;
     const el=document.getElementById('il');const today=new Date().toISOString().split('T')[0];
     if(!P.items.length){el.innerHTML='<p class="text-slate-500 text-sm italic text-center py-8 bg-slate-900 rounded-lg border border-slate-700">Keine Items. AR importieren oder manuell anlegen.</p>';return}
+    if(!matches.length){el.innerHTML='<p class="text-slate-500 text-sm italic text-center py-8 bg-slate-900 rounded-lg border border-slate-700">Keine Controls für die aktuelle Asset-Auswahl oder Suche.</p>';return}
     let h='';
-    P.items.forEach((it,i)=>{
+    matches.slice(0,POAM_VIEW.limit).forEach(({it,index:i})=>{
         const c=ct(it.controlId);const pm=PM[it.priority]||PM.medium;const sm=SM[it.status]||SM.open;
         const od=it.deadline&&it.status!=='closed'&&it.deadline<today;
         const msD=it.milestones.filter(m=>m.done).length,msT=it.milestones.length;
@@ -1305,9 +1334,8 @@ function renderItems(){
                 <div class="flex justify-end"><button onclick="delI(${i})" class="text-[10px] px-3 py-1 bg-red-900/50 text-red-300 border border-red-800 rounded hover:bg-red-900 font-bold font-mono">✕ Löschen</button></div>
             </div></div>`;
     });
+    if(matches.length>POAM_VIEW.limit)h+=`<button type="button" onclick="showMorePoamItems()" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-lg text-sm font-bold text-amber-300 hover:bg-slate-700">Weitere Controls anzeigen (${POAM_VIEW.limit} von ${matches.length})</button>`;
     el.innerHTML=h;
-    updateCompFilter();
-    window.flt();
 }
 
 function updateCompFilter() {
@@ -1325,6 +1353,12 @@ function updateCompFilter() {
     });
     sel.innerHTML = h;
     sel.value = curValid ? cur : "";
+    const nav=document.getElementById('poam-comp-nav');
+    if(nav){
+        const selected=sel.value;
+        nav.innerHTML=`<div class="rail-label">Assets</div><button type="button" onclick="selectPoamComponent('')" class="nav-item ${selected?'':'active'}"><span class="gly">◇</span>Alle Items</button>`+
+            [...comps].sort().map(c=>{const enc=encodeURIComponent(c);return `<button type="button" onclick="selectPoamComponent('${enc}')" class="nav-item ${selected===enc?'active':''}" title="Nur Controls dieses Assets anzeigen"><span class="gly">▣</span>${esc(c)}</button>`}).join('');
+    }
 }
 
 // Interactions
@@ -1336,7 +1370,10 @@ window.addMS=i=>{P.items[i].milestones.push({uuid:crypto.randomUUID(),title:'Mei
 window.tMS=(i,mi,d)=>{P.items[i].milestones[mi].done=d;renderStats()};
 window.uMS=(i,mi,k,v)=>{P.items[i].milestones[mi][k]=v};
 window.dMS=(i,mi)=>{P.items[i].milestones.splice(mi,1);renderItems()};
-window.flt=()=>{const t=(document.getElementById('flt-txt')?.value||'').toLowerCase();const fp=document.getElementById('flt-pr')?.value||'';const fs=document.getElementById('flt-st')?.value||'';const fc=document.getElementById('flt-comp')?.value||'';const fo=document.getElementById('flt-od')?.checked;document.querySelectorAll('.poam-card').forEach(c=>{let s=true;if(t&&!c.dataset.cid?.includes(t)&&!c.dataset.t?.includes(t))s=false;if(fp&&c.dataset.pr!==fp)s=false;if(fs&&c.dataset.st!==fs)s=false;if(fc&&c.dataset.comp!==fc)s=false;if(fo&&c.dataset.od!=='1')s=false;c.style.display=s?'':'none'})};
+window.flt=()=>{POAM_VIEW.limit=100;renderItems()};
+window.queuePoamFilter=()=>{clearTimeout(POAM_VIEW.timer);POAM_VIEW.limit=100;POAM_VIEW.timer=setTimeout(renderItems,120)};
+window.selectPoamComponent=encoded=>{const sel=document.getElementById('flt-comp');if(sel)sel.value=encoded;POAM_VIEW.limit=100;renderItems()};
+window.showMorePoamItems=()=>{POAM_VIEW.limit+=100;renderItems()};
 
 // AI
 window.aiRem=async i=>{if(!getAI()){const w=aiMissingReason();l.err(`KI-Aufruf abgelehnt: ${w}`);return alert(`KI konfigurieren — ${w}.`)}
