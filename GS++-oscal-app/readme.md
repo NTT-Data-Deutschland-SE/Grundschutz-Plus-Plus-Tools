@@ -150,7 +150,7 @@ Dieses Tool dient der detaillierten Bearbeitung von **System Security Plans (SSP
 
 ### 1. Workspace initialisieren
 * **SSP laden**: Lade deine zentrale SSP-JSON-Datei hoch.
-* **Assoziierte Dateien**: Lade Profile, Kataloge oder Komponenten-Definitionen hoch, um den Workspace mit Inhalten (Anforderungstexten, Parametern) zu füllen.
+* **Assoziierte Dateien**: Lade Profile und Kataloge hoch, um den Workspace mit Inhalten (Anforderungstexten, Parametern) zu füllen. Komponenten-Definitionen werden nicht nachgeladen — ihre Inhalte sind bereits bei der Generierung per Kopie in den SSP instanziiert.
 * **Status-Check**: Das Tool zeigt im Bereich "Ressourcen-Status" an, ob alle referenzierten Dateien korrekt geladen wurden oder ob Quellen fehlen.
 
 ### 2. KI-Assistent konfigurieren (Optional)

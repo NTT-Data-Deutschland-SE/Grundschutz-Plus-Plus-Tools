@@ -60,13 +60,22 @@ Vor dem Release lief ein mehrstufiger Review über den gesamten Umbau; alle best
 * **Unternehmenskontext gilt wirklich überall:** `config.html` sagt zu, dass der Text in die KI-Aufrufe eingeht. Eingelöst wurde das nur im SSP-Editor; der Explorer hatte ein eigenes, nicht synchronisiertes Feld, die übrigen Werkzeuge ignorierten den Wert. Jetzt hängt ihn jedes Werkzeug an der eigenen Backend-Weiche an.
 * **Ein Pin ist ein Commit-SHA — sonst nichts:** Die Erkennung wertete alles außer `main`, `master` und `refs/heads/…` als gepinnt. `…/develop/…` galt damit als fester Stand, und `develop` wurde sogar als Commit ausgegeben; `refs/tags/v1` blieb ebenfalls unbeanstandet, obwohl Tags verschiebbar sind. Betroffen war auch die Regel D8 im Validator. Verlangt wird jetzt ein 40-stelliger Hex-SHA; bei fremden Hosts, wo sich das nicht entscheiden lässt, wird weiterhin nur der offensichtliche Fall gemeldet.
 
+## Nachtrag: CDef-Semantik im SSP-Generator (V5.10.0)
+
+Ein Review gegen das OSCAL-Modell (Profil wird per `import-profile` referenziert, Component Definitions werden per Kopie instanziiert) fand vier Abweichungen bei den BSI-Komponenten aus dem SdT-`implementation_layer`; alle behoben:
+
+* **Baseline-Lücke geschlossen:** Die gemappten G++-Controls importierter BSI-Komponenten landen jetzt in den `include-controls` des Schwester-Profils. Vorher konnte der SSP implemented-requirements für Controls tragen, die im aufgelösten `import-profile` gar nicht enthalten waren.
+* **Vorlagentext behauptet keine Umsetzung mehr:** Aus der CDef übernommene by-components stehen auf `implementation-status: planned` mit Hinweis, statt pauschal `implemented` — konsistent zu „Offene Stellen sind als offen markiert".
+* **CDef-Quelle gepinnt (Grundregel 8):** Jede importierte Component Definition bekommt eine Back-Matter-Resource mit absoluter URL und SHA-256; Komponenten-Link und die `rel="source"`-Links der by-components zeigen als Fragment darauf. Damit bleibt je Eintrag unterscheidbar, was Vorlage und was redigierter Text ist.
+* **Instanz-UUIDs statt Quell-UUIDs:** Instanziierte Komponenten erhalten eine eigene UUID; die UUID der Quellkomponente bleibt als Prop `source-component-uuid` erhalten. Vorher hätte eine zweite Instanziierung derselben CDef (etwa je Zielobjekt) zu UUID-Kollisionen geführt.
+
 ## Versionen der Anwendungen
 
 | Anwendung | Version |
 |---|---|
 | Übersicht (index.html) | 1.3 |
 | OSCAL Schema Validator | 1.11.1 |
-| SSP-Generator (G++) | V5.9.1 |
+| SSP-Generator (G++) | V5.10.0 |
 | GS++ Explorer (GSpp-Viewer) | v9.7 |
 | BSI → G++ Profil (Baustein_2_Profile) | 0.9.1 |
 | SSP-Editor (ssp_ausfuellen) | v1.2.0 |
