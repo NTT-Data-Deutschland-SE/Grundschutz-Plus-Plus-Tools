@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.2.0</title>
+    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.3.0</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
@@ -732,8 +732,11 @@
         <div id="editor-save-actions" class="mt-auto space-y-1.5 pt-2 border-t border-slate-700">
             <button id="save-session-btn" onclick="saveSessionFile()" class="w-full bg-purple-700 text-white font-bold py-1.5 px-2 rounded text-[10px] hover:bg-purple-600 disabled:bg-slate-700">&#9635; Session (.json)</button>
             <button id="save-ssp-btn" onclick="handleFileSave()" class="w-full bg-emerald-600 text-white font-bold py-1.5 px-2 rounded text-[10px] hover:bg-emerald-500 disabled:bg-slate-700" disabled>&#10515; SSP Export</button>
-            <div class="text-[9px] text-slate-500 text-center pt-2">&copy; 2026 NTT DATA Deutschland SE</div>
         </div>
+        <!-- Ausserhalb von #editor-save-actions: dieser Container wird vom
+             schwebenden Speichermenü ausgeblendet, und die Zeile verschwände
+             sonst mit ihm (wie in den Schwesterwerkzeugen steht sie daneben). -->
+        <div class="text-[9px] text-slate-500 text-center pt-2">&copy; 2026 NTT DATA Deutschland SE</div>
 
     </aside>
 
@@ -805,13 +808,13 @@
     <div id="log-body" class="log-body cscroll"></div>
 </section>
 
-<script src="gpp-core.js?v=3.4"></script>
+<script src="gpp-core.js?v=3.5"></script>
 <script>
-    if (typeof gppCfg === 'undefined') {
+    if (typeof gppCfg === 'undefined' || typeof GPP_CORE_VERSION === 'undefined' || Number(GPP_CORE_VERSION) < 2) {
         document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
-            '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
+            '<h1 style="font-size:1.1rem">gpp-core.js fehlt oder ist veraltet</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
             '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) ' +
-            'statt einzelner Dateien.</p></div>';
+            'statt einzelner Dateien. Liegt sie vor, ist es ein alter Stand aus dem Browser-Cache: einmal mit Strg+F5 neu laden.</p></div>';
         throw new Error('gpp-core.js missing');
     }
     const GPP_TOOL_ID = 'ssp_ausfuellen';
@@ -940,7 +943,7 @@
     // CONFIG & STATE
     // ============================================================
     // Build-Version der App (nicht zu verwechseln mit dem Session-Format `_v`).
-    const BUILD_VERSION = 'v1.2.0';
+    const BUILD_VERSION = 'v1.3.0';
 
     // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
     // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
@@ -1144,6 +1147,10 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         }
     };
 
+    /* Die by-component-Props, die dieser Editor selbst schreibt. Nur diese darf er
+       beim Leeren der Felder wieder entfernen — fremde Props gehören dem Dokument. */
+    const MANAGED_BC_PROPS = ['implementing-user', 'implementation-date', 'implemented-statement-id'];
+
     function updateSSPFromDOM() {
         if (!sspData) return;
         try {
@@ -1181,19 +1188,25 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
             const setParameters = [];
             // Bei der Asset-Ansicht ist nur ein Teil der Controls im DOM. Bereits
             // gespeicherte Parameter bleiben deshalb erhalten und sichtbare Werte
-            // aktualisieren lediglich ihren Eintrag.
+            // aktualisieren lediglich ihren Eintrag. Gehalten wird das VOLLSTÄNDIGE
+            // values-Array: OSCAL erlaubt mehrwertige Parameter, das Eingabefeld zeigt
+            // aber nur den ersten Wert — die übrigen dürfen dadurch nicht verschwinden.
             const paramMap = new Map((ssp['control-implementation']['set-parameters'] || [])
                 .filter(p => p?.['param-id'] && p.values?.length)
-                .map(p => [p['param-id'], p.values[0]]));
+                .map(p => [p['param-id'], p.values.slice()]));
             paramInputs.forEach(input => {
                 const val = input.value.trim();
                 const paramId = input.dataset.paramId;
                 if (!paramId) return;
-                if (val) paramMap.set(paramId, val);
+                if (val) {
+                    const werte = paramMap.get(paramId);
+                    if (werte && werte.length > 1) { werte[0] = val; }   // Rest bleibt stehen
+                    else paramMap.set(paramId, [val]);
+                }
                 else paramMap.delete(paramId);
             });
-            paramMap.forEach((value, paramId) => {
-                setParameters.push({ "param-id": paramId, "values": [ value ] });
+            paramMap.forEach((values, paramId) => {
+                setParameters.push({ "param-id": paramId, "values": values });
             });
             if (setParameters.length > 0) ssp['control-implementation']['set-parameters'] = setParameters;
             else delete ssp['control-implementation']['set-parameters'];
@@ -1256,11 +1269,27 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
 
                     if (byCompEntry.props.length === 0) delete byCompEntry.props;
                 } else {
-                    let req = requirements.find(r => r['control-id'] === controlId);
-                    if (req && req['by-components']) {
-                        req['by-components'] = req['by-components'].filter(bc => bc['component-uuid'] !== compUuid);
+                    /* Alle sichtbaren Felder sind leer. Entfernt werden deshalb NUR die
+                       Felder, die dieser Editor verwaltet. Ein importiertes by-component
+                       kann remarks, export/inherited/satisfied, links oder fremde props
+                       tragen — die zeigt der Editor nie an und darf sie nicht wegwerfen
+                       (der Status "Offen" ist eine normale Auswahl, kein Löschbefehl).
+                       Erst wenn nichts Fremdes übrig bleibt, fällt der Eintrag weg. */
+                    const req = requirements.find(r => r['control-id'] === controlId);
+                    const byComps = req && req['by-components'];
+                    const idx = byComps ? byComps.findIndex(bc => bc['component-uuid'] === compUuid) : -1;
+                    if (idx >= 0) {
+                        const bc = byComps[idx];
+                        bc.description = '';   // schema-pflichtig, darf aber leer sein
+                        delete bc['implementation-status'];
+                        if (bc.props) {
+                            bc.props = bc.props.filter(p => !MANAGED_BC_PROPS.includes(p.name));
+                            if (!bc.props.length) delete bc.props;
+                        }
+                        const fremd = Object.keys(bc).filter(k => !['uuid', 'component-uuid', 'description'].includes(k));
+                        if (!fremd.length) byComps.splice(idx, 1);
                         // Leeres by-components verletzt minItems:1 — Feld dann ganz entfernen
-                        if (req['by-components'].length === 0) delete req['by-components'];
+                        if (byComps.length === 0) delete req['by-components'];
                     }
                 }
             });
@@ -1961,6 +1990,15 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         catalogControlMap.clear(); catalogParamMap.clear();
         profileModifications = { setParams: new Map(), alters: new Map() };
         loadedRiskData = []; loadedProfiles.clear(); resourceLoadStatus = [];
+        /* Suche und Filter gehören zum vorigen Dokument. Bleiben sie stehen,
+           filtert das neue SSP nach einem Prop, das es gar nicht kennt — die
+           Liste ist dann leer, das zugehörige Auswahlfeld wird mangels Werten
+           nicht gezeichnet, und es gibt sichtbar nichts zum Zurücksetzen. */
+        implementationView.term = '';
+        implementationView.filters = {};
+        implementationView.limit = 120;
+        const suchfeldReset = document.getElementById('global-search');
+        if (suchfeldReset) suchfeldReset.value = '';
 
         const ssp = sspData['system-security-plan'];
         const t0 = performance.now();
@@ -2316,8 +2354,14 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         values.push(['status', status.toLowerCase()]);
         if (cc?.class) values.push(['class', String(cc.class).toLowerCase()]);
         const prose = cc?.parts?.find(p => p?.name === 'statement')?.prose || '';
+        /* Die Prop-Werte gehören auch in die Freitextsuche: Vor der Umstellung
+           durchsuchte das Werkzeug sie mit (über data-search), und die
+           Filterauswahl bietet sie sichtbar an — ein Tag oder ein sec_level,
+           der im Dropdown steht, aber bei der Eingabe nichts findet, wirkt wie
+           ein kaputter Filter. */
+        const propText = values.map(([, v]) => v).join(' ');
         return {
-            haystack: `${cid} ${cc?.title || ''} ${prose} ${component.title || ''} ${component.description || ''}`.toLowerCase(),
+            haystack: `${cid} ${cc?.title || ''} ${prose} ${component.title || ''} ${component.description || ''} ${propText}`.toLowerCase(),
             values
         };
     }
@@ -2356,7 +2400,7 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
             const sNiv = c.props?.find(p => p && p.name === 'sicherheitsniveau')?.value || '';
             const sNivTag = sNiv ? ` <span class="text-[8px] opacity-60">[${sNiv}]</span>` : '';
             const activeClass = !hasQuery && c.uuid === implementationView.selectedUuid ? 'border-emerald-600 bg-emerald-900/30 text-white' : 'border-transparent bg-slate-900/40 text-slate-300';
-            navHtml += `<button onclick="selectImplementationComponent('${encodeURIComponent(c.uuid)}')" class="w-full text-left p-1.5 text-[10px] font-bold hover:bg-slate-800 rounded truncate border ${activeClass}" title="Nur Controls dieses Assets anzeigen">◇ ${implEsc(c.title)}${sNivTag}</button>`;
+            navHtml += `<button onclick="selectImplementationComponent('${gppAttrArg(c.uuid)}')" class="w-full text-left p-1.5 text-[10px] font-bold hover:bg-slate-800 rounded truncate border ${activeClass}" title="Nur Controls dieses Assets anzeigen">◇ ${implEsc(c.title)}${sNivTag}</button>`;
 
             let dl = c.links?.find(l => l.rel === 'profile' || l.rel === 'source-profile');
             const cd = dl ? loadedProfiles.get(dl.href) : null;
@@ -2764,16 +2808,32 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
     };
 
     window.applyFilters = (debounced = false) => {
-        implementationView.term = document.getElementById('global-search')?.value || '';
-        implementationView.filters = Object.fromEntries(Array.from(document.querySelectorAll('.flt-sel')).map(select => [select.dataset.filter, select.value]));
-        implementationView.limit = 120;
-        updateSSPFromDOM();
+        const suchfeld = document.getElementById('global-search');
+        const term = suchfeld?.value || '';
+        const filters = Object.fromEntries(Array.from(document.querySelectorAll('.flt-sel')).map(select => [select.dataset.filter, select.value]));
+        /* Das Limit nur zurücksetzen, wenn sich die Abfrage wirklich geändert hat.
+           updateStatus() ruft ebenfalls hierher — ein Statuswechsel darf die Liste
+           nicht auf die ersten 120 Einträge zurückschneiden und damit genau das
+           Control wegziehen, das gerade bearbeitet wird. */
+        const abfrageNeu = term !== implementationView.term
+            || JSON.stringify(filters) !== JSON.stringify(implementationView.filters);
+        implementationView.term = term;
+        implementationView.filters = filters;
+        if (abfrageNeu) implementationView.limit = 120;
+
         const rerender = () => {
+            // Erst den Stand aus dem DOM einsammeln, dann neu zeichnen — nie umgekehrt.
+            updateSSPFromDOM();
+            const hatteFokus = document.activeElement === suchfeld;
+            const von = suchfeld?.selectionStart, bis = suchfeld?.selectionEnd;
             renderImplementation(implementationView.ssp);
-            if (debounced) {
-                const search = document.getElementById('global-search');
-                search?.focus();
-                search?.setSelectionRange(search.value.length, search.value.length);
+            /* Fokus nur zurückgeben, wenn er vorher im Suchfeld lag, und mit der
+               ursprünglichen Cursorposition: sonst springt der Cursor mitten im
+               Wort ans Ende, oder der Fokus wird aus einem Kommentarfeld
+               zurückgerissen, in das der Nutzer gerade gewechselt ist. */
+            if (hatteFokus) {
+                const neu = document.getElementById('global-search');
+                if (neu) { neu.focus(); try { neu.setSelectionRange(von, bis); } catch (e) { /* Randfall egal */ } }
             }
         };
         clearTimeout(implementationView.timer);

@@ -561,14 +561,14 @@ select{color-scheme:dark}
 
 </div>
 
-<script src="gpp-core.js?v=3.4"></script>
+<script src="gpp-core.js?v=3.5"></script>
 <script>
 "use strict";
-if (typeof gppCfg === "undefined") {
+if (typeof gppCfg === "undefined" || typeof GPP_CORE_VERSION === "undefined" || Number(GPP_CORE_VERSION) < 2) {
   document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#111">' +
-    '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
+    '<h1 style="font-size:1.1rem">gpp-core.js fehlt oder ist veraltet</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
     '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) ' +
-    'statt einzelner Dateien.</p></div>';
+    'statt einzelner Dateien. Liegt sie vor, ist es ein alter Stand aus dem Browser-Cache: einmal mit Strg+F5 neu laden.</p></div>';
   throw new Error("gpp-core.js missing");
 }
 const GPP_TOOL_ID = "Baustein_2_Profile";
@@ -579,7 +579,7 @@ const GPP_TOOL_ID = "Baustein_2_Profile";
    Konstante; keine handgepflegten Versionsstrings mehr im File.
    ════════════════════════════════════════════════════════════════════════ */
 
-const APP_VERSION  = "0.9.1";
+const APP_VERSION  = "0.9.2";
 const APP_NAME     = "Baustein_2_Profile";
 
 // Fallback, wenn zentral kein Gemini-Modell gesetzt ist (config.html).

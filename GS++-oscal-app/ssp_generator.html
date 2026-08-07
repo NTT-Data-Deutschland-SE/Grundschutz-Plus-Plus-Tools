@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.9.1</title>
+    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.9.2</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -655,7 +655,7 @@
 
         <div class="topbar-actions">
             <div id="catalog-status" class="pill"><span class="dot animate-pulse"></span>Lade Basis-Katalog…</div>
-            <div class="pill pill-quiet">BUILD V5.9.1</div>
+            <div class="pill pill-quiet">BUILD V5.9.2</div>
         </div>
 
         <div class="progress-track"><div id="ai-doc-progress-bar" class="progress-fill"></div></div>
@@ -711,7 +711,7 @@
             </div>
         </div>
 
-        <div class="rail-foot">BUILD V5.9.1</div>
+        <div class="rail-foot">BUILD V5.9.2</div>
     </aside>
 
     <div id="rail-splitter" class="splitter" title="Rail-Breite ziehen"></div>
@@ -898,30 +898,33 @@
         </div>
     </div>
 
-<script src="gpp-core.js?v=3.4"></script>
+<script src="gpp-core.js?v=3.5"></script>
     <script>
-        if (typeof gppCfg === 'undefined') {
+        if (typeof gppCfg === 'undefined' || typeof GPP_CORE_VERSION === 'undefined' || Number(GPP_CORE_VERSION) < 2) {
             document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
-                '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
+                '<h1 style="font-size:1.1rem">gpp-core.js fehlt oder ist veraltet</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
                 '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) ' +
-                'statt einzelner Dateien.</p></div>';
+                'statt einzelner Dateien. Liegt sie vor, ist es ein alter Stand aus dem Browser-Cache: einmal mit Strg+F5 neu laden.</p></div>';
             throw new Error('gpp-core.js missing');
         }
         const GPP_TOOL_ID = 'ssp_generator';
         const aiLogToggle = gppCollapsibleLog({
             consoleEl: document.getElementById('ai-log-console'),
             headEl: document.querySelector('#ai-log-console > div > div:last-child'),
-            toolId: GPP_TOOL_ID
+            toolId: GPP_TOOL_ID,
+            // Dieses Werkzeug startete immer mit zugeklappter Konsole (44px statt
+            // 252px Dock) — sonst fehlen auf kleinen Bildschirmen 208px Arbeitsfläche.
+            defaultCollapsed: true
         });
         document.documentElement.classList.toggle('log-open', Boolean(aiLogToggle && !aiLogToggle.isCollapsed()));
         window.addEventListener('gpp:log-resize', () => {
             document.documentElement.classList.toggle('log-open', Boolean(aiLogToggle && !aiLogToggle.isCollapsed()));
         });
-        gppFloatingSave({
-            buttons: [{ el: '#save-blueprint-button', label: 'Blaupause-Paket abspeichern' }],
-            consoleEl: document.getElementById('ai-log-console'),
-            toolId: GPP_TOOL_ID
-        });
+        /* Kein Dock in diesem Werkzeug: Der einzige Kandidat wäre
+           „Blaupause-Paket“ — der primäre Erzeugen-Knopf am Ende des Formulars,
+           keine Speicheraktion. Ihn ins schwebende Menü zu verlegen ließe das
+           Formular sichtbar mit einer Checkbox enden und benannte das Erzeugen
+           als „abspeichern“. Er bleibt, wo ihn alle suchen. */
         // Auswahlliste aus dem Arbeitsstand füllen und bei Änderungen nachziehen
         window.addEventListener('DOMContentLoaded', () => { if (typeof refreshSetSourceOptions === 'function') refreshSetSourceOptions(); });
         window.addEventListener('gpp:artefacts-changed', () => { if (typeof refreshSetSourceOptions === 'function') refreshSetSourceOptions(); });
@@ -1553,6 +1556,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             return `<div class="text-[10px] font-bold text-blue-400 uppercase mb-2">◇ BSI IT-Grundschutz Edition 2023 – passende Anforderungen</div><table class="w-full text-xs border-collapse"><thead><tr class="text-left text-slate-500"><th class="py-1 pr-2">ID</th><th class="py-1 pr-2">Name der Anforderung</th><th class="py-1">Begründung</th></tr></thead><tbody>${rows}</tbody></table>`;
         }
         window.showED23 = (cid, rk) => {
+            cid = decodeURIComponent(cid);   // kodiert aus dem inline-Handler (gppAttrArg)
             const box = document.getElementById('ed23-' + rk);
             if (!box) return;
             if (!box.classList.contains('hidden')) { box.classList.add('hidden'); return; }
@@ -1836,7 +1840,9 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
         window.toggleAILog = function (forceOpen) {
             if (!aiLogToggle) return;
-            if (forceOpen === true) aiLogToggle.setCollapsed(false);
+            // Automatisches Öffnen (Warnung/Fehler) nicht speichern — nur ein
+            // Klick des Nutzers ist eine Entscheidung über den Startzustand.
+            if (forceOpen === true) aiLogToggle.setCollapsed(false, false);
             else aiLogToggle.toggle();
             const open = !aiLogToggle.isCollapsed();
             // Der Main-Bereich endet an der Konsole (--dock-h), damit nichts verdeckt wird.
@@ -4437,7 +4443,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 const schutzColor = SCHUTZBEDARF_COLORS[c.schutzbedarf] || SCHUTZBEDARF_COLORS['normal-SdT'];
                 list.innerHTML += `
                     <li class="flex justify-between items-center p-3 bg-slate-900 border border-slate-700 rounded-lg">
-                        <button type="button" onclick="openTailoringSource('${encodeURIComponent(c.id)}')" class="flex-1 text-left min-w-0" title="Nur die Controls dieses Assets anzeigen">
+                        <button type="button" onclick="openTailoringSource('${gppAttrArg(c.id)}')" class="flex-1 text-left min-w-0" title="Nur die Controls dieses Assets anzeigen">
                             <div class="flex items-center gap-2 font-bold text-slate-200 text-sm flex-wrap">
                                 ▣ ${c.name}
                                 <span class="px-2 py-0.5 rounded text-[10px] uppercase ${stateBadge} border border-slate-600">${c.state}</span>
@@ -4482,14 +4488,18 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
         function tailoringSources() {
             const sources = [];
-            const add = (id, title, type, badgeHtml, controls) => {
-                if (controls?.size) sources.push({ id: String(id || type), title, type, badgeHtml, controls });
+            const add = (id, title, type, badgeHtml, controls, immer) => {
+                /* `immer` haelt eine Quelle in der Navigation, auch wenn sie
+                   gerade leer ist. Ohne das verschwindet die Manuell-Quelle,
+                   solange nichts drin steht — und ein Asset, dessen letztes
+                   Control entfernt wurde, ist nicht mehr anwaehlbar. */
+                if (controls?.size || immer) sources.push({ id: String(id || type), title, type, badgeHtml, controls });
             };
             add(bpState.methodik.uuid || 'methodik', 'Zwingende Basis Methodik', 'Basis', '<span class="px-2 py-0.5 rounded bg-emerald-900 text-emerald-300 text-[10px] font-bold">◼ BASE</span>', bpState.methodik.controls);
             bpState.praktiken.forEach(p => add(p.id, `Prozess: ${p.name}${p.aiGenerated ? ' ◉' : ''}`, 'Praktik', '<span class="px-2 py-0.5 rounded bg-blue-900 text-blue-300 text-[10px] font-bold">◐ PRAKTIK</span>', p.controls));
-            bpState.components.forEach(c => add(c.id, `Asset: ${c.name}${c.aiGenerated ? ' ◉' : ''}`, 'Asset', '<span class="px-2 py-0.5 rounded bg-indigo-900 text-indigo-300 text-[10px] font-bold">▣ ASSET</span>', c.controls));
+            bpState.components.forEach(c => add(c.id, `Asset: ${c.name}${c.aiGenerated ? ' ◉' : ''}`, 'Asset', '<span class="px-2 py-0.5 rounded bg-indigo-900 text-indigo-300 text-[10px] font-bold">▣ ASSET</span>', c.controls, true));
             bpState.catalogs.slice(1).forEach(catalog => add(catalog.id, `Katalog: ${catalog.name}`, 'Katalog', '<span class="px-2 py-0.5 rounded bg-cyan-900 text-cyan-300 text-[10px] font-bold">▣ KATALOG</span>', catalog.controls));
-            add('manual', 'Manuell im Profil (Global)', 'Manuell', '<span class="px-2 py-0.5 rounded bg-slate-700 text-slate-300 text-[10px] font-bold">✎ MANUELL</span>', bpState.manualControls);
+            add('manual', 'Manuell im Profil (Global)', 'Manuell', '<span class="px-2 py-0.5 rounded bg-slate-700 text-slate-300 text-[10px] font-bold">✎ MANUELL</span>', bpState.manualControls, true);
             return sources;
         }
 
@@ -4499,7 +4509,11 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             if (!cid) return;
             bpState.manualControls.add(cid);
             inp.value = '';
-            renderTailoredList(document.getElementById('tailoring-search-input')?.value || '');
+            /* Auf die Manuell-Quelle umschalten: Die Liste zeigt immer nur die
+               ausgewaehlte Quelle. Ohne den Wechsel landet das neue Control in
+               einer Ansicht, die gerade nicht sichtbar ist — der Klick auf
+               „Hinzufuegen" sieht dann wie ein Fehlschlag aus. */
+            selectTailoringSource('manual');
         }
 
         window.queueTailoringSearch = function (term) {
@@ -4509,6 +4523,11 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         };
 
         window.selectTailoringSource = function (sourceId) {
+            /* Eine noch laufende Such-Verzoegerung abbrechen: Sonst feuert sie
+               nach dem Quellenwechsel mit dem alten Suchbegriff nach und wirft
+               die Ansicht zurueck in ein Suchergebnis, dessen Begriff im
+               geleerten Feld gar nicht mehr steht. */
+            clearTimeout(tailoringView.searchTimer);
             tailoringView.selectedSourceId = sourceId;
             tailoringView.limit = 120;
             const search = document.getElementById('tailoring-search-input');
@@ -4538,7 +4557,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             const nav = document.getElementById('tailoring-source-nav');
             if (nav) {
                 nav.innerHTML = sources.map(source => {
-                    const encodedId = encodeURIComponent(source.id);
+                    const encodedId = gppAttrArg(source.id);
                     const active = !term && source.id === tailoringView.selectedSourceId;
                     const shortTitle = source.title.replace(/^(Asset|Prozess|Katalog):\s*/, '');
                     return `<button type="button" class="tailoring-source-button ${active ? 'active' : ''}" onclick="selectTailoringSource(decodeURIComponent('${encodedId}'))">
@@ -4574,8 +4593,12 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     // Hier wurde die Änderung vorgenommen: Hinzufügen des info.text (Statement) unter dem Titel
                     // Mit line-clamp-2 und title-Attribut, um UI sauber zu halten, aber kompletten Text per Hover anzubieten.
                     const safeTextForTitle = info?.text ? escapeHTML(info.text) : '';
-                    const safeSourceId = source.id.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-                    const safeSourceTitle = source.title.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+                    // Argumente für die inline-Handler: dieselbe Kodierung wie in der
+                    // Quellen-Navigation, damit ein Asset namens Server "Prod" oder
+                    // Klaus' Laptop das Attribut nicht sprengt. Entschlüsselt wird im Handler.
+                    const argCid = gppAttrArg(cid);
+                    const argSourceId = gppAttrArg(source.id);
+                    const argSourceTitle = gppAttrArg(source.title);
 
                     html += `
                         <li class="bg-slate-900 border border-slate-700 rounded-lg p-3 group hover:border-slate-500 transition-colors">
@@ -4589,11 +4612,11 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                                 ${info?.text ? `<div class="text-[11px] text-slate-400 mt-1 line-clamp-2 leading-relaxed" title="${safeTextForTitle}">${escapeHTML(info.text)}</div>` : ''}
                             </div>
                             <div class="flex items-center gap-2 flex-shrink-0 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onclick="showED23('${cid}', '${rk}')" class="px-3 py-1.5 bg-slate-700 text-blue-300 hover:bg-slate-600 rounded text-xs font-bold transition-colors">◇ ED23</button>
-                                <button onclick="openModifyModal('${cid}', '${safeSourceId}', '${safeSourceTitle}')" class="px-3 py-1.5 bg-slate-700 text-blue-300 hover:bg-slate-600 rounded text-xs font-bold transition-colors">✎ Modify</button>
+                                <button onclick="showED23('${argCid}', '${rk}')" class="px-3 py-1.5 bg-slate-700 text-blue-300 hover:bg-slate-600 rounded text-xs font-bold transition-colors">◇ ED23</button>
+                                <button onclick="openModifyModal('${argCid}', '${argSourceId}', '${argSourceTitle}')" class="px-3 py-1.5 bg-slate-700 text-blue-300 hover:bg-slate-600 rounded text-xs font-bold transition-colors">✎ Modify</button>
                                 ${isMuss
                             ? `<button disabled class="px-3 py-1.5 bg-slate-800/50 text-slate-600 border border-slate-700 rounded text-xs font-bold cursor-not-allowed" title="MUSS-Anforderung kann nicht entfernt werden">◼</button>`
-                            : `<button onclick="removeControl('${cid}', '${safeSourceId}')" class="px-3 py-1.5 bg-slate-800 text-red-400 hover:bg-slate-700 border border-slate-700 rounded text-xs font-bold transition-colors">✕</button>`
+                            : `<button onclick="removeControl('${argCid}', '${argSourceId}')" class="px-3 py-1.5 bg-slate-800 text-red-400 hover:bg-slate-700 border border-slate-700 rounded text-xs font-bold transition-colors">✕</button>`
                         }
                             </div>
                           </div>
@@ -4631,6 +4654,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         }
 
         window.removeControl = function (cid, sourceId) {
+            // Argumente kommen kodiert aus dem inline-Handler (siehe gppAttrArg).
+            cid = decodeURIComponent(cid); sourceId = decodeURIComponent(sourceId);
             const info = bpState.controlsIndex.get(cid);
             if (info?.modalverb?.toUpperCase() === 'MUSS') return;
 
@@ -4658,6 +4683,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
         // --- MODIFY MODAL LOGIC ---
         window.openModifyModal = function (cid, sourceId, sourceName) {
+            // Argumente kommen kodiert aus dem inline-Handler (siehe gppAttrArg).
+            cid = decodeURIComponent(cid); sourceId = decodeURIComponent(sourceId); sourceName = decodeURIComponent(sourceName);
             currentActiveControlId = cid;
             currentModifySourceId = sourceId;
 

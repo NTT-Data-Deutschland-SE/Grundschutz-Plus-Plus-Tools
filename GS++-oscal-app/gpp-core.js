@@ -13,7 +13,12 @@
      IndexedDB     gpp-artefacts/artefacts   Artefakte (OSCAL-Dokumente, oft > 500 kB;
                    localStorage wäre nach wenigen SSPs voll)
    ———————————————————————————————————————————————————————————————————— */
-const GPP_CORE_VERSION = "1";
+/* Wird erhöht, sobald der Kern etwas anbietet, ohne das die Werkzeuge nicht mehr
+   starten (v2: gppFloatingSave, gppAttrArg). Jede Seite prüft beim Start gegen
+   ihren Mindeststand — nur so fällt ein alter, aus dem Browser-Cache geladener
+   Kern auf, statt beim ersten Aufruf einer neuen Funktion das ganze Skript
+   abzubrechen. Die Prüfung auf ein beliebiges Symbol reicht dafür nicht. */
+const GPP_CORE_VERSION = "2";
 const GPP_CFG_PREFIX = "gpp:cfg:";
 
 /* ---------- Konfiguration ---------- */
@@ -94,6 +99,17 @@ const gppCfg = {
     return out;
   },
 };
+
+/* Wert für ein inline-onclick sicher machen: encodeURIComponent lässt
+   ! ' ( ) * ~ unkodiert stehen — das Apostroph beendet den JS-String im
+   Attribut, ein Name wie "Klaus' Laptop" bricht den Handler, ein präparierter
+   Wert führt eigenen Code aus. Nach der zusätzlichen Kodierung des Apostrophs
+   besteht das Ergebnis nur noch aus [A-Za-z0-9-_.!~*()%] und ist damit sowohl
+   im einfach gequoteten JS-String als auch im doppelt gequoteten HTML-Attribut
+   unkritisch. Gegenstück im Handler ist decodeURIComponent(). */
+function gppAttrArg(value) {
+  return encodeURIComponent(String(value == null ? "" : value)).replace(/'/g, "%27");
+}
 
 /* Hängt den zentral gesetzten Unternehmenskontext an eine System-Instruktion
    oder — wo ein Werkzeug keine hat — an den Prompt selbst. config.html sagt zu,
@@ -563,7 +579,7 @@ function gppDownloadBlob(name, blob) {
    Jedes Werkzeug hat eine Log-Konsole; sie soll überall gleich bedienbar sein.
    Erwartet den Konsolen-Container und ein Element in dessen Kopfzeile, an das
    der Schalter gehängt wird. Der Zustand überlebt den Reload je Werkzeug. */
-function gppCollapsibleLog({ consoleEl, headEl, toolId, label = "Log" }) {
+function gppCollapsibleLog({ consoleEl, headEl, toolId, label = "Log", defaultCollapsed = false }) {
   if (!consoleEl || !headEl) return null;
   const key = GPP_CFG_PREFIX + "log:collapsed:" + (toolId || "tool");
   /* Einige Werkzeuge reichen die komplette Kopfzeile ein, andere nur deren
@@ -592,13 +608,18 @@ function gppCollapsibleLog({ consoleEl, headEl, toolId, label = "Log" }) {
     }
     window.dispatchEvent(new CustomEvent("gpp:log-resize"));
   };
-  apply(localStorage.getItem(key) === "1");
+  const gespeichert = localStorage.getItem(key);
+  apply(gespeichert === null ? Boolean(defaultCollapsed) : gespeichert === "1");
   btn.addEventListener("click", event => {
     event.stopPropagation();
     const next = !consoleEl.classList.contains("collapsed");
     apply(next, true);
   });
-  btn.setCollapsed = collapsed => apply(Boolean(collapsed), true);
+  /* persist=false für programmatisches Öffnen (etwa automatisch bei einer
+     Warnung): Eine vom Werkzeug ausgelöste Anzeige darf nicht als bewusste
+     Entscheidung des Nutzers gespeichert werden und dessen zugeklappten
+     Zustand dauerhaft überschreiben. */
+  btn.setCollapsed = (collapsed, persist = true) => apply(Boolean(collapsed), persist);
   btn.toggle = () => apply(!consoleEl.classList.contains("collapsed"), true);
   btn.isCollapsed = () => consoleEl.classList.contains("collapsed");
   headEl.appendChild(btn);
@@ -617,7 +638,8 @@ function gppFloatingSave({ buttons = [], consoleEl = null, hideContainers = [], 
   }).filter(Boolean);
   if (!entries.length) return null;
 
-  document.getElementById(`gpp-save-${toolId}`)?.remove();
+  const alt = document.getElementById(`gpp-save-${toolId}`);
+  if (alt) { if (typeof alt.gppDispose === "function") alt.gppDispose(); alt.remove(); }
   const dock = document.createElement("div");
   dock.id = `gpp-save-${toolId}`;
   dock.style.cssText = "position:fixed;left:14px;bottom:14px;z-index:120;font:600 12px/1.2 system-ui,-apple-system,sans-serif";
@@ -651,6 +673,12 @@ function gppFloatingSave({ buttons = [], consoleEl = null, hideContainers = [], 
     el.style.setProperty("overflow", "hidden", "important");
     el.style.setProperty("clip-path", "inset(50%)", "important");
     el.style.setProperty("pointer-events", "none", "important");
+    /* Optisch weg heisst nicht weg fuer die Tastatur: ohne diese beiden Zeilen
+       laeuft der Tabulator in einen unsichtbaren 1px-Knopf, der Fokusrahmen
+       verschwindet mitten auf der Seite und Enter loest den Export blind aus.
+       pointer-events blockt nur die Maus. */
+    el.setAttribute("tabindex", "-1");
+    el.setAttribute("aria-hidden", "true");
 
     const action = document.createElement("button");
     action.type = "button";
@@ -675,6 +703,7 @@ function gppFloatingSave({ buttons = [], consoleEl = null, hideContainers = [], 
       if (!action.disabled) el.click();
       menu.hidden = true;
       trigger.setAttribute("aria-expanded", "false");
+      trigger.focus();   // Fokus zurueck an den Ausloeser statt ins Leere
     });
     actionButtons.push({ action, sync });
     menu.appendChild(action);
@@ -687,9 +716,8 @@ function gppFloatingSave({ buttons = [], consoleEl = null, hideContainers = [], 
   trigger.setAttribute("aria-expanded", "false");
   trigger.style.cssText = "min-width:132px;padding:10px 15px;border:1px solid rgba(52,211,153,.6);border-radius:7px;" +
     "background:#059669;color:white;box-shadow:0 10px 28px rgba(0,0,0,.38);cursor:pointer;font:700 13px/1 system-ui,-apple-system,sans-serif";
-  trigger.addEventListener("click", event => {
-    event.stopPropagation();
-    actionButtons.forEach(item => item.sync());
+  trigger.addEventListener("click", () => {
+    syncAll();
     menu.hidden = !menu.hidden;
     trigger.setAttribute("aria-expanded", String(!menu.hidden));
   });
@@ -697,10 +725,45 @@ function gppFloatingSave({ buttons = [], consoleEl = null, hideContainers = [], 
   dock.append(menu, trigger);
   document.body.appendChild(dock);
 
+  const closeMenu = () => {
+    if (menu.hidden) return;
+    menu.hidden = true;
+    trigger.setAttribute("aria-expanded", "false");
+  };
+
+  /* Alle Eintraege pruefen und das Dock ganz ausblenden, wenn keine einzige
+     Aktion erreichbar ist — ein dauerhaft ausgegrautes Menue (Viewer ohne
+     KI-Schluessel, Uebersicht bei geschlossener Artefakt-Flaeche) ist nur ein
+     Versprechen, das die Seite nicht halten kann. */
+  const syncAll = () => {
+    actionButtons.forEach(item => item.sync());
+    const nutzbar = actionButtons.some(item => !item.action.disabled);
+    dock.style.display = nutzbar ? "" : "none";
+    if (!nutzbar) closeMenu();
+  };
+  syncAll();
+
   hiddenContainers.forEach(el => { el.style.display = "none"; });
+  const abbruch = new AbortController();
+  const signal = abbruch.signal;
   if (typeof MutationObserver !== "undefined") {
-    const observer = new MutationObserver(() => actionButtons.forEach(item => item.sync()));
+    /* Der Beobachter haengt an document.body, feuert also bei jeder Attribut-
+       aenderung der Seite — bei laufender KI-Analyse pro Fortschrittsschritt.
+       Deshalb werden Schuebe auf einen Lauf je Frame zusammengefasst, statt
+       je Mutation die getComputedStyle-Kette jedes Knopfes hochzulaufen. */
+    let geplant = false;
+    /* In einem verborgenen Tab liefert requestAnimationFrame keinen Takt — dort
+       muss ein Timeout einspringen, sonst bleibt der Zustand des Docks stehen,
+       bis der Tab wieder sichtbar wird. */
+    const gleichNachher = fn => (typeof requestAnimationFrame === "function" && !document.hidden)
+      ? requestAnimationFrame(fn) : setTimeout(fn, 50);
+    const observer = new MutationObserver(() => {
+      if (geplant) return;
+      geplant = true;
+      gleichNachher(() => { geplant = false; syncAll(); });
+    });
     observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ["class", "style", "hidden", "disabled"] });
+    signal.addEventListener("abort", () => observer.disconnect());
   }
 
   const placeAboveConsole = () => {
@@ -709,17 +772,31 @@ function gppFloatingSave({ buttons = [], consoleEl = null, hideContainers = [], 
       const rect = consoleEl.getBoundingClientRect();
       if (rect.height > 0 && rect.bottom >= window.innerHeight - 2) bottom = Math.ceil(window.innerHeight - rect.top + 12);
     }
-    dock.style.bottom = `${bottom}px`;
+    /* Nach oben begrenzen: bei starkem Zoom oder kurzem Fenster ist die Konsole
+       hoeher als der Rest, und ein ungebremstes bottom schoebe Knopf UND Menue
+       aus dem sichtbaren Bereich. */
+    const maxBottom = Math.max(14, window.innerHeight - dock.offsetHeight - 8);
+    dock.style.bottom = `${Math.min(bottom, maxBottom)}px`;
   };
   placeAboveConsole();
-  window.addEventListener("resize", placeAboveConsole);
-  window.addEventListener("gpp:log-resize", () => requestAnimationFrame(placeAboveConsole));
-  if (consoleEl && typeof ResizeObserver !== "undefined") new ResizeObserver(placeAboveConsole).observe(consoleEl);
-  document.addEventListener("click", () => { menu.hidden = true; trigger.setAttribute("aria-expanded", "false"); });
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape") { menu.hidden = true; trigger.setAttribute("aria-expanded", "false"); }
-  });
-  return { dock, trigger, menu, actions: actionButtons.map(item => item.action), placeAboveConsole };
+  window.addEventListener("resize", placeAboveConsole, { signal });
+  window.addEventListener("gpp:log-resize", () => requestAnimationFrame(placeAboveConsole), { signal });
+  if (consoleEl && typeof ResizeObserver !== "undefined") {
+    const ro = new ResizeObserver(placeAboveConsole);
+    ro.observe(consoleEl);
+    signal.addEventListener("abort", () => ro.disconnect());
+  }
+  /* Schliessen beim Klick nach draussen: der Treffer wird am Ziel geprueft statt
+     darauf zu bauen, dass jeder Klick bis document durchblubbert. Sonst haelt
+     ein beliebiges stopPropagation auf der Seite — etwa am Log-Schalter — das
+     Menue offen, waehrend das Dock unter dem Zeiger wegspringt. */
+  document.addEventListener("click", event => { if (!dock.contains(event.target)) closeMenu(); }, { signal, capture: true });
+  document.addEventListener("keydown", event => { if (event.key === "Escape") closeMenu(); }, { signal });
+
+  /* Ein zweiter Aufruf fuer dasselbe Werkzeug raeumt den alten Stand ab —
+     ohne das blieben Beobachter und Listener am entfernten Dock haengen. */
+  dock.gppDispose = () => abbruch.abort();
+  return { dock, trigger, menu, actions: actionButtons.map(item => item.action), placeAboveConsole, dispose: dock.gppDispose };
 }
 
 /* ---------- Hinweisbanner, wenn die Konfiguration fehlt ----------

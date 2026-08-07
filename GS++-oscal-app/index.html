@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Grundschutz++ OSCAL Tools · v1.3</title>
+  <title>Grundschutz++ OSCAL Tools · v1.4</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
   <style>
     select,option{background-color:#1b1b23;color:#e8e8ef}
@@ -270,7 +270,7 @@
     </section>
   </div>
 
-  <script src="gpp-core.js?v=3.4"></script>
+  <script src="gpp-core.js?v=3.5"></script>
   <script>
     // Workflow order: Explorer → Katalog/Profil-Erstellung → Modellierung → Umsetzung → Prüfung → Abarbeiten → Validierung.
     // `stage` und `tool` verbinden die Kachel mit den Artefakten, die das Tool ablegt.
@@ -286,14 +286,19 @@
       { id: "poam",      icon: "◬", label: "POA&M",             file: "abarbeiten_POAM_generator.html", stage: "remediate", tool: "abarbeiten_POAM_generator", kinds: ["poam"],               desc: "POA&M Generator – Feststellungen abarbeiten" },
       { id: "validator", icon: "◐", label: "OSCAL-Validator",   file: "oscal-schema-validator.html",    stage: "validate",  tool: "oscal-schema-validator",   kinds: ["report"],             desc: "OSCAL-Artefakte gegen Schema & Regeln prüfen" },
     ];
-    const CORE_OK = typeof gppArtefacts !== "undefined";
+    /* Geprüft wird jede Funktion, die dieses Dokument aus dem Kern benutzt —
+       nicht bloß irgendein Symbol daraus. Sonst besteht ein alter, aus dem
+       Cache geladener Kern die Prüfung und der erste Aufruf einer neueren
+       Funktion bricht das gesamte Skript ab. */
+    const CORE_OK = typeof gppArtefacts !== "undefined"
+      && typeof GPP_CORE_VERSION !== "undefined" && Number(GPP_CORE_VERSION) >= 2;
 
-    const APP_VERSION = "1.3";
+    const APP_VERSION = "1.4";
     document.getElementById("build-pill").textContent = `build ${APP_VERSION}`;
-    if (CORE_OK) gppFloatingSave({ buttons: [
-      { el: "#btn-export-zip", label: "Set als ZIP abspeichern" },
-      { el: "#btn-export-files", label: "Einzeldateien abspeichern" }
-    ], toolId: "index" });
+    /* Kein schwebendes Speichermenü in der Übersicht: Sie bettet die Werkzeuge
+       als iframe ein, und ein Dock im Elterndokument liegt pixelgenau über dem
+       Dock des eingebetteten Werkzeugs — der Klick landet dann im falschen
+       Menü. Die Export-Knöpfe stehen sichtbar in der Artefakt-Fläche. */
 
     const nav = document.getElementById("tabs");
     const frame = document.getElementById("app-frame");

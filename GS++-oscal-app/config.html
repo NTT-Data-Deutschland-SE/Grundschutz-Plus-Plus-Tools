@@ -267,13 +267,13 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
   </div>
 </main>
 
-<script src="gpp-core.js?v=3.4"></script>
+<script src="gpp-core.js?v=3.5"></script>
 <script>
-if (typeof gppCfg === "undefined") {
+if (typeof gppCfg === "undefined" || typeof GPP_CORE_VERSION === "undefined" || Number(GPP_CORE_VERSION) < 2) {
   document.querySelector("main").innerHTML =
     '<div class="card"><h2 style="color:var(--red)">gpp-core.js fehlt</h2>' +
     '<p class="sub">Diese Seite braucht <code>gpp-core.js</code> im selben Ordner. ' +
-    'Bitte die komplette Sammlung entpacken statt einzelner Dateien.</p></div>';
+    'Bitte die komplette Sammlung entpacken statt einzelner Dateien. Liegt sie vor, ist es ein alter Stand aus dem Browser-Cache: einmal mit Strg+F5 neu laden.</p></div>';
   throw new Error("gpp-core.js missing");
 }
 const $ = id => document.getElementById(id);

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL POA&M Generator v2.3.1</title>
+    <title>OSCAL POA&M Generator v2.4</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -602,13 +602,13 @@ input[type=date].inp{color-scheme:dark}
 
 </div><!-- /app -->
 
-<script src="gpp-core.js?v=3.4"></script>
+<script src="gpp-core.js?v=3.5"></script>
 <script>
-if(typeof gppCfg==='undefined'){
+if(typeof gppCfg==='undefined'||typeof GPP_CORE_VERSION==='undefined'||Number(GPP_CORE_VERSION)<2){
     document.body.innerHTML='<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">'+
-        '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek '+
+        '<h1 style="font-size:1.1rem">gpp-core.js fehlt oder ist veraltet</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek '+
         '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) '+
-        'statt einzelner Dateien.</p></div>';
+        'statt einzelner Dateien. Liegt sie vor, ist es ein alter Stand aus dem Browser-Cache: einmal mit Strg+F5 neu laden.</p></div>';
     throw new Error('gpp-core.js missing');
 }
 const GPP_TOOL_ID='abarbeiten_POAM_generator';
@@ -618,7 +618,7 @@ gppFloatingSave({buttons:[
     {el:'#save-poam-document',label:'POA&M abspeichern'},
     {el:'#save-poam-session',label:'Session abspeichern'}
   ],consoleEl:document.querySelector('.logbox'),hideContainers:['#poam-save-actions'],toolId:GPP_TOOL_ID});
-const BUILD='v2.3.1';
+const BUILD='v2.4';
 const P={arFilename:'',sspHref:'',sysName:'',catalog:new Map(),findings:[],observations:[],risks:[],items:[],meta:{title:'',version:'1.0.0',desc:''},responsible:{name:'',role:'system-owner',email:''}};
 // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
 // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
@@ -1256,6 +1256,10 @@ function renderStats(){
 }
 
 const POAM_VIEW={limit:100,timer:null};
+/* Welche Karten aufgeklappt sind. Früher stand das nur als CSS-Klasse im DOM —
+   seit die Liste beim Filtern komplett neu gebaut wird, ginge es bei jedem
+   Tastendruck verloren und die gerade gelesene Karte klappte zu. */
+const POAM_OPEN=new Set();
 function filteredPoamItems(){
     const term=(document.getElementById('flt-txt')?.value||'').trim().toLowerCase();
     const priority=document.getElementById('flt-pr')?.value||'';
@@ -1269,7 +1273,7 @@ function filteredPoamItems(){
         if(term&&!haystack.includes(term))return false;
         if(priority&&it.priority!==priority)return false;
         if(status&&it.status!==status)return false;
-        if(component&&encodeURIComponent(it.component||'')!==component)return false;
+        if(component&&gppAttrArg(it.component||'')!==component)return false;
         if(overdueOnly&&!(it.deadline&&it.status!=='closed'&&it.deadline<today))return false;
         return true;
     });
@@ -1288,7 +1292,7 @@ function renderItems(){
         const od=it.deadline&&it.status!=='closed'&&it.deadline<today;
         const msD=it.milestones.filter(m=>m.done).length,msT=it.milestones.length;
         const titleText=c.title||it.title;
-        const compEnc=encodeURIComponent(it.component||'');
+        const compEnc=gppAttrArg(it.component||'');
 
         h+=`<div class="poam-card bg-slate-900 border border-slate-700 rounded-xl prio-${it.priority} ${od?'overdue':''}" data-i="${i}" data-cid="${(it.controlId||'').toLowerCase()}" data-t="${esc(it.title).toLowerCase()}" data-pr="${it.priority}" data-st="${it.status}" data-od="${od?1:0}" data-comp="${compEnc}">
             <div class="flex items-center gap-2 p-3 cursor-pointer flex-wrap" onclick="togI(${i})">
@@ -1300,9 +1304,9 @@ function renderItems(){
                 ${od?'<span class="text-red-400 text-[10px] font-bold" title="Überfällig">◬</span>':''}
                 ${msT?`<span class="text-[10px] text-slate-500 font-mono">${msD}/${msT} MS</span>`:''}
                 ${it.deadline?`<span class="text-[10px] text-slate-500 font-mono">${it.deadline}</span>`:''}
-                <svg class="chev w-3.5 h-3.5 text-slate-500 flex-shrink-0" id="ich-${i}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+                <svg class="chev w-3.5 h-3.5 text-slate-500 flex-shrink-0 ${POAM_OPEN.has(i)?'open':''}" id="ich-${i}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
             </div>
-            <div class="coll-content px-3 pb-3" id="ib-${i}">
+            <div class="coll-content px-3 pb-3 ${POAM_OPEN.has(i)?'open':''}" id="ib-${i}">
                 ${c.prose?`<div class="text-xs text-slate-500 mb-2 bg-slate-800/60 p-2 rounded border-l-2 border-slate-600 overflow-y-auto" style="max-height:220px">${esc(c.prose).substring(0,400)}${c.prose.length>400?'…':''}</div>`:''}
                 ${it.observationText?`<div class="text-xs text-blue-300/80 mb-1.5 bg-blue-950/20 p-2 rounded border-l-2 border-blue-800 overflow-y-auto" style="max-height:240px">◉ <strong class="uppercase text-[9px] tracking-wider text-blue-500 font-mono">Beobachtung</strong><br>${esc(it.observationText)}</div>`:''}
                 ${it.riskText?`<div class="text-xs text-red-300/80 mb-1.5 bg-red-950/20 p-2 rounded border-l-2 border-red-800 overflow-y-auto" style="max-height:240px">◬ <strong class="uppercase text-[9px] tracking-wider text-red-500 font-mono">Risiko</strong><br>${esc(it.riskText)}</div>`:''}
@@ -1347,7 +1351,7 @@ function updateCompFilter() {
     let h = '<option value="">Komponente: Alle</option>';
     let curValid = false;
     [...comps].sort().forEach(c => {
-        const enc = encodeURIComponent(c);
+        const enc = gppAttrArg(c);
         h += `<option value="${enc}">${esc(c)}</option>`;
         if(enc === cur) curValid = true;
     });
@@ -1357,15 +1361,30 @@ function updateCompFilter() {
     if(nav){
         const selected=sel.value;
         nav.innerHTML=`<div class="rail-label">Assets</div><button type="button" onclick="selectPoamComponent('')" class="nav-item ${selected?'':'active'}"><span class="gly">◇</span>Alle Items</button>`+
-            [...comps].sort().map(c=>{const enc=encodeURIComponent(c);return `<button type="button" onclick="selectPoamComponent('${enc}')" class="nav-item ${selected===enc?'active':''}" title="Nur Controls dieses Assets anzeigen"><span class="gly">▣</span>${esc(c)}</button>`}).join('');
+            [...comps].sort().map(c=>{const enc=gppAttrArg(c);return `<button type="button" onclick="selectPoamComponent('${enc}')" class="nav-item ${selected===enc?'active':''}" title="Nur Controls dieses Assets anzeigen"><span class="gly">▣</span>${esc(c)}</button>`}).join('');
     }
 }
 
 // Interactions
-window.togI=i=>{document.getElementById('ib-'+i)?.classList.toggle('open');document.getElementById('ich-'+i)?.classList.toggle('open')};
+window.togI=i=>{const auf=!POAM_OPEN.has(i);if(auf)POAM_OPEN.add(i);else POAM_OPEN.delete(i);
+    document.getElementById('ib-'+i)?.classList.toggle('open',auf);document.getElementById('ich-'+i)?.classList.toggle('open',auf)};
 window.upd=(i,k,v)=>{P.items[i][k]=v};
 window.delI=i=>{if(!confirm('Löschen?'))return;const it=P.items[i];l.warn(`Item gelöscht: ${it?.controlId||'(ohne Control)'}`);P.items.splice(i,1);render()};
-window.addMan=()=>{P.items.push(mkItem('','','','Neuer Eintrag','','','','','',''));l.info(`Manueller Eintrag angelegt (jetzt ${P.items.length} Items)`);render()};
+window.addMan=()=>{
+    /* Filter und Anzeigegrenze zuruecksetzen, sonst faellt der neue Eintrag
+       hinter die 100er-Grenze oder durch einen aktiven Komponentenfilter — er
+       waere unsichtbar, und man legt beim zweiten Klick ein zweites leeres
+       Item an. Danach aufklappen und hinscrollen. */
+    const i=P.items.length;
+    P.items.push(mkItem('','','','Neuer Eintrag','','','','','',''));
+    ['flt-txt','flt-pr','flt-st','flt-comp'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});
+    const od=document.getElementById('flt-od');if(od)od.checked=false;
+    POAM_VIEW.limit=Math.max(POAM_VIEW.limit,i+1);
+    POAM_OPEN.add(i);
+    l.info(`Manueller Eintrag angelegt (jetzt ${P.items.length} Items)`);
+    render();
+    document.getElementById('ib-'+i)?.scrollIntoView({block:'center'});
+};
 window.addMS=i=>{P.items[i].milestones.push({uuid:crypto.randomUUID(),title:'Meilenstein',dueDate:'',done:false});renderItems()};
 window.tMS=(i,mi,d)=>{P.items[i].milestones[mi].done=d;renderStats()};
 window.uMS=(i,mi,k,v)=>{P.items[i].milestones[mi][k]=v};

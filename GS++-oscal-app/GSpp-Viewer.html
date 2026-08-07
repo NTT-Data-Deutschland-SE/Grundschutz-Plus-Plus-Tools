@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GS++ Explorer v9.7 · Multi-Katalog &amp; Profile</title>
+    <title>GS++ Explorer v9.8 · Multi-Katalog &amp; Profile</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
@@ -541,7 +541,7 @@
         <div class="topbar-meta">
             <span class="pill progress-pill" id="progressLabel"></span>
             <span class="pill" id="catalogPill">0 Kataloge</span>
-            <span class="pill build-version" id="buildVersion">v9.7</span>
+            <span class="pill build-version" id="buildVersion">v9.8</span>
         </div>
         <div class="progress-track" id="progressTrack"><div class="progress-fill" id="progressFill"></div></div>
     </header>
@@ -679,13 +679,13 @@
         </div>
     </div>
 
-<script src="gpp-core.js?v=3.4"></script>
+<script src="gpp-core.js?v=3.5"></script>
     <script>
-        if (typeof gppCfg === 'undefined') {
+        if (typeof gppCfg === 'undefined' || typeof GPP_CORE_VERSION === 'undefined' || Number(GPP_CORE_VERSION) < 2) {
             document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
-                '<h1 style="font-size:1.1rem">gpp-core.js fehlt</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
+                '<h1 style="font-size:1.1rem">gpp-core.js fehlt oder ist veraltet</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
                 '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) ' +
-                'statt einzelner Dateien.</p></div>';
+                'statt einzelner Dateien. Liegt sie vor, ist es ein alter Stand aus dem Browser-Cache: einmal mit Strg+F5 neu laden.</p></div>';
             throw new Error('gpp-core.js missing');
         }
         const GPP_TOOL_ID = 'GSpp-Viewer';
@@ -743,7 +743,7 @@
         };
 
         // Einzige Quelle der Build-Version. Titel und Topbar-Badge werden daraus gesetzt.
-        const BUILD_VERSION = "v9.7";
+        const BUILD_VERSION = "v9.8";
 
         const byId = id => document.getElementById(id);
 
