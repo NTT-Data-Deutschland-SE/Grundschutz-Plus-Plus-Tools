@@ -2,7 +2,7 @@
 
 Dieses Repository bündelt Werkzeuge, OSCAL-Artefakte, Zielobjektkategorien, Hilfsdateien und Beispielkataloge für die praktische Arbeit mit Grundschutz++.
 
-Es dient als technische Arbeitsbasis, als zitierfähige Referenz für Publikationen und als zentrale Heimat für wiederverwendbare Inhalte rund um Profile, Komponenten, Prüfunterlagen, Kataloge und unterstützende Automatisierung.
+Es dient als technische Arbeitsbasis, als zitierfähige Referenz für Publikationen und als zentrale Heimat für wiederverwendbare Inhalte rund um Profile, Prüfunterlagen, Kataloge und unterstützende Automatisierung.
 
 ## Werbeblock
 
@@ -13,7 +13,7 @@ In meinem Buch gibt es umfangreiche Analysen und Einen Ausblick auf die Zukunft:
 `Grundschutz-Plus-Plus-Tools` verfolgt vier Ziele:
 
 - **Werkzeuge bereitstellen**, die den operativen Umgang mit Grundschutz++ und OSCAL vereinfachen.
-- **Strukturierte Inhalte bündeln**, damit Profile, Komponenten und Hilfsdateien an einem konsistenten Ort liegen.
+- **Strukturierte Inhalte bündeln**, damit Profile, Kataloge und Hilfsdateien an einem konsistenten Ort liegen.
 - **Wiederverwendbare Artefakte veröffentlichen**, die direkt in Projekten, Prüfungen, Workshops oder Veröffentlichungen eingesetzt werden können.
 - **Eine stabile Referenz schaffen**, auf die aus Artikeln, Vorträgen, Schulungen und Büchern verwiesen werden kann.
 
@@ -21,7 +21,7 @@ In meinem Buch gibt es umfangreiche Analysen und Einen Ausblick auf die Zukunft:
 
 Das Repository umfasst insbesondere folgende Bereiche:
 
-- [`Gpp-ai-tool`](./Gpp-ai-tool) – Python-basiertes KI-Werkzeug zur automatisierten Erstellung und Anreicherung von OSCAL-Komponentendefinitionen
+- [`Gpp-ai-tool`](./Gpp-ai-tool) – Python-basiertes KI-Werkzeug zur automatisierten Erstellung und Anreicherung von OSCAL-Profilen (Baustein- und Zielobjektkategorie-Profile)
 - [`GS++-oscal-app`](./GS++-oscal-app) – browserbasierte HTML/JS-Werkzeuge für Modellierung, SSP-Bearbeitung, Audit und Maßnahmenplanung
 - [`kataloge`](./kataloge) – produktive OSCAL-Kataloge zu anderen Themen
 - [`ED23-Baustein-profile`](./ED23-Baustein-profile) – OSCAL-Profile je Baustein des IT-Grundschutz Edition 2023
@@ -51,9 +51,9 @@ Grundschutz-Plus-Plus-Tools/
 
 ### `Gpp-ai-tool`
 
-Dieses Verzeichnis enthält ein Python-basiertes Automatisierungswerkzeug zur Erstellung von OSCAL-Komponentendefinitionen mit KI-Unterstützung.
+Dieses Verzeichnis enthält ein Python-basiertes Automatisierungswerkzeug zur Erstellung und Anreicherung von OSCAL-Profilen mit KI-Unterstützung.
 
-Im Zentrum steht eine mehrstufige Pipeline zur Ableitung und Anreicherung von Grundschutz++-Artefakten. Das Werkzeug ist darauf ausgelegt, vorhandene fachliche Strukturen maschinell auszuwerten, semantisch zuzuordnen und daraus verwertbare OSCAL-Komponenten zu erzeugen.
+Im Zentrum steht eine mehrstufige Pipeline zur Ableitung und Anreicherung von Grundschutz++-Artefakten. Das Werkzeug ist darauf ausgelegt, vorhandene fachliche Strukturen maschinell auszuwerten, semantisch zuzuordnen und daraus verwertbare OSCAL-Profile zu erzeugen — je Baustein der Edition 2023 und je Zielobjektkategorie, jeweils als schlichte und als angereicherte (`_enhanced`) Fassung.
 
 #### Zweck
 
@@ -61,9 +61,11 @@ Im Zentrum steht eine mehrstufige Pipeline zur Ableitung und Anreicherung von Gr
 
 - Zielobjekte und Kontrollen semantisch zuzuordnen,
 - Kontrollmengen für Zielobjekte deterministisch zusammenzustellen,
-- Komponentendefinitionen automatisiert zu erzeugen,
+- OSCAL-Profile je Baustein und je Zielobjektkategorie automatisiert zu erzeugen,
 - generierte Inhalte mit zusätzlichen Implementierungsdetails anzureichern,
 - KI-gestützte Verarbeitung in reproduzierbare Verarbeitungsschritte einzubetten.
+
+Die automatisierte Erzeugung von OSCAL-Komponentendefinitionen ist als Ausbaustufe vorgesehen, aber noch nicht Teil der Pipeline.
 
 #### Inhalt von `Gpp-ai-tool`
 
@@ -112,7 +114,7 @@ Hier liegen unter anderem:
 - Strukturtests,
 - Tests für Parsing und Textverarbeitung,
 - Tests für einzelne Pipeline-Stages,
-- Prüfungen für Chunking, Matching und Komponentenaufbau.
+- Prüfungen für Chunking, Matching und Profilaufbau.
 
 Das Verzeichnis dokumentiert, dass das Werkzeug nicht nur experimentell gedacht ist, sondern auf reproduzierbare Verarbeitung und technische Nachvollziehbarkeit zielt.
 
@@ -353,7 +355,7 @@ Die Verzeichnisse sind bewusst so angelegt, dass sie zusammen einen nachvollzieh
 3. **Umsetzung festlegen** – passende Baustein-Profile aus `ED23-Baustein-profile/` wählen.
 4. **Grundlage modellieren** – mit den Apps in `GS++-oscal-app/` Profile und SSPs erzeugen bzw. bearbeiten.
 5. **Hilfsdaten einbinden** – Referenz- und Mapping-Dateien aus `hilfsdateien/` zur Unterstützung von Zuordnung, Parsing oder Kontextualisierung nutzen.
-6. **Automatisieren und anreichern** – mit `Gpp-ai-tool/` Komponenten, Zuordnungen oder ergänzende Beschreibungen programmatisch erzeugen.
+6. **Automatisieren und anreichern** – mit `Gpp-ai-tool/` Profile, Zuordnungen oder ergänzende Beschreibungen programmatisch erzeugen.
 7. **Beispiele und Tests durchführen** – mit den Dateien in `beispiel-kataloge/` Workflows demonstrieren und validieren.
 
 ## Für wen dieses Repository gedacht ist
