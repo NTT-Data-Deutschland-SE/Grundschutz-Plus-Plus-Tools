@@ -59,6 +59,23 @@ Das `schema.sql` liegt als eigene Datei bei — Tabellen, RLS-Policies, die Roll
 
 Wer schon vor der Zusammenarbeit lokal gearbeitet hat, überträgt den Bestand mit einem Klick: In der Übersicht erscheint **„⤒ In DB übertragen"**, sobald man die Sperre des aktiven Sets hält. Jedes lokale Artefakt wird angestoßen; was auf dem Server bereits identisch liegt, geht still durch, echte Kollisionen laufen als Konflikt auf und werden bewusst entschieden. Der Lösch-Spiegel des Abgleichs weiß dabei, was er anfassen darf: Nur Stände, die der Server nachweislich kennt (einmal übertragen oder von dort geholt), gelten bei ihm als „drüben gelöscht" — nie synchronisierter Altbestand bleibt liegen und wartet auf die Übertragung.
 
+## Die Werkzeugkette speichert sich selbst (Live-Set)
+
+Mit der gemeinsamen Datenbank fällt der letzte manuelle Handgriff: **die Abspeichern-Knöpfe sind weg.** SSP-Generator, SSP-Editor, Prüfung und POA&M schreiben ihr Dokument (Profil, SSP, AP, AR, POA&M) bei jeder Änderung entprellt als Einzelstück ins aktive Set — kurz nach der Eingabe, spätestens alle 30 Sekunden, und sofort beim Verlassen der Seite. Heruntergeladen wird in der Übersicht; dort hängen die Export-Knöpfe an jedem Artefakt.
+
+Die Werkzeuge lesen einander damit direkt zu: Ein im Generator ergänztes Control steht beim nächsten Öffnen im Editor und in der Prüfung; ein „nicht erfüllt" aus der Prüfung erscheint als Maßnahme im POA&M. Die Übernahmen **mergen statt überschreiben** — der Generator bestimmt die Struktur, der Editor behält seine Texte je Control und Komponente, die Prüfung ihre Bewertungen, das POA&M seine Abarbeitung (Status, Fristen, Meilensteine); Einträge zu Controls, die es nicht mehr gibt, entfallen benannt. Übernommen wird nur bei **inhaltlich** geändertem Artefakt (sha256-Vergleich), und jeder Arbeitsstand gehört seinem Werkzeug — ein Wechsel zwischen den Seiten verwechselt keine Stände mehr. Verliert eine Prüfungs-Session doch einmal ihre Bewertungen, holt sie sie aus dem AR-Artefakt zurück.
+
+Ein Set trägt dabei **genau ein** SSP, AP, AR und POA&M — Neues ersetzt Altes, auch serverseitig; die Übersicht räumt Duplikate aus Altbeständen beim Laden weg. Die Zähler an den Reitern zeigen nicht mehr „wie viele Dateien", sondern **wie viele Controls** im jeweiligen Dokument stecken.
+
+Scheitert ein Live-Speichern — typisch: die Sperre fehlt —, erscheint ein **rotes Banner** am oberen Rand statt einer stillen Logzeile, und es verschwindet mit dem nächsten erfolgreichen Speichern. Wer ohne Sperre arbeitet, sieht das sofort, nicht erst beim Datenverlust.
+
+## Leistung und Bedienung
+
+- **Prüfung bei großen Beständen:** Die Controls einer Komponente werden erst beim Aufklappen aufgebaut. Ein Bestand mit ~8.800 Controls belegte zuvor rund 3 GB Browser-Speicher und brauchte Minuten — jetzt ~33 MB und unter 100 ms fürs Rendern. Die Filter arbeiten deshalb über das Modell und klappen Treffer-Komponenten selbst auf.
+- **Delta-Abgleich mit der Datenbank:** Gezogen werden nur geänderte Artefakte (id+sha256-Vorabfrage, gebündelte Volltext-Abfragen) — der Seitenaufruf zieht nicht mehr den kompletten Bestand durchs Netz. Gepusht wird beim Freigeben der Sperre, alle fünf Minuten und beim Verstecken des Tabs; lokal ist ohnehin jede Änderung sofort gesichert.
+- **Schwebende Filterleiste links** (`gppFilterDock`) für Seiten ohne Filter in der Navigation — zuerst im SSP-Generator für die Tailoring-Suche.
+- **Log-Konsolen** klappen jetzt überall wirklich zusammen (auch bei fester CSS-Höhe), und der DB-Status-Chip weicht der eingeklappten Konsole aus, statt ihre Bedienung zu überdecken.
+
 ## Nicht im Umfang von 4.0
 
 * Die produktive Härtung des Backends (TLS auf dem öffentlichen Port, GoTrue-Admin-API statt direkter `auth.users`-Schreibzugriff bei der Konto-Anlage) — die Terraform-Umgebung ist eine Testinstanz.
@@ -67,7 +84,7 @@ Wer schon vor der Zusammenarbeit lokal gearbeitet hat, überträgt den Bestand m
 
 | Anwendung | Version |
 |---|---|
-| gemeinsamer Kern (gpp-core.js) | 3 · Cache-Buster v3.6 |
+| gemeinsamer Kern (gpp-core.js) | 3 · Cache-Buster v3.9 |
 | Übersicht (index.html) | 1.4 |
 | OSCAL Schema Validator | 1.11.2 |
 | SSP-Generator (G++) | V5.10.0 |
