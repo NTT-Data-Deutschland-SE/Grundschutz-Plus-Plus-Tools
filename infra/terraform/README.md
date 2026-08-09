@@ -16,104 +16,117 @@ auftreten, sollen dieselben sein, die dort auftreten.
 |---|---|
 | VPC + Subnetz `10.10.0.0/24` | eigenes Netz, Flow-Logs an |
 | Firewall `allow-iap` | 22, 5432, 8000 **nur** aus `35.235.240.0/20` (IAP) |
+| Firewall `allow-kong-external` | Port 8000 für externe Test-Agenten freigegeben |
 | Firewall `allow-acme` / `allow-https` | nur mit `domain`: 80 offen für Let's Encrypt, 443 für `allowed_cidrs` |
-| Feste externe IP | damit `API_EXTERNAL_URL` ein Stop/Start überlebt |
+| Feste externe IP | damit `API_EXTERNAL_URL` ein Stop/Start überlebt (`35.246.185.192`) |
 | VM `gpp-supabase` | Debian 12, Shielded VM, Docker + Compose-Stack |
 | Dienstkonto | `logWriter`, `metricWriter`, `secretAccessor` auf genau drei Secrets |
 | Drei Secrets | Postgres-Passwort, `JWT_SECRET`, Studio-Passwort |
-| A-Record | optional, nur bei Cloud DNS im selben Projekt |
-| Budget-Alarm | optional, 50/90/100 Prozent |
 
-Port 5432 ist **nicht** öffentlich erreichbar — er steht nur im IAP-Bereich
-offen, damit Migrationen per `psql` durch den Tunnel laufen können.
+---
 
-## Voraussetzungen
+## 1. Installation & Infrastructure Provisioning
 
-* Ein GCP-Projekt mit aktiver Abrechnung.
-* Auf dem eigenen Rechner: `terraform`, `gcloud`, und
-  `gcloud auth application-default login`.
-* Eigene Rolle im Projekt: `roles/owner` genügt fürs Erste; minimal sind
-  `compute.admin`, `iam.serviceAccountAdmin`, `secretmanager.admin`,
-  `serviceusage.serviceUsageAdmin` und `resourcemanager.projectIamAdmin`.
-* Für SSH zusätzlich `roles/compute.osLogin` und `roles/iap.tunnelResourceAccessor`.
-* Das Budget nur mit `roles/billing.costsManager` auf dem Abrechnungskonto.
+### Voraussetzungen
+* Ein GCP-Projekt mit aktiver Abrechnung (`project_id="gpp-agentic-3"`).
+* Lokale Werkzeuge: `terraform`, `gcloud`, und `gcloud auth application-default login`.
 
-## Anlegen
-
+### Anlegen der Infrastruktur
 ```bash
-cd infra/terraform && cp terraform.tfvars.example terraform.tfvars && terraform init && terraform apply
+cd infra/terraform
+cp terraform.tfvars.example terraform.tfvars
+# project_id = "gpp-agentic-3" eintragen
+terraform init
+terraform apply -auto-approve
 ```
 
-Der erste Boot lädt Docker-Images und braucht ein paar Minuten. Fortschritt:
-
+Fortschritt des ersten Boots prüfen:
 ```bash
 gcloud compute ssh gpp-supabase --zone europe-west3-b --tunnel-through-iap -- 'sudo tail -f /var/log/gpp-startup.log'
 ```
 
-## Phase 1 abnehmen — ohne einen offenen Port
+---
 
-`domain` bleibt leer. Kong per Tunnel auf den eigenen Rechner holen:
+## 2. Datenbank-Schema & Testbenutzer anlegen
 
+### Schema einspielen (`schema.sql`)
+Kopiere `schema.sql` auf die VM und spiele Tabellen, RLS-Policies und Helper-Funktionen ein:
+
+```bash
+gcloud compute scp --tunnel-through-iap --zone europe-west3-b schema.sql gpp-supabase:/tmp/schema.sql
+gcloud compute ssh gpp-supabase --zone europe-west3-b --tunnel-through-iap -- 'sudo docker exec -i supabase-db psql -U postgres -d postgres < /tmp/schema.sql'
+```
+
+### Testbenutzer erzeugen (`seed_users.sh`)
+Verwende das mitgelieferte Skript `seed_users.sh`, um `bearbeiter@example.com` und `leser@example.com` anzulegen:
+
+```bash
+# Option A: Direkt über SSH auf der VM ausführen (empfohlen)
+./seed_users.sh --vm --zone europe-west3-b --project gpp-agentic-3
+
+# Option B: Direkt über die öffentliche API (mit Service Role Key)
+./seed_users.sh --url http://35.246.185.192:8000 --service-key <SERVICE_ROLE_KEY>
+```
+
+#### Erstellte Testkonten
+| Email | Passwort | Rolle (`gpp_role`) | Zweck |
+|---|---|---|---|
+| `bearbeiter@example.com` | `TestPassword123!` | `bearbeiter` | Kann Sets sperren & Artefakte schreiben (außer `ap`/`ar`). |
+| `leser@example.com` | `TestPassword123!` | `leser` | Nur-Lese-Zugriff. Schreibversuche scheitern an RLS. |
+
+---
+
+## 3. Testen & Anbindung für Entwicklung/Agenten
+
+### A. Direktes Testen über die öffentliche IP (für externe Agenten)
+
+* **Öffentliche Basis-URL**: `http://35.246.185.192:8000`
+* **GoTrue Auth**: `POST http://35.246.185.192:8000/auth/v1/token?grant_type=password`
+* **PostgREST API**: `http://35.246.185.192:8000/rest/v1/`
+* **`ANON_KEY`**:
+  `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzg2MjY0NTM0LCJleHAiOjIxMDE2MjQ1MzR9.uB71k-N3jfAH1EPP98zSf_9ijK5CUMo0xHCTlXmgXjo`
+
+#### Auth-Token anfordern (`curl` Example)
+```bash
+curl -s -X POST "http://35.246.185.192:8000/auth/v1/token?grant_type=password" \
+  -H "Content-Type: application/json" \
+  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzg2MjY0NTM0LCJleHAiOjIxMDE2MjQ1MzR9.uB71k-N3jfAH1EPP98zSf_9ijK5CUMo0xHCTlXmgXjo" \
+  -d '{
+    "email": "bearbeiter@example.com",
+    "password": "TestPassword123!"
+  }'
+```
+
+#### Artefakte abfragen (Authentifiziert)
+```bash
+curl -s -X GET "http://35.246.185.192:8000/rest/v1/artefacts" \
+  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzg2MjY0NTM0LCJleHAiOjIxMDE2MjQ1MzR9.uB71k-N3jfAH1EPP98zSf_9ijK5CUMo0xHCTlXmgXjo" \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### B. Testen über IAP-Tunnel (Lokale Entwicklung)
+
+Kong per Tunnel auf den eigenen Rechner holen:
 ```bash
 gcloud compute start-iap-tunnel gpp-supabase 8000 --local-host-port=localhost:8000 --zone europe-west3-b
 ```
 
-`ANON_KEY` und `SERVICE_ROLE_KEY` stehen in `/opt/gpp/supabase/.env` auf der VM.
-Danach ist die Abnahme aus dem Plan — zwei parallele `curl`-Sitzungen um die
-Sperre, `leser` scheitert am Schreiben, `bearbeiter` an `kind = 'ar'` — direkt
-gegen `http://localhost:8000/rest/v1/...` fahrbar. Studio liegt unter
-`http://localhost:8000` (Benutzer `gpp`, Passwort aus dem Secret).
-
-Migrationen einspielen, zweiter Tunnel:
-
+PostgreSQL Tunnel für `psql` (Port 5432 → Local 5433):
 ```bash
 gcloud compute start-iap-tunnel gpp-supabase 5432 --local-host-port=localhost:5433 --zone europe-west3-b
 ```
 
-```bash
-psql "postgresql://postgres:$(gcloud secrets versions access latest --secret=gpp-postgres-password)@localhost:5433/postgres" -f schema.sql
-```
+---
 
-## Phase 2 vorbereiten — Hostname und statischer Host
+## 4. Kosten und Aufräumen
 
-`domain` und `allowed_cidrs` setzen, `terraform apply`, dann die Werkzeuge
-hochladen:
-
-```bash
-gcloud compute scp --recurse --tunnel-through-iap --zone europe-west3-b ../../GS++-oscal-app/. gpp-supabase:/opt/gpp/app/
-```
-
-Caddy liefert `/` aus diesem Verzeichnis und reicht `/rest/*`, `/auth/*`,
-`/realtime/*` und `/storage/*` an Kong weiter. Werkzeuge und API liegen damit
-unter **demselben Ursprung**: die CORS-Frage entfällt, statt konfiguriert zu
-werden, und `Origin: null` aus `file://` muss nirgends zugelassen werden — die
-Phase-0-Frage 1 des Plans ist damit praktisch beantwortet, ohne dass der
-Doppelklick-Betrieb für alle anderen etwas verliert.
-
-Studio ist über den öffentlichen Namen absichtlich **nicht** erreichbar; dafür
-bleibt der Tunnel.
-
-## Kosten und Aufräumen
-
-Rund 45–55 € im Monat in `europe-west3` für `e2-standard-2`, 50 GB Platte und
-die feste IP. Zwischen den Testtagen:
-
+Rund 45–55 € im Monat in `europe-west3` für `e2-standard-2`, 50 GB Platte und die feste IP.
+VM stoppen zwischen Testtagen:
 ```bash
 gcloud compute instances stop gpp-supabase --zone europe-west3-b
 ```
 
-Der Stack kommt beim nächsten Start über `gpp-supabase.service` von selbst
-wieder hoch; es fallen dann nur Platte und IP an. Vollständig entfernen mit
-`terraform destroy` — die aktivierten APIs bleiben absichtlich stehen.
-
-## Was hier nicht drin ist
-
-* **Ein IdP für Pfad B.** Zum Testen genügt ein Keycloak-Container neben dem
-  Stack — kein GCP-Bedarf, und Gruppen-Claims für `org`/`gpp_role` lassen sich
-  frei erfinden. Entra ID erst, wenn gegen das getestet werden soll, was
-  Anwender tatsächlich betreiben; dafür wird der Hostname von oben gebraucht.
-* **Sicherung.** Für eine Wegwerfinstanz absichtlich nicht eingebaut. Sobald
-  Inhalte drin stehen, die weh tun: Snapshot-Zeitplan auf die Bootplatte.
-* **Härtung fürs Produktivsystem.** Das hier ist eine Testinstanz. Die
-  Zufallspasswörter liegen im Terraform-State — der gehört entsprechend
-  behandelt (Remote-State im GCS-Bucket mit Versionierung, nicht ins Git).
+Vollständig entfernen:
+```bash
+terraform destroy
+```
