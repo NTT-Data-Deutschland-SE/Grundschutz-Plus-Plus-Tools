@@ -1,9 +1,11 @@
 # Testumgebung für das Datenbank-Backend (GCP)
 
-Baut die Referenzinstallation aus [`PLAN_Datenbank-Backend.md`](../../PLAN_Datenbank-Backend.md)
-auf einer einzelnen Compute-Engine-VM: PostgreSQL, GoTrue und PostgREST als
+Baut die Referenzinstallation des Datenbank-Backends auf einer einzelnen
+Compute-Engine-VM: PostgreSQL, GoTrue und PostgREST als
 Supabase-Compose-Stack, davor optional Caddy als TLS-Endpunkt und statischer
-Host für die Werkzeuge aus `GS++-oscal-app/`.
+Host für die Werkzeuge aus `GS++-oscal-app/`. (Der ursprüngliche
+Umsetzungsplan ist mit Release 4.0 abgearbeitet; die Architektur- und
+Rechte-Entscheidungen stehen in Abschnitt 4 und in `RELEASE_NOTES_v4.0.md`.)
 
 Bewusst **kein** Cloud SQL und **kein** Cloud Run: das wären VPC-Connector,
 Cloud-SQL-Proxy und zwei Dienstbereitstellungen zusätzlich — und der Aufbau

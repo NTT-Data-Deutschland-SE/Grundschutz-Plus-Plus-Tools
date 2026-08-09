@@ -1,5 +1,8 @@
--- Schema für das GS++-Datenbank-Backend (PLAN_Datenbank-Backend.md, Phase 1).
+-- Schema für das GS++-Datenbank-Backend.
 -- Version 2: Rechte kommen aus TABELLEN, nicht aus JWT-Claims.
+-- (Der ursprüngliche Umsetzungsplan PLAN_Datenbank-Backend.md ist mit
+-- Release 4.0 abgearbeitet und entfernt; was gilt, steht in dieser Datei,
+-- im README-Abschnitt 4 und in RELEASE_NOTES_v4.0.md.)
 --
 -- Warum: Claims leben bis zu einer Stunde im Access-Token — ein entzogenes
 -- Recht wirkte erst nach dem nächsten Refresh. Außerdem war der frühere

@@ -2,7 +2,7 @@
 
 Version 3 hat die neun Werkzeuge auf eine gemeinsame Basis gestellt und einen geteilten Artefaktbestand im Browser eingeführt. Version 4 öffnet diesen Bestand über den einzelnen Rechner hinaus: eine **optionale gemeinsame Datenbank**, in der ein Team an denselben Sets arbeitet, mit serverseitig durchgesetzten Rechten und einer beratenden Sperre gegen gleichzeitiges Schreiben. Der entscheidende Satz bleibt gültig und bleibt richtig: **ohne hinterlegten Server verhält sich alles exakt wie bisher — offline, ohne Backend, nur der Browser.**
 
-Umgesetzt sind damit die Phasen 2 bis 4 aus `PLAN_Datenbank-Backend.md`.
+Damit sind alle Phasen des Datenbank-Plans umgesetzt (der Plan selbst, `PLAN_Datenbank-Backend.md`, ist mit diesem Release abgearbeitet und aus dem Repository entfernt — die getroffenen Entscheidungen samt bewusster Abweichungen stehen hier und in `infra/terraform/README.md`, Abschnitt 4).
 
 ## Neu: Zusammenarbeit über eine gemeinsame Datenbank
 
@@ -55,9 +55,12 @@ Neu im Repository unter `infra/terraform/`: die Referenzinstallation als Infrast
 
 Das `schema.sql` liegt als eigene Datei bei — Tabellen, RLS-Policies, die Rollen-Auflösung, die Sperr- und Admin-Funktionen und die Audit-Trigger. Es ist idempotent und gegen die Testinstanz verifiziert.
 
+## Bestehende Arbeit in die Datenbank bringen
+
+Wer schon vor der Zusammenarbeit lokal gearbeitet hat, überträgt den Bestand mit einem Klick: In der Übersicht erscheint **„⤒ In DB übertragen"**, sobald man die Sperre des aktiven Sets hält. Jedes lokale Artefakt wird angestoßen; was auf dem Server bereits identisch liegt, geht still durch, echte Kollisionen laufen als Konflikt auf und werden bewusst entschieden. Der Lösch-Spiegel des Abgleichs weiß dabei, was er anfassen darf: Nur Stände, die der Server nachweislich kennt (einmal übertragen oder von dort geholt), gelten bei ihm als „drüben gelöscht" — nie synchronisierter Altbestand bleibt liegen und wartet auf die Übertragung.
+
 ## Nicht im Umfang von 4.0
 
-* **Phase 5** — das einmalige Hochladen bestehender Sets in die Datenbank.
 * Die produktive Härtung des Backends (TLS auf dem öffentlichen Port, GoTrue-Admin-API statt direkter `auth.users`-Schreibzugriff bei der Konto-Anlage) — die Terraform-Umgebung ist eine Testinstanz.
 
 ## Versionen der Anwendungen

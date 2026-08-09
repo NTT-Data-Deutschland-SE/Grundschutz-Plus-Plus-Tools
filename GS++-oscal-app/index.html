@@ -249,6 +249,8 @@
         <input type="file" id="set-upload-input" accept=".json,.zip" multiple hidden>
         <span id="lock-state" style="font-size:.72rem;display:none"></span>
         <button class="btn" id="btn-lock" style="display:none"></button>
+        <button class="btn" id="btn-push-set" style="display:none"
+                title="Bestehenden lokalen Bestand dieses Sets in die gemeinsame Datenbank übertragen — für Arbeit, die vor der Anmeldung entstanden ist">⤒ In DB übertragen</button>
         <span style="flex:1"></span>
         <button class="btn" id="btn-set-delete">Set löschen</button>
       </div>
@@ -574,6 +576,9 @@
       const info = s.lock && s.lock.set === gppArtefacts.activeSet() ? s.lock : null;
       state.style.display = ""; btn.style.display = "";
       btn.disabled = false;
+      /* Bestehenden Bestand übertragen: nur sinnvoll, solange man die Sperre
+         hält — dieselbe Voraussetzung wie jedes andere Schreiben. */
+      document.getElementById("btn-push-set").style.display = info && info.mine ? "" : "none";
       if (!info || !info.lock) {
         state.textContent = "nicht gesperrt — nur lesen";
         state.style.color = "var(--text-quiet)";
@@ -627,6 +632,21 @@
       renderLock();
     });
     window.addEventListener("gpp:remote-changed", () => { renderLock(); });
+    document.getElementById("btn-push-set").addEventListener("click", async e => {
+      const btn = e.currentTarget;
+      const note = document.getElementById("export-note");
+      btn.disabled = true;
+      note.textContent = "übertrage …";
+      try {
+        const r = await gppRemote.pushSet();
+        note.textContent = `Übertragen: ${r.queued} von ${r.total} Artefakt(en) angestoßen` +
+          (r.pending ? `, ${r.pending} noch unterwegs` : "") +
+          (r.conflicts ? ` — ${r.conflicts} Konflikt(e), Klärung über den DB-Chip oder config.html.` : ".");
+      } catch (err) {
+        note.textContent = "Übertragung fehlgeschlagen: " + err.message;
+      }
+      btn.disabled = false;
+    });
 
     /* Hochladen: JSON-Dateien einzeln oder ein exportiertes Set-ZIP (manifest.json
        liefert dann Stage/Kind/Tool zurück; fremde JSONs werden am Wurzelschlüssel

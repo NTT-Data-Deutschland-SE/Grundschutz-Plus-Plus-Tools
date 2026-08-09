@@ -831,6 +831,7 @@ const gppRemote = {
         try {
           await this._push(e);
           await this._outboxDel(e.key);
+          if (e.op === "save") await this._markSeen(e.id);
           this._lastError = "";
         } catch (err) {
           if (err && err.conflict) {
@@ -932,6 +933,7 @@ const gppRemote = {
       const serverIds = new Set(rows.map(r => r.id));
       for (const rec of await gppArtefacts.all(name)) {
         if (serverIds.has(rec.id) || pending.has(rec.id)) continue;
+        if (!rec.remoteSeen) continue;   // nie synchronisiert → wartet auf Übertragung, keine fremde Löschung
         await this._trash(rec);
         removed++;
       }
@@ -975,10 +977,14 @@ const gppRemote = {
     const pending = new Set((await this._outboxAll()).map(e => e.set).filter(Boolean));
     for (const name of vorher) {
       if (known.includes(name) || pending.has(name)) continue;
-      const doomed = await gppArtefacts.all(name);
+      const doomed = (await gppArtefacts.all(name)).filter(r => r.remoteSeen);
       for (const r of doomed) await this._trash(r);
-      if (doomed.length) removedSets++;
-      if (gppArtefacts.activeSet() === name) gppArtefacts.setActiveSet(GPP_DEFAULT_SET);
+      if (doomed.length) {
+        removedSets++;
+        if (gppArtefacts.activeSet() === name && !(await gppArtefacts.all(name)).length) {
+          gppArtefacts.setActiveSet(GPP_DEFAULT_SET);
+        }
+      }
     }
     /* Auch ohne gezogene Zeilen neu rendern: die Set-Liste selbst hat sich
        geändert (neue leere Berechtigung, entferntes Set). */
@@ -1000,10 +1006,23 @@ const gppRemote = {
     catch (e) { /* Papierkorb voll/kaputt: lieber behalten als vernichten */ return; }
     await gppTx("readwrite", store => store.delete(rec.id));
   },
+  /* remoteSeen markiert Zeilen, die der Server nachweislich kennt (gepullt
+     oder erfolgreich gepusht). Nur solche darf der Lösch-Spiegel anfassen —
+     lokaler Altbestand, der NIE synchronisiert wurde, ist keine „drüben
+     gelöschte" Zeile, sondern wartet auf die Übertragung (Phase 5). Ein
+     lokaler Neu-Save baut den Datensatz ohne Marker; bis zum nächsten
+     erfolgreichen Push schützt ohnehin die Outbox. */
   _toLocal(row) {
     return { id: row.id, set: row.set_name, stage: row.stage, kind: row.kind, title: row.title,
       filename: row.filename, tool: row.tool, createdAt: row.created_at, updatedAt: row.updated_at,
-      size: row.size, sha256: row.sha256, meta: row.meta || {}, data: row.data };
+      size: row.size, sha256: row.sha256, meta: row.meta || {}, data: row.data, remoteSeen: true };
+  },
+  async _markSeen(id) {
+    const rec = await gppArtefacts.get(id);
+    if (rec && !rec.remoteSeen) {
+      rec.remoteSeen = true;
+      await gppTx("readwrite", store => store.put(rec));
+    }
   },
   /* Zeitstempel und updated_by gehen mit: die Testinstanz (schema.sql) hat
      keinen Trigger dafür, und andere Browser sollen beim Pull echte Zeiten
@@ -1151,6 +1170,32 @@ const gppRemote = {
      Benutzerverwaltung. user() liest dagegen nur die Token-Claims. */
   async whoami() {
     return this.api("rpc/whoami", { method: "POST", body: {} });
+  },
+
+  /* Phase 5: bestehenden LOKALEN Bestand eines Sets in die Datenbank bringen.
+     Die Sync-Schicht kennt nur neue Speichervorgänge — was vor der Anmeldung
+     entstand, hat keinen Outbox-Eintrag und würde nie gepusht. Hier bekommt
+     jedes Artefakt des Sets einen, ohne Baseline: Kollisionen mit vorhandenen
+     Server-Zeilen laufen als Konflikt auf und werden bewusst entschieden;
+     identische Inhalte gehen still durch. Sperre vorausgesetzt. */
+  async pushSet(setName) {
+    if (!this.enabled() || !this.loggedIn()) throw new Error("nicht angemeldet");
+    const name = setName || gppArtefacts.activeSet();
+    await this.requireLock(name);
+    const recs = await gppArtefacts.all(name);
+    let queued = 0;
+    for (const rec of recs) {
+      const key = "save:" + rec.id;
+      if (!(await this._outboxGet(key))) {
+        await this._outboxPut({ key, op: "save", id: rec.id, set: name, prevSha: null,
+          queuedAt: new Date().toISOString(), tries: 0 });
+        queued++;
+      }
+    }
+    this._emit();
+    await this.flush();
+    const rest = await this.status();
+    return { queued, total: recs.length, pending: rest.pending, conflicts: rest.conflicts };
   },
 
   /* ---- Zustand für Anzeigen (config.html, Status-Chip) ---- */
