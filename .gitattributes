@@ -1,0 +1,4 @@
+# Shell-Skripte behalten LF, auch wenn sie unter Windows ausgecheckt werden:
+# infra/terraform/startup.sh wird per file() eingelesen und auf einer Linux-VM
+# ausgeführt — mit CRLF scheitert schon die Shebang-Zeile.
+*.sh text eol=lf
