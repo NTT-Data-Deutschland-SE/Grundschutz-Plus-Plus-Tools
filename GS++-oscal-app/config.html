@@ -673,7 +673,42 @@ async function renderStorage() {
         <div class="note">${Object.entries(byStage).map(([k, v]) => `${k}: ${v}`).join(" · ") || "noch nichts abgelegt"}</div></div>
     </div>
     <div class="bar"><i style="width:${Math.min(100, cfgBytes / 5e6 * 100).toFixed(1)}%"></i></div>
-    <div class="note">localStorage-Auslastung (Einstellungen). Artefakte zählen nicht hierauf — deshalb liegen sie in der IndexedDB.</div>`;
+    <div class="note">localStorage-Auslastung (Einstellungen). Artefakte zählen nicht hierauf — deshalb liegen sie in der IndexedDB.</div>
+    <div id="trash-body" style="margin-top:14px"></div>`;
+  renderTrash();
+}
+/* Papierkorb: Artefakte, die der Server-Abgleich als „drüben gelöscht"
+   entfernt hat. Nichts davon ist verloren, bis hier geleert wird. */
+async function renderTrash() {
+  const box = $("trash-body");
+  if (!box) return;
+  let entries = [];
+  try { entries = await gppRemoteTrash.list(); } catch (e) { return; }
+  if (!entries.length) { box.innerHTML = ""; return; }
+  entries.sort((a, b) => (b.trashedAt || "").localeCompare(a.trashedAt || ""));
+  box.innerHTML = `
+    <div class="row"><b style="font-size:.85rem">Papierkorb</b>
+      <span class="pill warn">${entries.length}</span>
+      <span class="note" style="margin:0">Vom Server-Abgleich entfernte Artefakte (fremde Löschung). Wiederherstellen legt sie zurück ins Set und — bei Anmeldung — wieder in die Datenbank.</span>
+      <span style="flex:1"></span>
+      <button class="btn" id="btn-trash-clear">Papierkorb leeren</button>
+    </div>
+    ${entries.map(e => `<div class="row" style="margin-top:6px">
+      <code style="font-size:.68rem">${e.set} · ${e.kind}</code>
+      <span style="font-size:.8rem">${(e.title || e.id).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]))}</span>
+      <span class="note" style="margin:0">${(e.trashedAt || "").slice(0, 16).replace("T", " ")}</span>
+      <span style="flex:1"></span>
+      <button class="btn" data-restore="${gppAttrArg(e.id)}">Wiederherstellen</button>
+    </div>`).join("")}`;
+  box.querySelectorAll("button[data-restore]").forEach(b => b.addEventListener("click", async () => {
+    await gppRemoteTrash.restore(decodeURIComponent(b.dataset.restore));
+    renderTrash(); flashSaved();
+  }));
+  $("btn-trash-clear").addEventListener("click", async () => {
+    if (!confirm("Papierkorb endgültig leeren? Diese Stände sind danach nirgends mehr vorhanden.")) return;
+    await gppRemoteTrash.clear();
+    renderTrash();
+  });
 }
 renderStorage();
 window.addEventListener("gpp:artefacts-changed", renderStorage);

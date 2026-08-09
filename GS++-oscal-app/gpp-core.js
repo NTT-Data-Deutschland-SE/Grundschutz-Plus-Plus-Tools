@@ -383,6 +383,9 @@ const gppArtefacts = {
     const bytes = new TextEncoder().encode(json);
     const now = new Date().toISOString();
     const st = (set || this.activeSet()).trim() || GPP_DEFAULT_SET;
+    /* In der Zusammenarbeit ist die Sperre Schreibvoraussetzung — wirft, wenn
+       sie fehlt. Ohne DB/Anmeldung und bei Netzausfall kein Eingriff. */
+    if (typeof gppRemote !== "undefined") await gppRemote.requireLock(st);
     let key = id || `${st}:${tool}:${filename}`;
     let existing = await this.get(key);
     if (!existing && !id) {
@@ -459,11 +462,14 @@ const gppArtefacts = {
     return [...by.values()].sort((a, b) => a.name.localeCompare(b.name));
   },
   async remove(id) {
+    const rec = await this.get(id);
+    if (rec && typeof gppRemote !== "undefined") await gppRemote.requireLock(gppSetOf(rec));
     await gppTx("readwrite", store => store.delete(id));
     window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { id, removed: true } }));
     try { gppRemote.onLocalRemove(id); } catch (e) { /* Sync bricht Lokales nie */ }
   },
   async removeSet(name) {
+    if (typeof gppRemote !== "undefined") await gppRemote.requireLock(name);
     const doomed = (await this.all("*")).filter(r => gppSetOf(r) === name);
     for (const r of doomed) await gppTx("readwrite", store => store.delete(r.id));
     window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { setRemoved: name } }));
@@ -532,13 +538,23 @@ const gppArtefacts = {
    im localStorage; das kurzlebige Access-Token lebt im Speicher des Tabs. */
 const GPP_REMOTE_DB = "gpp-remote";
 const GPP_REMOTE_STORE = "outbox";
+/* Papierkorb für spiegel-gelöschte Artefakte: Wenn der Abgleich eine fremde
+   Löschung nachvollzieht, kann er den LETZTEN existierenden Stand eines
+   Dokuments treffen — der Browser, der ihn hält, wurde nie gefragt. Deshalb
+   wird nicht vernichtet, sondern verschoben; gppRemoteTrash.list()/restore()
+   holen es zurück. Der eigene, bewusste Löschvorgang (removeSet mit
+   Rückfrage) läuft NICHT über den Papierkorb. */
+const GPP_REMOTE_TRASH = "trash";
 
 function gppRemoteDbOpen() {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(GPP_REMOTE_DB, 1);
+    const req = indexedDB.open(GPP_REMOTE_DB, 2);
     req.onupgradeneeded = () => {
       if (!req.result.objectStoreNames.contains(GPP_REMOTE_STORE)) {
         req.result.createObjectStore(GPP_REMOTE_STORE, { keyPath: "key" });
+      }
+      if (!req.result.objectStoreNames.contains(GPP_REMOTE_TRASH)) {
+        req.result.createObjectStore(GPP_REMOTE_TRASH, { keyPath: "id" });
       }
     };
     req.onsuccess = () => resolve(req.result);
@@ -546,13 +562,13 @@ function gppRemoteDbOpen() {
   });
 }
 /* Gleiches Muster wie gppTx: eine Operation je Transaktion, kein await darin. */
-async function gppRemoteTx(mode, fn) {
+async function gppRemoteTx(mode, fn, storeName = GPP_REMOTE_STORE) {
   const db = await gppRemoteDbOpen();
   return new Promise((resolve, reject) => {
-    const tx = db.transaction(GPP_REMOTE_STORE, mode);
+    const tx = db.transaction(storeName, mode);
     let result;
     let req;
-    try { req = fn(tx.objectStore(GPP_REMOTE_STORE)); } catch (e) { db.close(); reject(e); return; }
+    try { req = fn(tx.objectStore(storeName)); } catch (e) { db.close(); reject(e); return; }
     if (req && typeof req === "object" && "onsuccess" in req) {
       req.onsuccess = () => { result = req.result; };
     }
@@ -561,6 +577,24 @@ async function gppRemoteTx(mode, fn) {
     tx.onabort = () => { db.close(); reject(tx.error); };
   });
 }
+
+/* Zugriff auf den Papierkorb — bewusst klein: auflisten, wiederherstellen
+   (zurück in den Artefaktbestand UND als Push in die Datenbank, sofern
+   angemeldet), leeren. */
+const gppRemoteTrash = {
+  async list() { return (await gppRemoteTx("readonly", s => s.getAll(), GPP_REMOTE_TRASH)) || []; },
+  async restore(id) {
+    const entry = await gppRemoteTx("readonly", s => s.get(id), GPP_REMOTE_TRASH);
+    if (!entry) return null;
+    const { trashedAt, ...rec } = entry;
+    await gppTx("readwrite", store => store.put(rec));
+    await gppRemoteTx("readwrite", s => s.delete(id), GPP_REMOTE_TRASH);
+    window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { id: rec.id, restored: true } }));
+    try { gppRemote.onLocalSave(rec, null); } catch (e) { /* Push folgt beim nächsten Anlass */ }
+    return rec;
+  },
+  async clear() { await gppRemoteTx("readwrite", s => s.clear(), GPP_REMOTE_TRASH); },
+};
 
 const gppRemote = {
   _access: null,          // Access-Token: nur im Speicher dieses Tabs
@@ -861,6 +895,11 @@ const gppRemote = {
       await this.api("artefacts?id=eq." + encodeURIComponent(e.id), { method: "DELETE" });
     } else if (e.op === "removeset") {
       await this.api("artefacts?set_name=eq." + encodeURIComponent(e.set), { method: "DELETE" });
+      /* Set weg, Sperre weg: das Löschen setzte die gehaltene Sperre voraus,
+         also darf dieselbe Sitzung sie auch abräumen. Andere Clients spiegeln
+         die Löschung beim nächsten pullAll. */
+      await this.api("set_locks?set_name=eq." + encodeURIComponent(e.set), { method: "DELETE" });
+      this._held.delete(e.set);
     }
   },
 
@@ -884,13 +923,26 @@ const gppRemote = {
       await gppTx("readwrite", store => store.put(this._toLocal(row)));
       pulled++;
     }
-    if (pulled) {
-      window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { set: name, pulled } }));
+    /* Gelöschtes spiegeln: führt der Server das Set (Zeilen vorhanden oder als
+       zugängliches Set bekannt), verschwinden lokale Zeilen, die er nicht mehr
+       hat — außer eigener, noch nicht gepushter Arbeit (Outbox). Rein lokale
+       Sets, die der Server nie kannte, bleiben vollständig unberührt. */
+    let removed = 0;
+    if (rows.length > 0 || this.remoteSets().includes(name)) {
+      const serverIds = new Set(rows.map(r => r.id));
+      for (const rec of await gppArtefacts.all(name)) {
+        if (serverIds.has(rec.id) || pending.has(rec.id)) continue;
+        await this._trash(rec);
+        removed++;
+      }
+    }
+    if (pulled || removed) {
+      window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { set: name, pulled, removed } }));
       try { localStorage.setItem(GPP_CFG_PREFIX + "artefacts:touch", new Date().toISOString()); } catch (e) { /* Quota */ }
     }
     this._lastSync = new Date().toISOString();
     this._emit();
-    return { pulled, total: rows.length };
+    return { pulled, removed, total: rows.length };
   },
   /* Alle für den Benutzer zugänglichen Sets vom Server holen — nicht nur das
      aktive. Ohne das entdeckt ein neu Hinzugekommener geteilte Sets nie: der
@@ -901,6 +953,7 @@ const gppRemote = {
      localStorage, damit index.html auch leere berechtigte Sets anzeigen kann. */
   async pullAll() {
     if (!this.enabled() || !this.loggedIn()) return { sets: [], pulled: 0 };
+    const vorher = this.remoteSets();   // VOR dem Überschreiben: für die Löscherkennung
     const rows = await this.api("artefacts?select=set_name") || [];
     const dataSets = [...new Set(rows.map(r => r.set_name))];
     let permSets = [];
@@ -909,19 +962,43 @@ const gppRemote = {
     const known = [...new Set([...dataSets, ...permSets])].sort();
     try { localStorage.setItem(GPP_CFG_PREFIX + "remote:sets", JSON.stringify(known)); } catch (e) { /* Quota */ }
     let pulled = 0;
-    for (const s of dataSets) { try { pulled += (await this.pullSet(s)).pulled; } catch (e) { /* nächstes Set */ } }
+    /* Über ALLE bekannten Sets, nicht nur die mit Serverdaten: ein per
+       Berechtigung bekanntes, drüben geleertes Set muss auch lokal leeren —
+       pullSet spiegelt Löschungen für server-bekannte Sets. */
+    for (const s of known) { try { pulled += (await this.pullSet(s)).pulled; } catch (e) { /* nächstes Set */ } }
+    /* Gelöschtes löschen — überall: ein Set, das der Server nachweislich
+       KANNTE (stand im letzten pullAll) und jetzt nicht mehr führt, wurde
+       drüben gelöscht und verschwindet auch hier. Rein lokale Sets, die nie
+       auf dem Server waren, bleiben unberührt; eigene noch nicht gepushte
+       Arbeit (Outbox) schützt den jeweiligen Datensatz. */
+    let removedSets = 0;
+    const pending = new Set((await this._outboxAll()).map(e => e.set).filter(Boolean));
+    for (const name of vorher) {
+      if (known.includes(name) || pending.has(name)) continue;
+      const doomed = await gppArtefacts.all(name);
+      for (const r of doomed) await this._trash(r);
+      if (doomed.length) removedSets++;
+      if (gppArtefacts.activeSet() === name) gppArtefacts.setActiveSet(GPP_DEFAULT_SET);
+    }
     /* Auch ohne gezogene Zeilen neu rendern: die Set-Liste selbst hat sich
-       geändert (neue leere Berechtigung). */
-    window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { knownSets: known } }));
+       geändert (neue leere Berechtigung, entferntes Set). */
+    window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { knownSets: known, removedSets } }));
     this._lastSync = new Date().toISOString();
     this._emit();
-    return { sets: known, dataSets, permSets, pulled };
+    return { sets: known, dataSets, permSets, pulled, removedSets };
   },
   /* Server-Set-Namen aus dem letzten pullAll — für die Set-Auswahl der UI,
      auch für berechtigte, noch leere Sets. */
   remoteSets() {
     try { return JSON.parse(localStorage.getItem(GPP_CFG_PREFIX + "remote:sets") || "[]"); }
     catch (e) { return []; }
+  },
+  /* Spiegel-Löschung: in den Papierkorb verschieben statt vernichten — die
+     fremde Löschung könnte den letzten existierenden Stand treffen. */
+  async _trash(rec) {
+    try { await gppRemoteTx("readwrite", s => s.put({ ...rec, trashedAt: new Date().toISOString() }), GPP_REMOTE_TRASH); }
+    catch (e) { /* Papierkorb voll/kaputt: lieber behalten als vernichten */ return; }
+    await gppTx("readwrite", store => store.delete(rec.id));
   },
   _toLocal(row) {
     return { id: row.id, set: row.set_name, stage: row.stage, kind: row.kind, title: row.title,
@@ -1023,12 +1100,36 @@ const gppRemote = {
       await this.token();
       const me = (this.claims() || {}).sub || null;
       const info = { set, lock, mine: !!(lock && me && lock.holder === me) };
-      const changed = JSON.stringify(info) !== JSON.stringify(this._lockCache);
-      this._lockCache = info;
       if (info.mine) this._held.add(set); else this._held.delete(set);
-      if (changed) this._emit();
+      /* Der Cache trägt die Anzeige (Chip, Übersicht) und meint das AKTIVE
+         Set — eine Abfrage für ein anderes Set darf ihn nicht überschreiben. */
+      if (set === gppArtefacts.activeSet()) {
+        const changed = JSON.stringify(info) !== JSON.stringify(this._lockCache);
+        this._lockCache = info;
+        if (changed) this._emit();
+      }
       return info;
     } catch (e) { return this._lockCache; }
+  },
+
+  /* Schreib-Gate: In der Zusammenarbeit ist die Sperre Schreibvoraussetzung —
+     ohne sie wird auch LOKAL nichts geändert, sonst liefe der lokale Stand
+     vom Server weg und der Push scheiterte später an der RLS. Ohne DB oder
+     ohne Anmeldung bleibt alles frei (Offline-Betrieb ist der Normalfall);
+     bei Netzfehlern wird nicht blockiert — dann entscheidet der Server beim
+     Push, das ist der Offline-Weg. */
+  async requireLock(setName) {
+    if (!this.enabled() || !this.loggedIn()) return;
+    if (this._held.has(setName)) return;
+    let mine = false;
+    let netz = true;
+    try {
+      const info = await this._refreshLock(setName);
+      mine = !!(info && info.mine);
+    } catch (e) { netz = false; }
+    if (netz && !mine) {
+      throw new Error(`Set „${setName}" ist nicht gesperrt — in der Übersicht „Bearbeiten (sperren)" wählen. Ohne Sperre wird in der Zusammenarbeit nichts geändert.`);
+    }
   },
 
   /* Wirksame Rechte aus der Datenbank — für UI-Weichen wie die
@@ -1091,6 +1192,12 @@ function gppRemoteChip() {
       text = `DB · ${s.pending} ausstehend`;
       farbe = "#fbbf24";
       hint = s.lastError ? "Letzter Fehler: " + s.lastError : "Wird übertragen, sobald der Server erreichbar ist.";
+    } else if (s.lock && !s.lock.lock) {
+      /* Angemeldet, Set frei, aber nicht gesperrt: Speichern würde am
+         Schreib-Gate scheitern — das soll man sehen, BEVOR man tippt. */
+      text = "DB · nur lesen";
+      farbe = "#94a3b8";
+      hint = `Set „${s.lock.set}" ist nicht gesperrt — zum Bearbeiten in der Übersicht „Bearbeiten (sperren)" wählen. Lesen und Export gehen immer.`;
     } else {
       const eigene = s.lock && s.lock.mine ? " ✏" : "";
       text = "DB · synchron" + eigene;

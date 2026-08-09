@@ -522,8 +522,15 @@
     document.getElementById("btn-set-delete").addEventListener("click", async () => {
       const set = gppArtefacts.activeSet();
       const n = artefacts.length;
-      if (!confirm(`Set „${set}" mit ${n} Artefakt(en) komplett löschen?`)) return;
-      await gppArtefacts.removeSet(set);
+      if (!confirm(`Set „${set}" mit ${n} Artefakt(en) komplett löschen?` +
+        (typeof gppRemote !== "undefined" && gppRemote.enabled() && gppRemote.loggedIn()
+          ? " Die Löschung wird auch in der gemeinsamen Datenbank und damit bei allen anderen wirksam." : ""))) return;
+      try {
+        await gppArtefacts.removeSet(set);
+      } catch (e) {
+        alert("Löschen nicht möglich: " + e.message);
+        return;
+      }
       gppArtefacts.setActiveSet("standard");
       refreshArtefacts();
     });
@@ -535,18 +542,32 @@
     async function renderLock() {
       const state = document.getElementById("lock-state");
       const btn = document.getElementById("btn-lock");
+      const neu = document.getElementById("btn-set-new");
       if (typeof gppRemote === "undefined" || !gppRemote.enabled() || !gppRemote.loggedIn()) {
-        state.style.display = "none"; btn.style.display = "none"; return;
+        state.style.display = "none"; btn.style.display = "none";
+        neu.style.display = "";   // rein lokal: Sets anlegen bleibt frei
+        return;
       }
+      if (meineRolle === null) {
+        try { meineRolle = ((await gppRemote.whoami()) || {}).gpp_role || ""; } catch (e) { meineRolle = ""; }
+      }
+      /* Neue Sets legt in der Zusammenarbeit nur der admin an — der Server
+         lehnt Nicht-Admins ohnehin ab (Set-Existenz-Regel), der Knopf soll
+         nichts versprechen, was scheitert. */
+      neu.style.display = meineRolle === "admin" ? "" : "none";
       const s = await gppRemote.status();
       const info = s.lock && s.lock.set === gppArtefacts.activeSet() ? s.lock : null;
       state.style.display = ""; btn.style.display = "";
       btn.disabled = false;
       if (!info || !info.lock) {
-        state.textContent = "nicht gesperrt";
+        state.textContent = "nicht gesperrt — nur lesen";
         state.style.color = "var(--text-quiet)";
-        btn.textContent = "Bearbeiten (sperren)";
-        btn.dataset.act = "acquire";
+        if (meineRolle === "leser" || meineRolle === "") {
+          btn.style.display = "none";   // leser kann nicht sperren, also auch kein Knopf
+        } else {
+          btn.textContent = "Bearbeiten (sperren)";
+          btn.dataset.act = "acquire";
+        }
       } else if (info.mine) {
         state.textContent = `✏ von dir gesperrt seit ${String(info.lock.acquired_at || "").slice(11, 16)}`;
         state.style.color = "var(--green, #34d399)";

@@ -165,7 +165,7 @@ Rechte keine Rolle mehr.
 |---|---|---|---|---|
 | `leser` | alle Sets der Org | — | — | — |
 | `bearbeiter` | alle Sets der Org | alles **außer** `ap`/`ar` | ja | — |
-| `pruefer` | alle Sets der Org | nur `ap`/`ar`/`poam` | — | — |
+| `pruefer` | alle Sets der Org | nur `ap`/`ar`/`poam` | ja | — |
 | `admin` | alle Sets der Org | alles | ja, plus fremde brechen | Konten, Rollen, Set-Rechte |
 
 Die `bearbeiter`/`pruefer`-Trennung fällt auf die Spalte `kind` und steckt in
@@ -173,6 +173,19 @@ Die `bearbeiter`/`pruefer`-Trennung fällt auf die Spalte `kind` und steckt in
 `artefacts` auswerten. Ein **Set-Recht** (`set_permissions`) schlägt für genau
 dieses Set die globale Rolle; ein globaler `admin` lässt sich so nicht
 herabstufen, und `admin` ist je Set nicht vergebbar.
+
+Zwei Verschärfungen gegenüber dem ursprünglichen Plan (§4 sah die Sperre als
+beratend):
+
+* **Schreiben setzt die gehaltene Sperre voraus.** `gpp_can_write` verlangt
+  zusätzlich `gpp_holds_lock(set_name)` — wer nicht sperrt, schreibt nicht,
+  auch nicht per `curl`. Deshalb darf jetzt auch `pruefer` sperren, sonst
+  könnte er nie `ap`/`ar` schreiben. Der Client blockiert konsistent dazu
+  schon das lokale Speichern, wenn angemeldet und die Sperre fehlt.
+* **Neue Sets legt nur der `admin` an.** Nicht-Admins schreiben (und sperren)
+  nur Sets, die es gibt: Artefakte vorhanden **oder** Set-Recht vergeben
+  (`gpp_set_exists`). Der Weg für ein neues Team-Set: der Admin legt es an
+  bzw. vergibt das Set-Recht, dann arbeiten die anderen darin.
 
 ### 4.4 Was ein Unauthentifizierter kann: nichts Datenrelevantes
 
@@ -237,7 +250,17 @@ curl -s -H "apikey: $ANON" -X POST "$B/rest/v1/artefacts" -d '{...}'       # erw
 curl -s -H "apikey: $ANON" -H "Authorization: Bearer $LESER" \
   -X POST "$B/rest/v1/artefacts" -d '{...}'                                # erwartet 42501
 
-# 4. bearbeiter darf kein ap/ar
+# 3b. bearbeiter OHNE gehaltene Sperre darf auch nicht schreiben
+curl -s -H "apikey: $ANON" -H "Authorization: Bearer $BEARB" \
+  -X POST "$B/rest/v1/artefacts" -d '{...}'                                # erwartet 42501
+# … nach rpc/acquire_set_lock auf dasselbe Set: 201
+
+# 3c. bearbeiter kann kein NEUES Set anlegen (auch mit Sperre-Versuch)
+curl -s -H "apikey: $ANON" -H "Authorization: Bearer $BEARB" \
+  -X POST "$B/rest/v1/rpc/acquire_set_lock" \
+  -d '{"p_set_name":"gibt-es-nicht","p_holder_name":"x"}'                  # erwartet "Set existiert nicht"
+
+# 4. bearbeiter darf kein ap/ar (selbst mit gehaltener Sperre)
 curl -s -H "apikey: $ANON" -H "Authorization: Bearer $BEARB" \
   -X POST "$B/rest/v1/artefacts" -d '{"kind":"ar", ...}'                   # erwartet 42501
 

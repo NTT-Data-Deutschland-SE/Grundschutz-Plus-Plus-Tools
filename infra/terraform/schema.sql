@@ -120,14 +120,38 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
   LIMIT 1;
 $$;
 
--- Schreibrecht nach Plan §4: bearbeiter alles außer ap/ar; pruefer nur
--- ap/ar/poam; admin alles; leser nichts.
+-- Ein Set "existiert", wenn es Artefakte trägt oder ein Set-Recht darauf
+-- vergeben ist. Sperren zählen bewusst nicht — sonst erschüfe der Sperrversuch
+-- selbst das Set.
+CREATE OR REPLACE FUNCTION public.gpp_set_exists(p_set_name text) RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
+  SELECT EXISTS (SELECT 1 FROM public.artefacts
+                  WHERE set_name = p_set_name AND org = public.auth_org())
+      OR EXISTS (SELECT 1 FROM public.set_permissions
+                  WHERE set_name = p_set_name AND org = public.auth_org());
+$$;
+
+-- Hält der Anfragende die (lebendige) Sperre auf dem Set? Die TTL entspricht
+-- der Übernahme-Frist in acquire_set_lock.
+CREATE OR REPLACE FUNCTION public.gpp_holds_lock(p_set_name text) RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
+  SELECT EXISTS (SELECT 1 FROM public.set_locks
+                  WHERE set_name = p_set_name AND org = public.auth_org()
+                    AND holder = auth.uid()
+                    AND heartbeat_at > now() - INTERVAL '5 minutes');
+$$;
+
+-- Schreibrecht: Rolle nach Plan §4 (bearbeiter alles außer ap/ar; pruefer nur
+-- ap/ar/poam; admin alles; leser nichts) UND die gehaltene Sperre — die Sperre
+-- ist keine Höflichkeit mehr, sondern Schreibvoraussetzung. Neue Sets legt nur
+-- der admin an: Nicht-Admins schreiben nur in existierende Sets (Artefakte
+-- vorhanden oder Set-Recht vergeben).
 CREATE OR REPLACE FUNCTION public.gpp_can_write(p_set_name text, p_kind text) RETURNS boolean
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
-  SELECT CASE public.gpp_set_role(p_set_name)
+  SELECT public.gpp_holds_lock(p_set_name) AND CASE public.gpp_set_role(p_set_name)
     WHEN 'admin'      THEN true
-    WHEN 'bearbeiter' THEN p_kind NOT IN ('ap', 'ar')
-    WHEN 'pruefer'    THEN p_kind IN ('ap', 'ar', 'poam')
+    WHEN 'bearbeiter' THEN p_kind NOT IN ('ap', 'ar') AND public.gpp_set_exists(p_set_name)
+    WHEN 'pruefer'    THEN p_kind IN ('ap', 'ar', 'poam') AND public.gpp_set_exists(p_set_name)
     ELSE false
   END;
 $$;
@@ -261,8 +285,15 @@ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE
   v_org uuid := public.auth_org();
 BEGIN
-  IF v_org IS NULL OR public.gpp_set_role(p_set_name) NOT IN ('bearbeiter', 'admin') THEN
+  /* Seit die Sperre Schreibvoraussetzung ist, darf auch pruefer sperren —
+     sonst könnte er nie ap/ar schreiben (Abweichung von Plan §4, dort war
+     die Sperre beratend). Nicht-Admins sperren nur existierende Sets:
+     neue Sets anzulegen ist admin-Sache. */
+  IF v_org IS NULL OR public.gpp_set_role(p_set_name) NOT IN ('bearbeiter', 'pruefer', 'admin') THEN
     RAISE EXCEPTION 'keine Berechtigung, dieses Set zu sperren';
+  END IF;
+  IF public.gpp_set_role(p_set_name) <> 'admin' AND NOT public.gpp_set_exists(p_set_name) THEN
+    RAISE EXCEPTION 'Set existiert nicht — neue Sets legt der admin an';
   END IF;
   RETURN QUERY
   INSERT INTO public.set_locks (set_name, org, holder, holder_name, acquired_at, heartbeat_at)
