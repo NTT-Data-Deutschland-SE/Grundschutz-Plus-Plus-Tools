@@ -455,10 +455,14 @@ const gppArtefacts = {
     return all.filter(r => want === "*" || gppSetOf(r) === want);
   },
   /* Neuestes Artefakt einer Sorte im aktiven Set — für die Tool-Übergabe
-     (Generator erzeugt SSP, der Editor bietet ihn automatisch an). */
-  async latest(kind, set) {
+     (Generator erzeugt SSP, der Editor bietet ihn automatisch an).
+     `tool` grenzt zusätzlich auf den Erzeuger ein: kind "workspace" schreiben
+     MEHRERE Werkzeuge — wer nur nach der Sorte fragt, bekommt sonst beim
+     Hin- und Herspringen den Arbeitsstand des jeweils anderen Werkzeugs
+     (und verwirft dann fälschlich den eigenen). */
+  async latest(kind, set, tool) {
     const rows = await this.list(set);
-    const hit = rows.find(r => r.kind === kind);
+    const hit = rows.find(r => r.kind === kind && (!tool || r.tool === tool));
     return hit ? await this.get(hit.id) : null;
   },
   /* Übersicht aller Sets mit Bestand */
@@ -1625,6 +1629,34 @@ function gppCollapsibleLog({ consoleEl, headEl, toolId, label = "Log", defaultCo
   headEl.appendChild(btn);
   return btn;
 }
+
+/* ---------- Sichtbare Warnung: Schreiben derzeit blockiert ----------
+   In der Zusammenarbeit ist die Sperre Schreibvoraussetzung. Scheitert ein
+   Live-Save daran, reicht eine Logzeile nicht: man arbeitet sonst minutenlang
+   weiter und verliert alles beim Verlassen. Ein Banner oben am Fenster,
+   aktualisiert statt gestapelt; verschwindet, sobald wieder gespeichert
+   werden konnte (clear() aus dem Erfolgspfad). */
+function gppWriteBlockedBanner(msg) {
+  let b = document.getElementById("gpp-writeblock");
+  if (!b) {
+    b = document.createElement("div");
+    b.id = "gpp-writeblock";
+    b.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:200;padding:10px 44px 10px 16px;" +
+      "background:#7f1d1d;color:#fecaca;font:600 13px/1.4 system-ui,-apple-system,sans-serif;" +
+      "box-shadow:0 4px 16px rgba(0,0,0,.4)";
+    const text = document.createElement("span");
+    const x = document.createElement("button");
+    x.type = "button";
+    x.textContent = "✕";
+    x.title = "Warnung ausblenden";
+    x.style.cssText = "position:absolute;right:10px;top:8px;background:transparent;border:0;color:inherit;font-size:14px;cursor:pointer";
+    x.addEventListener("click", () => b.remove());
+    b.append(text, x);
+    document.body.appendChild(b);
+  }
+  b.firstChild.textContent = "⚠ " + msg;
+}
+gppWriteBlockedBanner.clear = () => { const b = document.getElementById("gpp-writeblock"); if (b) b.remove(); };
 
 /* ---------- Schwebende Filterleiste (links) ----------
    Einheitliche, stets erreichbare Filter je Werkzeug: eine schmale, schwebende

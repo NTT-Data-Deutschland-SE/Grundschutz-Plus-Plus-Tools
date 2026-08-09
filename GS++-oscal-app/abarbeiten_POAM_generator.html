@@ -597,7 +597,7 @@ input[type=date].inp{color-scheme:dark}
 
 </div><!-- /app -->
 
-<script src="gpp-core.js?v=3.8"></script>
+<script src="gpp-core.js?v=3.9"></script>
 <script>
 if(typeof gppCfg==='undefined'||typeof GPP_CORE_VERSION==='undefined'||Number(GPP_CORE_VERSION)<2){
     document.body.innerHTML='<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">'+
@@ -849,10 +849,11 @@ function importAR(d,fn){
 }
 
 // SESSION
-function ser(){return JSON.stringify({_t:'poam',_v:2,arFilename:P.arFilename,sspHref:P.sspHref,sysName:P.sysName,meta:P.meta,responsible:P.responsible,findings:P.findings,observations:P.observations,risks:P.risks,items:P.items})}
+function ser(){return JSON.stringify({_t:'poam',_v:2,arFilename:P.arFilename,arSha:P._arSha||'',sspHref:P.sspHref,sysName:P.sysName,meta:P.meta,responsible:P.responsible,findings:P.findings,observations:P.observations,risks:P.risks,items:P.items})}
 function restoreS(d){
     if(d._t!=='poam'){l.err('Session-Import abgelehnt: kein POA&M-Session-Dokument.');return alert('Keine POA&M-Session.')}
     Object.assign(P,{arFilename:d.arFilename||'',sspHref:d.sspHref||'',sysName:d.sysName||'',meta:d.meta||{title:'',version:'1.0.0',desc:''},responsible:d.responsible||{name:'',role:'system-owner',email:''},findings:d.findings||[],observations:d.observations||[],risks:d.risks||[],items:d.items||[]});
+    P._arSha=d.arSha||'';
     document.getElementById('m-title').value=P.meta.title;document.getElementById('m-ver').value=P.meta.version;
     document.getElementById('m-resp').value=P.responsible.name;document.getElementById('m-email').value=P.responsible.email;
     document.getElementById('sec-meta').classList.remove('hidden');
@@ -860,7 +861,11 @@ function restoreS(d){
     setSt('ar-status',true,`Session: ${P.items.length} Items`);render()
 }
 // Arbeitsstand liegt ausschliesslich im gemeinsamen Artefaktbestand (aktives Set).
-function autoSave(){gppArtefacts.save({stage:'remediate',kind:'workspace',title:'POA&M Arbeitsstand',filename:'poam-workspace.json',tool:GPP_TOOL_ID,data:JSON.parse(ser())}).catch(e=>l.warn('Arbeitsstand nicht ins Set gesichert: '+e.message))}
+function autoSave(){gppArtefacts.save({stage:'remediate',kind:'workspace',title:'POA&M Arbeitsstand',filename:'poam-workspace.json',tool:GPP_TOOL_ID,data:JSON.parse(ser())})
+    .then(()=>{if(typeof gppWriteBlockedBanner==='function')gppWriteBlockedBanner.clear()})
+    .catch(e=>{l.warn('Arbeitsstand nicht ins Set gesichert: '+e.message);
+        if(typeof gppWriteBlockedBanner==='function')
+            gppWriteBlockedBanner('Abarbeitung wird derzeit NICHT gespeichert: '+e.message+' — in der Übersicht „Bearbeiten (sperren)" wählen.')})}
 // Boot-Übernahme: eigener Arbeitsstand aus dem Set, sonst neuestes AR als Input.
 async function adoptFromSet(){
     // Einmalige Migration: alter localStorage-Autosave → Workspace-Artefakt.
@@ -875,15 +880,17 @@ async function adoptFromSet(){
         const arRow=rows.find(r=>r.kind==='ar');   // rows sind nach updatedAt sortiert
         if(ws){const rec=await gppArtefacts.get(ws.id);
             if(rec?.data?._t==='poam'){restoreS(rec.data);l.info(`Arbeitsstand aus Set übernommen (${rec.updatedAt||''})`);
-                /* Hat die Prüfung das AR inzwischen weitergeschrieben, dessen
-                   Befunde einarbeiten — eigene Bearbeitung bleibt erhalten. */
-                if(arRow&&(arRow.updatedAt||'')>(ws.updatedAt||'')){
+                /* Hat die Prüfung das AR inhaltlich weitergeschrieben (sha-
+                   Vergleich, nicht bloß „jünger" — das gilt seit dem Live-Sync
+                   fast immer), dessen Befunde einarbeiten — eigene Bearbeitung
+                   bleibt erhalten. */
+                if(arRow&&(arRow.sha256||'')!==(P._arSha||'')){
                     const ar=await gppArtefacts.get(arRow.id);
-                    if(ar?.data?.['assessment-results'])mergeAR(ar.data,ar.filename||'AR aus Set');
+                    if(ar?.data?.['assessment-results']){mergeAR(ar.data,ar.filename||'AR aus Set');P._arSha=arRow.sha256||''}
                 }
                 return}}
         const ar=await gppArtefacts.latest('ar');
-        if(ar?.data?.['assessment-results']){importAR(ar.data,ar.filename||'AR aus Set');l.info('AR aus Set übernommen');return}
+        if(ar?.data?.['assessment-results']){importAR(ar.data,ar.filename||'AR aus Set');P._arSha=ar.sha256||'';l.info('AR aus Set übernommen');return}
         l.debug('Kein Arbeitsstand und kein AR im aktiven Set — leer gestartet');
     }catch(e){l.warn('Übernahme aus dem Set fehlgeschlagen: '+shortErr(e.message))}
 }
@@ -903,6 +910,7 @@ function mergeAR(d,fn){
     const e=document.getElementById('m-email');if(e)e.value=resp.email;
     let kept=0;
     P.items.forEach(it=>{const o=old.get(key(it));if(!o)return;kept++;
+        if(o.uuid)it.uuid=o.uuid;   // stabile Identität über Merges hinweg
         ['priority','status','deadline','responsible','remediation','remarks','deviationJustification'].forEach(k=>{if(o[k])it[k]=o[k]});
         if(o.milestones?.length)it.milestones=o.milestones;
         if(o.createdAt)it.createdAt=o.createdAt});

@@ -558,7 +558,7 @@ textarea.inp{min-height:80px;line-height:1.55}
   </section>
 </div>
 
-<script src="gpp-core.js?v=3.8"></script>
+<script src="gpp-core.js?v=3.9"></script>
 <script>
 if(typeof gppCfg==='undefined'||typeof GPP_CORE_VERSION==='undefined'||Number(GPP_CORE_VERSION)<2){
     document.body.innerHTML='<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">'+
@@ -906,11 +906,11 @@ function applyDefData(uuid,d){
 // ============================================================
 // SESSION
 // ============================================================
-function ser(){return JSON.stringify({_v:9,sspFilename:S.sspFilename,meta:S.meta,sspRisks:S.sspRisks,assessor:S.assessor,terms:S.terms,tasks:S.tasks,dateStart:S.dateStart,dateEnd:S.dateEnd,excluded:[...S.excluded],methods:[...S.methods.entries()].map(([k,v])=>[k,[...v]]),findings:[...S.findings.entries()],aiCache:[...S.aiCache.entries()],compGroups:[...S.compGroups.entries()].map(([k,m])=>[k,[...m.entries()]]),compMeta:[...S.compMeta.entries()],allCids:[...S.allCids]})}
+function ser(){return JSON.stringify({_v:9,sspFilename:S.sspFilename,sspSha:S.sspArtSha||'',meta:S.meta,sspRisks:S.sspRisks,assessor:S.assessor,terms:S.terms,tasks:S.tasks,dateStart:S.dateStart,dateEnd:S.dateEnd,excluded:[...S.excluded],methods:[...S.methods.entries()].map(([k,v])=>[k,[...v]]),findings:[...S.findings.entries()],aiCache:[...S.aiCache.entries()],compGroups:[...S.compGroups.entries()].map(([k,m])=>[k,[...m.entries()]]),compMeta:[...S.compMeta.entries()],allCids:[...S.allCids]})}
 
 function restoreSession(d){
     if(!d._v||d._v<6){L.err(`Session-Format v${d._v||'?'} zu alt (v9 benötigt)`);return alert('Session-Format zu alt oder inkompatibel (v9 benötigt).')}
-    S.sspFilename=d.sspFilename||'';S.meta=d.meta||{title:'',version:'1.0.0',desc:''};S.sspRisks=d.sspRisks||[];S.assessor=d.assessor||{name:'',type:'organization',email:''};
+    S.sspFilename=d.sspFilename||'';S.sspArtSha=d.sspSha||'';S.meta=d.meta||{title:'',version:'1.0.0',desc:''};S.sspRisks=d.sspRisks||[];S.assessor=d.assessor||{name:'',type:'organization',email:''};
     S.terms=d.terms||{roe:'',disclosures:'',methodology:''};S.tasks=d.tasks||[];S.dateStart=d.dateStart||'';S.dateEnd=d.dateEnd||'';
     S.excluded=new Set(d.excluded||[]);S.methods=new Map((d.methods||[]).map(([k,v])=>[k,new Set(v)]));
     S.findings=new Map(d.findings||[]);S.aiCache=new Map(d.aiCache||[]);
@@ -935,8 +935,10 @@ function autoSave(){
     if(j===_autoSaved)return;
     gppArtefacts.save({stage:'assess',kind:'workspace',title:'Prüfung Arbeitsstand',
         filename:'pruefung-workspace.json',tool:GPP_TOOL_ID,data:JSON.parse(j)})
-        .then(()=>{_autoSaved=j})
-        .catch(e=>L.warn(`Arbeitsstand nicht gesichert: ${e.message}`));
+        .then(()=>{_autoSaved=j;if(typeof gppWriteBlockedBanner==='function')gppWriteBlockedBanner.clear()})
+        .catch(e=>{L.warn(`Arbeitsstand nicht gesichert: ${e.message}`);
+            if(typeof gppWriteBlockedBanner==='function')
+                gppWriteBlockedBanner('Bewertungen werden derzeit NICHT gespeichert: '+e.message+' — in der Übersicht „Bearbeiten (sperren)" wählen.')});
 }
 // Sicherheitsnetz-Takt und Auslöser für den Live-Sync (Arbeitsstand + AP/AR):
 // jede Formularänderung stößt gebündelt an; beim Verlassen wird sofort geschrieben.
@@ -952,18 +954,27 @@ async function bootFromSet(){
     try{
         migrateLegacyAutosave();
         const set=gppArtefacts.activeSet();
-        const ws=await gppArtefacts.latest('workspace');
+        /* NUR der eigene Arbeitsstand zählt: kind "workspace" schreiben auch
+           Editor und POA&M — ohne Tool-Filter verwirft die Prüfung beim
+           Hin- und Herspringen ihren eigenen Stand samt Bewertungen. */
+        const ws=await gppArtefacts.latest('workspace',undefined,GPP_TOOL_ID);
         if(ws&&ws.tool===GPP_TOOL_ID&&ws.data&&(ws.data.allCids||[]).length){
             L.info(`Arbeitsstand aus Set „${set}" übernommen`);
             restoreSession(ws.data);
             await adoptDefsFromSet();
-            /* Hat Generator oder Editor den SSP inzwischen weitergeschrieben
-               (Artefakt jünger als der eigene Arbeitsstand), dessen Controls
-               übernehmen — vorhandene Bewertungen bleiben erhalten. */
+            /* SSP-Änderungen übernehmen — aber nur, wenn sich der INHALT seit
+               der letzten Übernahme geändert hat (sha-Vergleich). Ein reines
+               „Artefakt ist jünger" gilt seit dem Live-Sync immer und würde
+               bei jedem Öffnen neu mergen. */
             const ssp=await gppArtefacts.latest('ssp');
-            if(ssp&&ssp.data&&ssp.data['system-security-plan']&&(ssp.updatedAt||'')>(ws.updatedAt||'')){
-                await mergeSSP(ssp);
+            if(ssp&&ssp.data&&ssp.data['system-security-plan']){
+                if((ssp.sha256||'')!==(ws.data.sspSha||''))await mergeSSP(ssp);
+                else S.sspArtSha=ssp.sha256||'';
             }
+            /* Sicherheitsnetz: Arbeitsstand ohne eine einzige Bewertung, aber
+               ein AR im Set? Dann Bewertungen von dort zurückholen (z. B. nach
+               einem früher verlorenen Arbeitsstand). */
+            if(![...S.findings.values()].some(f=>f&&f.status))await hydrateFromAR();
             return;
         }
         await adoptDefsFromSet();
@@ -972,6 +983,8 @@ async function bootFromSet(){
             S.ssp=ssp.data['system-security-plan'];S.sspFilename=ssp.filename||'ssp.json';
             L.ok(`SSP aus Set „${set}" übernommen: ${ssp.title}`);
             await initSSP();
+            S.sspArtSha=ssp.sha256||'';
+            await hydrateFromAR();
         }else{
             L.info(`Set „${set}" enthält noch keinen SSP — im SSP-Generator erzeugen, er erscheint hier automatisch.`);
         }
@@ -990,13 +1003,51 @@ async function mergeSSP(ssp){
     await initSSP();
     if(meta.title)S.meta=meta;
     S.terms=terms;S.assessor=assessor;S.dateStart=ds;S.dateEnd=de;S.tasks=tasks;S.aiCache=ai;
-    let kept=0,gone=0;
-    keepF.forEach((f,c)=>{if(S.findings.has(c)){S.findings.set(c,f);if(f.status)kept++}else if(f.status)gone++});
-    keepM.forEach((m,c)=>{if(S.methods.has(c))S.methods.set(c,m)});
+    /* ALLE Bewertungen zurücklegen — auch für Controls, die gerade nicht im
+       SSP/den Defs auftauchen (z. B. weil ein Komponenten-Profil in diesem
+       Lauf nicht ladbar war). Sie ruhen dann nur: buildAR exportiert allein
+       Controls im aktuellen Scope, aber nichts geht verloren. */
+    let kept=0,ruht=0;
+    keepF.forEach((f,c)=>{S.findings.set(c,f);if(f.status){if(S.allCids.has(c))kept++;else ruht++}});
+    keepM.forEach((m,c)=>{S.methods.set(c,m)});
     keepX.forEach(c=>{if(S.allCids.has(c))S.excluded.add(c)});
+    S.sspArtSha=ssp.sha256||'';
     showUI();
-    L.ok(`SSP-Änderungen übernommen: jetzt ${S.allCids.size} Controls, ${kept} Bewertung(en) erhalten${gone?`, ${gone} entfallen (Control nicht mehr im SSP)`:''}.`);
+    L.ok(`SSP-Änderungen übernommen: jetzt ${S.allCids.size} Controls, ${kept} Bewertung(en) erhalten${ruht?`, ${ruht} ruhend (Control derzeit nicht aufgelöst)`:''}.`);
     scheduleLive();
+}
+
+/* Bewertungen aus dem AR-Artefakt zurückgewinnen: startet die Prüfung ohne
+   (bewertete) eigene Session, trägt das Set oft noch ein AR mit allen
+   Befunden — etwa nach einem verlorenen Arbeitsstand. Vorhandene Bewertungen
+   werden nie überschrieben. */
+async function hydrateFromAR(){
+    try{
+        const ar=await gppArtefacts.latest('ar');
+        const res=ar?.data?.['assessment-results']?.results?.[0];
+        if(!res||!(res.findings||[]).length)return;
+        const obsById=new Map((res.observations||[]).map(o=>[o.uuid,o]));
+        const riskById=new Map((res.risks||[]).map(r=>[r.uuid,r]));
+        let n=0;
+        (res.findings||[]).forEach(fd=>{
+            const cid=fd.target?.['target-id'];if(!cid)return;
+            const cur=S.findings.get(cid);
+            if(cur&&cur.status)return;
+            const st=fd.target?.status||{};
+            const status=st.state==='satisfied'?'satisfied':(st.reason==='other'?'other':'not-satisfied');
+            const ou=(fd['related-observations']||[])[0]?.['observation-uuid'];
+            const ru=(fd['related-risks']||[])[0]?.['risk-uuid'];
+            S.findings.set(cid,{status,
+                observation:(ou&&obsById.get(ou)?.description)||'',
+                risk:(ru&&riskById.get(ru)?.description)||'',
+                remarks:(fd.description&&!/^Bewertung /.test(fd.description))?fd.description:''});
+            n++;
+        });
+        if(n){
+            L.ok(`${n} Bewertung(en) aus dem AR-Artefakt zurückgewonnen („${ar.title}").`);
+            renderStats();renderControls();autoSave();
+        }
+    }catch(e){L.warn('AR-Rückübernahme fehlgeschlagen: '+e.message)}
 }
 
 // Kataloge/Profile des Sets als local://-Auflösung bereitstellen

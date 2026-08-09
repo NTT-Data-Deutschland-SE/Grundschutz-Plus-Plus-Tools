@@ -802,7 +802,7 @@
     <div id="log-body" class="log-body cscroll"></div>
 </section>
 
-<script src="gpp-core.js?v=3.8"></script>
+<script src="gpp-core.js?v=3.9"></script>
 <script>
     if (typeof gppCfg === 'undefined' || typeof GPP_CORE_VERSION === 'undefined' || Number(GPP_CORE_VERSION) < 2) {
         document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
@@ -1322,7 +1322,12 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
             stage: 'implement', kind: 'ssp', tool: GPP_TOOL_ID,
             title: sspData?.['system-security-plan']?.metadata?.title || sspFileName,
             filename: sspFileName, data: sspData, meta: { controls: reqs.length },
-        }).catch(e => L.warn('SSP nicht ins Set gelegt: ' + e.message + ' — in der Zusammenarbeit dafür die Sperre halten.'));
+        }).then(() => { if (typeof gppWriteBlockedBanner === 'function') gppWriteBlockedBanner.clear(); })
+          .catch(e => {
+            L.warn('SSP nicht ins Set gelegt: ' + e.message);
+            if (typeof gppWriteBlockedBanner === 'function')
+                gppWriteBlockedBanner('Änderungen werden derzeit NICHT gespeichert: ' + e.message + ' — in der Übersicht „Bearbeiten (sperren)" wählen.');
+        });
     }
     // Beim Verlassen der Seite ausstehende Änderungen sofort sichern.
     const _flushNow = () => { if (!sspData) return; clearTimeout(autoSaveTimer); updateSSPFromDOM(); autoSave(); };
@@ -1336,7 +1341,10 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         try {
             await migrateLegacyAutosave();
             const set = gppArtefacts.activeSet();
-            const ws = await gppArtefacts.latest('workspace');
+            /* NUR der eigene Arbeitsstand: kind "workspace" schreiben auch
+               Prüfung und POA&M — ohne Tool-Filter verlöre der Editor beim
+               Hin- und Herspringen seinen Stand samt KI-Cache. */
+            const ws = await gppArtefacts.latest('workspace', undefined, GPP_TOOL_ID);
             const wsOk = ws && ws.tool === GPP_TOOL_ID && ws.data && ws.data.sspData;
             const ssp = await gppArtefacts.latest('ssp');
             // Ein SSP ohne metadata bringt processWorkspace zu Fall — im Set kann

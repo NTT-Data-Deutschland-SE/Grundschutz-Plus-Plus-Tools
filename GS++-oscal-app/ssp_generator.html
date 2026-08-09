@@ -887,7 +887,7 @@
         </div>
     </div>
 
-<script src="gpp-core.js?v=3.8"></script>
+<script src="gpp-core.js?v=3.9"></script>
     <script>
         if (typeof gppCfg === 'undefined' || typeof GPP_CORE_VERSION === 'undefined' || Number(GPP_CORE_VERSION) < 2) {
             document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
@@ -5521,7 +5521,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             const compByTitle = new Map(genComps.map(c => [c.title, c]));
             const prevComps = prevSsp['system-implementation']?.components || [];
             const prevTitleByUuid = new Map(prevComps.map(c => [c.uuid, c.title]));
-            const genReqs = genSsp['control-implementation']?.['implemented-requirements'] || [];
+            const ci = genSsp['control-implementation'];
+            const genReqs = ci ? (ci['implemented-requirements'] = ci['implemented-requirements'] || []) : [];
             const genByCid = new Map(genReqs.map(r => [r['control-id'], r]));
             let carried = 0;
             (prevSsp['control-implementation']?.['implemented-requirements'] || []).forEach(pr => {
@@ -5550,6 +5551,32 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 });
                 if (pr.remarks && !gr.remarks) gr.remarks = pr.remarks;
             });
+            /* Editor-Anlagen erhalten: Requirements zu Controls, die der
+               Generator selbst nicht ausgibt — typisch die über Komponenten-
+               Profile aufgelösten Controls, deren IDs der Generator gar nicht
+               kennt. Inhaltstragende Einträge werden angehängt; by-components
+               werden auf existierende Komponenten umgeschrieben, Verweise auf
+               verschwundene Komponenten entfallen. */
+            if (ci) (prevSsp['control-implementation']?.['implemented-requirements'] || []).forEach(pr => {
+                if (genByCid.has(pr['control-id'])) return;
+                const hatInhalt = pr.remarks || (pr['by-components'] || []).some(bc =>
+                    bc.description || bc['implementation-status'] || (bc.props || []).length || bc.remarks);
+                if (!hatInhalt) return;
+                const kopie = JSON.parse(JSON.stringify(pr));
+                kopie['by-components'] = (kopie['by-components'] || []).map(bc => {
+                    if (!compByUuid.has(bc['component-uuid'])) {
+                        const titel = prevTitleByUuid.get(bc['component-uuid']);
+                        const ziel = titel && compByTitle.get(titel);
+                        if (ziel) bc['component-uuid'] = ziel.uuid;
+                    }
+                    return bc;
+                }).filter(bc => compByUuid.has(bc['component-uuid']));
+                if (!kopie['by-components'].length && !kopie.remarks) return;
+                if (!kopie['by-components'].length) delete kopie['by-components'];
+                genReqs.push(kopie);
+                genByCid.set(kopie['control-id'], kopie);
+                carried++;
+            });
             return carried;
         }
 
@@ -5576,7 +5603,9 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 await syncGeneratedSSP(t, safeName, profileData);
                 _genFp = fp;
             } catch (e) {
-                aiLog('warn', 'Blaupause nicht ins Set geschrieben: ' + e.message + ' — in der Zusammenarbeit dafür die Sperre halten.');
+                aiLog('warn', 'Blaupause nicht ins Set geschrieben: ' + e.message);
+                if (typeof gppWriteBlockedBanner === 'function')
+                    gppWriteBlockedBanner('Blaupause wird derzeit NICHT gespeichert: ' + e.message + ' — in der Übersicht „Bearbeiten (sperren)" wählen.');
             }
         }
         function scheduleLiveSync() { clearTimeout(_genT); _genT = setTimeout(() => { syncBlueprint().catch(e => console.warn('Live-Sync', e)); }, 2500); }
@@ -5601,6 +5630,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     meta: { controls: reqs.length, profile: `${safeName}_Profile.json`, profileSha256: profileHash },
                 });
                 aiLog('ok', `Blaupause ins Set geschrieben: Profil + SSP mit ${reqs.length} Controls${carried ? ` (${carried} Editor-Einträge übernommen)` : ''} — Editor und Prüfung lesen automatisch mit.`);
+            if (typeof gppWriteBlockedBanner === 'function') gppWriteBlockedBanner.clear();
         }
 
         function base64EncodeUnicode(str) {
