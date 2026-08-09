@@ -546,14 +546,9 @@ input[type=date].inp{color-scheme:dark}
 
         <div id="poam-comp-nav" class="space-y-1" aria-label="Asset-Auswahl"></div>
 
-        <!-- Export -->
-        <div id="poam-save-actions" class="mt-auto space-y-2 pt-3 border-t border-slate-700">
-            <div class="rail-label">Export</div>
-            <button id="save-poam-session" onclick="saveSession()" class="w-full bg-purple-700 font-bold py-2 px-3 rounded-lg hover:bg-purple-600 text-xs">Session</button>
-            <button id="save-poam-document" onclick="exportPOAM()" class="w-full bg-amber-600 font-bold py-2.5 px-3 rounded-lg hover:bg-amber-500 text-xs shadow-lg">POA&amp;M</button>
-        </div>
-
-        <div class="rail-foot">© 2026 NTT DATA Deutschland SE</div>
+        <!-- Kein Export-Block mehr: das POA&M wird bei jeder Änderung automatisch
+             ins Set geschrieben; Dateien lädt man in der Übersicht herunter. -->
+        <div class="rail-foot mt-auto">© 2026 NTT DATA Deutschland SE</div>
 
     </aside>
 
@@ -602,7 +597,7 @@ input[type=date].inp{color-scheme:dark}
 
 </div><!-- /app -->
 
-<script src="gpp-core.js?v=3.7"></script>
+<script src="gpp-core.js?v=3.8"></script>
 <script>
 if(typeof gppCfg==='undefined'||typeof GPP_CORE_VERSION==='undefined'||Number(GPP_CORE_VERSION)<2){
     document.body.innerHTML='<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">'+
@@ -614,10 +609,8 @@ if(typeof gppCfg==='undefined'||typeof GPP_CORE_VERSION==='undefined'||Number(GP
 const GPP_TOOL_ID='abarbeiten_POAM_generator';
 gppCollapsibleLog({consoleEl:document.querySelector('.logbox'),
   headEl:document.querySelector('.logbox .log-tools'),toolId:GPP_TOOL_ID});
-gppFloatingSave({buttons:[
-    {el:'#save-poam-document',label:'POA&M abspeichern'},
-    {el:'#save-poam-session',label:'Session abspeichern'}
-  ],consoleEl:document.querySelector('.logbox'),hideContainers:['#poam-save-actions'],toolId:GPP_TOOL_ID});
+/* Kein Speichermenü mehr: das POA&M wird fortlaufend aus den Items erzeugt
+   und als Einzelstück ins aktive Set gelegt (Live-Sync weiter unten). */
 const BUILD='v2.4';
 const P={arFilename:'',sspHref:'',sysName:'',catalog:new Map(),findings:[],observations:[],risks:[],items:[],meta:{title:'',version:'1.0.0',desc:''},responsible:{name:'',role:'system-owner',email:''}};
 // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
@@ -866,7 +859,6 @@ function restoreS(d){
     l.ok(`Session geladen: ${P.items.length} Items · Quelle ${P.arFilename||'(unbekannt)'}`);
     setSt('ar-status',true,`Session: ${P.items.length} Items`);render()
 }
-window.saveSession=()=>{const n=`${sn()}_poam_session.json`;dl(JSON.parse(ser()),n);l.ok(`Session exportiert: ${n} (${P.items.length} Items)`)};
 // Arbeitsstand liegt ausschliesslich im gemeinsamen Artefaktbestand (aktives Set).
 function autoSave(){gppArtefacts.save({stage:'remediate',kind:'workspace',title:'POA&M Arbeitsstand',filename:'poam-workspace.json',tool:GPP_TOOL_ID,data:JSON.parse(ser())}).catch(e=>l.warn('Arbeitsstand nicht ins Set gesichert: '+e.message))}
 // Boot-Übernahme: eigener Arbeitsstand aus dem Set, sonst neuestes AR als Input.
@@ -880,12 +872,45 @@ async function adoptFromSet(){
     try{
         const rows=await gppArtefacts.list();
         const ws=rows.find(r=>r.kind==='workspace'&&r.tool===GPP_TOOL_ID);
+        const arRow=rows.find(r=>r.kind==='ar');   // rows sind nach updatedAt sortiert
         if(ws){const rec=await gppArtefacts.get(ws.id);
-            if(rec?.data?._t==='poam'){restoreS(rec.data);l.info(`Arbeitsstand aus Set übernommen (${rec.updatedAt||''})`);return}}
+            if(rec?.data?._t==='poam'){restoreS(rec.data);l.info(`Arbeitsstand aus Set übernommen (${rec.updatedAt||''})`);
+                /* Hat die Prüfung das AR inzwischen weitergeschrieben, dessen
+                   Befunde einarbeiten — eigene Bearbeitung bleibt erhalten. */
+                if(arRow&&(arRow.updatedAt||'')>(ws.updatedAt||'')){
+                    const ar=await gppArtefacts.get(arRow.id);
+                    if(ar?.data?.['assessment-results'])mergeAR(ar.data,ar.filename||'AR aus Set');
+                }
+                return}}
         const ar=await gppArtefacts.latest('ar');
         if(ar?.data?.['assessment-results']){importAR(ar.data,ar.filename||'AR aus Set');l.info('AR aus Set übernommen');return}
         l.debug('Kein Arbeitsstand und kein AR im aktiven Set — leer gestartet');
     }catch(e){l.warn('Übernahme aus dem Set fehlgeschlagen: '+shortErr(e.message))}
+}
+/* Jüngeres AR in die laufenden Items einarbeiten: Befunde kommen frisch aus dem
+   AR, die eigene Abarbeitung (Status, Priorität, Maßnahmen, Meilensteine,
+   Fristen) bleibt für alle Items erhalten, deren Control weiterhin not-satisfied
+   ist. Items zu inzwischen erfüllten Controls entfallen; manuell angelegte
+   Items (ohne AR-Befund) bleiben. */
+function mergeAR(d,fn){
+    const key=it=>`${it.controlId}::${it.componentUuid||it.component||''}`;
+    const old=new Map(P.items.map(it=>[key(it),it]));
+    const meta={...P.meta},resp={...P.responsible};
+    importAR(d,fn);
+    if(meta.title){P.meta=meta;const t=document.getElementById('m-title');if(t)t.value=meta.title;
+        const v=document.getElementById('m-ver');if(v)v.value=meta.version}
+    P.responsible=resp;const r=document.getElementById('m-resp');if(r)r.value=resp.name;
+    const e=document.getElementById('m-email');if(e)e.value=resp.email;
+    let kept=0;
+    P.items.forEach(it=>{const o=old.get(key(it));if(!o)return;kept++;
+        ['priority','status','deadline','responsible','remediation','remarks','deviationJustification'].forEach(k=>{if(o[k])it[k]=o[k]});
+        if(o.milestones?.length)it.milestones=o.milestones;
+        if(o.createdAt)it.createdAt=o.createdAt});
+    let manuell=0;
+    old.forEach((o,k)=>{if(!(o.findingUuids||[]).length&&!P.items.some(it=>key(it)===k)){P.items.push(o);manuell++}});
+    const weg=[...old.values()].filter(o=>(o.findingUuids||[]).length&&!P.items.some(it=>key(it)===key(o))).length;
+    l.ok(`AR-Änderungen übernommen: ${P.items.length} Items — ${kept} Bearbeitungsstände erhalten${manuell?`, ${manuell} manuelle behalten`:''}${weg?`, ${weg} entfallen (Control inzwischen erfüllt)`:''}.`);
+    render();scheduleLive();
 }
 // Set-Wechsel/Fremd-Schreiber in anderen Fenstern: leeres Tool zieht nach, volles loggt nur.
 window.addEventListener('storage',e=>{
@@ -893,7 +918,7 @@ window.addEventListener('storage',e=>{
     if(!P.items.length)adoptFromSet();
     else l.debug('Artefaktbestand geändert — aktueller Arbeitsstand bleibt geladen');
 });
-setInterval(()=>{if(P.items.length){autoSave();l.debug(`Autosave: ${P.items.length} Items ins Set gesichert`)}},30000);
+setInterval(()=>{if(P.items.length)liveSync()},30000);
 
 // ============================ KI-KONFIGURATION ============================
 // Zwei Backends, getrennt persistiert: Key, Modell und die Backend-Auswahl selbst.
@@ -1413,10 +1438,9 @@ l.ok(`${arr.length} Meilensteine übernommen (Fälligkeiten deterministisch aus 
 else throw new Error('Antwort enthielt keine Meilensteine')}
 catch(e){endProgress(false,'Fehler');alert('KI: '+shortErr(e.message))}finally{if(btn){btn.disabled=false;btn.textContent='▶ Planen'}}};
 
-// EXPORT
-function exportPOAM(){
-    if(!P.items.length){l.err('Export abgebrochen: keine POA&M-Items (minItems 1).');return alert('Keine POA&M-Items vorhanden — poam-items ist im Schema Pflicht (minItems 1).')}
-    l.info(`POA&M-Export gestartet: ${P.items.length} Items`);
+// POA&M AUS DEN ITEMS BAUEN (Live-Sync legt es ins Set)
+function buildPOAM(){
+    if(!P.items.length)return null;   // poam-items ist im Schema Pflicht (minItems 1)
     const ts=new Date().toISOString(),ru=crypto.randomUUID();
     // Risk-Status auf die OSCAL-Wertemenge gemappt (open|investigating|remediating|deviation-requested|deviation-approved|closed);
     // der Original-Status bleibt im poam-item als Prop "status" erhalten.
@@ -1445,14 +1469,30 @@ function exportPOAM(){
             pinnedCatalogResource()
         ]}}};
     if(P.responsible.name){poam["plan-of-action-and-milestones"].metadata.parties=[{uuid:ru,type:'person',name:P.responsible.name}];if(P.responsible.email)poam["plan-of-action-and-milestones"].metadata.parties[0]["email-addresses"]=[P.responsible.email];poam["plan-of-action-and-milestones"].metadata["responsible-parties"]=[{"role-id":P.responsible.role,"party-uuids":[ru]}]}
-    const fname=`${sn()}_POAM.json`;
-    l.debug(`Export-Zusammenbau: ${oscalItems.length} poam-items · ${oscalRisks.length} risks · ${P.observations.length} observations · Katalog-Pin als back-matter-Resource gesetzt`);
-    dl(poam,fname);autoSave();
-    // zusätzlich in den gemeinsamen Artefaktbestand (Übersicht in index.html)
+    return {doc:poam,items:oscalItems.length}}
+
+// ============================================================
+// LIVE-SYNC: das POA&M liegt immer aktuell als Einzelstück im Set.
+// Fingerabdruck über die EINGABEN (ser()), nicht über das Ergebnis — der
+// Zusammenbau trägt bei jedem Lauf frische UUIDs und wäre nie „unverändert".
+// ============================================================
+let _poamFp='',_syncT=null;
+function syncPoam(){
+    if(typeof gppArtefacts==='undefined'||!P.items.length)return;
+    const fp=ser();
+    if(fp===_poamFp)return;
+    const b=buildPOAM();
+    if(!b){_poamFp=fp;return}
     gppArtefacts.save({stage:'remediate',kind:'poam',tool:GPP_TOOL_ID,
-        title:`${sn()} — POA&M`,filename:fname,data:poam})
-        .catch(e=>l.warn('Artefakt nicht abgelegt: '+e.message));
-    l.ok(`POA&M exportiert: ${fname}`)}
+        title:`${sn()} — POA&M`,filename:`${sn()}_POAM.json`,data:b.doc,meta:{controls:b.items}})
+        .then(()=>{_poamFp=fp;l.debug(`POA&M im Set aktualisiert (${b.items} Items).`)})
+        .catch(e=>l.warn('POA&M nicht ins Set gelegt: '+e.message+' — in der Zusammenarbeit dafür die Sperre halten.'));
+}
+function liveSync(){if(P.items.length){autoSave();syncPoam()}}
+function scheduleLive(){clearTimeout(_syncT);_syncT=setTimeout(liveSync,2500)}
+document.addEventListener('change',()=>{if(P.items.length)scheduleLive()});
+window.addEventListener('pagehide',()=>{clearTimeout(_syncT);liveSync()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(_syncT);liveSync()}});
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function sn(){return(P.meta.title||P.sysName||'System').replace(/[^a-zA-Z0-9äöüÄÖÜß\-]/g,'_').replace(/_+/g,'_')}

@@ -728,15 +728,9 @@
         <!-- Component Navigation (Injected by JS) -->
         <div id="sb-comp-nav" class="space-y-1 mt-1 hidden"></div>
 
-        <!-- Export -->
-        <div id="editor-save-actions" class="mt-auto space-y-1.5 pt-2 border-t border-slate-700">
-            <button id="save-session-btn" onclick="saveSessionFile()" class="w-full bg-purple-700 text-white font-bold py-1.5 px-2 rounded text-[10px] hover:bg-purple-600 disabled:bg-slate-700">&#9635; Session (.json)</button>
-            <button id="save-ssp-btn" onclick="handleFileSave()" class="w-full bg-emerald-600 text-white font-bold py-1.5 px-2 rounded text-[10px] hover:bg-emerald-500 disabled:bg-slate-700" disabled>&#10515; SSP Export</button>
-        </div>
-        <!-- Ausserhalb von #editor-save-actions: dieser Container wird vom
-             schwebenden Speichermenü ausgeblendet, und die Zeile verschwände
-             sonst mit ihm (wie in den Schwesterwerkzeugen steht sie daneben). -->
-        <div class="text-[9px] text-slate-500 text-center pt-2">&copy; 2026 NTT DATA Deutschland SE</div>
+        <!-- Kein Export-Block mehr: das SSP wird bei jeder Änderung automatisch
+             ins Set geschrieben; Dateien lädt man in der Übersicht herunter. -->
+        <div class="mt-auto text-[9px] text-slate-500 text-center pt-2">&copy; 2026 NTT DATA Deutschland SE</div>
 
     </aside>
 
@@ -808,7 +802,7 @@
     <div id="log-body" class="log-body cscroll"></div>
 </section>
 
-<script src="gpp-core.js?v=3.7"></script>
+<script src="gpp-core.js?v=3.8"></script>
 <script>
     if (typeof gppCfg === 'undefined' || typeof GPP_CORE_VERSION === 'undefined' || Number(GPP_CORE_VERSION) < 2) {
         document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
@@ -820,15 +814,8 @@
     const GPP_TOOL_ID = 'ssp_ausfuellen';
     gppCollapsibleLog({ consoleEl: document.getElementById('logbox'),
         headEl: document.querySelector('#logbox .log-head'), toolId: GPP_TOOL_ID });
-    gppFloatingSave({
-        buttons: [
-            { el: '#save-ssp-btn', label: 'SSP abspeichern' },
-            { el: '#save-session-btn', label: 'Session abspeichern' }
-        ],
-        consoleEl: document.getElementById('logbox'),
-        hideContainers: ['#editor-save-actions'],
-        toolId: GPP_TOOL_ID
-    });
+    /* Kein Speichermenü mehr: das SSP wird bei jeder Änderung (entprellt)
+       automatisch als Einzelstück ins aktive Set geschrieben. */
     /* Quelle für die Pin-Übersicht in config.html anmelden (Grundregel 8). */
     gppRegisterSources(GPP_TOOL_ID, [{ id: 'ed23-anforderungen', label: 'G++/ED23 Anforderungen (Hilfsdatei)',
         repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools', path: 'hilfsdateien/gpp_ed23_anforderungen.json',
@@ -1015,7 +1002,6 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
     const welcomeMsg = document.getElementById('welcome-msg');
     const loadingIndicator = document.getElementById('loading-indicator');
     const loadingText = document.getElementById('loading-text');
-    const saveSspBtn = document.getElementById('save-ssp-btn');
 
     // ============================================================
     // HELPER (FIX C: Properties Config für Filter und Tags)
@@ -1321,7 +1307,9 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
     }
 
     // Der Arbeitsstand liegt im gemeinsamen Artefakt-Set — kein tool-eigener
-    // Speicher mehr, damit alle Werkzeuge denselben Stand sehen.
+    // Speicher mehr, damit alle Werkzeuge denselben Stand sehen. Zusätzlich
+    // wird das SSP selbst als Einzelstück geschrieben: Prüfung und Generator
+    // lesen es live; der Kern überspringt inhaltlich unveränderte Stände.
     function autoSave() {
         if(!sspData || typeof gppArtefacts === 'undefined') return;
         gppArtefacts.save({
@@ -1329,7 +1317,17 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
             filename: 'ssp-editor-workspace.json', tool: GPP_TOOL_ID, data: JSON.parse(ser())
         }).then(r => L.debug(`Arbeitsstand im Set „${gppArtefacts.activeSet()}" gesichert (${(r.size/1024).toFixed(1)} kB).`))
           .catch(e => L.warn(`Arbeitsstand nicht gesichert: ${e.message}`));
+        const reqs = sspData?.['system-security-plan']?.['control-implementation']?.['implemented-requirements'] || [];
+        gppArtefacts.save({
+            stage: 'implement', kind: 'ssp', tool: GPP_TOOL_ID,
+            title: sspData?.['system-security-plan']?.metadata?.title || sspFileName,
+            filename: sspFileName, data: sspData, meta: { controls: reqs.length },
+        }).catch(e => L.warn('SSP nicht ins Set gelegt: ' + e.message + ' — in der Zusammenarbeit dafür die Sperre halten.'));
     }
+    // Beim Verlassen der Seite ausstehende Änderungen sofort sichern.
+    const _flushNow = () => { if (!sspData) return; clearTimeout(autoSaveTimer); updateSSPFromDOM(); autoSave(); };
+    window.addEventListener('pagehide', _flushNow);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) _flushNow(); });
 
     // Beim Start übernehmen, was im aktiven Set liegt: eigener Arbeitsstand vor
     // SSP; Kataloge und Profile wandern als Workspace-Dateien mit.
@@ -1339,23 +1337,29 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
             await migrateLegacyAutosave();
             const set = gppArtefacts.activeSet();
             const ws = await gppArtefacts.latest('workspace');
-            if (ws && ws.tool === GPP_TOOL_ID && ws.data && ws.data.sspData) {
+            const wsOk = ws && ws.tool === GPP_TOOL_ID && ws.data && ws.data.sspData;
+            const ssp = await gppArtefacts.latest('ssp');
+            // Ein SSP ohne metadata bringt processWorkspace zu Fall — im Set kann
+            // per Hochladen beliebiges JSON landen, also hier prüfen statt vertrauen.
+            const sspOk = ssp && ssp.data && ssp.data['system-security-plan'] &&
+                ssp.data['system-security-plan'].metadata;
+            /* Das SSP-Artefakt ist die gemeinsame Wahrheit: hat Generator oder ein
+               anderes Fenster es jünger geschrieben als den eigenen Arbeitsstand,
+               gilt das Artefakt — der KI-Cache aus dem Arbeitsstand bleibt. */
+            if (wsOk && !(sspOk && (ssp.updatedAt || '') > (ws.updatedAt || ''))) {
                 L.info(`Arbeitsstand aus Set „${set}" übernommen.`);
                 await restoreSession(ws.data);
                 return;
             }
-            const ssp = await gppArtefacts.latest('ssp');
-            // Ein SSP ohne metadata bringt processWorkspace zu Fall — im Set kann
-            // per Hochladen beliebiges JSON landen, also hier prüfen statt vertrauen.
-            if (ssp && ssp.data && ssp.data['system-security-plan'] &&
-                ssp.data['system-security-plan'].metadata) {
+            if (sspOk) {
                 workspaceFiles.clear();
                 workspaceFiles.set(ssp.filename || 'ssp.json', ssp.data);
                 sspData = ssp.data;
-                sspFileName = (ssp.filename || 'ssp.json').replace(/\.json$/i, '-edited.json');
+                sspFileName = ssp.filename || 'ssp.json';   // gleiche Identität weiterschreiben, kein "-edited"
+                if (wsOk) aiCache = ws.data.aiCache || {};
                 const refs = (await gppArtefacts.all()).filter(r => r.kind === 'catalog' || r.kind === 'profile');
                 refs.forEach(r => workspaceFiles.set(r.filename, r.data));
-                L.ok(`SSP aus Set „${set}" übernommen: ${ssp.title}${refs.length ? ` (+ ${refs.length} Katalog/Profil)` : ''}`);
+                L.ok(`SSP aus Set „${set}" übernommen: ${ssp.title}${refs.length ? ` (+ ${refs.length} Katalog/Profil)` : ''}${wsOk ? ' — Artefakt war jünger als der Arbeitsstand' : ''}`);
                 await processWorkspace();
             } else if (ssp) {
                 L.warn(`SSP „${ssp.title}" im Set „${set}" hat keine metadata und wurde nicht geladen.`);
@@ -1400,16 +1404,6 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         await processWorkspace();
     }
 
-    window.saveSessionFile = () => {
-        updateSSPFromDOM();
-        const dataStr = ser();
-        const blob = new Blob([dataStr], { type: 'application/json;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = sspFileName.replace('.json', '_session.json');
-        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-        L.ok(`Session exportiert: ${a.download} (${(dataStr.length / 1024).toFixed(1)} kB).`);
-    };
 
     // ============================================================
     // KI ANBINDUNG — Backends: Gemini | OpenRouter
@@ -1979,7 +1973,6 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
     async function processWorkspace() {
         welcomeMsg.style.display = 'none';
         editorDiv.classList.add('hidden');
-        saveSspBtn.disabled = true;
 
         if (!sspData || !sspData['system-security-plan']) {
             L.warn('Kein gültiges SSP im Workspace — Verarbeitung abgebrochen.');
@@ -2036,7 +2029,6 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
             document.getElementById('ssp-status-ind').classList.replace('text-slate-400', 'text-emerald-400');
 
             editorDiv.classList.remove('hidden');
-            saveSspBtn.disabled = false;
             progress('Autosave', 6, PHASES);
             autoSave();
             L.ok(`Workspace fertig in ${Math.round(performance.now() - t0)}ms — ${catalogControlMap.size} Controls im Katalog.`);
@@ -2915,26 +2907,8 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         finally { loader.style.display = 'none'; }
     };
 
-    // ============================================================
-    // SSP EXPORT
-    // ============================================================
-    window.handleFileSave = () => {
-        updateSSPFromDOM();
-        const dataStr = JSON.stringify(sspData, null, 2);
-        const blob = new Blob([dataStr], { type: 'application/json;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = sspFileName;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-        const reqs = sspData?.['system-security-plan']?.['control-implementation']?.['implemented-requirements'] || [];
-        L.ok(`SSP exportiert: ${sspFileName} (${(dataStr.length / 1024).toFixed(1)} kB, ${reqs.length} implemented-requirement(s)).`);
-        // zusätzlich in den gemeinsamen Artefaktbestand (Übersicht in index.html)
-        gppArtefacts.save({
-            stage: 'implement', kind: 'ssp', tool: GPP_TOOL_ID,
-            title: `${sspData?.['system-security-plan']?.metadata?.title || sspFileName} — ausgefüllt`,
-            filename: sspFileName, data: sspData, meta: { requirements: reqs.length },
-        }).catch(e => L.warn('Artefakt nicht abgelegt: ' + e.message));
-    };
+    /* Kein Export-Knopf mehr: autoSave() schreibt das SSP bei jeder Änderung
+       ins Set; heruntergeladen wird in der Übersicht (index.html). */
 
 </script>
 </body>

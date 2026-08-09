@@ -1373,6 +1373,25 @@ function gppRemoteChip() {
   window.addEventListener("gpp:remote-changed", () => { render(); });
   render();
   document.body.appendChild(chip);
+  /* Nicht auf die Konsolen-Steuerung legen: eine eingeklappte Log-Konsole ist
+     nur noch eine schmale Leiste am unteren Rand — genau dort säße der Chip
+     und verdeckte den Auf-/Zuklapp-Schalter. Bodennahe schmale Konsolen
+     (.gpp-log-host, ≤ 96px hoch am unteren Rand) heben den Chip deshalb an;
+     eine aufgeklappte, hohe Konsole lässt ihn unten (dort liegt er höchstens
+     über Logzeilen, nie über Bedienelementen — die sitzen in der Kopfzeile). */
+  const reposition = () => {
+    let lift = 0;
+    document.querySelectorAll(".gpp-log-host").forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (!r.height || r.bottom < window.innerHeight - 40) return;
+      if (window.innerHeight - r.top <= 96) lift = Math.max(lift, window.innerHeight - r.top + 10);
+    });
+    chip.style.bottom = (lift || 14) + "px";
+  };
+  window.addEventListener("gpp:log-resize", reposition);
+  window.addEventListener("resize", reposition);
+  reposition();
+  setTimeout(reposition, 300);   // nach Layout/Schrift-Laden einmal nachmessen
   return chip;
 }
 
@@ -1551,6 +1570,9 @@ function gppDownloadBlob(name, blob) {
    der Schalter gehängt wird. Der Zustand überlebt den Reload je Werkzeug. */
 function gppCollapsibleLog({ consoleEl, headEl, toolId, label = "Log", defaultCollapsed = false }) {
   if (!consoleEl || !headEl) return null;
+  /* Markierung für den Status-Chip: bodennahe Konsolen heben ihn an, damit er
+     die Konsolen-Steuerung (diesen Schalter) nie überdeckt. */
+  consoleEl.classList.add("gpp-log-host");
   const key = GPP_CFG_PREFIX + "log:collapsed:" + (toolId || "tool");
   /* Einige Werkzeuge reichen die komplette Kopfzeile ein, andere nur deren
      Aktionsbereich. Fuer das Ein-/Ausblenden brauchen wir immer das direkte
@@ -1564,12 +1586,20 @@ function gppCollapsibleLog({ consoleEl, headEl, toolId, label = "Log", defaultCo
   btn.style.cssText = "background:transparent;border:1px solid currentColor;border-radius:5px;" +
     "color:inherit;font:inherit;font-size:10px;line-height:1;padding:2px 7px;cursor:pointer;opacity:.75";
   /* Alles außer der Kopfzeile ausblenden — so braucht kein Werkzeug eigenes CSS.
-     Die vorherige Flex-Vorgabe wird gemerkt und beim Aufklappen zurückgesetzt. */
+     Die vorherigen Inline-Vorgaben werden gemerkt und beim Aufklappen
+     zurückgesetzt. height/min-height MÜSSEN überschrieben werden: mehrere
+     Konsolen tragen eine feste CSS-Höhe (height:var(--log-h)) — ohne Override
+     blieben sie beim Einklappen gleich groß, nur eben leer, und der Schalter
+     wirkte kaputt. */
   const prevFlex = consoleEl.style.flex;
+  const prevHeight = consoleEl.style.height;
+  const prevMinHeight = consoleEl.style.minHeight;
   const others = () => [...consoleEl.children].filter(el => el !== headerEl);
   const apply = (collapsed, persist = false) => {
     others().forEach(el => { el.style.display = collapsed ? "none" : ""; });
     consoleEl.style.flex = collapsed ? "0 0 auto" : prevFlex;
+    consoleEl.style.height = collapsed ? "auto" : prevHeight;
+    consoleEl.style.minHeight = collapsed ? "0" : prevMinHeight;
     consoleEl.classList.toggle("collapsed", collapsed);
     btn.textContent = collapsed ? "▲ " + label : "▼ " + label;
     btn.setAttribute("aria-expanded", String(!collapsed));
@@ -1594,6 +1624,110 @@ function gppCollapsibleLog({ consoleEl, headEl, toolId, label = "Log", defaultCo
   btn.isCollapsed = () => consoleEl.classList.contains("collapsed");
   headEl.appendChild(btn);
   return btn;
+}
+
+/* ---------- Schwebende Filterleiste (links) ----------
+   Einheitliche, stets erreichbare Filter je Werkzeug: eine schmale, schwebende
+   Leiste am linken Rand, unabhängig vom Scrollzustand der Seite. Felder werden
+   deklarativ beschrieben (text/select) ODER vorhandene Elemente werden samt
+   ihrer Listener hineingezogen (adopt). Zustand (eingeklappt) überlebt den
+   Reload je Werkzeug. */
+function gppFilterDock({ toolId = "tool", title = "Filter", fields = [], adopt = [], top = 84, width = 200, onChange = null, defaultCollapsed = false } = {}) {
+  const old = document.getElementById(`gpp-filter-${toolId}`);
+  if (old) old.remove();
+  const key = GPP_CFG_PREFIX + "filter:collapsed:" + toolId;
+  const dock = document.createElement("aside");
+  dock.id = `gpp-filter-${toolId}`;
+  dock.setAttribute("aria-label", title);
+  dock.style.cssText = `position:fixed;left:14px;top:${top}px;z-index:117;width:${width}px;` +
+    "max-height:calc(100vh - " + (top + 90) + "px);display:flex;flex-direction:column;" +
+    "font:500 12px/1.35 system-ui,-apple-system,sans-serif;color:#e2e8f0;" +
+    "background:rgba(15,23,42,.94);border:1px solid rgba(148,163,184,.35);border-radius:9px;" +
+    "box-shadow:0 12px 32px rgba(0,0,0,.4);backdrop-filter:blur(12px)";
+  const head = document.createElement("button");
+  head.type = "button";
+  head.style.cssText = "display:flex;align-items:center;gap:7px;width:100%;padding:8px 10px;border:0;" +
+    "background:transparent;color:inherit;cursor:pointer;font:700 11px/1 inherit;letter-spacing:.05em;text-transform:uppercase";
+  const caret = document.createElement("span");
+  const headLabel = document.createElement("span");
+  headLabel.textContent = "⌕ " + title;
+  const countEl = document.createElement("span");
+  countEl.style.cssText = "margin-left:auto;font:600 10px/1 ui-monospace,Consolas,monospace;color:#94a3b8;text-transform:none";
+  head.append(caret, headLabel, countEl);
+  const body = document.createElement("div");
+  body.style.cssText = "display:flex;flex-direction:column;gap:8px;padding:2px 10px 10px;overflow:auto;min-height:0";
+  dock.append(head, body);
+
+  const inputCss = "width:100%;box-sizing:border-box;padding:5px 7px;border-radius:6px;" +
+    "border:1px solid rgba(148,163,184,.4);background:rgba(2,6,23,.6);color:#e2e8f0;font:500 12px/1.3 inherit";
+  const inputs = new Map();
+  const emit = () => { if (onChange) onChange(api.values()); };
+  fields.forEach(f => {
+    const wrap = document.createElement("label");
+    wrap.style.cssText = "display:flex;flex-direction:column;gap:3px";
+    const cap = document.createElement("span");
+    cap.textContent = f.label || f.id;
+    cap.style.cssText = "font:600 10px/1 inherit;color:#94a3b8;letter-spacing:.04em;text-transform:uppercase";
+    let inp;
+    if (f.type === "select") {
+      inp = document.createElement("select");
+      (f.options || []).forEach(o => {
+        const opt = document.createElement("option");
+        opt.value = o.value; opt.textContent = o.label;
+        inp.appendChild(opt);
+      });
+    } else {
+      inp = document.createElement("input");
+      inp.type = "search";
+      inp.placeholder = f.placeholder || "";
+    }
+    inp.style.cssText = inputCss;
+    if (f.value !== undefined) inp.value = f.value;
+    inp.addEventListener(f.type === "select" ? "change" : "input", emit);
+    inputs.set(f.id, inp);
+    wrap.append(cap, inp);
+    body.appendChild(wrap);
+  });
+  adopt.map(sel => typeof sel === "string" ? document.querySelector(sel) : sel)
+    .filter(Boolean).forEach(el => body.appendChild(el));
+
+  const apply = (collapsed, persist) => {
+    body.style.display = collapsed ? "none" : "flex";
+    countEl.style.display = collapsed ? "none" : "";
+    caret.textContent = collapsed ? "▸" : "▾";
+    head.setAttribute("aria-expanded", String(!collapsed));
+    if (persist) { try { localStorage.setItem(key, collapsed ? "1" : "0"); } catch (e) { /* Quota egal */ } }
+  };
+  head.addEventListener("click", () => apply(body.style.display !== "none", true));
+  const gespeichert = localStorage.getItem(key);
+  apply(gespeichert === null ? Boolean(defaultCollapsed) : gespeichert === "1");
+  document.body.appendChild(dock);
+
+  const api = {
+    el: dock, body,
+    values() {
+      const v = {};
+      inputs.forEach((inp, id) => { v[id] = inp.value; });
+      return v;
+    },
+    set(id, value) { const inp = inputs.get(id); if (inp) { inp.value = value; } },
+    input(id) { return inputs.get(id) || null; },
+    setOptions(id, options, keep = true) {
+      const inp = inputs.get(id);
+      if (!inp || inp.tagName !== "SELECT") return;
+      const prev = keep ? inp.value : "";
+      inp.innerHTML = "";
+      options.forEach(o => {
+        const opt = document.createElement("option");
+        opt.value = o.value; opt.textContent = o.label;
+        inp.appendChild(opt);
+      });
+      if ([...inp.options].some(o => o.value === prev)) inp.value = prev;
+    },
+    setCount(text) { countEl.textContent = text == null ? "" : String(text); },
+    setCollapsed(c) { apply(Boolean(c), false); },
+  };
+  return api;
 }
 
 /* ---------- Einheitliche, schwebende Speicheraktion ----------
