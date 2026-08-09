@@ -450,6 +450,25 @@ BEGIN
 END;
 $$;
 
+-- Ein Set KOMPLETT löschen — Artefakte, Sperre und Set-Rechte, überall.
+-- Nur admin (Beschluss nach dem ersten Testlauf: das Wholesale-Löschen eines
+-- geteilten Standes ist eine Verwaltungsentscheidung, keine Bearbeitung).
+-- Einzelne Artefakte löschen bleibt Teil des normalen Schreibens und läuft
+-- über die Zeilen-Policies. Die audit-Trigger protokollieren jede Zeile.
+CREATE OR REPLACE FUNCTION public.admin_delete_set(p_set_name text) RETURNS integer
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+  v_n integer;
+BEGIN
+  PERFORM public.gpp_require_admin();
+  DELETE FROM public.artefacts WHERE set_name = p_set_name AND org = public.auth_org();
+  GET DIAGNOSTICS v_n = ROW_COUNT;
+  DELETE FROM public.set_locks WHERE set_name = p_set_name AND org = public.auth_org();
+  DELETE FROM public.set_permissions WHERE set_name = p_set_name AND org = public.auth_org();
+  RETURN v_n;
+END;
+$$;
+
 -- ============================================================ Grants
 
 -- Kein anon auf den Tabellen mehr: ohne Anmeldung gibt es nichts zu sehen.
@@ -464,5 +483,6 @@ GRANT INSERT, UPDATE, DELETE ON public.memberships, public.set_permissions
 
 GRANT EXECUTE ON FUNCTION public.acquire_set_lock, public.whoami,
   public.admin_list_users, public.admin_create_user, public.admin_delete_user,
-  public.admin_set_role, public.admin_set_set_role, public.admin_clear_set_role
+  public.admin_set_role, public.admin_set_set_role, public.admin_clear_set_role,
+  public.admin_delete_set
   TO authenticated, service_role;

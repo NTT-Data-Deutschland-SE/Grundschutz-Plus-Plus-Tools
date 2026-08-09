@@ -186,6 +186,12 @@ beratend):
   nur Sets, die es gibt: Artefakte vorhanden **oder** Set-Recht vergeben
   (`gpp_set_exists`). Der Weg für ein neues Team-Set: der Admin legt es an
   bzw. vergibt das Set-Recht, dann arbeiten die anderen darin.
+* **Ganze Sets löscht nur der `admin`** — über `admin_delete_set`, das
+  Artefakte, Sperre und Set-Rechte in einer Transaktion räumt. Einzelne
+  Artefakte löschen bleibt normales Bearbeiten (Zeilen-Policies, mit Sperre).
+  Andere Browser spiegeln die Löschung beim nächsten Abgleich — in ihren
+  lokalen **Papierkorb**, nicht ins Nichts; eigene noch nicht übertragene
+  Arbeit bleibt geschützt.
 
 ### 4.4 Was ein Unauthentifizierter kann: nichts Datenrelevantes
 
@@ -220,6 +226,7 @@ Mitgliedschaft bekommt `„nur admin"` (HTTP 400), die Transaktion rollt zurück
 | `admin_delete_user` | Konto löschen (nicht das eigene) |
 | `admin_set_role` | globale Rolle setzen (eigene `admin`-Rolle nicht selbst abgeben) |
 | `admin_set_set_role` / `admin_clear_set_role` | Set-Recht vergeben/entziehen |
+| `admin_delete_set` | ganzes Set löschen — Artefakte, Sperre und Set-Rechte, in einer Transaktion |
 
 `admin_create_user` schreibt direkt in `auth.users` — der pragmatische Weg für den
 Test-Stack, weil der Browser den `SERVICE_ROLE_KEY` nie sehen darf. **Produktiv**

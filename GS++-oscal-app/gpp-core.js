@@ -469,7 +469,7 @@ const gppArtefacts = {
     try { gppRemote.onLocalRemove(id); } catch (e) { /* Sync bricht Lokales nie */ }
   },
   async removeSet(name) {
-    if (typeof gppRemote !== "undefined") await gppRemote.requireLock(name);
+    if (typeof gppRemote !== "undefined") await gppRemote.requireSetDeletion(name);
     const doomed = (await this.all("*")).filter(r => gppSetOf(r) === name);
     for (const r of doomed) await gppTx("readwrite", store => store.delete(r.id));
     window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { setRemoved: name } }));
@@ -894,11 +894,11 @@ const gppRemote = {
     } else if (e.op === "remove") {
       await this.api("artefacts?id=eq." + encodeURIComponent(e.id), { method: "DELETE" });
     } else if (e.op === "removeset") {
-      await this.api("artefacts?set_name=eq." + encodeURIComponent(e.set), { method: "DELETE" });
-      /* Set weg, Sperre weg: das Löschen setzte die gehaltene Sperre voraus,
-         also darf dieselbe Sitzung sie auch abräumen. Andere Clients spiegeln
-         die Löschung beim nächsten pullAll. */
-      await this.api("set_locks?set_name=eq." + encodeURIComponent(e.set), { method: "DELETE" });
+      /* Über die admin-RPC, nicht über Zeilen-DELETEs: sie räumt Artefakte,
+         Sperre und Set-Rechte in einer Transaktion und prüft selbst auf
+         admin. Andere Clients spiegeln die Löschung beim nächsten pullAll —
+         in ihren Papierkorb, nicht ins Nichts. */
+      await this.api("rpc/admin_delete_set", { method: "POST", body: { p_set_name: e.set } });
       this._held.delete(e.set);
     }
   },
@@ -1130,6 +1130,21 @@ const gppRemote = {
     if (netz && !mine) {
       throw new Error(`Set „${setName}" ist nicht gesperrt — in der Übersicht „Bearbeiten (sperren)" wählen. Ohne Sperre wird in der Zusammenarbeit nichts geändert.`);
     }
+  },
+
+  /* Ein GANZES Set löschen ist Verwaltungssache: nur admin, und auch der nur
+     mit gehaltener Sperre. Einzelne Artefakte entfernen bleibt normales
+     Bearbeiten. Bei Netzfehlern kein Block — der Push landet dann an der
+     admin_delete_set-RPC, die serverseitig ablehnt, und der nächste Abgleich
+     stellt die lokale Kopie wieder her. */
+  async requireSetDeletion(setName) {
+    if (!this.enabled() || !this.loggedIn()) return;
+    let rolle = "";
+    try { rolle = ((await this.whoami()) || {}).gpp_role || ""; } catch (e) { return; }
+    if (rolle !== "admin") {
+      throw new Error("Ein geteiltes Set löscht nur die Rolle admin. Einzelne Artefakte lassen sich weiterhin entfernen (mit Sperre).");
+    }
+    await this.requireLock(setName);
   },
 
   /* Wirksame Rechte aus der Datenbank — für UI-Weichen wie die

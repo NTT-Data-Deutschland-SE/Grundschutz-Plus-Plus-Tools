@@ -484,8 +484,15 @@
     document.getElementById("btn-clear-art").addEventListener("click", async () => {
       if (!artefacts.length) return;
       const set = gppArtefacts.activeSet();
-      if (!confirm(`Alle ${artefacts.length} Artefakte des Sets „${set}" löschen? Heruntergeladene Dateien bleiben erhalten. Vorher exportieren?`)) return;
-      await gppArtefacts.removeSet(set);
+      if (!confirm(`Alle ${artefacts.length} Artefakte des Sets „${set}" löschen? Heruntergeladene Dateien bleiben erhalten. Vorher exportieren?` +
+        (typeof gppRemote !== "undefined" && gppRemote.enabled() && gppRemote.loggedIn()
+          ? " Die Löschung wird auch in der gemeinsamen Datenbank und damit bei allen anderen wirksam." : ""))) return;
+      try {
+        await gppArtefacts.removeSet(set);
+      } catch (e) {
+        alert("Leeren nicht möglich: " + e.message);
+        return;
+      }
       refreshArtefacts();
     });
 
@@ -543,18 +550,26 @@
       const state = document.getElementById("lock-state");
       const btn = document.getElementById("btn-lock");
       const neu = document.getElementById("btn-set-new");
+      const del = document.getElementById("btn-set-delete");
+      const leeren = document.getElementById("btn-clear-art");
       if (typeof gppRemote === "undefined" || !gppRemote.enabled() || !gppRemote.loggedIn()) {
         state.style.display = "none"; btn.style.display = "none";
-        neu.style.display = "";   // rein lokal: Sets anlegen bleibt frei
+        neu.style.display = "";   // rein lokal: Sets anlegen und löschen bleibt frei
+        del.style.display = "";
+        leeren.style.display = "";
         return;
       }
       if (meineRolle === null) {
         try { meineRolle = ((await gppRemote.whoami()) || {}).gpp_role || ""; } catch (e) { meineRolle = ""; }
       }
-      /* Neue Sets legt in der Zusammenarbeit nur der admin an — der Server
-         lehnt Nicht-Admins ohnehin ab (Set-Existenz-Regel), der Knopf soll
-         nichts versprechen, was scheitert. */
-      neu.style.display = meineRolle === "admin" ? "" : "none";
+      /* Neue Sets anlegen und ganze Sets löschen/leeren ist in der
+         Zusammenarbeit admin-Sache — der Server lehnt Nicht-Admins ohnehin ab
+         (Set-Existenz-Regel bzw. admin_delete_set), die Knöpfe sollen nichts
+         versprechen, was scheitert. */
+      const istAdmin = meineRolle === "admin";
+      neu.style.display = istAdmin ? "" : "none";
+      del.style.display = istAdmin ? "" : "none";
+      leeren.style.display = istAdmin ? "" : "none";
       const s = await gppRemote.status();
       const info = s.lock && s.lock.set === gppArtefacts.activeSet() ? s.lock : null;
       state.style.display = ""; btn.style.display = "";
