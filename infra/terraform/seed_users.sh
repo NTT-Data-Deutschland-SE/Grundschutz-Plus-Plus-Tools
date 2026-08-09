@@ -84,14 +84,17 @@ fi
 
 ADMIN_EMAIL=$(curl -sf -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/attributes/gpp-admin-email" || true)
 echo "--> Mitgliedschaften upserten (admin: ${ADMIN_EMAIL:-keiner})..."
-# Unquoted Heredoc: ${ADMIN_EMAIL} expandiert; deshalb hier kein DO-Block
-# (dessen $$ die Shell als PID ersetzen würde), nur schlichtes SQL.
-sudo docker exec -i supabase-db psql -U postgres -d postgres -v ON_ERROR_STOP=1 <<SQL
+# Admin-E-Mail als psql-Variable übergeben und mit :'admin_email' einsetzen
+# (psql quotet selbst) — kein Splicing in die SQL-Zeichenkette, sonst bräche ein
+# Apostroph (o'brien@…) die Anweisung oder schleuste SQL ein. Quoted Heredoc
+# (<<'SQL'), damit die Shell nichts im Rumpf ersetzt.
+sudo docker exec -i supabase-db psql -U postgres -d postgres -v ON_ERROR_STOP=1 \
+  -v admin_email="${ADMIN_EMAIL:-niemand@invalid}" <<'SQL'
 INSERT INTO public.memberships (user_id, org_id, gpp_role)
 SELECT u.id, '00000000-0000-0000-0000-000000000001', v.rolle
   FROM (VALUES ('bearbeiter@example.com', 'bearbeiter'),
                ('leser@example.com', 'leser'),
-               ('${ADMIN_EMAIL:-niemand@invalid}', 'admin')) AS v(email, rolle)
+               (:'admin_email', 'admin')) AS v(email, rolle)
   JOIN auth.users u ON lower(u.email) = lower(v.email)
 ON CONFLICT (user_id, org_id) DO UPDATE SET gpp_role = EXCLUDED.gpp_role;
 SELECT m.gpp_role, u.email FROM public.memberships m JOIN auth.users u ON u.id = m.user_id ORDER BY 1, 2;

@@ -829,7 +829,21 @@ const gppRemote = {
         .sort((a, b) => (a.queuedAt || "").localeCompare(b.queuedAt || ""));
       for (const e of entries) {
         try {
-          await this._push(e);
+          const pushedSha = await this._push(e);
+          /* Kam während des Pushes ein neuer Speichervorgang für dasselbe
+             Artefakt herein, hat onLocalSave den bestehenden Eintrag NICHT neu
+             angelegt — der neue Stand stünde dann weder auf dem Server noch als
+             eigener Eintrag. Den Eintrag mit dem gepushten sha als neuer
+             Baseline behalten statt löschen, damit der nächste Lauf ihn nachholt. */
+          if (e.op === "save" && pushedSha) {
+            const now = await gppArtefacts.get(e.id);
+            if (now && now.sha256 !== pushedSha) {
+              e.prevSha = pushedSha; e.tries = 0; delete e.lastError;
+              await this._outboxPut(e);
+              this._lastError = "";
+              continue;
+            }
+          }
           await this._outboxDel(e.key);
           if (e.op === "save") await this._markSeen(e.id);
           this._lastError = "";
@@ -880,6 +894,16 @@ const gppRemote = {
         const cur = await this.api("artefacts?id=eq." + id + "&select=sha256,updated_by,updated_at");
         if (cur && cur.length) {
           if (cur[0].sha256 === rec.sha256) return;   // identischer Inhalt liegt schon drüben (zweiter Tab)
+          if (e.prevSha && cur[0].sha256 === e.prevSha) {
+            /* Der Server trägt noch GENAU unseren Ausgangsstand — die CAS-PATCH
+               hat also nicht wegen einer fremden Änderung 0 Zeilen getroffen,
+               sondern weil die RLS-Policy (Rolle × kind) das Schreiben verwehrt.
+               Kein Konflikt, sondern ein Rechteproblem: so melden (bleibt am
+               Eintrag, keine Konfliktschleife, kein Datenverlust über „Übernehmen"). */
+            const err = new Error(`keine Schreibberechtigung für Sorte „${rec.kind}" im Set „${rec.set}"`);
+            err.status = 403;
+            throw err;
+          }
           const err = new Error("Konflikt");
           err.conflict = { serverSha: cur[0].sha256 || "", updatedBy: cur[0].updated_by || "", updatedAt: cur[0].updated_at || "" };
           throw err;
@@ -892,8 +916,23 @@ const gppRemote = {
         await this.api("artefacts?set_name=eq." + encodeURIComponent(rec.set) +
           "&kind=eq." + encodeURIComponent(rec.kind) + "&id=neq." + id, { method: "DELETE" });
       }
+      return rec.sha256;   // gepushter Stand — flush erkennt daran ein Resave während des Pushes
     } else if (e.op === "remove") {
-      await this.api("artefacts?id=eq." + encodeURIComponent(e.id), { method: "DELETE" });
+      /* return=representation, um 0 gelöschte Zeilen zu erkennen: entweder schon
+         fort (idempotent, ok) oder die RLS-Policy (Rolle × kind) verwehrt das
+         Löschen. Steht die Zeile danach noch, war es eine Verweigerung — als
+         Rechteproblem melden, sonst käme das Artefakt beim nächsten pullSet
+         stumm zurück. */
+      const del = await this.api("artefacts?id=eq." + encodeURIComponent(e.id),
+        { method: "DELETE", headers: { Prefer: "return=representation" } });
+      if (!(del && del.length)) {
+        const still = await this.api("artefacts?id=eq." + encodeURIComponent(e.id) + "&select=id");
+        if (still && still.length) {
+          const err = new Error("keine Berechtigung, dieses Artefakt zu löschen");
+          err.status = 403;
+          throw err;
+        }
+      }
     } else if (e.op === "removeset") {
       /* Über die admin-RPC, nicht über Zeilen-DELETEs: sie räumt Artefakte,
          Sperre und Set-Rechte in einer Transaktion und prüft selbst auf
@@ -913,9 +952,15 @@ const gppRemote = {
   async pullSet(setName) {
     if (!this.enabled() || !this.loggedIn()) return { pulled: 0, total: 0 };
     const name = setName || gppArtefacts.activeSet();
+    const outbox = await this._outboxAll();
+    /* Eigene, noch nicht ausgeführte Set-Löschung: die Zeilen stehen serverseitig
+       bis zum Push noch — nicht wieder einlesen, sonst kehrt das gerade gelöschte
+       Set zurück und landet nach dem Push als Phantom im Papierkorb. Der
+       removeset-Eintrag trägt keine id, greift also nicht über `pending`. */
+    if (outbox.some(e => e.op === "removeset" && e.set === name)) return { pulled: 0, removed: 0, total: 0 };
     const rows = await this.api("artefacts?set_name=eq." + encodeURIComponent(name) +
       "&select=id,set_name,stage,kind,title,filename,tool,created_at,updated_at,size,sha256,meta,data") || [];
-    const pending = new Set((await this._outboxAll()).map(e => e.id).filter(Boolean));
+    const pending = new Set(outbox.map(e => e.id).filter(Boolean));
     let pulled = 0;
     for (const row of rows) {
       if (pending.has(row.id)) continue;
@@ -959,8 +1004,9 @@ const gppRemote = {
     const rows = await this.api("artefacts?select=set_name") || [];
     const dataSets = [...new Set(rows.map(r => r.set_name))];
     let permSets = [];
+    let permOk = true;
     try { permSets = [...new Set((await this.api("set_permissions?select=set_name") || []).map(r => r.set_name))]; }
-    catch (e) { /* Recht auf die Sicht fehlt evtl. — dann nur Daten-Sets */ }
+    catch (e) { permOk = false; /* Recht auf die Sicht fehlt evtl. ODER transienter Fehler — „known" ist dann lückenhaft */ }
     const known = [...new Set([...dataSets, ...permSets])].sort();
     try { localStorage.setItem(GPP_CFG_PREFIX + "remote:sets", JSON.stringify(known)); } catch (e) { /* Quota */ }
     let pulled = 0;
@@ -974,15 +1020,21 @@ const gppRemote = {
        auf dem Server waren, bleiben unberührt; eigene noch nicht gepushte
        Arbeit (Outbox) schützt den jeweiligen Datensatz. */
     let removedSets = 0;
-    const pending = new Set((await this._outboxAll()).map(e => e.set).filter(Boolean));
-    for (const name of vorher) {
-      if (known.includes(name) || pending.has(name)) continue;
-      const doomed = (await gppArtefacts.all(name)).filter(r => r.remoteSeen);
-      for (const r of doomed) await this._trash(r);
-      if (doomed.length) {
-        removedSets++;
-        if (gppArtefacts.activeSet() === name && !(await gppArtefacts.all(name)).length) {
-          gppArtefacts.setActiveSet(GPP_DEFAULT_SET);
+    /* Löschungen nur spiegeln, wenn die Set-Liste vollständig ermittelt wurde:
+       schlug die set_permissions-Abfrage fehl, ist „known" lückenhaft und darf
+       kein Set als „drüben gelöscht" einstufen — sonst wischt eine einzige
+       fehlgeschlagene Anfrage lokalen Bestand in den Papierkorb. */
+    if (permOk) {
+      const pending = new Set((await this._outboxAll()).map(e => e.set).filter(Boolean));
+      for (const name of vorher) {
+        if (known.includes(name) || pending.has(name)) continue;
+        const doomed = (await gppArtefacts.all(name)).filter(r => r.remoteSeen);
+        for (const r of doomed) await this._trash(r);
+        if (doomed.length) {
+          removedSets++;
+          if (gppArtefacts.activeSet() === name && !(await gppArtefacts.all(name)).length) {
+            gppArtefacts.setActiveSet(GPP_DEFAULT_SET);
+          }
         }
       }
     }
@@ -1115,7 +1167,14 @@ const gppRemote = {
     if (!this.enabled() || !this.loggedIn()) { this._lockCache = null; return null; }
     const set = setName || gppArtefacts.activeSet();
     try {
-      const lock = await this.lockStatus(set);
+      let lock = await this.lockStatus(set);
+      /* Abgelaufene Sperre (5 min ohne Heartbeat) zählt wie keine — genau wie
+         serverseitig gpp_holds_lock/acquire_set_lock. Sonst hielte ein Halter
+         nach TTL-Ablauf fälschlich weiter (der Push würde zum Scheinkonflikt),
+         und eine fremde, abgestürzte Sitzung blockierte, obwohl der Server die
+         Sperre sofort neu vergäbe. */
+      if (lock && lock.heartbeat_at &&
+          Date.now() - new Date(lock.heartbeat_at).getTime() >= 5 * 60000) lock = null;
       await this.token();
       const me = (this.claims() || {}).sub || null;
       const info = { set, lock, mine: !!(lock && me && lock.holder === me) };
@@ -1128,7 +1187,7 @@ const gppRemote = {
         if (changed) this._emit();
       }
       return info;
-    } catch (e) { return this._lockCache; }
+    } catch (e) { return { set, transportError: true }; }
   },
 
   /* Schreib-Gate: In der Zusammenarbeit ist die Sperre Schreibvoraussetzung —
@@ -1140,13 +1199,14 @@ const gppRemote = {
   async requireLock(setName) {
     if (!this.enabled() || !this.loggedIn()) return;
     if (this._held.has(setName)) return;
-    let mine = false;
-    let netz = true;
-    try {
-      const info = await this._refreshLock(setName);
-      mine = !!(info && info.mine);
-    } catch (e) { netz = false; }
-    if (netz && !mine) {
+    const info = await this._refreshLock(setName);
+    /* Nur eine frische, GENAU dieses Set betreffende Antwort ohne eigene Sperre
+       blockiert. Ein Netzfehler (info.transportError) oder ein aus dem Cache
+       stammender Treffer für ein anderes Set blockiert NICHT — dann entscheidet
+       der Server beim Push (Offline-Weg: „bei Netzfehlern wird nicht blockiert").
+       Früher verschluckte _refreshLock den Netzfehler und lieferte den Cache, so
+       dass der Zweig unerreichbar war und der Offline-Fall fälschlich blockierte. */
+    if (info && !info.transportError && info.set === setName && !info.mine) {
       throw new Error(`Set „${setName}" ist nicht gesperrt — in der Übersicht „Bearbeiten (sperren)" wählen. Ohne Sperre wird in der Zusammenarbeit nichts geändert.`);
     }
   },

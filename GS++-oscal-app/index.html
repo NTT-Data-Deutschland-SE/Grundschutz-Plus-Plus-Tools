@@ -430,7 +430,12 @@
     async function removeOne(id) {
       const rec = artefacts.find(a => a.id === id);
       if (!confirm(`Artefakt „${rec ? rec.title : id}" löschen? Bereits heruntergeladene Dateien bleiben davon unberührt.`)) return;
-      await gppArtefacts.remove(id);
+      try {
+        await gppArtefacts.remove(id);   // wirft in der Zusammenarbeit ohne Sperre (requireLock)
+      } catch (e) {
+        alert("Löschen nicht möglich: " + e.message);
+        return;
+      }
       refreshArtefacts();
     }
     /* Eindeutige Dateinamen — zwei Tools dürfen dieselbe filename liefern */
@@ -562,7 +567,7 @@
         return;
       }
       if (meineRolle === null) {
-        try { meineRolle = ((await gppRemote.whoami()) || {}).gpp_role || ""; } catch (e) { meineRolle = ""; }
+        try { meineRolle = ((await gppRemote.whoami()) || {}).gpp_role || ""; } catch (e) { /* nur einen erfolgreichen whoami cachen — transienter Fehler bleibt null und wird beim nächsten gpp:remote-changed erneut versucht, sonst blieben Sperr-/Verwaltungsknöpfe die ganze Sitzung verborgen */ }
       }
       /* Neue Sets anlegen und ganze Sets löschen/leeren ist in der
          Zusammenarbeit admin-Sache — der Server lehnt Nicht-Admins ohnehin ab
@@ -597,7 +602,7 @@
         state.textContent = `🔒 ${info.lock.holder_name} seit ${String(info.lock.acquired_at || "").slice(11, 16)}`;
         state.style.color = "var(--amber, #fbbf24)";
         if (meineRolle === null) {
-          try { meineRolle = ((await gppRemote.whoami()) || {}).gpp_role || ""; } catch (e) { meineRolle = ""; }
+          try { meineRolle = ((await gppRemote.whoami()) || {}).gpp_role || ""; } catch (e) { /* nur einen erfolgreichen whoami cachen — transienter Fehler bleibt null und wird beim nächsten gpp:remote-changed erneut versucht, sonst blieben Sperr-/Verwaltungsknöpfe die ganze Sitzung verborgen */ }
         }
         if (meineRolle === "admin") {
           btn.textContent = "Sperre übernehmen";

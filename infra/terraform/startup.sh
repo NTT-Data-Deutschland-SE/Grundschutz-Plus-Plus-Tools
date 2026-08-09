@@ -233,7 +233,15 @@ if [ -n "$SCHEMA_SQL" ]; then
     docker exec supabase-db pg_isready -U postgres >/dev/null 2>&1 && break
     sleep 2
   done
-  echo "$SCHEMA_SQL" | docker exec -i supabase-db psql -U postgres -d postgres || true
+  # ON_ERROR_STOP=1: bei einem Fehler anhalten statt die Migration halb
+  # anzuwenden; Fehler sichtbar machen statt ihn mit "|| true" als Erfolg zu
+  # tarnen (sonst DROP der v1-Policies ohne v2-Ersatz → alle ausgesperrt, Log
+  # meldet trotzdem "== fertig"). Idempotent, ein erneuter Boot spielt nach.
+  if echo "$SCHEMA_SQL" | docker exec -i supabase-db psql -U postgres -d postgres -v ON_ERROR_STOP=1; then
+    echo "== Schema eingespielt"
+  else
+    echo "FEHLER: schema.sql nicht vollständig eingespielt — Migration prüfen (RLS/Policies)!" >&2
+  fi
 fi
 
 # --------------------------------------------------------------------------
@@ -256,16 +264,20 @@ if [ -n "$ADMIN_EMAIL" ] && [ -n "$SECRET_ADMIN" ]; then
     -H "Content-Type: application/json" \
     -d "{\"email\":\"$ADMIN_EMAIL\",\"password\":\"$ADMIN_PASS\",\"email_confirm\":true}" || true
 
-  # Mitgliedschaft direkt in der DB — die Rolle lebt in public.memberships
-  docker exec -i supabase-db psql -U postgres -d postgres -v ON_ERROR_STOP=0 <<SQL || true
-DO \$\$
+  # Mitgliedschaft direkt in der DB — die Rolle lebt in public.memberships.
+  # E-Mail als psql-Variable, quoted Heredoc (<<'SQL'): kein Splicing in die
+  # SQL-Zeichenkette (Apostroph bräche sie / schleuste SQL als postgres ein);
+  # :'admin_email' quotet psql selbst, $$ braucht so keine Shell-Maskierung.
+  docker exec -i supabase-db psql -U postgres -d postgres -v ON_ERROR_STOP=0 \
+    -v admin_email="$ADMIN_EMAIL" <<'SQL' || true
+DO $$
 DECLARE v_id uuid;
 BEGIN
   IF to_regclass('public.memberships') IS NULL THEN
     RAISE NOTICE 'Schema noch nicht eingespielt - Mitgliedschaft folgt mit seed_users.sh';
     RETURN;
   END IF;
-  SELECT id INTO v_id FROM auth.users WHERE lower(email) = lower('$ADMIN_EMAIL');
+  SELECT id INTO v_id FROM auth.users WHERE lower(email) = lower(:'admin_email');
   IF v_id IS NULL THEN
     RAISE NOTICE 'Admin-Konto nicht gefunden';
     RETURN;
@@ -274,7 +286,7 @@ BEGIN
   VALUES (v_id, '00000000-0000-0000-0000-000000000001', 'admin')
   ON CONFLICT (user_id, org_id) DO UPDATE SET gpp_role = 'admin';
 END
-\$\$;
+$$;
 SQL
 fi
 
@@ -292,18 +304,19 @@ if [ "$SEED_TEST_USERS" = "TRUE" ]; then
       -H "Content-Type: application/json" \
       -d "{\"email\":\"$email\",\"password\":\"$pass\",\"email_confirm\":true}" || true
 
-    docker exec -i supabase-db psql -U postgres -d postgres -v ON_ERROR_STOP=0 <<SQL || true
-DO \$\$
+    docker exec -i supabase-db psql -U postgres -d postgres -v ON_ERROR_STOP=0 \
+      -v email="$email" -v role="$role" <<'SQL' || true
+DO $$
 DECLARE v_id uuid;
 BEGIN
-  SELECT id INTO v_id FROM auth.users WHERE lower(email) = lower('$email');
+  SELECT id INTO v_id FROM auth.users WHERE lower(email) = lower(:'email');
   IF v_id IS NOT NULL THEN
     INSERT INTO public.memberships (user_id, org_id, gpp_role)
-    VALUES (v_id, '00000000-0000-0000-0000-000000000001', '$role')
-    ON CONFLICT (user_id, org_id) DO UPDATE SET gpp_role = '$role';
+    VALUES (v_id, '00000000-0000-0000-0000-000000000001', :'role')
+    ON CONFLICT (user_id, org_id) DO UPDATE SET gpp_role = :'role';
   END IF;
 END
-\$\$;
+$$;
 SQL
   }
 

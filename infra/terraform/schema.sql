@@ -42,6 +42,24 @@ CREATE TABLE IF NOT EXISTS public.memberships (
   PRIMARY KEY (user_id, org_id)
 );
 
+-- v1→v2: Auf einer bereits bestehenden memberships-Tabelle (v1: user_id ohne
+-- FK) rüstet CREATE TABLE IF NOT EXISTS die FK/CASCADE NICHT nach. Idempotent
+-- ergänzen, sonst räumt admin_delete_user die Mitgliedschaft nicht ab und
+-- hinterlässt eine verwaiste, unsichtbare Zeile. NOT VALID: bestehende Altzeilen
+-- blockieren die Migration nicht, künftige Löschungen kaskadieren trotzdem.
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conrelid = 'public.memberships'::regclass AND contype = 'f'
+      AND conname = 'memberships_user_id_fkey'
+  ) THEN
+    ALTER TABLE public.memberships
+      ADD CONSTRAINT memberships_user_id_fkey
+      FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE NOT VALID;
+  END IF;
+END $$;
+
 -- Abweichende Rolle je Set (vom Admin vergeben). Ohne Eintrag gilt die
 -- globale Rolle; 'admin' ist bewusst nicht je Set vergebbar.
 CREATE TABLE IF NOT EXISTS public.set_permissions (
@@ -98,16 +116,23 @@ CREATE TABLE IF NOT EXISTS public.audit (
 -- ============================================================ Rollen-Auflösung
 
 -- Org des Anfragenden — aus memberships, nicht aus Claims.
+-- ORDER BY: ist ein Benutzer in mehreren Orgs (PK (user_id, org_id) lässt das
+-- zu), muss die primäre Org DETERMINISTISCH gewählt werden — sonst liefern
+-- auth_org()/auth_gpp_role()/gpp_set_role() je Anfrage eine andere Org/Rolle,
+-- und ein Artefakt würde in Org A gestempelt, aber unter Org B gefiltert.
 CREATE OR REPLACE FUNCTION public.auth_org() RETURNS uuid
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
-  SELECT org_id FROM public.memberships WHERE user_id = auth.uid() LIMIT 1;
+  SELECT org_id FROM public.memberships WHERE user_id = auth.uid()
+   ORDER BY created_at, org_id LIMIT 1;
 $$;
 
 -- Globale Rolle. KEIN Fallback auf 'leser' mehr: wer keine Mitgliedschaft
--- hat, hat keine Rolle und sieht nichts.
+-- hat, hat keine Rolle und sieht nichts. ORDER BY wie in auth_org(), damit
+-- Org und Rolle dieselbe (primäre) Mitgliedschaft treffen.
 CREATE OR REPLACE FUNCTION public.auth_gpp_role() RETURNS text
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
-  SELECT gpp_role FROM public.memberships WHERE user_id = auth.uid() LIMIT 1;
+  SELECT gpp_role FROM public.memberships WHERE user_id = auth.uid()
+   ORDER BY created_at, org_id LIMIT 1;
 $$;
 
 -- Wirksame Rolle auf einem Set: Set-Eintrag schlägt globale Rolle;
@@ -120,6 +145,7 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
   LEFT JOIN public.set_permissions sp
     ON sp.user_id = m.user_id AND sp.org = m.org_id AND sp.set_name = p_set_name
   WHERE m.user_id = auth.uid()
+  ORDER BY m.created_at, m.org_id
   LIMIT 1;
 $$;
 

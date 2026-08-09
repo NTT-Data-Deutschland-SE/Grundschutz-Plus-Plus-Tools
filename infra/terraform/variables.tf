@@ -91,9 +91,9 @@ variable "admin_email" {
 }
 
 variable "allow_public_api" {
-  description = "Freigabe von Port 8000 in der Firewall für direkte API-Anfragen (z.B. durch Test-Agenten)."
+  description = "Öffnet Port 8000 (Kong, KLARTEXT-HTTP) in der Firewall für 0.0.0.0/0 — nur bewusst opt-in für direkte API-Tests. Standard aus: sonst lägen Login-Passwörter und JWTs unverschlüsselt im Netz, entgegen der 0.0.0.0/0-Sperre von allowed_cidrs für 443."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "seed_test_users" {

@@ -682,6 +682,10 @@ async function renderStorage() {
 async function renderTrash() {
   const box = $("trash-body");
   if (!box) return;
+  /* set/kind/title stammen aus Serverzeilen anderer Nutzer — vor der
+     innerHTML-Interpolation escapen (Stored XSS; in dieser Origin liegen
+     gh:token und ai:key:* im localStorage). */
+  const h = s => String(s == null ? "" : s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
   let entries = [];
   try { entries = await gppRemoteTrash.list(); } catch (e) { return; }
   if (!entries.length) { box.innerHTML = ""; return; }
@@ -694,8 +698,8 @@ async function renderTrash() {
       <button class="btn" id="btn-trash-clear">Papierkorb leeren</button>
     </div>
     ${entries.map(e => `<div class="row" style="margin-top:6px">
-      <code style="font-size:.68rem">${e.set} · ${e.kind}</code>
-      <span style="font-size:.8rem">${(e.title || e.id).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]))}</span>
+      <code style="font-size:.68rem">${h(e.set)} · ${h(e.kind)}</code>
+      <span style="font-size:.8rem">${h(e.title || e.id)}</span>
       <span class="note" style="margin:0">${(e.trashedAt || "").slice(0, 16).replace("T", " ")}</span>
       <span style="flex:1"></span>
       <button class="btn" data-restore="${gppAttrArg(e.id)}">Wiederherstellen</button>
