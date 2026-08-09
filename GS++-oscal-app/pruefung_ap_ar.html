@@ -563,7 +563,7 @@ textarea.inp{min-height:80px;line-height:1.55}
   </section>
 </div>
 
-<script src="gpp-core.js?v=3.6"></script>
+<script src="gpp-core.js?v=3.7"></script>
 <script>
 if(typeof gppCfg==='undefined'||typeof GPP_CORE_VERSION==='undefined'||Number(GPP_CORE_VERSION)<2){
     document.body.innerHTML='<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">'+
@@ -931,10 +931,20 @@ function restoreSession(d){
 window.saveSession=()=>{const j=ser();L.ok(`Session exportiert: ${S.allCids.size} Controls, ${(j.length/1024).toFixed(1)} kB`);dl(JSON.parse(j),`${sn()}_session.json`)};
 // Der Arbeitsstand liegt im gemeinsamen Artefakt-Set, nicht mehr in einem
 // tool-eigenen localStorage-Schlüssel — so sieht jedes Werkzeug denselben Stand.
+let _autoSaved='';
 function autoSave(){
     if(typeof gppArtefacts==='undefined')return;
+    /* Erst vergleichen, dann arbeiten: bei einem großen Set (mehrere MB Session)
+       kostet die volle Kette parse → pretty-stringify → sha256 im Kern sonst alle
+       30 s spürbar CPU und Speicher, auch wenn sich nichts geändert hat. Ein
+       Stringify ist zur Änderungserkennung ohnehin nötig — mehr passiert im
+       unveränderten Fall jetzt nicht. Scheitert das Sichern (z. B. ohne Sperre),
+       bleibt der Merker leer und der nächste Takt versucht es erneut. */
+    const j=ser();
+    if(j===_autoSaved)return;
     gppArtefacts.save({stage:'assess',kind:'workspace',title:'Prüfung Arbeitsstand',
-        filename:'pruefung-workspace.json',tool:GPP_TOOL_ID,data:JSON.parse(ser())})
+        filename:'pruefung-workspace.json',tool:GPP_TOOL_ID,data:JSON.parse(j)})
+        .then(()=>{_autoSaved=j})
         .catch(e=>L.warn(`Arbeitsstand nicht gesichert: ${e.message}`));
 }
 setInterval(()=>{if(S.allCids.size>0)autoSave()},30000);
@@ -1637,6 +1647,12 @@ function renderStats(){
 // ============================================================
 // EDITOR
 // ============================================================
+// Die Control-Zeilen jeder Komponente werden vorbereitet, aber erst beim
+// Aufklappen ins DOM gehängt (togC). Bei großen Sets (Tausende Controls) lägen
+// sonst mehrere GB im DOM und das Laden dauert; die Wahrheit steht in S.* (dem
+// JSON), das DOM ist nur die Sicht. _groupCache hält je Komponente das fertige
+// HTML als Zeichenkette (Bruchteil des DOM-Speichers) bereit.
+let _groupCache={};
 function renderControls(){
     // 1. Component navigation in sidebar
     let nav='';
@@ -1664,10 +1680,12 @@ function renderControls(){
 
         h+=`<div id="comp-${cuuid}" class="border border-slate-700 rounded-xl overflow-hidden mb-3">
             <div class="comp-header flex justify-between items-center p-2.5 bg-slate-900/80 hover:bg-slate-800" onclick="togC('${cuuid}')">
-                <div class="flex items-center gap-2 flex-wrap"><svg id="cc-${cuuid}" class="chev open w-4 h-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg><span class="sb ${tb}">${esc(meta.type)}</span><h3 class="comp-title text-sm font-bold text-slate-200">${esc(meta.title)}</h3><span class="text-xs text-slate-500">(${sspN}${defN?' + '+defN+' Def':''})</span>${meta.defLoaded?'<span class="sb bg-cyan-900/50 text-cyan-300 border-cyan-700">Def</span>':''}</div>
+                <div class="flex items-center gap-2 flex-wrap"><svg id="cc-${cuuid}" class="chev w-4 h-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg><span class="sb ${tb}">${esc(meta.type)}</span><h3 class="comp-title text-sm font-bold text-slate-200">${esc(meta.title)}</h3><span class="text-xs text-slate-500">(${sspN}${defN?' + '+defN+' Def':''})</span>${meta.defLoaded?'<span class="sb bg-cyan-900/50 text-cyan-300 border-cyan-700">Def</span>':''}</div>
             </div>
-            <div id="cb-${cuuid}" class="coll-content open p-1.5 space-y-1">`;
+            <div id="cb-${cuuid}" class="coll-content p-1.5 space-y-1" data-lazy="1"></div>
+        </div>`;
 
+        let rows='';
         sorted.forEach(([cid,info])=>{
             const sm=STM[info.status]||STM['nicht-angegeben'];
             const ci=catInfo(cid);
@@ -1706,7 +1724,7 @@ function renderControls(){
 
             const params=(S.setParams||[]).filter(p=>p['param-id']?.toLowerCase().startsWith(cid.toLowerCase()));
 
-            h+=`<div class="ctrl-row bg-slate-900 border border-slate-700 rounded-lg" data-cid="${cid}" data-rk="${rk}" data-title="${esc(ci.title).toLowerCase()}" data-modal="${modal}" data-class="${ctrlClass}" data-sec="${secLevel}" data-status="${info.status}">
+            rows+=`<div class="ctrl-row bg-slate-900 border border-slate-700 rounded-lg" data-cid="${cid}" data-cuuid="${cuuid}" data-rk="${rk}" data-title="${esc(ci.title).toLowerCase()}" data-modal="${modal}" data-class="${ctrlClass}" data-sec="${secLevel}" data-status="${info.status}">
                 <div class="flex items-center gap-2 p-2 cursor-pointer" onclick="togD('${rk}')">
                     <input type="checkbox" ${excl?'':'checked'} onclick="event.stopPropagation();togSc('${cid}',this.checked)" class="scb form-checkbox h-3.5 w-3.5 text-emerald-500 rounded border-slate-600 bg-slate-700 flex-shrink-0">
                     <span class="font-mono font-bold text-white text-xs w-24 flex-shrink-0">${cid}</span>
@@ -1771,7 +1789,7 @@ function renderControls(){
                 </div>
             </div>`;
         });
-        h+=`</div></div>`;
+        _groupCache[cuuid]=rows;
     });
 
     document.getElementById('ctrl-area').innerHTML=h;
@@ -1791,7 +1809,13 @@ window.scrollToSec = id => {
 };
 
 window.tog=id=>{document.getElementById(id+'-content')?.classList.toggle('open');document.getElementById('icon-'+id)?.classList.toggle('open')};
-window.togC=u=>{document.getElementById('cb-'+u)?.classList.toggle('open');document.getElementById('cc-'+u)?.classList.toggle('open')};
+window.togC=u=>{
+    const box=document.getElementById('cb-'+u);
+    // Beim ERSTEN Aufklappen die Zeilen aus dem Cache ins DOM hängen.
+    if(box&&box.dataset.lazy){box.innerHTML=_groupCache[u]||'';delete box.dataset.lazy}
+    box?.classList.toggle('open');
+    document.getElementById('cc-'+u)?.classList.toggle('open');
+};
 window.togD=rk=>{document.getElementById('cbd-'+rk)?.classList.toggle('open');document.getElementById('cch-'+rk)?.classList.toggle('open')};
 window.togSc=(c,on)=>{if(on)S.excluded.delete(c);else S.excluded.add(c);document.getElementById('scope-n').textContent=S.allCids.size-S.excluded.size};
 window.scopeAll=on=>{if(on)S.excluded.clear();else S.allCids.forEach(c=>S.excluded.add(c));document.querySelectorAll('.scb').forEach(cb=>cb.checked=on);document.getElementById('scope-n').textContent=on?S.allCids.size:0};
@@ -1801,7 +1825,10 @@ window.bulkMC=()=>{S.allCids.forEach(c=>{if(S.excluded.has(c))return;S.methods.s
 window.setF=(c,k,v)=>{let f=S.findings.get(c);if(!f){f={status:'',observation:'',risk:'',remarks:''};S.findings.set(c,f)}f[k]=v;
     document.querySelectorAll(`[data-fp="${c}"]`).forEach(p=>{p.textContent=f.status==='satisfied'?'✓':f.status==='not-satisfied'?'✗':f.status==='other'?'◬':'○';p.className=`fp text-xs ml-1 ${f.status==='satisfied'?'text-emerald-400':f.status==='not-satisfied'?'text-red-400':f.status==='other'?'text-amber-400':'text-slate-600'}`});
     if(k==='status')document.querySelectorAll(`.ctrl-row[data-cid="${c}"] select`).forEach(s=>{if(s.id.startsWith('f-s-'))s.value=v});
-    let n=0;S.findings.forEach((f2,cc)=>{if(!S.excluded.has(cc)&&f2.status)n++});const rn=document.getElementById('rated-n');if(rn)rn.textContent=n;const sr=document.getElementById('stat-rated');if(sr)sr.textContent=n};
+    let n=0;S.findings.forEach((f2,cc)=>{if(!S.excluded.has(cc)&&f2.status)n++});const rn=document.getElementById('rated-n');if(rn)rn.textContent=n;const sr=document.getElementById('stat-rated');if(sr)sr.textContent=n;
+    // Bei Status-Änderung die Kennzahlen-Karte (Donut/Balken „Befundstatus") neu
+    // aufbauen — bisher aktualisierte sich nur die „bewertet"-Zahl, nicht die Charts.
+    if(k==='status'&&typeof renderStats==='function')renderStats()};
 window.fltC=()=>{
     const t=(document.getElementById('cf')?.value||'').toLowerCase();
     const fm=document.getElementById('flt-modal')?.value||'';
@@ -1845,7 +1872,8 @@ function exportAP(){
     // zusätzlich in den gemeinsamen Artefaktbestand (Übersicht in index.html)
     gppArtefacts.save({stage:'assess',kind:'ap',tool:GPP_TOOL_ID,
         title:`${sn()} — Assessment Plan`,filename:`${sn()}_AP.json`,data:ap})
-        .catch(e=>L.warn('Artefakt nicht abgelegt: '+e.message));
+        .then(()=>L.ok('Assessment Plan ins Set gelegt — in der Übersicht und für Folgewerkzeuge verfügbar.'))
+        .catch(e=>L.warn('Nur als Datei heruntergeladen, NICHT ins Set gespeichert: '+e.message+' — in der Zusammenarbeit dafür die Sperre halten.'));
 }
 
 function exportAR(){
@@ -1947,7 +1975,8 @@ function exportAR(){
     dl(ar,`${sn()}_AR.json`);autoSave();
     gppArtefacts.save({stage:'assess',kind:'ar',tool:GPP_TOOL_ID,
         title:`${sn()} — Assessment Results`,filename:`${sn()}_AR.json`,data:ar})
-        .catch(e=>L.warn('Artefakt nicht abgelegt: '+e.message));
+        .then(()=>L.ok('Assessment Results ins Set gelegt — POA&M kann sie jetzt übernehmen.'))
+        .catch(e=>L.warn('Nur als Datei heruntergeladen, NICHT ins Set gespeichert: '+e.message+' — in der Zusammenarbeit dafür die Sperre halten.'));
 }
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}

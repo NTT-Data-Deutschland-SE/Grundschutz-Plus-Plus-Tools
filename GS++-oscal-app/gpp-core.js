@@ -383,9 +383,6 @@ const gppArtefacts = {
     const bytes = new TextEncoder().encode(json);
     const now = new Date().toISOString();
     const st = (set || this.activeSet()).trim() || GPP_DEFAULT_SET;
-    /* In der Zusammenarbeit ist die Sperre Schreibvoraussetzung — wirft, wenn
-       sie fehlt. Ohne DB/Anmeldung und bei Netzausfall kein Eingriff. */
-    if (typeof gppRemote !== "undefined") await gppRemote.requireLock(st);
     let key = id || `${st}:${tool}:${filename}`;
     let existing = await this.get(key);
     if (!existing && !id) {
@@ -408,6 +405,22 @@ const gppArtefacts = {
       meta: meta || {},
       data,
     };
+    /* Inhaltlich unverändert → echtes No-op: kein Schreiben, kein DB-Push und
+       keine Sperre nötig. Spart bei großen Dokumenten (SSP-Workspace ~400 kB)
+       das wiederholte Ablegen desselben Blobs bei jedem Autosave und lässt einen
+       Leser einen unveränderten „Speichervorgang" auslösen, ohne dass es wirft.
+       Verglichen wird der Inhalt (sha256) samt der beschreibenden Felder — eine
+       reine Titel-/Meta-Änderung geht weiterhin durch. */
+    if (existing && existing.sha256 === rec.sha256 && existing.title === rec.title &&
+        existing.stage === rec.stage && existing.kind === rec.kind &&
+        existing.filename === rec.filename &&
+        JSON.stringify(existing.meta || {}) === JSON.stringify(rec.meta || {})) {
+      return existing;
+    }
+    /* Ab hier ändert sich wirklich etwas: In der Zusammenarbeit ist die Sperre
+       Schreibvoraussetzung — wirft, wenn sie fehlt. Ohne DB/Anmeldung und bei
+       Netzausfall kein Eingriff. */
+    if (typeof gppRemote !== "undefined") await gppRemote.requireLock(st);
     await gppTx("readwrite", store => store.put(rec));
     /* Einzelstück-Sorten: ältere Exemplare derselben Sorte im Set weichen. */
     if (GPP_SINGLETON_KINDS.has(rec.kind)) {
@@ -774,7 +787,10 @@ const gppRemote = {
           queuedAt: new Date().toISOString(), tries: 0 });
       }
       this._emit();
-      this._debounce();
+      /* Kein Push mehr pro Speichern: die Outbox ist lokal sicher; in die
+         Datenbank geteilt wird beim Freigeben der Sperre, alle 5 min als
+         Sicherheitsnetz und beim Verstecken des Tabs — das spart bei großen
+         Arbeitsständen viel Netzwerk. */
     })().catch(() => { /* Outbox nicht schreibbar → nächster save versucht es erneut */ });
   },
   onLocalRemove(id) {
@@ -783,7 +799,6 @@ const gppRemote = {
       await this._outboxDel("save:" + id);   // ein Push für Gelöschtes wäre Unsinn
       await this._outboxPut({ key: "remove:" + id, op: "remove", id, queuedAt: new Date().toISOString(), tries: 0 });
       this._emit();
-      this._debounce();
     })().catch(() => {});
   },
   onLocalRemoveSet(name) {
@@ -794,7 +809,9 @@ const gppRemote = {
       }
       await this._outboxPut({ key: "removeset:" + name, op: "removeset", set: name, queuedAt: new Date().toISOString(), tries: 0 });
       this._emit();
-      this._debounce();
+      /* Eine ganze-Set-Löschung ist selten und gewichtig → zeitnah spiegeln,
+         nicht bis zum nächsten Sicherheitsnetz warten. */
+      this.flushSoon(500);
     })().catch(() => {});
   },
   onSetChanged(name) {
@@ -808,13 +825,10 @@ const gppRemote = {
     }, 300);
   },
 
-  /* Entprellung: abarbeiten_POAM_generator speichert bei jeder Änderung —
-     ungebremst wären das Dutzende Anfragen pro Minute. Ein Sammel-Timer über
-     alle Einträge genügt, die Outbox selbst ist bereits je Artefakt dedupliziert. */
-  _debounce() {
-    clearTimeout(this._debounceTimer);
-    this._debounceTimer = setTimeout(() => this.flush(), 2000);
-  },
+  /* Sammel-Timer für die Outbox. Es gibt keinen Push mehr pro Speichern (das
+     würde bei großen Arbeitsständen das Netz fluten); flushSoon dient den
+     bewussten Anlässen: Login, Rückkehr der Verbindung, Freigabe der Sperre,
+     Tab-Verstecken. */
   flushSoon(ms) {
     clearTimeout(this._debounceTimer);
     this._debounceTimer = setTimeout(() => this.flush(), ms || 0);
@@ -958,24 +972,40 @@ const gppRemote = {
        Set zurück und landet nach dem Push als Phantom im Papierkorb. Der
        removeset-Eintrag trägt keine id, greift also nicht über `pending`. */
     if (outbox.some(e => e.op === "removeset" && e.set === name)) return { pulled: 0, removed: 0, total: 0 };
-    const rows = await this.api("artefacts?set_name=eq." + encodeURIComponent(name) +
-      "&select=id,set_name,stage,kind,title,filename,tool,created_at,updated_at,size,sha256,meta,data") || [];
+    /* Delta-Abgleich: erst nur id+sha256 (wenige Bytes je Zeile), volle Zeilen
+       — inklusive data, oft > 500 kB — nur für tatsächlich geänderte ids. Bei
+       großen Sets entscheidet das über Sekunden je Seitenaufruf: der Boot-Pull
+       jeder Werkzeugseite zog sonst den kompletten Bestand durchs Netz, obwohl
+       fast immer alles schon lokal liegt. */
+    const head = await this.api("artefacts?set_name=eq." + encodeURIComponent(name) + "&select=id,sha256") || [];
     const pending = new Set(outbox.map(e => e.id).filter(Boolean));
-    let pulled = 0;
-    for (const row of rows) {
+    const need = [];
+    for (const row of head) {
       if (pending.has(row.id)) continue;
       const local = await gppArtefacts.get(row.id);
       if (local && local.sha256 === row.sha256) continue;
-      await gppTx("readwrite", store => store.put(this._toLocal(row)));
-      pulled++;
+      need.push(row.id);
+    }
+    let pulled = 0;
+    /* Gebündelt über in.(...) und die URL kurz gehalten; ids sind frei gewählte
+       Texte, deshalb je Wert doppelt gequotet (PostgREST-Syntax). */
+    for (let i = 0; i < need.length; i += 40) {
+      const inList = need.slice(i, i + 40)
+        .map(id => encodeURIComponent('"' + String(id).replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"')).join(",");
+      const rows = await this.api("artefacts?set_name=eq." + encodeURIComponent(name) + "&id=in.(" + inList + ")" +
+        "&select=id,set_name,stage,kind,title,filename,tool,created_at,updated_at,size,sha256,meta,data") || [];
+      for (const row of rows) {
+        await gppTx("readwrite", store => store.put(this._toLocal(row)));
+        pulled++;
+      }
     }
     /* Gelöschtes spiegeln: führt der Server das Set (Zeilen vorhanden oder als
        zugängliches Set bekannt), verschwinden lokale Zeilen, die er nicht mehr
        hat — außer eigener, noch nicht gepushter Arbeit (Outbox). Rein lokale
        Sets, die der Server nie kannte, bleiben vollständig unberührt. */
     let removed = 0;
-    if (rows.length > 0 || this.remoteSets().includes(name)) {
-      const serverIds = new Set(rows.map(r => r.id));
+    if (head.length > 0 || this.remoteSets().includes(name)) {
+      const serverIds = new Set(head.map(r => r.id));
       for (const rec of await gppArtefacts.all(name)) {
         if (serverIds.has(rec.id) || pending.has(rec.id)) continue;
         if (!rec.remoteSeen) continue;   // nie synchronisiert → wartet auf Übertragung, keine fremde Löschung
@@ -989,7 +1019,7 @@ const gppRemote = {
     }
     this._lastSync = new Date().toISOString();
     this._emit();
-    return { pulled, removed, total: rows.length };
+    return { pulled, removed, total: head.length };
   },
   /* Alle für den Benutzer zugänglichen Sets vom Server holen — nicht nur das
      aktive. Ohne das entdeckt ein neu Hinzugekommener geteilte Sets nie: der
@@ -1144,6 +1174,11 @@ const gppRemote = {
   },
   async lockRelease(setName) {
     const set = setName || gppArtefacts.activeSet();
+    /* Erst alles Ausstehende teilen, DANN die Sperre lösen — nach dem Löschen
+       verweigert die RLS (gpp_holds_lock) jeden weiteren Push für dieses Set.
+       Scheitert der Flush (Netz), bleibt der Rest in der Outbox und geht beim
+       nächsten Anlass raus. */
+    try { await this.flush(); } catch (e) { /* Outbox hält */ }
     await this.api("set_locks?set_name=eq." + encodeURIComponent(set), { method: "DELETE" });
     this._held.delete(set);
     await this._refreshLock(set);
@@ -1346,7 +1381,13 @@ function gppRemoteChip() {
 if (typeof window !== "undefined") {
   window.addEventListener("online", () => gppRemote.flushSoon(1000));
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) return;
+    if (document.hidden) {
+      /* Tab wird versteckt (oft der Vorbote des Schließens): den geteilten Stand
+         noch rausschicken, solange die Seite lebt. Best effort — bei echtem
+         Schließen evtl. abgebrochen, dann greifen Intervall und Freigabe. */
+      if (gppRemote.enabled() && gppRemote.loggedIn()) gppRemote.flush();
+      return;
+    }
     gppRemote.flushSoon(1500);
     /* Zurück im Blick: gehaltene Sperren sofort bestätigen, bevor die TTL
        während einer langen Hintergrundphase abläuft. */
@@ -1354,7 +1395,10 @@ if (typeof window !== "undefined") {
       for (const s of gppRemote._held) gppRemote.lockAcquire(s).catch(() => {});
     }
   });
-  setInterval(() => { if (gppRemote.enabled() && gppRemote.loggedIn()) gppRemote.flush(); }, 45000);
+  /* Sicherheitsnetz: alle 5 min teilen, was noch in der Outbox liegt (lokal ist
+     ohnehin alles sicher). Häufiger muss es nicht sein — geteilt wird sonst beim
+     Freigeben der Sperre und beim Verstecken des Tabs. */
+  setInterval(() => { if (gppRemote.enabled() && gppRemote.loggedIn()) gppRemote.flush(); }, 300000);
   /* Sperr-Takt: Heartbeat für gehaltene Sperren, Zustands-Abgleich fürs
      aktive Set (auch Nicht-Halter sollen eine fremde Sperre sehen). Nur im
      sichtbaren Tab — ein Dutzend Hintergrund-Tabs soll den Server nicht
@@ -1664,7 +1708,14 @@ function gppFloatingSave({ buttons = [], consoleEl = null, hideContainers = [], 
   const syncAll = () => {
     actionButtons.forEach(item => item.sync());
     const nutzbar = actionButtons.some(item => !item.action.disabled);
-    dock.style.display = nutzbar ? "" : "none";
+    /* NUR bei echter Änderung schreiben. Sonst löst dieser Schreibvorgang den
+       document.body-MutationObserver (unten) aus, der syncAll erneut plant —
+       eine Endlosschleife je Frame: 100 % CPU, kein Netz, RAM wächst. Sichtbar
+       vor allem in großen DOMs (Prüfung, 87 Controls), wo sourceAvailable je
+       Knopf die getComputedStyle-Kette hochläuft. Die Knopf-Syncs oben sind aus
+       genau diesem Grund bereits abgesichert; hier fehlte es. */
+    const disp = nutzbar ? "" : "none";
+    if (dock.style.display !== disp) dock.style.display = disp;
     if (!nutzbar) closeMenu();
   };
   syncAll();
@@ -1702,7 +1753,10 @@ function gppFloatingSave({ buttons = [], consoleEl = null, hideContainers = [], 
        hoeher als der Rest, und ein ungebremstes bottom schoebe Knopf UND Menue
        aus dem sichtbaren Bereich. */
     const maxBottom = Math.max(14, window.innerHeight - dock.offsetHeight - 8);
-    dock.style.bottom = `${Math.min(bottom, maxBottom)}px`;
+    /* Ebenfalls nur bei Änderung schreiben — sonst weckt jeder Aufruf (Resize,
+       ResizeObserver der Konsole) den MutationObserver unnötig. */
+    const val = `${Math.min(bottom, maxBottom)}px`;
+    if (dock.style.bottom !== val) dock.style.bottom = val;
   };
   placeAboveConsole();
   window.addEventListener("resize", placeAboveConsole, { signal });
