@@ -12,13 +12,17 @@
      localStorage  gpp:cfg:*   Konfiguration (klein, synchron beim Start lesbar)
      IndexedDB     gpp-artefacts/artefacts   Artefakte (OSCAL-Dokumente, oft > 500 kB;
                    localStorage wäre nach wenigen SSPs voll)
+     IndexedDB     gpp-remote/outbox   noch nicht übertragene Datenbank-Pushes
+                   (eigene DB, damit alte Kern-Stände im Cache nie an einer
+                   hochgezählten gpp-artefacts-Version scheitern)
    ———————————————————————————————————————————————————————————————————— */
 /* Wird erhöht, sobald der Kern etwas anbietet, ohne das die Werkzeuge nicht mehr
-   starten (v2: gppFloatingSave, gppAttrArg). Jede Seite prüft beim Start gegen
+   starten (v2: gppFloatingSave, gppAttrArg; v3: gppRemote — Sync mit der
+   gemeinsamen Datenbank). Jede Seite prüft beim Start gegen
    ihren Mindeststand — nur so fällt ein alter, aus dem Browser-Cache geladener
    Kern auf, statt beim ersten Aufruf einer neuen Funktion das ganze Skript
    abzubrechen. Die Prüfung auf ein beliebiges Symbol reicht dafür nicht. */
-const GPP_CORE_VERSION = "2";
+const GPP_CORE_VERSION = "3";
 const GPP_CFG_PREFIX = "gpp:cfg:";
 
 /* ---------- Konfiguration ---------- */
@@ -51,6 +55,13 @@ const GPP_CFG_DEFAULTS = {
   "run:chunk": "6",
   "run:chunkchars": "28000",
   "run:retries": "2",
+  // Gemeinsame Datenbank (optional, Abschnitt "Zusammenarbeit" in config.html).
+  // Ohne db:url verhält sich die Sammlung exakt wie ohne diese Schlüssel.
+  "db:url": "",
+  "db:anonkey": "",
+  "db:auth:mode": "passwort",
+  "db:auth:provider": "keycloak",
+  "db:email": "",
 };
 
 const gppCfg = {
@@ -355,6 +366,7 @@ const gppArtefacts = {
     localStorage.setItem(GPP_CFG_PREFIX + "artefacts:set", n);
     window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { setChanged: n } }));
     try { localStorage.setItem(GPP_CFG_PREFIX + "artefacts:touch", new Date().toISOString()); } catch (e) { /* Quota egal */ }
+    try { gppRemote.onSetChanged(n); } catch (e) { /* Sync bricht Lokales nie */ }
     return n;
   },
   /* Legt ein Artefakt ab. `data` ist das fertige OSCAL-Objekt (oder ein
@@ -401,6 +413,11 @@ const gppArtefacts = {
     }
     window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { id: rec.id, set: st } }));
     try { localStorage.setItem(GPP_CFG_PREFIX + "artefacts:touch", now); } catch (e) { /* Quota egal */ }
+    /* DB-Push NACH dem lokalen Erfolg anstoßen, nie davor (Leitprinzip:
+       IndexedDB ist die Wahrheit, die Datenbank ein Ziel, kein Nadelöhr).
+       existing.sha256 ist der Stand, den der Server zuletzt gesehen haben
+       kann — er dient drüben als Konfliktprüfung. */
+    try { gppRemote.onLocalSave(rec, existing ? existing.sha256 : null); } catch (e) { /* Sync bricht Lokales nie */ }
     return rec;
   },
   async get(id) {
@@ -444,12 +461,14 @@ const gppArtefacts = {
   async remove(id) {
     await gppTx("readwrite", store => store.delete(id));
     window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { id, removed: true } }));
+    try { gppRemote.onLocalRemove(id); } catch (e) { /* Sync bricht Lokales nie */ }
   },
   async removeSet(name) {
     const doomed = (await this.all("*")).filter(r => gppSetOf(r) === name);
     for (const r of doomed) await gppTx("readwrite", store => store.delete(r.id));
     window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { setRemoved: name } }));
     try { localStorage.setItem(GPP_CFG_PREFIX + "artefacts:touch", new Date().toISOString()); } catch (e) { /* Quota egal */ }
+    try { gppRemote.onLocalRemoveSet(name); } catch (e) { /* Sync bricht Lokales nie */ }
     return doomed.length;
   },
   async clear() {
@@ -457,6 +476,566 @@ const gppArtefacts = {
     window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { cleared: true } }));
   },
 };
+
+/* ---------- Gemeinsame Datenbank: gppRemote (Phase 2 des DB-Plans) ----------
+   Optionale Synchronisierung mit einer PostgREST+GoTrue-Instanz (Supabase-Stack,
+   self-hosted oder gehostet — derselbe Code). Ohne gesetzte db:url ist dieses
+   Modul vollständig inert; die Sammlung verhält sich wie bisher.
+
+   Leitprinzip: IndexedDB bleibt die Wahrheit für den laufenden Vorgang, die
+   Datenbank ist ein Ziel, kein Nadelöhr. save() liefert lokal zurück, der Push
+   hängt daran; scheitert er, wandert er in die Outbox (IndexedDB gpp-remote)
+   und wird bei nächster Gelegenheit erneut versucht.
+
+   SERVER-KONTRAKT (gegen die Testinstanz vom 2026-08-09 verifiziert):
+     POST {url}/auth/v1/token?grant_type=password       {email, password}
+     POST {url}/auth/v1/token?grant_type=refresh_token  {refresh_token}
+     POST {url}/auth/v1/logout
+     GET  {url}/auth/v1/authorize?provider=…&redirect_to=…   (Pfad B, OIDC)
+       → Token-Claims: sub, email, exp (≤ 1 h); org und gpp_role als eigene
+         Claims ODER in app_metadata — user() liest beide Stellen.
+     Tabelle {url}/rest/v1/artefacts — Spalten: id (PK), set_name, stage,
+       kind, title, filename, tool, created_at, updated_at, size, sha256,
+       meta, data; org und updated_by setzt der Server aus dem JWT.
+       RBAC macht die RLS-Policy, nicht der Client.
+       Schreiben ist Compare-and-Swap über den Zeilenfilter:
+         PATCH ?id=eq.…&sha256=eq.{prev}  + Prefer: return=representation
+           → []  heißt: Zeile fehlt ODER trägt einen anderen sha256.
+         Dann GET ?id=eq.…: Zeile da → Konflikt (fremde Änderung);
+         Zeile fehlt → POST (neue Zeile); 409/23505 dabei = Einfüge-Rennen,
+         wird beim nächsten flush als Konflikt gemeldet.
+       Einzelstück-Sorten (GPP_SINGLETON_KINDS) räumt der Client nach
+       erfolgreichem Push per DELETE …&kind=eq.…&id=neq.… nach — eine
+       serverseitige artefact_save()-Funktion, die Schreiben und Räumen in
+       einer Transaktion erledigt, bleibt das Phase-1-Soll; sobald sie
+       existiert, wandert _push() dorthin.
+     POST {url}/rest/v1/rpc/acquire_set_lock {p_set_name, p_holder_name}
+       → [Zeile] | [] (leer: jemand anderes hält die Sperre);
+       erneuter Aufruf = Heartbeat.
+     DELETE {url}/rest/v1/set_locks?set_name=eq.…   (Freigabe; RLS: nur
+       Halter oder admin)
+     POST {url}/rest/v1/rpc/whoami {} → {user_id, email, org, gpp_role,
+       set_roles} — wirksame Rechte aus der DB (memberships/set_permissions),
+       NICHT aus den Token-Claims: Admin-Änderungen greifen sofort, Claims
+       hängen bis zu 1 h nach. Die UI richtet sich danach; durchgesetzt wird
+       ohnehin serverseitig (RLS).
+     Benutzerverwaltung (nur Rolle admin, config.html):
+       POST rpc/admin_list_users {} · rpc/admin_create_user {p_email,
+       p_password, p_gpp_role} · rpc/admin_delete_user {p_user_id} ·
+       rpc/admin_set_role {p_user_id, p_gpp_role} · rpc/admin_set_set_role
+       {p_user_id, p_set_name, p_gpp_role} · rpc/admin_clear_set_role
+       {p_user_id, p_set_name}
+   Alle REST-Aufrufe mit apikey: {anon-key} und Authorization: Bearer {jwt}.
+
+   NICHT synchronisiert: gpp:cfg:* — insbesondere ai:key:* und gh:token
+   verlassen den Browser nicht. Vom Sitzungszustand liegt nur das Refresh-Token
+   im localStorage; das kurzlebige Access-Token lebt im Speicher des Tabs. */
+const GPP_REMOTE_DB = "gpp-remote";
+const GPP_REMOTE_STORE = "outbox";
+
+function gppRemoteDbOpen() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(GPP_REMOTE_DB, 1);
+    req.onupgradeneeded = () => {
+      if (!req.result.objectStoreNames.contains(GPP_REMOTE_STORE)) {
+        req.result.createObjectStore(GPP_REMOTE_STORE, { keyPath: "key" });
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+/* Gleiches Muster wie gppTx: eine Operation je Transaktion, kein await darin. */
+async function gppRemoteTx(mode, fn) {
+  const db = await gppRemoteDbOpen();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(GPP_REMOTE_STORE, mode);
+    let result;
+    let req;
+    try { req = fn(tx.objectStore(GPP_REMOTE_STORE)); } catch (e) { db.close(); reject(e); return; }
+    if (req && typeof req === "object" && "onsuccess" in req) {
+      req.onsuccess = () => { result = req.result; };
+    }
+    tx.oncomplete = () => { db.close(); resolve(result); };
+    tx.onerror = () => { db.close(); reject(tx.error); };
+    tx.onabort = () => { db.close(); reject(tx.error); };
+  });
+}
+
+const gppRemote = {
+  _access: null,          // Access-Token: nur im Speicher dieses Tabs
+  _exp: 0,
+  _flushing: false,
+  _debounceTimer: null,
+  _lastSync: "",
+  _lastError: "",
+  _refreshKey: GPP_CFG_PREFIX + "db:refresh",
+
+  url() { return (gppCfg.get("db:url") || "").trim().replace(/\/+$/, ""); },
+  anonKey() { return (gppCfg.get("db:anonkey") || "").trim(); },
+  enabled() { return !!this.url(); },
+  refreshToken() { return localStorage.getItem(this._refreshKey) || ""; },
+  loggedIn() { return !!this._access || !!this.refreshToken(); },
+
+  claims() {
+    if (!this._access) return null;
+    try {
+      const b64 = this._access.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+      return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(b64), c => c.charCodeAt(0))));
+    } catch (e) { return null; }
+  },
+  /* org und gpp_role stehen bei Pfad B als eigene Claims im Token, bei
+     GoTrue-Konten (Pfad A) je nach Hook-Konfiguration in app_metadata —
+     beide Stellen lesen, damit der Rest des Codes es nie wissen muss. */
+  user() {
+    const c = this.claims();
+    if (!c) return null;
+    const app = c.app_metadata || {};
+    return { email: c.email || "", org: c.org || app.org || "", role: c.gpp_role || app.gpp_role || "", exp: c.exp || 0 };
+  },
+
+  _setSession(json) {
+    this._access = json.access_token || null;
+    const c = this.claims();
+    this._exp = c && c.exp ? c.exp * 1000 : Date.now() + (json.expires_in || 3600) * 1000;
+    if (json.refresh_token) {
+      try { localStorage.setItem(this._refreshKey, json.refresh_token); } catch (e) { /* Quota */ }
+    }
+    this._emit();
+  },
+  _clearSession() {
+    this._access = null;
+    this._exp = 0;
+    localStorage.removeItem(this._refreshKey);
+    this._emit();
+  },
+
+  async _auth(pathAndQuery, body) {
+    const r = await fetch(this.url() + "/auth/v1/" + pathAndQuery, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: this.anonKey() },
+      body: JSON.stringify(body),
+    });
+    const json = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(json.error_description || json.msg || json.message || "HTTP " + r.status);
+    return json;
+  },
+  async login(email, password) {
+    const json = await this._auth("token?grant_type=password", { email, password });
+    this._setSession(json);
+    gppCfg.set("db:email", email);
+    this.flushSoon(500);
+    return this.user();
+  },
+  async refresh() {
+    /* Immer frisch aus dem localStorage lesen: GoTrue ROTIERT Refresh-Tokens,
+       und ein anderer Tab kann inzwischen rotiert haben. Gleichzeitige
+       Refreshes zweier Tabs deckt die Reuse-Toleranz von GoTrue ab. */
+    const rt = this.refreshToken();
+    if (!rt) throw new Error("keine Sitzung");
+    try {
+      this._setSession(await this._auth("token?grant_type=refresh_token", { refresh_token: rt }));
+    } catch (e) {
+      /* Abgelehnter Refresh = Sitzung beendet (abgelaufen, widerrufen).
+         Aufräumen statt endlos mit demselben Token wiederholen. */
+      this._clearSession();
+      throw e;
+    }
+  },
+  async token() {
+    if (this._access && Date.now() < this._exp - 60000) return this._access;
+    await this.refresh();
+    return this._access;
+  },
+  async logout() {
+    try {
+      if (this._access) {
+        await fetch(this.url() + "/auth/v1/logout", {
+          method: "POST",
+          headers: { Authorization: "Bearer " + this._access, apikey: this.anonKey() },
+        });
+      }
+    } catch (e) { /* lokal ist die Sitzung gleich ohnehin weg */ }
+    this._clearSession();
+  },
+  /* Pfad B: GoTrue führt den OIDC-Tanz serverseitig; der Browser wird nur
+     umgeleitet. Genau deshalb bauen wir Authorization Code + PKCE nicht selbst
+     (fehleranfälligste Stelle des Vorhabens, siehe Plan Abschnitt 3). */
+  oidcStart() {
+    const provider = gppCfg.get("db:auth:provider") || "keycloak";
+    const back = location.origin + location.pathname;
+    location.href = this.url() + "/auth/v1/authorize?provider=" + encodeURIComponent(provider) +
+      "&redirect_to=" + encodeURIComponent(back);
+  },
+  /* Rückkehr aus Pfad B: Tokens stehen im URL-Fragment. Das Fragment verlässt
+     den Browser nie — aber es gehört auch nicht in Verlauf oder Lesezeichen,
+     deshalb sofort aus der Adresszeile entfernen. */
+  oidcComplete() {
+    if (!location.hash.includes("access_token=")) return false;
+    const p = new URLSearchParams(location.hash.slice(1));
+    if (!p.get("access_token")) return false;
+    this._setSession({
+      access_token: p.get("access_token"),
+      refresh_token: p.get("refresh_token") || "",
+      expires_in: parseInt(p.get("expires_in") || "3600", 10),
+    });
+    history.replaceState(null, "", location.pathname + location.search);
+    this.flushSoon(500);
+    return true;
+  },
+
+  /* REST-Aufruf mit Auth, Timeout und einmaligem Retry nach 401 (Token kann
+     zwischen Prüfung und Ankunft am Server ablaufen — die Claims sagen ≤ 1 h). */
+  async api(path, { method = "GET", body, headers = {}, retried = false } = {}) {
+    const tok = await this.token();
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 20000);
+    let r;
+    try {
+      r = await fetch(this.url() + "/rest/v1/" + path, {
+        method,
+        headers: { apikey: this.anonKey(), Authorization: "Bearer " + tok, "Content-Type": "application/json", ...headers },
+        body: body === undefined ? undefined : JSON.stringify(body),
+        signal: ctrl.signal,
+      });
+    } finally { clearTimeout(timer); }
+    if (r.status === 401 && !retried) {
+      await this.refresh();
+      return this.api(path, { method, body, headers, retried: true });
+    }
+    if (!r.ok) {
+      const json = await r.json().catch(() => ({}));
+      const err = new Error(json.message || json.hint || "HTTP " + r.status);
+      err.status = r.status;   // 401/403 = Rechte (bleibt am Eintrag), sonst Transport
+      throw err;
+    }
+    if (r.status === 204) return null;
+    const text = await r.text();
+    return text ? JSON.parse(text) : null;
+  },
+
+  /* ---- Outbox ---- */
+  async _outboxAll() { return (await gppRemoteTx("readonly", s => s.getAll())) || []; },
+  async _outboxGet(key) { return (await gppRemoteTx("readonly", s => s.get(key))) || null; },
+  async _outboxPut(e) { await gppRemoteTx("readwrite", s => s.put(e)); },
+  async _outboxDel(key) { await gppRemoteTx("readwrite", s => s.delete(key)); },
+
+  /* ---- Einhängepunkte der vier Schreibfunktionen ---- */
+  onLocalSave(rec, prevSha) {
+    if (!this.enabled()) return;
+    (async () => {
+      const key = "save:" + rec.id;
+      const alt = await this._outboxGet(key);
+      /* Baseline bewahren: prevSha ist der letzte Stand, den der Server kennt.
+         Hängt bereits ein unerledigter Push, hat der Server auch alle
+         zwischenzeitlichen lokalen Stände nie gesehen — der ÄLTESTE prevSha
+         bleibt der richtige Vergleichswert, sonst meldet der Server nie einen
+         Konflikt, obwohl er längst etwas anderes trägt. */
+      if (!alt) {
+        await this._outboxPut({ key, op: "save", id: rec.id, set: rec.set, prevSha: prevSha || null,
+          queuedAt: new Date().toISOString(), tries: 0 });
+      }
+      this._emit();
+      this._debounce();
+    })().catch(() => { /* Outbox nicht schreibbar → nächster save versucht es erneut */ });
+  },
+  onLocalRemove(id) {
+    if (!this.enabled()) return;
+    (async () => {
+      await this._outboxDel("save:" + id);   // ein Push für Gelöschtes wäre Unsinn
+      await this._outboxPut({ key: "remove:" + id, op: "remove", id, queuedAt: new Date().toISOString(), tries: 0 });
+      this._emit();
+      this._debounce();
+    })().catch(() => {});
+  },
+  onLocalRemoveSet(name) {
+    if (!this.enabled()) return;
+    (async () => {
+      for (const e of await this._outboxAll()) {
+        if (e.set === name || (e.op === "remove" && String(e.id).startsWith(name + ":"))) await this._outboxDel(e.key);
+      }
+      await this._outboxPut({ key: "removeset:" + name, op: "removeset", set: name, queuedAt: new Date().toISOString(), tries: 0 });
+      this._emit();
+      this._debounce();
+    })().catch(() => {});
+  },
+  onSetChanged(name) {
+    /* Beim Setwechsel den Serverstand nachziehen (Plan Phase 2) — verzögert,
+       damit der Wechsel selbst nicht auf das Netz wartet. */
+    if (!this.enabled() || !this.loggedIn()) return;
+    setTimeout(() => { this.pullSet(name).catch(() => {}); }, 300);
+  },
+
+  /* Entprellung: abarbeiten_POAM_generator speichert bei jeder Änderung —
+     ungebremst wären das Dutzende Anfragen pro Minute. Ein Sammel-Timer über
+     alle Einträge genügt, die Outbox selbst ist bereits je Artefakt dedupliziert. */
+  _debounce() {
+    clearTimeout(this._debounceTimer);
+    this._debounceTimer = setTimeout(() => this.flush(), 2000);
+  },
+  flushSoon(ms) {
+    clearTimeout(this._debounceTimer);
+    this._debounceTimer = setTimeout(() => this.flush(), ms || 0);
+  },
+
+  async flush() {
+    if (this._flushing || !this.enabled() || !this.loggedIn()) return;
+    this._flushing = true;
+    try {
+      const entries = (await this._outboxAll())
+        .filter(e => !e.conflict)
+        .sort((a, b) => (a.queuedAt || "").localeCompare(b.queuedAt || ""));
+      for (const e of entries) {
+        try {
+          await this._push(e);
+          await this._outboxDel(e.key);
+          this._lastError = "";
+        } catch (err) {
+          if (err && err.conflict) {
+            /* Fremde Änderung: niemand gewinnt automatisch (Plan Phase 2).
+               Der Eintrag bleibt markiert liegen, bis jemand entscheidet. */
+            e.conflict = err.conflict;
+            await this._outboxPut(e);
+            continue;
+          }
+          e.tries = (e.tries || 0) + 1;
+          e.lastError = String((err && err.message) || err);
+          await this._outboxPut(e);
+          this._lastError = e.lastError;
+          /* Rechteproblem (401/403) klebt am Eintrag — die übrigen können
+             trotzdem durchgehen. Transportfehler heißt: Server gerade nicht
+             erreichbar, der Rest scheitert genauso — abbrechen, Outbox hält. */
+          if (err && err.status) continue;
+          break;
+        }
+      }
+      this._lastSync = new Date().toISOString();
+    } finally {
+      this._flushing = false;
+      this._emit();
+    }
+  },
+  async _push(e) {
+    if (e.op === "save") {
+      const rec = await gppArtefacts.get(e.id);
+      if (!rec) return;   // inzwischen lokal gelöscht — der remove-Eintrag folgt
+      /* Erst die Sitzung sicherstellen: direkt nach einem Seiten-Reload gibt es
+         nur das Refresh-Token, und _toRow() läse leere Claims — updated_by
+         wäre null, obwohl der Urheber bekannt ist. */
+      await this.token();
+      const row = this._toRow(rec);
+      const id = encodeURIComponent(rec.id);
+      let geschrieben = false;
+      if (e.prevSha) {
+        /* Compare-and-Swap: der Filter trifft nur, wenn der Server noch den
+           Stand trägt, den dieser Client zuletzt gesehen hat. */
+        const hits = await this.api("artefacts?id=eq." + id + "&sha256=eq." + encodeURIComponent(e.prevSha),
+          { method: "PATCH", body: row, headers: { Prefer: "return=representation" } });
+        geschrieben = !!(hits && hits.length);
+      }
+      if (!geschrieben) {
+        const cur = await this.api("artefacts?id=eq." + id + "&select=sha256,updated_by,updated_at");
+        if (cur && cur.length) {
+          if (cur[0].sha256 === rec.sha256) return;   // identischer Inhalt liegt schon drüben (zweiter Tab)
+          const err = new Error("Konflikt");
+          err.conflict = { serverSha: cur[0].sha256 || "", updatedBy: cur[0].updated_by || "", updatedAt: cur[0].updated_at || "" };
+          throw err;
+        }
+        await this.api("artefacts", { method: "POST", body: row });
+      }
+      /* Einzelstück-Sorten serverseitig nachziehen: das lokale save() hat
+         ältere Exemplare bereits ohne eigenen Push-Eintrag verdrängt. */
+      if (GPP_SINGLETON_KINDS.has(rec.kind)) {
+        await this.api("artefacts?set_name=eq." + encodeURIComponent(rec.set) +
+          "&kind=eq." + encodeURIComponent(rec.kind) + "&id=neq." + id, { method: "DELETE" });
+      }
+    } else if (e.op === "remove") {
+      await this.api("artefacts?id=eq." + encodeURIComponent(e.id), { method: "DELETE" });
+    } else if (e.op === "removeset") {
+      await this.api("artefacts?set_name=eq." + encodeURIComponent(e.set), { method: "DELETE" });
+    }
+  },
+
+  /* Serverstand eines Sets in die lokale IndexedDB ziehen. Upsert, kein
+     Spiegel: lokale Artefakte, die der Server nicht kennt, bleiben stehen —
+     "Lokal zuerst" heißt auch, dass ein Pull nie Arbeit löscht. Artefakte mit
+     offenem Outbox-Eintrag werden übersprungen (die lokale, noch nicht
+     gepushte Fassung gewinnt bis zur Klärung). Geschrieben wird direkt per
+     gppTx, NICHT über save(): kein erneuter Push, keine Singleton-Räumung. */
+  async pullSet(setName) {
+    if (!this.enabled() || !this.loggedIn()) return { pulled: 0, total: 0 };
+    const name = setName || gppArtefacts.activeSet();
+    const rows = await this.api("artefacts?set_name=eq." + encodeURIComponent(name) +
+      "&select=id,set_name,stage,kind,title,filename,tool,created_at,updated_at,size,sha256,meta,data") || [];
+    const pending = new Set((await this._outboxAll()).map(e => e.id).filter(Boolean));
+    let pulled = 0;
+    for (const row of rows) {
+      if (pending.has(row.id)) continue;
+      const local = await gppArtefacts.get(row.id);
+      if (local && local.sha256 === row.sha256) continue;
+      await gppTx("readwrite", store => store.put(this._toLocal(row)));
+      pulled++;
+    }
+    if (pulled) {
+      window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { set: name, pulled } }));
+      try { localStorage.setItem(GPP_CFG_PREFIX + "artefacts:touch", new Date().toISOString()); } catch (e) { /* Quota */ }
+    }
+    this._lastSync = new Date().toISOString();
+    this._emit();
+    return { pulled, total: rows.length };
+  },
+  _toLocal(row) {
+    return { id: row.id, set: row.set_name, stage: row.stage, kind: row.kind, title: row.title,
+      filename: row.filename, tool: row.tool, createdAt: row.created_at, updatedAt: row.updated_at,
+      size: row.size, sha256: row.sha256, meta: row.meta || {}, data: row.data };
+  },
+  /* Zeitstempel und updated_by gehen mit: die Testinstanz (schema.sql) hat
+     keinen Trigger dafür, und andere Browser sollen beim Pull echte Zeiten
+     und den Urheber sehen — der speist die Konfliktmeldung. */
+  _toRow(rec) {
+    const c = this.claims() || {};
+    return { id: rec.id, set_name: rec.set, stage: rec.stage, kind: rec.kind, title: rec.title,
+      filename: rec.filename, tool: rec.tool, created_at: rec.createdAt, updated_at: rec.updatedAt,
+      size: rec.size, sha256: rec.sha256, meta: rec.meta || {}, data: rec.data,
+      updated_by: c.sub || null };
+  },
+
+  /* Konfliktklärung — bewusst schlicht (confirm), die Werkzeuge bekommen mit
+     Phase 4 eine richtige Anzeige. Übernehmen = Serverstand ersetzt den
+     eigenen; Erzwingen = eigener Stand überschreibt mit der Server-Baseline. */
+  async resolveConflicts() {
+    const entries = (await this._outboxAll()).filter(e => e.conflict);
+    for (const e of entries) {
+      const rec = await gppArtefacts.get(e.id);
+      const wer = (e.conflict.updatedBy || "jemand anderes") +
+        (e.conflict.updatedAt ? " (" + String(e.conflict.updatedAt).slice(0, 16).replace("T", " ") + ")" : "");
+      const titel = (rec && rec.title) || e.id;
+      if (confirm(`„${titel}": in der Datenbank liegt eine fremde Änderung von ${wer}.\n\nOK — fremde Änderung übernehmen (der eigene Stand wird ersetzt)\nAbbrechen — weiter entscheiden`)) {
+        const rows = await this.api("artefacts?id=eq." + encodeURIComponent(e.id) +
+          "&select=id,set_name,stage,kind,title,filename,tool,created_at,updated_at,size,sha256,meta,data");
+        if (rows && rows[0]) {
+          await gppTx("readwrite", store => store.put(this._toLocal(rows[0])));
+          window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { id: e.id, pulled: 1 } }));
+        }
+        await this._outboxDel(e.key);
+      } else if (confirm(`„${titel}": stattdessen den EIGENEN Stand erzwingen und die fremde Änderung überschreiben?`)) {
+        e.prevSha = e.conflict.serverSha || null;
+        delete e.conflict;
+        e.tries = 0;
+        await this._outboxPut(e);
+      }
+      /* zweimal Abbrechen: Eintrag bleibt als Konflikt liegen */
+    }
+    this._emit();
+    this.flushSoon(0);
+  },
+
+  /* ---- Sperren (Client-Seite; die Anzeige kommt mit Phase 4) ----
+     Beratend, nicht erzwingend: gegen böswillige Umgehung schützt die
+     RLS-Policy, nicht die Sperre. Erneutes Acquire = Heartbeat. */
+  async lockAcquire(setName) {
+    const u = this.user() || {};
+    const rows = await this.api("rpc/acquire_set_lock", { method: "POST",
+      body: { p_set_name: setName || gppArtefacts.activeSet(), p_holder_name: u.email || "unbekannt" } });
+    const lock = Array.isArray(rows) ? rows[0] : rows;
+    if (lock) this.pullSet(setName).catch(() => {});   // Sperrerwerb zieht den Serverstand (Plan Phase 2)
+    return lock || null;
+  },
+  async lockRelease(setName) {
+    await this.api("set_locks?set_name=eq." + encodeURIComponent(setName || gppArtefacts.activeSet()), { method: "DELETE" });
+  },
+  async lockStatus(setName) {
+    const rows = await this.api("set_locks?set_name=eq." + encodeURIComponent(setName || gppArtefacts.activeSet()));
+    return (rows && rows[0]) || null;
+  },
+
+  /* Wirksame Rechte aus der Datenbank — für UI-Weichen wie die
+     Benutzerverwaltung. user() liest dagegen nur die Token-Claims. */
+  async whoami() {
+    return this.api("rpc/whoami", { method: "POST", body: {} });
+  },
+
+  /* ---- Zustand für Anzeigen (config.html, Status-Chip) ---- */
+  async status() {
+    let entries = [];
+    if (this.enabled()) { try { entries = await this._outboxAll(); } catch (e) { /* Anzeige bleibt leer */ } }
+    return {
+      enabled: this.enabled(),
+      loggedIn: this.loggedIn(),
+      user: this.user(),
+      pending: entries.filter(e => !e.conflict).length,
+      conflicts: entries.filter(e => e.conflict).length,
+      lastSync: this._lastSync,
+      lastError: this._lastError,
+    };
+  },
+  _emit() { window.dispatchEvent(new CustomEvent("gpp:remote-changed")); },
+};
+
+/* Status-Chip: das Phase-3-Gegenstück zu gppConfigBanner, aber selbst
+   einhängend — kein Eingriff in die einzelnen Werkzeuge nötig. Erscheint nur,
+   wenn eine Server-URL konfiguriert ist; config.html unterdrückt ihn über
+   window.GPP_REMOTE_NO_CHIP und zeigt den Zustand selbst an. */
+function gppRemoteChip() {
+  if (window.GPP_REMOTE_NO_CHIP || !gppRemote.enabled()) return null;
+  const old = document.getElementById("gpp-remote-chip");
+  if (old) old.remove();
+  const chip = document.createElement("button");
+  chip.id = "gpp-remote-chip";
+  chip.type = "button";
+  chip.style.cssText = "position:fixed;right:14px;bottom:14px;z-index:119;cursor:pointer;" +
+    "font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.04em;padding:7px 11px;" +
+    "border-radius:999px;border:1px solid;background:rgba(15,23,42,.92);backdrop-filter:blur(10px)";
+  let conflicts = 0;
+  const render = async () => {
+    const s = await gppRemote.status();
+    conflicts = s.conflicts;
+    let text, farbe, hint;
+    if (s.conflicts) {
+      text = `DB · ${s.conflicts} Konflikt${s.conflicts > 1 ? "e" : ""}`;
+      farbe = "#f87171";
+      hint = "Fremde Änderungen in der Datenbank — klicken zum Klären.";
+    } else if (!s.loggedIn) {
+      text = "DB · lokal";
+      farbe = "#fbbf24";
+      hint = "Nicht angemeldet — Änderungen bleiben in diesem Browser. Klicken für die Anmeldung.";
+    } else if (s.pending) {
+      text = `DB · ${s.pending} ausstehend`;
+      farbe = "#fbbf24";
+      hint = s.lastError ? "Letzter Fehler: " + s.lastError : "Wird übertragen, sobald der Server erreichbar ist.";
+    } else {
+      text = "DB · synchron";
+      farbe = "#34d399";
+      hint = "Alle Änderungen sind in der gemeinsamen Datenbank." + (s.user && s.user.email ? " Angemeldet: " + s.user.email : "");
+    }
+    chip.textContent = text;
+    chip.title = hint;
+    chip.style.color = farbe;
+    chip.style.borderColor = farbe;
+  };
+  chip.addEventListener("click", () => {
+    if (conflicts) gppRemote.resolveConflicts();
+    else window.open("config.html#sec-zusammenarbeit", "_blank", "noopener");
+  });
+  window.addEventListener("gpp:remote-changed", () => { render(); });
+  render();
+  document.body.appendChild(chip);
+  return chip;
+}
+
+/* Anstöße für die Outbox: Rückkehr der Verbindung, Sichtbarwerden des Tabs,
+   Sicherheitsnetz-Intervall, und einmal kurz nach dem Laden. */
+if (typeof window !== "undefined") {
+  window.addEventListener("online", () => gppRemote.flushSoon(1000));
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) gppRemote.flushSoon(1500); });
+  setInterval(() => { if (gppRemote.enabled() && gppRemote.loggedIn()) gppRemote.flush(); }, 45000);
+  const gppRemoteBoot = () => {
+    if (gppRemote.enabled() && gppRemote.loggedIn()) gppRemote.flushSoon(1500);
+    gppRemoteChip();
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", gppRemoteBoot);
+  else gppRemoteBoot();
+}
 
 /* ---------- ZIP-Writer (store, ohne Kompression) ----------
    Bewusst selbst gebaut: die Sammlung bindet keine externen Bibliotheken ein,

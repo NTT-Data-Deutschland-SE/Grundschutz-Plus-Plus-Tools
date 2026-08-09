@@ -18,9 +18,11 @@ meta() {
 PROJECT="$(curl -sf -H "Metadata-Flavor: Google" "$MD/project/project-id")"
 DOMAIN="$(meta gpp-domain)"
 SUPABASE_REF="$(meta gpp-supabase-ref)"
+ADMIN_EMAIL="$(meta gpp-admin-email)"
 SECRET_PG="$(meta gpp-secret-pg)"
 SECRET_JWT="$(meta gpp-secret-jwt)"
 SECRET_DASH="$(meta gpp-secret-dash)"
+SECRET_ADMIN="$(meta gpp-secret-admin)"
 
 secret() {
   local token
@@ -218,6 +220,51 @@ CADDY
   chown -R caddy:caddy /var/log/caddy
   systemctl enable caddy
   systemctl reload-or-restart caddy
+fi
+
+# --------------------------------------------------------------------------
+# Admin-Konto der Anwendung sicherstellen (Rolle admin, Plan §4). Läuft bei
+# jedem Boot: Anlegen über die GoTrue-Admin-API ist idempotent (422 wenn es
+# das Konto gibt), die Mitgliedschaft ist ein Upsert. Liegt das Schema noch
+# nicht in der Datenbank (memberships fehlt), wird nur das Konto angelegt —
+# seed_users.sh holt die Mitgliedschaft nach dem Schema-Einspielen nach.
+# --------------------------------------------------------------------------
+if [ -n "$ADMIN_EMAIL" ] && [ -n "$SECRET_ADMIN" ]; then
+  echo "== Admin-Konto sicherstellen ($ADMIN_EMAIL)"
+  SR_KEY="$(grep '^SERVICE_ROLE_KEY=' "$STACK_DIR/.env" | cut -d= -f2-)"
+  ADMIN_PASS="$(secret "$SECRET_ADMIN")"
+
+  for i in $(seq 1 30); do
+    curl -sf -o /dev/null -H "apikey: $SR_KEY" http://localhost:8000/auth/v1/health && break
+    sleep 2
+  done
+
+  curl -s -o /tmp/gpp-admin-create.json -X POST http://localhost:8000/auth/v1/admin/users \
+    -H "Authorization: Bearer $SR_KEY" -H "apikey: $SR_KEY" \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"$ADMIN_EMAIL\",\"password\":\"$ADMIN_PASS\",\"email_confirm\":true}" || true
+
+  # Mitgliedschaft direkt in der DB — die Rolle lebt seit Schema v2 in
+  # public.memberships, nicht in den Token-Claims.
+  docker exec -i supabase-db psql -U postgres -d postgres -v ON_ERROR_STOP=0 <<SQL || true
+DO \$\$
+DECLARE v_id uuid;
+BEGIN
+  IF to_regclass('public.memberships') IS NULL THEN
+    RAISE NOTICE 'Schema noch nicht eingespielt - Mitgliedschaft folgt mit seed_users.sh';
+    RETURN;
+  END IF;
+  SELECT id INTO v_id FROM auth.users WHERE lower(email) = lower('$ADMIN_EMAIL');
+  IF v_id IS NULL THEN
+    RAISE NOTICE 'Admin-Konto nicht gefunden';
+    RETURN;
+  END IF;
+  INSERT INTO public.memberships (user_id, org_id, gpp_role)
+  VALUES (v_id, '00000000-0000-0000-0000-000000000001', 'admin')
+  ON CONFLICT (user_id, org_id) DO UPDATE SET gpp_role = 'admin';
+END
+\$\$;
+SQL
 fi
 
 echo "== fertig"

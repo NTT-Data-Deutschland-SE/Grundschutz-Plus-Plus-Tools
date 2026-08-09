@@ -15,11 +15,21 @@ resource "random_password" "dashboard" {
   special = false
 }
 
+# Erstes Konto der Anwendung (Rolle admin) — legt Benutzer an und vergibt
+# Rechte, wie es der Plan für Pfad A vorsieht. Angelegt wird es vom
+# Startskript, sobald der Stack läuft; das Passwort liegt nur im Secret
+# Manager und im State.
+resource "random_password" "admin" {
+  length  = 24
+  special = false
+}
+
 locals {
   secrets = {
     postgres-password = random_password.postgres.result
     jwt-secret        = random_password.jwt_secret.result
     dashboard-password = random_password.dashboard.result
+    admin-password    = random_password.admin.result
   }
 }
 

@@ -45,38 +45,61 @@ done
 
 if [[ "$USE_VM" == "true" ]]; then
   echo "==> Erzeuge Testbenutzer via SSH auf der VM gpp-supabase..."
-  
+
   PROJECT_FLAG=""
   if [[ -n "$PROJECT" ]]; then
     PROJECT_FLAG="--project $PROJECT"
   fi
 
-  CLOUDSDK_METRICS_ENVIRONMENT=datacloud.antigravity gcloud compute ssh gpp-supabase --zone "$ZONE" $PROJECT_FLAG --tunnel-through-iap -- '
-    SR_KEY=$(sudo grep "SERVICE_ROLE_KEY=" /opt/gpp/supabase/.env | cut -d= -f2)
+  # Das Remote-Skript geht per stdin auf die VM — kein Quoting-Ringkampf mit
+  # der äußeren Shell, Single-Quotes im SQL bleiben erlaubt.
+  TMP_SCRIPT="$(mktemp)"
+  cat > "$TMP_SCRIPT" <<'REMOTE'
+set -euo pipefail
+SR_KEY=$(sudo grep "^SERVICE_ROLE_KEY=" /opt/gpp/supabase/.env | cut -d= -f2-)
 
-    create_user() {
-      local email="$1"
-      local pass="$2"
-      local role="$3"
+create_user() {
+  local email="$1"
+  local pass="$2"
 
-      echo "--> Erstelle/Aktualisiere ${email} (${role})..."
-      curl -s -X POST "http://localhost:8000/auth/v1/admin/users" \
-        -H "Authorization: Bearer ${SR_KEY}" \
-        -H "apikey: ${SR_KEY}" \
-        -H "Content-Type: application/json" \
-        -d "{
-          \"email\": \"${email}\",
-          \"password\": \"${pass}\",
-          \"email_confirm\": true,
-          \"user_metadata\": { \"gpp_role\": \"${role}\" },
-          \"app_metadata\": { \"gpp_role\": \"${role}\" }
-        }"
-      echo ""
-    }
+  echo "--> Erstelle/Aktualisiere ${email}..."
+  curl -s -X POST "http://localhost:8000/auth/v1/admin/users" \
+    -H "Authorization: Bearer ${SR_KEY}" \
+    -H "apikey: ${SR_KEY}" \
+    -H "Content-Type: application/json" \
+    -d "{\"email\": \"${email}\", \"password\": \"${pass}\", \"email_confirm\": true}"
+  echo ""
+}
 
-    create_user "bearbeiter@example.com" "TestPassword123!" "bearbeiter"
-    create_user "leser@example.com" "TestPassword123!" "leser"
-  '
+create_user "bearbeiter@example.com" "TestPassword123!"
+create_user "leser@example.com" "TestPassword123!"
+
+# Seit Schema v2 lebt die Rolle in public.memberships — ohne Zeile dort sieht
+# ein Konto NICHTS (kein Fallback, das ist die Durchsetzung). Upsert für die
+# Testkonten und das Admin-Konto aus den Instanz-Metadaten (gpp-admin-email).
+if [ "$(sudo docker exec supabase-db psql -U postgres -d postgres -tAc "SELECT count(*) FROM pg_tables WHERE schemaname='public' AND tablename='memberships'")" != "1" ]; then
+  echo "FEHLER: Schema fehlt — erst schema.sql einspielen (README Abschnitt 2)."
+  exit 1
+fi
+
+ADMIN_EMAIL=$(curl -sf -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/attributes/gpp-admin-email" || true)
+echo "--> Mitgliedschaften upserten (admin: ${ADMIN_EMAIL:-keiner})..."
+# Unquoted Heredoc: ${ADMIN_EMAIL} expandiert; deshalb hier kein DO-Block
+# (dessen $$ die Shell als PID ersetzen würde), nur schlichtes SQL.
+sudo docker exec -i supabase-db psql -U postgres -d postgres -v ON_ERROR_STOP=1 <<SQL
+INSERT INTO public.memberships (user_id, org_id, gpp_role)
+SELECT u.id, '00000000-0000-0000-0000-000000000001', v.rolle
+  FROM (VALUES ('bearbeiter@example.com', 'bearbeiter'),
+               ('leser@example.com', 'leser'),
+               ('${ADMIN_EMAIL:-niemand@invalid}', 'admin')) AS v(email, rolle)
+  JOIN auth.users u ON lower(u.email) = lower(v.email)
+ON CONFLICT (user_id, org_id) DO UPDATE SET gpp_role = EXCLUDED.gpp_role;
+SELECT m.gpp_role, u.email FROM public.memberships m JOIN auth.users u ON u.id = m.user_id ORDER BY 1, 2;
+SQL
+REMOTE
+
+  CLOUDSDK_METRICS_ENVIRONMENT=datacloud.antigravity gcloud compute ssh gpp-supabase --zone "$ZONE" $PROJECT_FLAG --tunnel-through-iap -- 'bash -s' < "$TMP_SCRIPT"
+  rm -f "$TMP_SCRIPT"
   echo "==> Abgeschlossen."
   exit 0
 fi
@@ -90,24 +113,21 @@ fi
 create_user_api() {
   local email="$1"
   local pass="$2"
-  local role="$3"
 
-  echo "--> Erstelle ${email} (${role}) über ${URL}..."
+  echo "--> Erstelle ${email} über ${URL}..."
   curl -s -X POST "${URL}/auth/v1/admin/users" \
     -H "Authorization: Bearer ${SERVICE_KEY}" \
     -H "apikey: ${SERVICE_KEY}" \
     -H "Content-Type: application/json" \
-    -d "{
-      \"email\": \"${email}\",
-      \"password\": \"${pass}\",
-      \"email_confirm\": true,
-      \"user_metadata\": { \"gpp_role\": \"${role}\" },
-      \"app_metadata\": { \"gpp_role\": \"${role}\" }
-    }"
+    -d "{\"email\": \"${email}\", \"password\": \"${pass}\", \"email_confirm\": true}"
   echo ""
 }
 
-create_user_api "bearbeiter@example.com" "TestPassword123!" "bearbeiter"
-create_user_api "leser@example.com" "TestPassword123!" "leser"
+create_user_api "bearbeiter@example.com" "TestPassword123!"
+create_user_api "leser@example.com" "TestPassword123!"
 
-echo "==> Fertig! Testbenutzer angelegt."
+echo "==> Konten angelegt."
+echo "ACHTUNG: Seit Schema v2 brauchen die Konten zusätzlich Zeilen in"
+echo "public.memberships, sonst sehen sie nichts. Die legt nur der --vm-Pfad"
+echo "an (braucht psql auf der VM) — diesen einmal nachziehen:"
+echo "  ./seed_users.sh --vm --zone <zone> --project <projekt>"

@@ -84,6 +84,12 @@ variable "supabase_ref" {
   default     = "master"
 }
 
+variable "admin_email" {
+  description = "E-Mail des ersten admin-Kontos der Anwendung. Das Startskript legt es über die GoTrue-Admin-API an; das Passwort kommt aus dem Secret Manager (gpp-admin-password)."
+  type        = string
+  default     = "admin@example.com"
+}
+
 variable "billing_account" {
   description = "Abrechnungskonto-ID für das Budget-Alarm. Leer lassen, wenn keine Rechte darauf bestehen — dann entfällt das Budget."
   type        = string

@@ -39,9 +39,11 @@ resource "google_compute_instance" "supabase" {
 
     gpp-domain       = var.domain
     gpp-supabase-ref = var.supabase_ref
+    gpp-admin-email  = var.admin_email
     gpp-secret-pg    = google_secret_manager_secret.this["postgres-password"].secret_id
     gpp-secret-jwt   = google_secret_manager_secret.this["jwt-secret"].secret_id
     gpp-secret-dash  = google_secret_manager_secret.this["dashboard-password"].secret_id
+    gpp-secret-admin = google_secret_manager_secret.this["admin-password"].secret_id
   }
 
   metadata_startup_script = file("${path.module}/startup.sh")
