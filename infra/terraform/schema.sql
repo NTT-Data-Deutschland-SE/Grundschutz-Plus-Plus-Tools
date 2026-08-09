@@ -218,23 +218,22 @@ CREATE TRIGGER trg_artefacts_stamp BEFORE INSERT OR UPDATE ON public.artefacts
 -- data-Inhalt — der Prüfpfad braucht Wer/Was/Wann, nicht das Dokument.
 CREATE OR REPLACE FUNCTION public.audit_row() RETURNS trigger
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-DECLARE
-  v_row record;
 BEGIN
-  v_row := COALESCE(NEW, OLD);
-  INSERT INTO public.audit (action, entity_type, entity_id, user_id, org, details)
-  VALUES (
-    lower(TG_OP), TG_TABLE_NAME,
-    CASE TG_TABLE_NAME
-      WHEN 'artefacts' THEN v_row.id
-      ELSE NULL
-    END,
-    auth.uid(), public.auth_org(),
-    CASE TG_TABLE_NAME
-      WHEN 'artefacts' THEN jsonb_build_object('set', v_row.set_name, 'kind', v_row.kind, 'sha256', v_row.sha256)
-      ELSE to_jsonb(v_row) - 'data'
-    END
-  );
+  IF TG_TABLE_NAME = 'artefacts' THEN
+    INSERT INTO public.audit (action, entity_type, entity_id, user_id, org, details)
+    VALUES (
+      lower(TG_OP), TG_TABLE_NAME, COALESCE(NEW.id, OLD.id),
+      auth.uid(), public.auth_org(),
+      jsonb_build_object('set', COALESCE(NEW.set_name, OLD.set_name), 'kind', COALESCE(NEW.kind, OLD.kind), 'sha256', COALESCE(NEW.sha256, OLD.sha256))
+    );
+  ELSE
+    INSERT INTO public.audit (action, entity_type, entity_id, user_id, org, details)
+    VALUES (
+      lower(TG_OP), TG_TABLE_NAME, NULL,
+      auth.uid(), public.auth_org(),
+      to_jsonb(COALESCE(NEW, OLD)) - 'data'
+    );
+  END IF;
   RETURN COALESCE(NEW, OLD);
 END;
 $$;

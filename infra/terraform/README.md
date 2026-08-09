@@ -47,52 +47,30 @@ gcloud compute ssh gpp-supabase --zone europe-west3-b --tunnel-through-iap -- 's
 
 ---
 
-## 2. Datenbank-Schema & Testbenutzer anlegen
+## 2. Automatische Inhalts-Einrichtung (Schema & Admin-Konto)
 
-### Schema einspielen (`schema.sql`)
-Kopiere `schema.sql` auf die VM und spiele Tabellen, RLS-Policies und Helper-Funktionen ein:
+Das Startskript der VM (`startup.sh`) übernimmt beim Erststart automatisch:
+1. **Schema-Einspielung**: `schema.sql` wird aus den Instanz-Metadaten gelesen und direkt beim ersten Boot in die PostgreSQL-Datenbank eingespielt.
+2. **Admin-Konto**: Das Anwendungskonto `admin@example.com` (konfigurierbar über `var.admin_email`) wird über GoTrue angelegt. Das zugehörige Admin-Passwort wird von Terraform zufällig erzeugt und im Secret Manager abgelegt:
+   ```bash
+   gcloud secrets versions access latest --secret=gpp-admin-password
+   ```
+3. **Optionale Testbenutzer**: Über die Variable `seed_test_users = true` (Voreinstellung: `false`) in `terraform.tfvars` können die Testkonten `bearbeiter@example.com` und `leser@example.com` automatisch mit-angelegt werden.
 
-```bash
-gcloud compute scp --tunnel-through-iap --zone europe-west3-b schema.sql gpp-supabase:/tmp/schema.sql
-gcloud compute ssh gpp-supabase --zone europe-west3-b --tunnel-through-iap -- 'sudo docker exec -i supabase-db psql -U postgres -d postgres < /tmp/schema.sql'
-```
-
-**Schema v2 — Rechte liegen in Tabellen, nicht in Token-Claims.** `public.memberships` trägt die globale Rolle je Benutzer, `public.set_permissions` abweichende Rollen je Set (vom Admin vergeben). Ein Konto **ohne** memberships-Zeile sieht nichts — das ist die Durchsetzung, kein Versehen. Deshalb nach dem Einspielen von Schema v2 zwingend `seed_users.sh --vm` laufen lassen, sonst sperren sich auch die Testkonten aus. Rechteänderungen des Admins greifen sofort (nächste Anfrage), nicht erst beim Token-Refresh; der frühere selbst-editierbare `user_metadata`-Fallback ist damit weg.
-
-### Testbenutzer und Mitgliedschaften (`seed_users.sh`)
-Verwende das mitgelieferte Skript `seed_users.sh`, um `bearbeiter@example.com` und `leser@example.com` anzulegen und die memberships-Zeilen zu setzen (auch für das Admin-Konto, s. u.):
+### Testbenutzer manuell/nachträglich anlegen (`seed_users.sh`)
+Über das Skript `seed_users.sh` lassen sich `bearbeiter@example.com` und `leser@example.com` auch jederzeit manuell nachpflegen:
 
 ```bash
-# Option A: Direkt über SSH auf der VM ausführen (empfohlen; einzige Option,
-# die auch die memberships schreibt)
+# Direkt über SSH auf der VM ausführen:
 ./seed_users.sh --vm --zone europe-west3-b --project gpp-agentic-3
-
-# Option B: Nur Konten, über die öffentliche API (mit Service Role Key) —
-# memberships danach per Option A nachziehen
-./seed_users.sh --url http://35.246.185.192:8000 --service-key <SERVICE_ROLE_KEY>
 ```
 
-#### Erstellte Testkonten
+#### Standard-Testkonten (wenn aktiviert oder ge-seedet)
 | Email | Passwort | Rolle (`gpp_role`) | Zweck |
 |---|---|---|---|
+| `admin@example.com` | *(Secret Manager)* | `admin` | Admin-Zugriff, Benutzerverwaltung in `config.html`. |
 | `bearbeiter@example.com` | `TestPassword123!` | `bearbeiter` | Kann Sets sperren & Artefakte schreiben (außer `ap`/`ar`). |
 | `leser@example.com` | `TestPassword123!` | `leser` | Nur-Lese-Zugriff. Schreibversuche scheitern an RLS. |
-
-#### Admin-Konto (aus Terraform)
-Das Startskript legt beim Boot das Konto `admin@example.com` an (Variable
-`admin_email`); das Passwort erzeugt Terraform und legt es im Secret Manager ab:
-
-```bash
-gcloud secrets versions access latest --secret=gpp-admin-password
-```
-
-Die zugehörige memberships-Zeile (`admin`) setzt das Startskript selbst, sobald
-das Schema in der Datenbank liegt — bei der Erstinstallation übernimmt das
-`seed_users.sh --vm`, weil das Schema später eingespielt wird als der erste
-Boot. Der Admin verwaltet danach Konten und Set-Rechte direkt in `config.html`
-(Abschnitt „Zusammenarbeit"): Konten anlegen/löschen, globale Rollen und
-Set-Rechte vergeben — über die `admin_*`-RPCs aus `schema.sql`, die
-serverseitig auf die Rolle `admin` prüfen.
 
 ---
 

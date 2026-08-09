@@ -19,10 +19,12 @@ PROJECT="$(curl -sf -H "Metadata-Flavor: Google" "$MD/project/project-id")"
 DOMAIN="$(meta gpp-domain)"
 SUPABASE_REF="$(meta gpp-supabase-ref)"
 ADMIN_EMAIL="$(meta gpp-admin-email)"
+SEED_TEST_USERS="$(meta gpp-seed-test-users)"
 SECRET_PG="$(meta gpp-secret-pg)"
 SECRET_JWT="$(meta gpp-secret-jwt)"
 SECRET_DASH="$(meta gpp-secret-dash)"
 SECRET_ADMIN="$(meta gpp-secret-admin)"
+SCHEMA_SQL="$(meta gpp-schema-sql)"
 
 secret() {
   local token
@@ -223,11 +225,21 @@ CADDY
 fi
 
 # --------------------------------------------------------------------------
+# Datenbank-Schema einspielen (schema.sql)
+# --------------------------------------------------------------------------
+if [ -n "$SCHEMA_SQL" ]; then
+  echo "== Datenbank-Schema einspielen (schema.sql)"
+  for i in $(seq 1 30); do
+    docker exec supabase-db pg_isready -U postgres >/dev/null 2>&1 && break
+    sleep 2
+  done
+  echo "$SCHEMA_SQL" | docker exec -i supabase-db psql -U postgres -d postgres || true
+fi
+
+# --------------------------------------------------------------------------
 # Admin-Konto der Anwendung sicherstellen (Rolle admin, Plan §4). Läuft bei
 # jedem Boot: Anlegen über die GoTrue-Admin-API ist idempotent (422 wenn es
-# das Konto gibt), die Mitgliedschaft ist ein Upsert. Liegt das Schema noch
-# nicht in der Datenbank (memberships fehlt), wird nur das Konto angelegt —
-# seed_users.sh holt die Mitgliedschaft nach dem Schema-Einspielen nach.
+# das Konto gibt), die Mitgliedschaft ist ein Upsert.
 # --------------------------------------------------------------------------
 if [ -n "$ADMIN_EMAIL" ] && [ -n "$SECRET_ADMIN" ]; then
   echo "== Admin-Konto sicherstellen ($ADMIN_EMAIL)"
@@ -244,8 +256,7 @@ if [ -n "$ADMIN_EMAIL" ] && [ -n "$SECRET_ADMIN" ]; then
     -H "Content-Type: application/json" \
     -d "{\"email\":\"$ADMIN_EMAIL\",\"password\":\"$ADMIN_PASS\",\"email_confirm\":true}" || true
 
-  # Mitgliedschaft direkt in der DB — die Rolle lebt seit Schema v2 in
-  # public.memberships, nicht in den Token-Claims.
+  # Mitgliedschaft direkt in der DB — die Rolle lebt in public.memberships
   docker exec -i supabase-db psql -U postgres -d postgres -v ON_ERROR_STOP=0 <<SQL || true
 DO \$\$
 DECLARE v_id uuid;
@@ -265,6 +276,39 @@ BEGIN
 END
 \$\$;
 SQL
+fi
+
+# --------------------------------------------------------------------------
+# Optionale Testbenutzer anlegen (nur wenn gpp-seed-test-users = TRUE)
+# --------------------------------------------------------------------------
+if [ "$SEED_TEST_USERS" = "TRUE" ]; then
+  echo "== Optionale Testbenutzer anlegen (bearbeiter, leser)"
+  SR_KEY="$(grep '^SERVICE_ROLE_KEY=' "$STACK_DIR/.env" | cut -d= -f2-)"
+
+  create_test_user() {
+    local email="$1" pass="$2" role="$3"
+    curl -s -X POST http://localhost:8000/auth/v1/admin/users \
+      -H "Authorization: Bearer $SR_KEY" -H "apikey: $SR_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"email\":\"$email\",\"password\":\"$pass\",\"email_confirm\":true}" || true
+
+    docker exec -i supabase-db psql -U postgres -d postgres -v ON_ERROR_STOP=0 <<SQL || true
+DO \$\$
+DECLARE v_id uuid;
+BEGIN
+  SELECT id INTO v_id FROM auth.users WHERE lower(email) = lower('$email');
+  IF v_id IS NOT NULL THEN
+    INSERT INTO public.memberships (user_id, org_id, gpp_role)
+    VALUES (v_id, '00000000-0000-0000-0000-000000000001', '$role')
+    ON CONFLICT (user_id, org_id) DO UPDATE SET gpp_role = '$role';
+  END IF;
+END
+\$\$;
+SQL
+  }
+
+  create_test_user "bearbeiter@example.com" "TestPassword123!" "bearbeiter"
+  create_test_user "leser@example.com" "TestPassword123!" "leser"
 fi
 
 echo "== fertig"

@@ -90,6 +90,18 @@ variable "admin_email" {
   default     = "admin@example.com"
 }
 
+variable "allow_public_api" {
+  description = "Freigabe von Port 8000 in der Firewall für direkte API-Anfragen (z.B. durch Test-Agenten)."
+  type        = bool
+  default     = true
+}
+
+variable "seed_test_users" {
+  description = "Zusätzliche Testbenutzer (bearbeiter@example.com und leser@example.com) beim Boot automatisch anlegen. Standard ist false (nur Admin-Konto)."
+  type        = bool
+  default     = false
+}
+
 variable "billing_account" {
   description = "Abrechnungskonto-ID für das Budget-Alarm. Leer lassen, wenn keine Rechte darauf bestehen — dann entfällt das Budget."
   type        = string
