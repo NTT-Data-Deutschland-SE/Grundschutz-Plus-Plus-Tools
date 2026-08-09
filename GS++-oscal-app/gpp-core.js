@@ -625,6 +625,9 @@ const gppRemote = {
     this._setSession(json);
     gppCfg.set("db:email", email);
     this.flushSoon(500);
+    /* Frisch angemeldet: alle zugänglichen Sets holen, damit geteilte Stände
+       sofort auftauchen und nicht erst nach manuellem Setwechsel. */
+    this.pullAll().catch(() => {});
     return this.user();
   },
   async refresh() {
@@ -681,6 +684,7 @@ const gppRemote = {
     });
     history.replaceState(null, "", location.pathname + location.search);
     this.flushSoon(500);
+    this.pullAll().catch(() => {});
     return true;
   },
 
@@ -761,9 +765,13 @@ const gppRemote = {
   },
   onSetChanged(name) {
     /* Beim Setwechsel den Serverstand nachziehen (Plan Phase 2) — verzögert,
-       damit der Wechsel selbst nicht auf das Netz wartet. */
+       damit der Wechsel selbst nicht auf das Netz wartet. Danach den
+       Sperrzustand des neuen Sets holen. */
     if (!this.enabled() || !this.loggedIn()) return;
-    setTimeout(() => { this.pullSet(name).catch(() => {}); }, 300);
+    setTimeout(() => {
+      this.pullSet(name).catch(() => {});
+      this._refreshLock(name).catch(() => {});
+    }, 300);
   },
 
   /* Entprellung: abarbeiten_POAM_generator speichert bei jeder Änderung —
@@ -884,6 +892,37 @@ const gppRemote = {
     this._emit();
     return { pulled, total: rows.length };
   },
+  /* Alle für den Benutzer zugänglichen Sets vom Server holen — nicht nur das
+     aktive. Ohne das entdeckt ein neu Hinzugekommener geteilte Sets nie: der
+     Setwechsel-Pull greift erst, wenn man den Namen schon kennt. Zwei Quellen:
+     Sets MIT Artefakten (RLS filtert auf die Org) und Sets, auf die eine
+     ausdrückliche Berechtigung besteht (die dürfen leer sein — der Admin hat
+     Zugang vergeben, bevor Inhalt existiert). Die Namen landen in
+     localStorage, damit index.html auch leere berechtigte Sets anzeigen kann. */
+  async pullAll() {
+    if (!this.enabled() || !this.loggedIn()) return { sets: [], pulled: 0 };
+    const rows = await this.api("artefacts?select=set_name") || [];
+    const dataSets = [...new Set(rows.map(r => r.set_name))];
+    let permSets = [];
+    try { permSets = [...new Set((await this.api("set_permissions?select=set_name") || []).map(r => r.set_name))]; }
+    catch (e) { /* Recht auf die Sicht fehlt evtl. — dann nur Daten-Sets */ }
+    const known = [...new Set([...dataSets, ...permSets])].sort();
+    try { localStorage.setItem(GPP_CFG_PREFIX + "remote:sets", JSON.stringify(known)); } catch (e) { /* Quota */ }
+    let pulled = 0;
+    for (const s of dataSets) { try { pulled += (await this.pullSet(s)).pulled; } catch (e) { /* nächstes Set */ } }
+    /* Auch ohne gezogene Zeilen neu rendern: die Set-Liste selbst hat sich
+       geändert (neue leere Berechtigung). */
+    window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { knownSets: known } }));
+    this._lastSync = new Date().toISOString();
+    this._emit();
+    return { sets: known, dataSets, permSets, pulled };
+  },
+  /* Server-Set-Namen aus dem letzten pullAll — für die Set-Auswahl der UI,
+     auch für berechtigte, noch leere Sets. */
+  remoteSets() {
+    try { return JSON.parse(localStorage.getItem(GPP_CFG_PREFIX + "remote:sets") || "[]"); }
+    catch (e) { return []; }
+  },
   _toLocal(row) {
     return { id: row.id, set: row.set_name, stage: row.stage, kind: row.kind, title: row.title,
       filename: row.filename, tool: row.tool, createdAt: row.created_at, updatedAt: row.updated_at,
@@ -930,23 +969,66 @@ const gppRemote = {
     this.flushSoon(0);
   },
 
-  /* ---- Sperren (Client-Seite; die Anzeige kommt mit Phase 4) ----
+  /* ---- Sperren (Phase 4) ----
      Beratend, nicht erzwingend: gegen böswillige Umgehung schützt die
-     RLS-Policy, nicht die Sperre. Erneutes Acquire = Heartbeat. */
+     RLS-Policy, nicht die Sperre. Erneutes Acquire = Heartbeat (60 s, solange
+     der Tab sichtbar ist). BEWUSST keine automatische Freigabe beim Schließen
+     des Tabs — die Sperre gehört dem Benutzer, nicht dem Tab, und ein zweites
+     offenes Werkzeug arbeitet womöglich weiter; abgestürzte Sitzungen räumt
+     die 5-Minuten-TTL des Servers ab. */
+  _held: new Set(),        // Sets, deren Sperre dieser Benutzer hält (Tab-Sicht)
+  _lockCache: null,        // letzter bekannter Sperrzustand des aktiven Sets
+
   async lockAcquire(setName) {
+    const set = setName || gppArtefacts.activeSet();
     const u = this.user() || {};
     const rows = await this.api("rpc/acquire_set_lock", { method: "POST",
-      body: { p_set_name: setName || gppArtefacts.activeSet(), p_holder_name: u.email || "unbekannt" } });
+      body: { p_set_name: set, p_holder_name: u.email || "unbekannt" } });
     const lock = Array.isArray(rows) ? rows[0] : rows;
-    if (lock) this.pullSet(setName).catch(() => {});   // Sperrerwerb zieht den Serverstand (Plan Phase 2)
+    if (lock && !this._held.has(set)) {
+      /* Nur beim ERWERB den Serverstand ziehen (Plan Phase 2) — nicht bei
+         jedem Heartbeat, sonst pullten wir minütlich. */
+      this._held.add(set);
+      this.pullSet(set).catch(() => {});
+    }
+    await this._refreshLock(set);
     return lock || null;
   },
   async lockRelease(setName) {
-    await this.api("set_locks?set_name=eq." + encodeURIComponent(setName || gppArtefacts.activeSet()), { method: "DELETE" });
+    const set = setName || gppArtefacts.activeSet();
+    await this.api("set_locks?set_name=eq." + encodeURIComponent(set), { method: "DELETE" });
+    this._held.delete(set);
+    await this._refreshLock(set);
   },
   async lockStatus(setName) {
     const rows = await this.api("set_locks?set_name=eq." + encodeURIComponent(setName || gppArtefacts.activeSet()));
     return (rows && rows[0]) || null;
+  },
+  /* Fremde Sperre brechen: löschen + neu erwerben. Bei Nicht-Admins löscht
+     das DELETE null Zeilen (RLS) und der Erwerb scheitert wie gehabt — die
+     Rechteprüfung bleibt beim Server. Der Sperrbruch steht im audit-Log. */
+  async lockTakeover(setName) {
+    const set = setName || gppArtefacts.activeSet();
+    await this.lockRelease(set).catch(() => {});
+    return this.lockAcquire(set);
+  },
+  /* Sperrzustand des aktiven Sets nachladen und bei Änderung Bescheid geben.
+     _held folgt dabei der Server-Wahrheit: Übernahme durch einen Admin oder
+     TTL-Ablauf beendet den eigenen Heartbeat von selbst. */
+  async _refreshLock(setName) {
+    if (!this.enabled() || !this.loggedIn()) { this._lockCache = null; return null; }
+    const set = setName || gppArtefacts.activeSet();
+    try {
+      const lock = await this.lockStatus(set);
+      await this.token();
+      const me = (this.claims() || {}).sub || null;
+      const info = { set, lock, mine: !!(lock && me && lock.holder === me) };
+      const changed = JSON.stringify(info) !== JSON.stringify(this._lockCache);
+      this._lockCache = info;
+      if (info.mine) this._held.add(set); else this._held.delete(set);
+      if (changed) this._emit();
+      return info;
+    } catch (e) { return this._lockCache; }
   },
 
   /* Wirksame Rechte aus der Datenbank — für UI-Weichen wie die
@@ -967,6 +1049,7 @@ const gppRemote = {
       conflicts: entries.filter(e => e.conflict).length,
       lastSync: this._lastSync,
       lastError: this._lastError,
+      lock: this._lockCache,   // Sperrzustand des aktiven Sets (letzter Stand)
     };
   },
   _emit() { window.dispatchEvent(new CustomEvent("gpp:remote-changed")); },
@@ -991,10 +1074,15 @@ function gppRemoteChip() {
     const s = await gppRemote.status();
     conflicts = s.conflicts;
     let text, farbe, hint;
+    const fremdeSperre = s.lock && s.lock.lock && !s.lock.mine;
     if (s.conflicts) {
       text = `DB · ${s.conflicts} Konflikt${s.conflicts > 1 ? "e" : ""}`;
       farbe = "#f87171";
       hint = "Fremde Änderungen in der Datenbank — klicken zum Klären.";
+    } else if (fremdeSperre) {
+      text = `DB · 🔒 ${s.lock.lock.holder_name || "gesperrt"}`;
+      farbe = "#fbbf24";
+      hint = `Set „${s.lock.set}" ist seit ${String(s.lock.lock.acquired_at || "").slice(11, 16)} von ${s.lock.lock.holder_name} gesperrt — eigene Änderungen riskieren Konflikte. Die Sperre ist beratend; verwaltet wird sie in der Übersicht.`;
     } else if (!s.loggedIn) {
       text = "DB · lokal";
       farbe = "#fbbf24";
@@ -1004,9 +1092,12 @@ function gppRemoteChip() {
       farbe = "#fbbf24";
       hint = s.lastError ? "Letzter Fehler: " + s.lastError : "Wird übertragen, sobald der Server erreichbar ist.";
     } else {
-      text = "DB · synchron";
+      const eigene = s.lock && s.lock.mine ? " ✏" : "";
+      text = "DB · synchron" + eigene;
       farbe = "#34d399";
-      hint = "Alle Änderungen sind in der gemeinsamen Datenbank." + (s.user && s.user.email ? " Angemeldet: " + s.user.email : "");
+      hint = "Alle Änderungen sind in der gemeinsamen Datenbank." +
+        (eigene ? ` Du hältst die Sperre für Set „${s.lock.set}".` : "") +
+        (s.user && s.user.email ? " Angemeldet: " + s.user.email : "");
     }
     chip.textContent = text;
     chip.title = hint;
@@ -1027,10 +1118,39 @@ function gppRemoteChip() {
    Sicherheitsnetz-Intervall, und einmal kurz nach dem Laden. */
 if (typeof window !== "undefined") {
   window.addEventListener("online", () => gppRemote.flushSoon(1000));
-  document.addEventListener("visibilitychange", () => { if (!document.hidden) gppRemote.flushSoon(1500); });
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) return;
+    gppRemote.flushSoon(1500);
+    /* Zurück im Blick: gehaltene Sperren sofort bestätigen, bevor die TTL
+       während einer langen Hintergrundphase abläuft. */
+    if (gppRemote.enabled() && gppRemote.loggedIn()) {
+      for (const s of gppRemote._held) gppRemote.lockAcquire(s).catch(() => {});
+    }
+  });
   setInterval(() => { if (gppRemote.enabled() && gppRemote.loggedIn()) gppRemote.flush(); }, 45000);
+  /* Sperr-Takt: Heartbeat für gehaltene Sperren, Zustands-Abgleich fürs
+     aktive Set (auch Nicht-Halter sollen eine fremde Sperre sehen). Nur im
+     sichtbaren Tab — ein Dutzend Hintergrund-Tabs soll den Server nicht
+     minütlich zwölffach befragen. */
+  setInterval(() => {
+    if (document.hidden || !gppRemote.enabled() || !gppRemote.loggedIn()) return;
+    for (const s of gppRemote._held) {
+      if (s !== gppArtefacts.activeSet()) gppRemote.lockAcquire(s).catch(() => {});
+    }
+    gppRemote._refreshLock().then(info => {
+      if (info && info.mine) return gppRemote.lockAcquire(info.set);
+    }).catch(() => {});
+  }, 60000);
   const gppRemoteBoot = () => {
-    if (gppRemote.enabled() && gppRemote.loggedIn()) gppRemote.flushSoon(1500);
+    if (gppRemote.enabled() && gppRemote.loggedIn()) {
+      gppRemote.flushSoon(1500);
+      /* Beim Laden jeder Seite die zugänglichen Sets nachziehen — so ist die
+         Set-Liste überall aktuell, nicht nur direkt nach dem Anmelden. */
+      setTimeout(() => gppRemote.pullAll().catch(() => {}), 1800);
+      /* Sperrzustand des aktiven Sets: hält dieser Benutzer sie (aus einem
+         früheren Seitenaufruf), übernimmt dieser Tab den Heartbeat. */
+      setTimeout(() => gppRemote._refreshLock().catch(() => {}), 1200);
+    }
     gppRemoteChip();
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", gppRemoteBoot);

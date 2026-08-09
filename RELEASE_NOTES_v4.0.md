@@ -2,7 +2,7 @@
 
 Version 3 hat die neun Werkzeuge auf eine gemeinsame Basis gestellt und einen geteilten Artefaktbestand im Browser eingeführt. Version 4 öffnet diesen Bestand über den einzelnen Rechner hinaus: eine **optionale gemeinsame Datenbank**, in der ein Team an denselben Sets arbeitet, mit serverseitig durchgesetzten Rechten und einer beratenden Sperre gegen gleichzeitiges Schreiben. Der entscheidende Satz bleibt gültig und bleibt richtig: **ohne hinterlegten Server verhält sich alles exakt wie bisher — offline, ohne Backend, nur der Browser.**
 
-Umgesetzt sind damit die Phasen 2 und 3 aus `PLAN_Datenbank-Backend.md`.
+Umgesetzt sind damit die Phasen 2 bis 4 aus `PLAN_Datenbank-Backend.md`.
 
 ## Neu: Zusammenarbeit über eine gemeinsame Datenbank
 
@@ -37,9 +37,13 @@ Der springende Punkt: **Durchgesetzt wird in der Datenbank, nicht im Client.** J
 
 Was ein Unauthentifizierter kann: **nichts Datenrelevantes.** Ohne Anmeldung gibt es kein Lesen und kein Schreiben; der öffentliche Anon-Key ist kein Vertrauensmerkmal. Das Berechtigungsmodell ist in der Betriebsanleitung (`infra/terraform/README.md`, Abschnitt 4) vollständig beschrieben, samt curl-Abnahme der Grenzen.
 
-## Sperren gegen gleichzeitiges Schreiben
+## Sperren gegen gleichzeitiges Schreiben — sichtbar und bedienbar
 
-Wer ein Set bearbeitet, sperrt es für andere — atomar erworben, mit Heartbeat und einer Zeitüberschreitung von fünf Minuten, damit ein abgestürzter Tab kein Set dauerhaft blockiert. Die Sperre ist **beratend**: Gegen böswillige Umgehung schützt nicht sie, sondern die RLS-Policy. Fremde Sperren brechen darf nur der Admin. Der Client bringt Erwerb, Freigabe und Statusabfrage bereits mit; die sichtbare Sperranzeige in jedem Werkzeug folgt in Phase 4.
+Wer ein Set bearbeitet, sperrt es für andere: In der Übersicht steht neben der Set-Auswahl **„Bearbeiten (sperren)"** bzw. **„Freigeben"**; eine fremde Sperre wird mit Halter und Uhrzeit angezeigt, und der Status-Chip warnt in jedem Werkzeug (🔒), solange sie steht. Der Admin kann eine fremde Sperre **übernehmen** — mit Rückfrage, und der Vorgang steht im Audit-Log.
+
+Technisch: atomarer Erwerb, Heartbeat alle 60 Sekunden solange ein Tab sichtbar ist, Zeitüberschreitung von fünf Minuten, damit ein abgestürzter Tab kein Set dauerhaft blockiert. Der Sperrerwerb zieht zugleich den Serverstand des Sets in den Browser. Beim Schließen eines Tabs wird bewusst **nicht** automatisch freigegeben — die Sperre gehört dem Benutzer, nicht dem Tab, und ein zweites offenes Werkzeug arbeitet womöglich weiter; verwaiste Sperren räumt die Zeitüberschreitung ab. Die Sperre bleibt **beratend**: Gegen böswillige Umgehung schützt nicht sie, sondern die RLS-Policy.
+
+**Geteilte Sets werden gefunden.** Nach der Anmeldung (und beim Laden jeder Seite) holt der Client alle Sets, auf die der Benutzer Zugriff hat — auch solche, die nur per Set-Recht zugewiesen und noch leer sind — und zeigt sie in der Set-Auswahl der Übersicht. Ein neu berechtigtes Teammitglied sieht ein geteiltes Set damit sofort, ohne den Namen kennen zu müssen.
 
 ## Betrieb: Testumgebung als Terraform
 
@@ -49,7 +53,6 @@ Das `schema.sql` liegt als eigene Datei bei — Tabellen, RLS-Policies, die Roll
 
 ## Nicht im Umfang von 4.0
 
-* **Phase 4** — die sichtbare Sperranzeige und „Sperre übernehmen" in den Werkzeugen und der Übersicht.
 * **Phase 5** — das einmalige Hochladen bestehender Sets in die Datenbank.
 * Die produktive Härtung des Backends (TLS auf dem öffentlichen Port, GoTrue-Admin-API statt direkter `auth.users`-Schreibzugriff bei der Konto-Anlage) — die Terraform-Umgebung ist eine Testinstanz.
 

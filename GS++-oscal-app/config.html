@@ -740,8 +740,10 @@ async function renderRemote() {
     $("db-sync-note").textContent = "gleiche ab …";
     try {
       await gppRemote.flush();
-      const r = await gppRemote.pullSet();
-      $("db-sync-note").textContent = `Abgeglichen — ${r.pulled} von ${r.total} Artefakt(en) des aktiven Sets übernommen.`;
+      const r = await gppRemote.pullAll();
+      $("db-sync-note").textContent = r.sets.length
+        ? `Abgeglichen — ${r.pulled} Artefakt(e) aus ${r.sets.length} zugänglichen Set(s) übernommen.`
+        : "Abgeglichen — keine zugänglichen Sets auf dem Server.";
     } catch (e) {
       $("db-sync-note").textContent = "Abgleich fehlgeschlagen: " + e.message;
     }

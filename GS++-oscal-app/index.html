@@ -247,6 +247,8 @@
         <button class="btn" id="btn-set-new">+ Neues Set</button>
         <button class="btn" id="btn-set-upload" title="JSON-Dateien oder ein exportiertes Set-ZIP in ein Set laden">⤒ Hochladen</button>
         <input type="file" id="set-upload-input" accept=".json,.zip" multiple hidden>
+        <span id="lock-state" style="font-size:.72rem;display:none"></span>
+        <button class="btn" id="btn-lock" style="display:none"></button>
         <span style="flex:1"></span>
         <button class="btn" id="btn-set-delete">Set löschen</button>
       </div>
@@ -363,6 +365,7 @@
       catch (e) { artefacts = []; console.warn("Artefaktspeicher nicht lesbar", e); }
       document.getElementById("art-h2").textContent = `Artefakte · Set „${gppArtefacts.activeSet()}"`;
       await renderSets();
+      renderLock();   // Sperranzeige folgt dem aktiven Set
       // Zähler an den Reitern — nach Dokumentsorte, nicht nach erzeugendem Werkzeug
       const byKind = {};
       artefacts.forEach(a => { byKind[a.kind] = (byKind[a.kind] || 0) + 1; });
@@ -494,6 +497,14 @@
       try { sets = await gppArtefacts.sets(); } catch (e) { /* Store nicht lesbar */ }
       if (!sets.some(s => s.name === active)) sets.push({ name: active, count: 0, bytes: 0 });
       if (!sets.some(s => s.name === "standard")) sets.push({ name: "standard", count: 0, bytes: 0 });
+      /* Geteilte Sets vom Server ergänzen — auch solche, auf die nur eine
+         Berechtigung besteht und die lokal noch leer sind. Ohne das sähe ein
+         neu berechtigter Nutzer ein zugewiesenes Set nie, bevor es Inhalt hat. */
+      if (typeof gppRemote !== "undefined" && gppRemote.enabled()) {
+        for (const name of gppRemote.remoteSets()) {
+          if (!sets.some(s => s.name === name)) sets.push({ name, count: 0, bytes: 0, remote: true });
+        }
+      }
       sets.sort((a, b) => a.name.localeCompare(b.name));
       sel.innerHTML = sets.map(s =>
         `<option value="${escapeAttr(s.name)}" ${s.name === active ? "selected" : ""}>${escapeHtml(s.name)} (${s.count})</option>`).join("");
@@ -516,6 +527,70 @@
       gppArtefacts.setActiveSet("standard");
       refreshArtefacts();
     });
+
+    /* ---------- Sperre des aktiven Sets (Phase 4) ----------
+       Anzeige und Knöpfe; entschieden wird serverseitig. Die Sperre ist
+       beratend — sie koordiniert, die RLS-Policy schützt. */
+    let meineRolle = null;   // aus whoami, einmal je Seite
+    async function renderLock() {
+      const state = document.getElementById("lock-state");
+      const btn = document.getElementById("btn-lock");
+      if (typeof gppRemote === "undefined" || !gppRemote.enabled() || !gppRemote.loggedIn()) {
+        state.style.display = "none"; btn.style.display = "none"; return;
+      }
+      const s = await gppRemote.status();
+      const info = s.lock && s.lock.set === gppArtefacts.activeSet() ? s.lock : null;
+      state.style.display = ""; btn.style.display = "";
+      btn.disabled = false;
+      if (!info || !info.lock) {
+        state.textContent = "nicht gesperrt";
+        state.style.color = "var(--text-quiet)";
+        btn.textContent = "Bearbeiten (sperren)";
+        btn.dataset.act = "acquire";
+      } else if (info.mine) {
+        state.textContent = `✏ von dir gesperrt seit ${String(info.lock.acquired_at || "").slice(11, 16)}`;
+        state.style.color = "var(--green, #34d399)";
+        btn.textContent = "Freigeben";
+        btn.dataset.act = "release";
+      } else {
+        state.textContent = `🔒 ${info.lock.holder_name} seit ${String(info.lock.acquired_at || "").slice(11, 16)}`;
+        state.style.color = "var(--amber, #fbbf24)";
+        if (meineRolle === null) {
+          try { meineRolle = ((await gppRemote.whoami()) || {}).gpp_role || ""; } catch (e) { meineRolle = ""; }
+        }
+        if (meineRolle === "admin") {
+          btn.textContent = "Sperre übernehmen";
+          btn.dataset.act = "takeover";
+        } else {
+          btn.textContent = "gesperrt";
+          btn.disabled = true;
+          btn.dataset.act = "";
+        }
+      }
+    }
+    document.getElementById("btn-lock").addEventListener("click", async e => {
+      const btn = e.currentTarget;
+      const act = btn.dataset.act;
+      btn.disabled = true;
+      try {
+        if (act === "acquire") {
+          const lock = await gppRemote.lockAcquire();
+          if (!lock) alert("Sperre nicht bekommen — jemand anderes hält sie bereits.");
+        } else if (act === "release") {
+          await gppRemote.lockRelease();
+        } else if (act === "takeover") {
+          const info = (await gppRemote.status()).lock;
+          const wer = info && info.lock ? info.lock.holder_name : "unbekannt";
+          if (!confirm(`Sperre von ${wer} übernehmen? Der Vorgang wird protokolliert, und dessen ungesicherte Arbeit kann in Konflikte laufen.`)) { btn.disabled = false; return; }
+          const lock = await gppRemote.lockTakeover();
+          if (!lock) alert("Übernahme fehlgeschlagen — vermutlich fehlen die Rechte (nur admin).");
+        }
+      } catch (err) {
+        alert("Sperr-Vorgang fehlgeschlagen: " + err.message);
+      }
+      renderLock();
+    });
+    window.addEventListener("gpp:remote-changed", () => { renderLock(); });
 
     /* Hochladen: JSON-Dateien einzeln oder ein exportiertes Set-ZIP (manifest.json
        liefert dann Stage/Kind/Tool zurück; fremde JSONs werden am Wurzelschlüssel
