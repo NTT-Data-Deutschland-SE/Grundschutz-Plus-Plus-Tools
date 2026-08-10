@@ -18,9 +18,13 @@ meta() {
 PROJECT="$(curl -sf -H "Metadata-Flavor: Google" "$MD/project/project-id")"
 DOMAIN="$(meta gpp-domain)"
 SUPABASE_REF="$(meta gpp-supabase-ref)"
+ADMIN_EMAIL="$(meta gpp-admin-email)"
+SEED_TEST_USERS="$(meta gpp-seed-test-users)"
 SECRET_PG="$(meta gpp-secret-pg)"
 SECRET_JWT="$(meta gpp-secret-jwt)"
 SECRET_DASH="$(meta gpp-secret-dash)"
+SECRET_ADMIN="$(meta gpp-secret-admin)"
+SCHEMA_SQL="$(meta gpp-schema-sql)"
 
 secret() {
   local token
@@ -218,6 +222,106 @@ CADDY
   chown -R caddy:caddy /var/log/caddy
   systemctl enable caddy
   systemctl reload-or-restart caddy
+fi
+
+# --------------------------------------------------------------------------
+# Datenbank-Schema einspielen (schema.sql)
+# --------------------------------------------------------------------------
+if [ -n "$SCHEMA_SQL" ]; then
+  echo "== Datenbank-Schema einspielen (schema.sql)"
+  for i in $(seq 1 30); do
+    docker exec supabase-db pg_isready -U postgres >/dev/null 2>&1 && break
+    sleep 2
+  done
+  # ON_ERROR_STOP=1: bei einem Fehler anhalten statt die Migration halb
+  # anzuwenden; Fehler sichtbar machen statt ihn mit "|| true" als Erfolg zu
+  # tarnen (sonst DROP der v1-Policies ohne v2-Ersatz → alle ausgesperrt, Log
+  # meldet trotzdem "== fertig"). Idempotent, ein erneuter Boot spielt nach.
+  if echo "$SCHEMA_SQL" | docker exec -i supabase-db psql -U postgres -d postgres -v ON_ERROR_STOP=1; then
+    echo "== Schema eingespielt"
+  else
+    echo "FEHLER: schema.sql nicht vollständig eingespielt — Migration prüfen (RLS/Policies)!" >&2
+  fi
+fi
+
+# --------------------------------------------------------------------------
+# Admin-Konto der Anwendung sicherstellen (Rolle admin, Plan §4). Läuft bei
+# jedem Boot: Anlegen über die GoTrue-Admin-API ist idempotent (422 wenn es
+# das Konto gibt), die Mitgliedschaft ist ein Upsert.
+# --------------------------------------------------------------------------
+if [ -n "$ADMIN_EMAIL" ] && [ -n "$SECRET_ADMIN" ]; then
+  echo "== Admin-Konto sicherstellen ($ADMIN_EMAIL)"
+  SR_KEY="$(grep '^SERVICE_ROLE_KEY=' "$STACK_DIR/.env" | cut -d= -f2-)"
+  ADMIN_PASS="$(secret "$SECRET_ADMIN")"
+
+  for i in $(seq 1 30); do
+    curl -sf -o /dev/null -H "apikey: $SR_KEY" http://localhost:8000/auth/v1/health && break
+    sleep 2
+  done
+
+  curl -s -o /tmp/gpp-admin-create.json -X POST http://localhost:8000/auth/v1/admin/users \
+    -H "Authorization: Bearer $SR_KEY" -H "apikey: $SR_KEY" \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"$ADMIN_EMAIL\",\"password\":\"$ADMIN_PASS\",\"email_confirm\":true}" || true
+
+  # Mitgliedschaft direkt in der DB — die Rolle lebt in public.memberships.
+  # E-Mail als psql-Variable, quoted Heredoc (<<'SQL'): kein Splicing in die
+  # SQL-Zeichenkette (Apostroph bräche sie / schleuste SQL als postgres ein);
+  # :'admin_email' quotet psql selbst, $$ braucht so keine Shell-Maskierung.
+  docker exec -i supabase-db psql -U postgres -d postgres -v ON_ERROR_STOP=0 \
+    -v admin_email="$ADMIN_EMAIL" <<'SQL' || true
+DO $$
+DECLARE v_id uuid;
+BEGIN
+  IF to_regclass('public.memberships') IS NULL THEN
+    RAISE NOTICE 'Schema noch nicht eingespielt - Mitgliedschaft folgt mit seed_users.sh';
+    RETURN;
+  END IF;
+  SELECT id INTO v_id FROM auth.users WHERE lower(email) = lower(:'admin_email');
+  IF v_id IS NULL THEN
+    RAISE NOTICE 'Admin-Konto nicht gefunden';
+    RETURN;
+  END IF;
+  INSERT INTO public.memberships (user_id, org_id, gpp_role)
+  VALUES (v_id, '00000000-0000-0000-0000-000000000001', 'admin')
+  ON CONFLICT (user_id, org_id) DO UPDATE SET gpp_role = 'admin';
+END
+$$;
+SQL
+fi
+
+# --------------------------------------------------------------------------
+# Optionale Testbenutzer anlegen (nur wenn gpp-seed-test-users = TRUE)
+# --------------------------------------------------------------------------
+if [ "$SEED_TEST_USERS" = "TRUE" ]; then
+  echo "== Optionale Testbenutzer anlegen (bearbeiter, leser)"
+  SR_KEY="$(grep '^SERVICE_ROLE_KEY=' "$STACK_DIR/.env" | cut -d= -f2-)"
+
+  create_test_user() {
+    local email="$1" pass="$2" role="$3"
+    curl -s -X POST http://localhost:8000/auth/v1/admin/users \
+      -H "Authorization: Bearer $SR_KEY" -H "apikey: $SR_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"email\":\"$email\",\"password\":\"$pass\",\"email_confirm\":true}" || true
+
+    docker exec -i supabase-db psql -U postgres -d postgres -v ON_ERROR_STOP=0 \
+      -v email="$email" -v role="$role" <<'SQL' || true
+DO $$
+DECLARE v_id uuid;
+BEGIN
+  SELECT id INTO v_id FROM auth.users WHERE lower(email) = lower(:'email');
+  IF v_id IS NOT NULL THEN
+    INSERT INTO public.memberships (user_id, org_id, gpp_role)
+    VALUES (v_id, '00000000-0000-0000-0000-000000000001', :'role')
+    ON CONFLICT (user_id, org_id) DO UPDATE SET gpp_role = :'role';
+  END IF;
+END
+$$;
+SQL
+  }
+
+  create_test_user "bearbeiter@example.com" "TestPassword123!" "bearbeiter"
+  create_test_user "leser@example.com" "TestPassword123!" "leser"
 fi
 
 echo "== fertig"

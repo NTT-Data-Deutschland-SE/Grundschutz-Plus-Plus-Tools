@@ -479,6 +479,7 @@ textarea.inp{min-height:80px;line-height:1.55}
                 <select id="flt-class" onchange="fltC()" class="inp text-[10px]"><option value="">Klasse: Alle</option><option value="Technical">Technical</option><option value="Organizational">Organizational</option></select>
                 <select id="flt-sec" onchange="fltC()" class="inp text-[10px]"><option value="">Sicherheitsniv.: Alle</option><option value="normal-SdT">Normal</option><option value="hoch-SdT">Hoch</option><option value="sehr hoch-SdT">Sehr hoch</option></select>
                 <select id="flt-status" onchange="fltC()" class="inp text-[10px]"><option value="">Status: Alle</option><option value="implemented">Impl.</option><option value="partial">Teilw.</option><option value="planned">Geplant</option><option value="alternative">Altern.</option><option value="nicht-angegeben">Kein St.</option><option value="nur-komponente">Nur Def</option></select>
+                <div id="flt-count" class="text-[10px] text-emerald-400 font-mono"></div>
             </div>
         </div>
         <!-- Component nav (populated dynamically) -->
@@ -497,15 +498,9 @@ textarea.inp{min-height:80px;line-height:1.55}
             </div>
             <div class="text-[10px] text-slate-500">Scope: <strong class="text-white" id="scope-n">0</strong> · Bewertet: <strong class="text-emerald-400" id="rated-n">0</strong></div>
         </div>
-        <!-- Export -->
-        <div id="assessment-save-actions" class="mt-auto space-y-1.5 pt-2 border-t border-slate-700">
-            <div class="lbl mb-0">⤓ Export</div>
-            <button id="save-assessment-session" onclick="saveSession()" class="btn w-full">Session</button>
-            <button id="save-assessment-plan" onclick="exportAP()" class="btn btn-primary w-full">Assessment Plan</button>
-            <button id="save-assessment-results" onclick="exportAR()" class="btn w-full">Assessment Results</button>
-        </div>
-
-        <div class="pt-2 text-center text-[9px] text-slate-600 font-mono">&copy; 2026 NTT DATA Deutschland SE</div>
+        <!-- Kein Export-Block mehr: AP und AR liegen automatisch aktuell im Set
+             (Live-Sync unten); Dateien lädt man in der Übersicht herunter. -->
+        <div class="mt-auto pt-2 text-center text-[9px] text-slate-600 font-mono">&copy; 2026 NTT DATA Deutschland SE</div>
 
     </aside>
     <div class="splitter" id="splitter" title="Breite der Seitenleiste ziehen"></div>
@@ -563,7 +558,7 @@ textarea.inp{min-height:80px;line-height:1.55}
   </section>
 </div>
 
-<script src="gpp-core.js?v=3.5"></script>
+<script src="gpp-core.js?v=3.9"></script>
 <script>
 if(typeof gppCfg==='undefined'||typeof GPP_CORE_VERSION==='undefined'||Number(GPP_CORE_VERSION)<2){
     document.body.innerHTML='<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">'+
@@ -575,11 +570,8 @@ if(typeof gppCfg==='undefined'||typeof GPP_CORE_VERSION==='undefined'||Number(GP
 const GPP_TOOL_ID='pruefung_ap_ar';
 gppCollapsibleLog({consoleEl:document.querySelector('.logbox'),
   headEl:document.querySelector('.logbox .log-head'),toolId:GPP_TOOL_ID});
-gppFloatingSave({buttons:[
-    {el:'#save-assessment-plan',label:'Assessment Plan abspeichern'},
-    {el:'#save-assessment-results',label:'Assessment Results abspeichern'},
-    {el:'#save-assessment-session',label:'Session abspeichern'}
-  ],consoleEl:document.querySelector('.logbox'),hideContainers:['#assessment-save-actions'],toolId:GPP_TOOL_ID});
+/* Kein Speichermenü mehr: AP und AR werden fortlaufend aus dem Modell erzeugt
+   und als Einzelstücke ins aktive Set gelegt (Live-Sync weiter unten). */
 /* Quelle für die Pin-Übersicht in config.html anmelden (Grundregel 8). */
 gppRegisterSources(GPP_TOOL_ID,[{id:'ed23-anforderungen',label:'G++/ED23 Anforderungen (Hilfsdatei)',
     repo:'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',path:'hilfsdateien/gpp_ed23_anforderungen.json',
@@ -914,11 +906,11 @@ function applyDefData(uuid,d){
 // ============================================================
 // SESSION
 // ============================================================
-function ser(){return JSON.stringify({_v:9,sspFilename:S.sspFilename,meta:S.meta,sspRisks:S.sspRisks,assessor:S.assessor,terms:S.terms,tasks:S.tasks,dateStart:S.dateStart,dateEnd:S.dateEnd,excluded:[...S.excluded],methods:[...S.methods.entries()].map(([k,v])=>[k,[...v]]),findings:[...S.findings.entries()],aiCache:[...S.aiCache.entries()],compGroups:[...S.compGroups.entries()].map(([k,m])=>[k,[...m.entries()]]),compMeta:[...S.compMeta.entries()],allCids:[...S.allCids]})}
+function ser(){return JSON.stringify({_v:9,sspFilename:S.sspFilename,sspSha:S.sspArtSha||'',meta:S.meta,sspRisks:S.sspRisks,assessor:S.assessor,terms:S.terms,tasks:S.tasks,dateStart:S.dateStart,dateEnd:S.dateEnd,excluded:[...S.excluded],methods:[...S.methods.entries()].map(([k,v])=>[k,[...v]]),findings:[...S.findings.entries()],aiCache:[...S.aiCache.entries()],compGroups:[...S.compGroups.entries()].map(([k,m])=>[k,[...m.entries()]]),compMeta:[...S.compMeta.entries()],allCids:[...S.allCids]})}
 
 function restoreSession(d){
     if(!d._v||d._v<6){L.err(`Session-Format v${d._v||'?'} zu alt (v9 benötigt)`);return alert('Session-Format zu alt oder inkompatibel (v9 benötigt).')}
-    S.sspFilename=d.sspFilename||'';S.meta=d.meta||{title:'',version:'1.0.0',desc:''};S.sspRisks=d.sspRisks||[];S.assessor=d.assessor||{name:'',type:'organization',email:''};
+    S.sspFilename=d.sspFilename||'';S.sspArtSha=d.sspSha||'';S.meta=d.meta||{title:'',version:'1.0.0',desc:''};S.sspRisks=d.sspRisks||[];S.assessor=d.assessor||{name:'',type:'organization',email:''};
     S.terms=d.terms||{roe:'',disclosures:'',methodology:''};S.tasks=d.tasks||[];S.dateStart=d.dateStart||'';S.dateEnd=d.dateEnd||'';
     S.excluded=new Set(d.excluded||[]);S.methods=new Map((d.methods||[]).map(([k,v])=>[k,new Set(v)]));
     S.findings=new Map(d.findings||[]);S.aiCache=new Map(d.aiCache||[]);
@@ -928,16 +920,32 @@ function restoreSession(d){
     setSt('ssp-status',true,`Session: ${S.allCids.size} Controls`);showUI();
 }
 
-window.saveSession=()=>{const j=ser();L.ok(`Session exportiert: ${S.allCids.size} Controls, ${(j.length/1024).toFixed(1)} kB`);dl(JSON.parse(j),`${sn()}_session.json`)};
 // Der Arbeitsstand liegt im gemeinsamen Artefakt-Set, nicht mehr in einem
 // tool-eigenen localStorage-Schlüssel — so sieht jedes Werkzeug denselben Stand.
+let _autoSaved='';
 function autoSave(){
     if(typeof gppArtefacts==='undefined')return;
+    /* Erst vergleichen, dann arbeiten: bei einem großen Set (mehrere MB Session)
+       kostet die volle Kette parse → pretty-stringify → sha256 im Kern sonst alle
+       30 s spürbar CPU und Speicher, auch wenn sich nichts geändert hat. Ein
+       Stringify ist zur Änderungserkennung ohnehin nötig — mehr passiert im
+       unveränderten Fall jetzt nicht. Scheitert das Sichern (z. B. ohne Sperre),
+       bleibt der Merker leer und der nächste Takt versucht es erneut. */
+    const j=ser();
+    if(j===_autoSaved)return;
     gppArtefacts.save({stage:'assess',kind:'workspace',title:'Prüfung Arbeitsstand',
-        filename:'pruefung-workspace.json',tool:GPP_TOOL_ID,data:JSON.parse(ser())})
-        .catch(e=>L.warn(`Arbeitsstand nicht gesichert: ${e.message}`));
+        filename:'pruefung-workspace.json',tool:GPP_TOOL_ID,data:JSON.parse(j)})
+        .then(()=>{_autoSaved=j;if(typeof gppWriteBlockedBanner==='function')gppWriteBlockedBanner.clear()})
+        .catch(e=>{L.warn(`Arbeitsstand nicht gesichert: ${e.message}`);
+            if(typeof gppWriteBlockedBanner==='function')
+                gppWriteBlockedBanner('Bewertungen werden derzeit NICHT gespeichert: '+e.message+' — in der Übersicht „Bearbeiten (sperren)" wählen.')});
 }
-setInterval(()=>{if(S.allCids.size>0)autoSave()},30000);
+// Sicherheitsnetz-Takt und Auslöser für den Live-Sync (Arbeitsstand + AP/AR):
+// jede Formularänderung stößt gebündelt an; beim Verlassen wird sofort geschrieben.
+setInterval(()=>{if(S.allCids.size>0)liveSync()},30000);
+document.addEventListener('change',()=>{if(S.allCids.size)scheduleLive()});
+window.addEventListener('pagehide',()=>{clearTimeout(_syncT);if(S.allCids.size)liveSync()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&S.allCids.size){clearTimeout(_syncT);liveSync()}});
 
 // Übernimmt beim Start, was im aktiven Set liegt: eigener Arbeitsstand vor SSP.
 // Kataloge und Profile des Sets landen als local://-Referenzen im Speicher.
@@ -946,11 +954,27 @@ async function bootFromSet(){
     try{
         migrateLegacyAutosave();
         const set=gppArtefacts.activeSet();
-        const ws=await gppArtefacts.latest('workspace');
+        /* NUR der eigene Arbeitsstand zählt: kind "workspace" schreiben auch
+           Editor und POA&M — ohne Tool-Filter verwirft die Prüfung beim
+           Hin- und Herspringen ihren eigenen Stand samt Bewertungen. */
+        const ws=await gppArtefacts.latest('workspace',undefined,GPP_TOOL_ID);
         if(ws&&ws.tool===GPP_TOOL_ID&&ws.data&&(ws.data.allCids||[]).length){
             L.info(`Arbeitsstand aus Set „${set}" übernommen`);
             restoreSession(ws.data);
             await adoptDefsFromSet();
+            /* SSP-Änderungen übernehmen — aber nur, wenn sich der INHALT seit
+               der letzten Übernahme geändert hat (sha-Vergleich). Ein reines
+               „Artefakt ist jünger" gilt seit dem Live-Sync immer und würde
+               bei jedem Öffnen neu mergen. */
+            const ssp=await gppArtefacts.latest('ssp');
+            if(ssp&&ssp.data&&ssp.data['system-security-plan']){
+                if((ssp.sha256||'')!==(ws.data.sspSha||''))await mergeSSP(ssp);
+                else S.sspArtSha=ssp.sha256||'';
+            }
+            /* Sicherheitsnetz: Arbeitsstand ohne eine einzige Bewertung, aber
+               ein AR im Set? Dann Bewertungen von dort zurückholen (z. B. nach
+               einem früher verlorenen Arbeitsstand). */
+            if(![...S.findings.values()].some(f=>f&&f.status))await hydrateFromAR();
             return;
         }
         await adoptDefsFromSet();
@@ -959,11 +983,73 @@ async function bootFromSet(){
             S.ssp=ssp.data['system-security-plan'];S.sspFilename=ssp.filename||'ssp.json';
             L.ok(`SSP aus Set „${set}" übernommen: ${ssp.title}`);
             await initSSP();
+            S.sspArtSha=ssp.sha256||'';
+            await hydrateFromAR();
         }else{
             L.info(`Set „${set}" enthält noch keinen SSP — im SSP-Generator erzeugen, er erscheint hier automatisch.`);
         }
     }catch(e){L.err(`Set-Übernahme fehlgeschlagen: ${e.message}`)}
 }
+/* Jüngeren SSP in die laufende Session einarbeiten: Strukturen (Controls,
+   Komponenten, Parameter) kommen frisch aus dem SSP, die eigene Prüfarbeit
+   (Bewertungen, Methoden, Scope, Metadaten) wird für alle Controls erhalten,
+   die es weiterhin gibt. Entfallene Controls verlieren ihre Bewertung — sie
+   sind ja nicht mehr Teil des Systems. */
+async function mergeSSP(ssp){
+    const keepF=new Map(S.findings),keepM=new Map(S.methods),keepX=new Set(S.excluded);
+    const meta={...S.meta},terms={...S.terms},assessor={...S.assessor};
+    const ds=S.dateStart,de=S.dateEnd,tasks=S.tasks,ai=S.aiCache;
+    S.ssp=ssp.data['system-security-plan'];S.sspFilename=ssp.filename||'ssp.json';
+    await initSSP();
+    if(meta.title)S.meta=meta;
+    S.terms=terms;S.assessor=assessor;S.dateStart=ds;S.dateEnd=de;S.tasks=tasks;S.aiCache=ai;
+    /* ALLE Bewertungen zurücklegen — auch für Controls, die gerade nicht im
+       SSP/den Defs auftauchen (z. B. weil ein Komponenten-Profil in diesem
+       Lauf nicht ladbar war). Sie ruhen dann nur: buildAR exportiert allein
+       Controls im aktuellen Scope, aber nichts geht verloren. */
+    let kept=0,ruht=0;
+    keepF.forEach((f,c)=>{S.findings.set(c,f);if(f.status){if(S.allCids.has(c))kept++;else ruht++}});
+    keepM.forEach((m,c)=>{S.methods.set(c,m)});
+    keepX.forEach(c=>{if(S.allCids.has(c))S.excluded.add(c)});
+    S.sspArtSha=ssp.sha256||'';
+    showUI();
+    L.ok(`SSP-Änderungen übernommen: jetzt ${S.allCids.size} Controls, ${kept} Bewertung(en) erhalten${ruht?`, ${ruht} ruhend (Control derzeit nicht aufgelöst)`:''}.`);
+    scheduleLive();
+}
+
+/* Bewertungen aus dem AR-Artefakt zurückgewinnen: startet die Prüfung ohne
+   (bewertete) eigene Session, trägt das Set oft noch ein AR mit allen
+   Befunden — etwa nach einem verlorenen Arbeitsstand. Vorhandene Bewertungen
+   werden nie überschrieben. */
+async function hydrateFromAR(){
+    try{
+        const ar=await gppArtefacts.latest('ar');
+        const res=ar?.data?.['assessment-results']?.results?.[0];
+        if(!res||!(res.findings||[]).length)return;
+        const obsById=new Map((res.observations||[]).map(o=>[o.uuid,o]));
+        const riskById=new Map((res.risks||[]).map(r=>[r.uuid,r]));
+        let n=0;
+        (res.findings||[]).forEach(fd=>{
+            const cid=fd.target?.['target-id'];if(!cid)return;
+            const cur=S.findings.get(cid);
+            if(cur&&cur.status)return;
+            const st=fd.target?.status||{};
+            const status=st.state==='satisfied'?'satisfied':(st.reason==='other'?'other':'not-satisfied');
+            const ou=(fd['related-observations']||[])[0]?.['observation-uuid'];
+            const ru=(fd['related-risks']||[])[0]?.['risk-uuid'];
+            S.findings.set(cid,{status,
+                observation:(ou&&obsById.get(ou)?.description)||'',
+                risk:(ru&&riskById.get(ru)?.description)||'',
+                remarks:(fd.description&&!/^Bewertung /.test(fd.description))?fd.description:''});
+            n++;
+        });
+        if(n){
+            L.ok(`${n} Bewertung(en) aus dem AR-Artefakt zurückgewonnen („${ar.title}").`);
+            renderStats();renderControls();autoSave();
+        }
+    }catch(e){L.warn('AR-Rückübernahme fehlgeschlagen: '+e.message)}
+}
+
 // Kataloge/Profile des Sets als local://-Auflösung bereitstellen
 async function adoptDefsFromSet(){
     const defs=(await gppArtefacts.all()).filter(r=>r.kind==='catalog'||r.kind==='profile');
@@ -1637,6 +1723,12 @@ function renderStats(){
 // ============================================================
 // EDITOR
 // ============================================================
+// Die Control-Zeilen jeder Komponente werden vorbereitet, aber erst beim
+// Aufklappen ins DOM gehängt (togC). Bei großen Sets (Tausende Controls) lägen
+// sonst mehrere GB im DOM und das Laden dauert; die Wahrheit steht in S.* (dem
+// JSON), das DOM ist nur die Sicht. _groupCache hält je Komponente das fertige
+// HTML als Zeichenkette (Bruchteil des DOM-Speichers) bereit.
+let _groupCache={};
 function renderControls(){
     // 1. Component navigation in sidebar
     let nav='';
@@ -1664,10 +1756,12 @@ function renderControls(){
 
         h+=`<div id="comp-${cuuid}" class="border border-slate-700 rounded-xl overflow-hidden mb-3">
             <div class="comp-header flex justify-between items-center p-2.5 bg-slate-900/80 hover:bg-slate-800" onclick="togC('${cuuid}')">
-                <div class="flex items-center gap-2 flex-wrap"><svg id="cc-${cuuid}" class="chev open w-4 h-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg><span class="sb ${tb}">${esc(meta.type)}</span><h3 class="comp-title text-sm font-bold text-slate-200">${esc(meta.title)}</h3><span class="text-xs text-slate-500">(${sspN}${defN?' + '+defN+' Def':''})</span>${meta.defLoaded?'<span class="sb bg-cyan-900/50 text-cyan-300 border-cyan-700">Def</span>':''}</div>
+                <div class="flex items-center gap-2 flex-wrap"><svg id="cc-${cuuid}" class="chev w-4 h-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg><span class="sb ${tb}">${esc(meta.type)}</span><h3 class="comp-title text-sm font-bold text-slate-200">${esc(meta.title)}</h3><span class="text-xs text-slate-500">(${sspN}${defN?' + '+defN+' Def':''})</span>${meta.defLoaded?'<span class="sb bg-cyan-900/50 text-cyan-300 border-cyan-700">Def</span>':''}</div>
             </div>
-            <div id="cb-${cuuid}" class="coll-content open p-1.5 space-y-1">`;
+            <div id="cb-${cuuid}" class="coll-content p-1.5 space-y-1" data-lazy="1"></div>
+        </div>`;
 
+        let rows='';
         sorted.forEach(([cid,info])=>{
             const sm=STM[info.status]||STM['nicht-angegeben'];
             const ci=catInfo(cid);
@@ -1706,7 +1800,7 @@ function renderControls(){
 
             const params=(S.setParams||[]).filter(p=>p['param-id']?.toLowerCase().startsWith(cid.toLowerCase()));
 
-            h+=`<div class="ctrl-row bg-slate-900 border border-slate-700 rounded-lg" data-cid="${cid}" data-rk="${rk}" data-title="${esc(ci.title).toLowerCase()}" data-modal="${modal}" data-class="${ctrlClass}" data-sec="${secLevel}" data-status="${info.status}">
+            rows+=`<div class="ctrl-row bg-slate-900 border border-slate-700 rounded-lg" data-cid="${cid}" data-cuuid="${cuuid}" data-rk="${rk}" data-title="${esc(ci.title).toLowerCase()}" data-modal="${modal}" data-class="${ctrlClass}" data-sec="${secLevel}" data-status="${info.status}">
                 <div class="flex items-center gap-2 p-2 cursor-pointer" onclick="togD('${rk}')">
                     <input type="checkbox" ${excl?'':'checked'} onclick="event.stopPropagation();togSc('${cid}',this.checked)" class="scb form-checkbox h-3.5 w-3.5 text-emerald-500 rounded border-slate-600 bg-slate-700 flex-shrink-0">
                     <span class="font-mono font-bold text-white text-xs w-24 flex-shrink-0">${cid}</span>
@@ -1771,7 +1865,7 @@ function renderControls(){
                 </div>
             </div>`;
         });
-        h+=`</div></div>`;
+        _groupCache[cuuid]=rows;
     });
 
     document.getElementById('ctrl-area').innerHTML=h;
@@ -1791,7 +1885,13 @@ window.scrollToSec = id => {
 };
 
 window.tog=id=>{document.getElementById(id+'-content')?.classList.toggle('open');document.getElementById('icon-'+id)?.classList.toggle('open')};
-window.togC=u=>{document.getElementById('cb-'+u)?.classList.toggle('open');document.getElementById('cc-'+u)?.classList.toggle('open')};
+window.togC=u=>{
+    const box=document.getElementById('cb-'+u);
+    // Beim ERSTEN Aufklappen die Zeilen aus dem Cache ins DOM hängen.
+    if(box&&box.dataset.lazy){box.innerHTML=_groupCache[u]||'';delete box.dataset.lazy}
+    box?.classList.toggle('open');
+    document.getElementById('cc-'+u)?.classList.toggle('open');
+};
 window.togD=rk=>{document.getElementById('cbd-'+rk)?.classList.toggle('open');document.getElementById('cch-'+rk)?.classList.toggle('open')};
 window.togSc=(c,on)=>{if(on)S.excluded.delete(c);else S.excluded.add(c);document.getElementById('scope-n').textContent=S.allCids.size-S.excluded.size};
 window.scopeAll=on=>{if(on)S.excluded.clear();else S.allCids.forEach(c=>S.excluded.add(c));document.querySelectorAll('.scb').forEach(cb=>cb.checked=on);document.getElementById('scope-n').textContent=on?S.allCids.size:0};
@@ -1801,32 +1901,71 @@ window.bulkMC=()=>{S.allCids.forEach(c=>{if(S.excluded.has(c))return;S.methods.s
 window.setF=(c,k,v)=>{let f=S.findings.get(c);if(!f){f={status:'',observation:'',risk:'',remarks:''};S.findings.set(c,f)}f[k]=v;
     document.querySelectorAll(`[data-fp="${c}"]`).forEach(p=>{p.textContent=f.status==='satisfied'?'✓':f.status==='not-satisfied'?'✗':f.status==='other'?'◬':'○';p.className=`fp text-xs ml-1 ${f.status==='satisfied'?'text-emerald-400':f.status==='not-satisfied'?'text-red-400':f.status==='other'?'text-amber-400':'text-slate-600'}`});
     if(k==='status')document.querySelectorAll(`.ctrl-row[data-cid="${c}"] select`).forEach(s=>{if(s.id.startsWith('f-s-'))s.value=v});
-    let n=0;S.findings.forEach((f2,cc)=>{if(!S.excluded.has(cc)&&f2.status)n++});const rn=document.getElementById('rated-n');if(rn)rn.textContent=n;const sr=document.getElementById('stat-rated');if(sr)sr.textContent=n};
-window.fltC=()=>{
+    let n=0;S.findings.forEach((f2,cc)=>{if(!S.excluded.has(cc)&&f2.status)n++});const rn=document.getElementById('rated-n');if(rn)rn.textContent=n;const sr=document.getElementById('stat-rated');if(sr)sr.textContent=n;
+    // Bei Status-Änderung die Kennzahlen-Karte (Donut/Balken „Befundstatus") neu
+    // aufbauen — bisher aktualisierte sich nur die „bewertet"-Zahl, nicht die Charts.
+    if(k==='status'&&typeof renderStats==='function')renderStats()};
+/* Filter arbeitet über das MODELL, nicht über das DOM: seit dem Lazy-Rendering
+   existieren Zeilen erst nach dem Aufklappen. Komponenten mit Treffern werden
+   materialisiert und aufgeklappt, trefferlose ganz ausgeblendet. */
+let _fltT=null;
+window.fltC=()=>{clearTimeout(_fltT);_fltT=setTimeout(_fltApply,150)};
+function _fltFacts(cid,info){
+    const ci=catInfo(cid);const prose=ci.prose||'';
+    return{title:(ci.title||'').toLowerCase(),
+        modal:prose.match(/\bMUSS\b|\bMÜSSEN\b/)?'MUSS':prose.match(/\bSOLL\b|\bSOLLTE\b|\bSOLLTEN\b/)?'SOLL':prose.match(/\bKANN\b|\bKÖNNEN\b/)?'KANN':'',
+        cls:(info.defProps||[]).find(p=>p.name==='control_class')?.value||'',
+        sec:ci.secLevel||'',status:info.status};
+}
+function _fltApply(){
     const t=(document.getElementById('cf')?.value||'').toLowerCase();
     const fm=document.getElementById('flt-modal')?.value||'';
     const fc=document.getElementById('flt-class')?.value||'';
     const fsec=document.getElementById('flt-sec')?.value||'';
     const fs=document.getElementById('flt-status')?.value||'';
-    document.querySelectorAll('.ctrl-row').forEach(r=>{
-        const cid=r.dataset.cid?.toLowerCase()||'';const title=r.dataset.title||'';
-        let show=true;
-        if(t&&!cid.includes(t)&&!title.includes(t))show=false;
-        if(fm&&r.dataset.modal!==fm)show=false;
-        if(fc&&r.dataset.class!==fc)show=false;
-        if(fsec&&r.dataset.sec!==fsec)show=false;
-        if(fs&&r.dataset.status!==fs)show=false;
-        r.style.display=show?'':'none';
-    })
-};
+    const any=!!(t||fm||fc||fsec||fs);
+    let shown=0,total=0;
+    S.compGroups.forEach((ctrls,cuuid)=>{
+        const wrap=document.getElementById('comp-'+cuuid);if(!wrap)return;
+        total+=ctrls.size;
+        let hit=0;
+        if(any)for(const [cid,info] of ctrls){
+            const fx=_fltFacts(cid,info);
+            if(t&&!cid.toLowerCase().includes(t)&&!fx.title.includes(t))continue;
+            if(fm&&fx.modal!==fm)continue;
+            if(fc&&fx.cls!==fc)continue;
+            if(fsec&&fx.sec!==fsec)continue;
+            if(fs&&fx.status!==fs)continue;
+            hit++;
+        }
+        if(any&&!hit){wrap.style.display='none';return}
+        wrap.style.display='';shown+=any?hit:ctrls.size;
+        const box=document.getElementById('cb-'+cuuid);
+        if(any&&box){
+            if(box.dataset.lazy){box.innerHTML=_groupCache[cuuid]||'';delete box.dataset.lazy}
+            if(!box.classList.contains('open')){box.classList.add('open');document.getElementById('cc-'+cuuid)?.classList.add('open')}
+        }
+        if(box&&!box.dataset.lazy)box.querySelectorAll('.ctrl-row').forEach(r=>{
+            const cid=r.dataset.cid?.toLowerCase()||'';const title=r.dataset.title||'';
+            let show=true;
+            if(t&&!cid.includes(t)&&!title.includes(t))show=false;
+            if(fm&&r.dataset.modal!==fm)show=false;
+            if(fc&&r.dataset.class!==fc)show=false;
+            if(fsec&&r.dataset.sec!==fsec)show=false;
+            if(fs&&r.dataset.status!==fs)show=false;
+            r.style.display=show?'':'none';
+        });
+    });
+    const cnt=document.getElementById('flt-count');
+    if(cnt)cnt.textContent=any?`${shown} von ${total} Controls`:'';
+}
 
 // ============================================================
-// EXPORT AP / AR
+// AP / AR AUS DEM MODELL BAUEN (Live-Sync legt sie ins Set)
 // ============================================================
-function exportAP(){
+function buildAP(){
     const ts=new Date().toISOString(),au=crypto.randomUUID();const cids=[...S.allCids].filter(c=>!S.excluded.has(c)).sort();
-    L.info(`Assessment Plan wird erzeugt (${cids.length} Controls im Scope)`);
-    if(!cids.length){L.err('AP-Export abgebrochen: keine Controls im Prüf-Scope');return alert('Keine Controls im Prüf-Scope — include-controls wäre leer (Schema-Verstoß).')}
+    if(!cids.length)return null;   // include-controls wäre leer (Schema-Verstoß)
     const byM={};cids.forEach(c=>{(S.methods.get(c)||new Set(['EXAMINE'])).forEach(m=>{if(!byM[m])byM[m]={uuid:crypto.randomUUID(),cids:[]};byM[m].cids.push(c)})});
     const acts=Object.entries(byM).map(([m,a])=>({uuid:a.uuid,title:`${m}-Prüfung`,description:`${m} für ${a.cids.length} Controls.`,props:[{name:"method",ns:"http://csrc.nist.gov/ns/oscal",value:m}],"related-controls":{"control-selections":[{"include-controls":a.cids.map(c=>({"control-id":c}))}]}}));
     // Pin-Muster (Grundregel 8): import-ssp als Fragment auf eine back-matter-Resource;
@@ -1840,17 +1979,11 @@ function exportAP(){
     ap["assessment-plan"]["assessment-subjects"]=[{type:"component",description:"Systemkomponenten","include-all":{}}];
     ap["assessment-plan"]["assessment-assets"]={"assessment-platforms":[{uuid:crypto.randomUUID(),title:"Assessment-Plattform"}]};
     if(S.dateStart||S.dateEnd||S.tasks.length){const t=[];if(S.dateStart&&S.dateEnd)t.push({uuid:crypto.randomUUID(),type:"action",title:"Assessment-Durchführung",timing:{"within-date-range":{start:`${S.dateStart}T00:00:00Z`,end:`${S.dateEnd}T23:59:59Z`}},"associated-activities":Object.values(byM).map(a=>({"activity-uuid":a.uuid,subjects:[{type:"component","include-all":{}}]}))});S.tasks.forEach(tk=>t.push({uuid:tk.uuid,type:tk.type,title:tk.title}));if(t.length)ap["assessment-plan"].tasks=t}
-    L.ok(`Assessment Plan erzeugt: ${cids.length} Controls, ${acts.length} Aktivität(en), Katalog-Pin ${GPP_CATALOG_PIN_COMMIT.slice(0,12)}…`);
-    dl(ap,`${sn()}_AP.json`);autoSave();
-    // zusätzlich in den gemeinsamen Artefaktbestand (Übersicht in index.html)
-    gppArtefacts.save({stage:'assess',kind:'ap',tool:GPP_TOOL_ID,
-        title:`${sn()} — Assessment Plan`,filename:`${sn()}_AP.json`,data:ap})
-        .catch(e=>L.warn('Artefakt nicht abgelegt: '+e.message));
+    return {doc:ap,controls:cids.length};
 }
 
-function exportAR(){
+function buildAR(){
     const ts=new Date().toISOString();const cids=[...S.allCids].filter(c=>!S.excluded.has(c)).sort();
-    L.info(`Assessment Results werden erzeugt (${cids.length} Controls im Scope)`);
     const obs=[],fin=[],rsk=[];
 
     cids.forEach(c=>{
@@ -1937,18 +2070,50 @@ function exportAR(){
         rsk.push(oscalRisk);
     });
 
-    if(!fin.length){L.err('AR-Export abgebrochen: keine bewerteten Controls');return alert('Keine bewerteten Controls.')}
-    L.debug(`AR-Bestandteile: ${fin.length} findings, ${obs.length} observations, ${rsk.length} risks (davon ${S.sspRisks.length} aus der SSP-Risikoanalyse)`);
+    if(!fin.length)return null;   // noch nichts bewertet — es gibt nichts zu berichten
     // Pin-Muster (Grundregel 8): import-ap als Fragment auf eine back-matter-Resource;
     // die Katalog-Resource dokumentiert, gegen welchen Katalogstand geprüft wurde.
     const apResUuid=crypto.randomUUID();
     const ar={"assessment-results":{uuid:crypto.randomUUID(),metadata:{title:`${sn().replace(/_/g,' ')} - Assessment Results`,version:S.meta.version||'1.0.0',"last-modified":ts,"oscal-version":"1.2.2"},"import-ap":{href:`#${apResUuid}`},results:[{uuid:crypto.randomUUID(),title:"Assessment-Ergebnis",description:'Ergebnisse',start:S.dateStart?`${S.dateStart}T00:00:00Z`:ts,end:S.dateEnd?`${S.dateEnd}T23:59:59Z`:ts,"reviewed-controls":{"control-selections":[{"include-controls":cids.map(c=>({"control-id":c}))}]},...(obs.length?{observations:obs}:{}),findings:fin,...(rsk.length?{risks:rsk}:{})}],"back-matter":{resources:[{uuid:apResUuid,title:`Assessment Plan (${sn()}_AP.json)`,rlinks:[{href:`${sn()}_AP.json`}]},pinnedCatalogResource()]}}};
-    L.ok(`Assessment Results erzeugt: ${fin.length} Befunde, ${obs.length} Beobachtungen, ${rsk.length} Risiken`);
-    dl(ar,`${sn()}_AR.json`);autoSave();
-    gppArtefacts.save({stage:'assess',kind:'ar',tool:GPP_TOOL_ID,
-        title:`${sn()} — Assessment Results`,filename:`${sn()}_AR.json`,data:ar})
-        .catch(e=>L.warn('Artefakt nicht abgelegt: '+e.message));
+    return {doc:ar,controls:new Set(fin.map(f=>f.target['target-id'])).size,findings:fin.length,obs:obs.length,risks:rsk.length};
 }
+
+// ============================================================
+// LIVE-SYNC: AP und AR liegen immer aktuell als Einzelstücke im Set.
+// Kein Abspeichern-Knopf mehr — Statistik, POA&M und Übersicht lesen mit.
+// Fingerabdruck über die EINGABEN (nicht das Ergebnis: das trägt bei jedem
+// Zusammenbau frische UUIDs/Zeitstempel und wäre nie „unverändert").
+// ============================================================
+let _apFp='',_arFp='',_syncT=null;
+function _apInputs(){return JSON.stringify([[...S.allCids].filter(c=>!S.excluded.has(c)).sort(),
+    [...S.methods].map(([c,m])=>[c,[...m].sort()]),S.meta,S.terms,S.assessor,S.dateStart,S.dateEnd,S.tasks])}
+function _arInputs(){return JSON.stringify([[...S.allCids].filter(c=>!S.excluded.has(c)).sort(),
+    [...S.findings].filter(([,f])=>f.status),[...S.methods].map(([c,m])=>[c,[...m].sort()]),
+    [...S.compGroups.keys()],S.sspRisks,S.meta,S.dateStart,S.dateEnd])}
+function syncDocs(){
+    if(typeof gppArtefacts==='undefined'||!S.allCids.size)return;
+    const apIn=_apInputs();
+    if(apIn!==_apFp){
+        const b=buildAP();
+        if(b)gppArtefacts.save({stage:'assess',kind:'ap',tool:GPP_TOOL_ID,
+            title:`${sn()} — Assessment Plan`,filename:`${sn()}_AP.json`,data:b.doc,meta:{controls:b.controls}})
+            .then(()=>{_apFp=apIn;L.debug(`Assessment Plan im Set aktualisiert (${b.controls} Controls im Scope).`)})
+            .catch(e=>L.warn('AP nicht ins Set gelegt: '+e.message+' — in der Zusammenarbeit dafür die Sperre halten.'));
+        else _apFp=apIn;
+    }
+    const arIn=_arInputs();
+    if(arIn!==_arFp){
+        const b=buildAR();
+        if(b)gppArtefacts.save({stage:'assess',kind:'ar',tool:GPP_TOOL_ID,
+            title:`${sn()} — Assessment Results`,filename:`${sn()}_AR.json`,data:b.doc,meta:{controls:b.controls}})
+            .then(()=>{_arFp=arIn;L.debug(`Assessment Results im Set aktualisiert: ${b.findings} Befunde zu ${b.controls} Controls — POA&M liest sie beim nächsten Öffnen.`)})
+            .catch(e=>L.warn('AR nicht ins Set gelegt: '+e.message+' — in der Zusammenarbeit dafür die Sperre halten.'));
+        else _arFp=arIn;
+    }
+}
+function liveSync(){autoSave();syncDocs()}
+// Kurz nach einer Eingabe bündeln — tippen in „Beobachtung" löst nicht 20 Builds aus.
+function scheduleLive(){clearTimeout(_syncT);_syncT=setTimeout(liveSync,2500)}
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 

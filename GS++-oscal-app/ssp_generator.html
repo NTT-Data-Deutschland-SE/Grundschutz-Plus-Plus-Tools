@@ -734,20 +734,9 @@
             </div>
         </section>
 
-        <div id="generator-save-actions" class="card p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <label class="flex items-center space-x-3 cursor-pointer">
-                <input type="checkbox" id="generate-ssp-checkbox" checked class="form-checkbox h-5 w-5">
-                <span>
-                    <span class="font-semibold block text-sm">Optionalen Muster-SSP generieren</span>
-                    <span class="text-xs text-slate-400 font-normal">Verknüpft Profil, Methodik, Prozesse und Assets.</span>
-                </span>
-            </label>
-            <button id="save-blueprint-button" onclick="generateBlueprintPackage()"
-                class="w-full md:w-auto bg-emerald-600 font-bold py-3 px-8 rounded-lg transition-all">
-                Blaupause-Paket
-            </button>
-        </div>
-
+        <!-- Kein Erzeugen/Abspeichern-Knopf mehr: Profil und SSP werden bei jeder
+             Änderung automatisch ins Set geschrieben (Live-Sync); Editor, Prüfung
+             und POA&M lesen dort mit. Dateien lädt man in der Übersicht herunter. -->
         <p class="text-[11px] text-slate-600 text-center pt-2">&copy; 2026 NTT DATA Deutschland SE</p>
     </main>
 
@@ -898,7 +887,7 @@
         </div>
     </div>
 
-<script src="gpp-core.js?v=3.5"></script>
+<script src="gpp-core.js?v=3.9"></script>
     <script>
         if (typeof gppCfg === 'undefined' || typeof GPP_CORE_VERSION === 'undefined' || Number(GPP_CORE_VERSION) < 2) {
             document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
@@ -1519,6 +1508,40 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             document.getElementById('main-editor').classList.remove('hidden');
             renderStats();
             await switchMethodik('standard');
+            /* Arbeitsstand aus dem Set übernehmen: liegt dort ein SSP (und ggf.
+               ein Profil), wird der Generator-Zustand daraus rekonstruiert —
+               derselbe Weg wie der Datei-Import. Der Fingerabdruck wird danach
+               gesetzt, damit der unveränderte Stand nicht sofort zurückgeschrieben
+               wird (das würde nur UUIDs würfeln). */
+            try {
+                if (typeof gppArtefacts !== 'undefined') {
+                    const sspArt = await gppArtefacts.latest('ssp');
+                    const profArt = await gppArtefacts.latest('profile');
+                    const ssp = sspArt?.data?.['system-security-plan'] || null;
+                    const prof = profArt?.data?.profile || null;
+                    if (ssp || prof) {
+                        await importFromSSPAndProfile(ssp, prof);
+                        _genFp = _genInputs();
+                        aiLog('ok', `Arbeitsstand aus dem Set übernommen (${ssp ? 'SSP' : ''}${ssp && prof ? ' + ' : ''}${prof ? 'Profil' : ''}) — Änderungen fließen automatisch zurück.`);
+                    }
+                }
+            } catch (e) { aiLog('warn', 'Set-Übernahme fehlgeschlagen: ' + (e && e.message || e)); }
+            /* Schwebende Filterleiste links: durchsucht die Tailoring-Liste von
+               überall; der Fokus springt zum Tailoring-Abschnitt. */
+            if (typeof gppFilterDock === 'function') {
+                const dock = gppFilterDock({
+                    toolId: GPP_TOOL_ID, title: 'Control-Filter', top: 96, defaultCollapsed: true,
+                    fields: [{ id: 'q', label: 'Tailoring durchsuchen', placeholder: 'Control-ID / Titel…' }],
+                    onChange: v => {
+                        const inp = document.getElementById('tailoring-search-input');
+                        if (inp) inp.value = v.q;
+                        renderTailoredList(v.q || '');
+                    },
+                });
+                dock.input('q')?.addEventListener('focus', () => {
+                    if (typeof navigateToSection === 'function') navigateToSection('sec-tailoring');
+                });
+            }
         });
 
         // --- BSI ED2023 Anforderungen (vorberechnet von Gpp-ai-tool, ohne Laufzeit-KI) ---
@@ -5478,36 +5501,136 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             refreshRiskUI();
         }
 
-        // --- SECTION 5: EXPORTS (OSCAL GENERATION) ---
-        async function generateBlueprintPackage() {
+        // --- SECTION 5: LIVE-SYNC (Profil + SSP liegen immer aktuell im Set) ---
+        // Kein Erzeugen-Knopf mehr: jede Zustandsänderung schreibt (entprellt)
+        // Profil und SSP als Artefakte ins aktive Set. Der Fingerabdruck läuft
+        // über den GESAMTEN bpState — das Ergebnis trägt bei jedem Zusammenbau
+        // frische UUIDs/Zeitstempel und wäre als Vergleichsbasis unbrauchbar.
+        let _genFp = '', _genT = null, _profArtId = '';
+        const _genInputs = () => JSON.stringify(bpState, (k, v) => v instanceof Map ? [...v.entries()] : v instanceof Set ? [...v] : v);
+
+        /* Editor-Texte in den frisch generierten SSP übernehmen: gleiche
+           control-id, Ziel-Komponente per uuid, sonst per Titel (die uuid von
+           "this-system" wechselt je Generierung). Der Generator bestimmt die
+           Struktur (welche Controls, welche Komponenten), der Editor die
+           Inhalte (description, Umsetzungsstatus, Bearbeiter-Props). */
+        function mergeEditorWork(genSsp, prevSsp) {
+            if (!prevSsp) return 0;
+            const genComps = genSsp['system-implementation']?.components || [];
+            const compByUuid = new Map(genComps.map(c => [c.uuid, c]));
+            const compByTitle = new Map(genComps.map(c => [c.title, c]));
+            const prevComps = prevSsp['system-implementation']?.components || [];
+            const prevTitleByUuid = new Map(prevComps.map(c => [c.uuid, c.title]));
+            const ci = genSsp['control-implementation'];
+            const genReqs = ci ? (ci['implemented-requirements'] = ci['implemented-requirements'] || []) : [];
+            const genByCid = new Map(genReqs.map(r => [r['control-id'], r]));
+            let carried = 0;
+            (prevSsp['control-implementation']?.['implemented-requirements'] || []).forEach(pr => {
+                const gr = genByCid.get(pr['control-id']);
+                if (!gr) return;   // Control im Generator entfernt → gilt überall als entfernt
+                (pr['by-components'] || []).forEach(pbc => {
+                    const hatInhalt = pbc.description || pbc['implementation-status'] || (pbc.props || []).length || pbc.remarks;
+                    if (!hatInhalt) return;
+                    let target = compByUuid.get(pbc['component-uuid']);
+                    if (!target) {
+                        const titel = prevTitleByUuid.get(pbc['component-uuid']);
+                        if (titel) target = compByTitle.get(titel);
+                    }
+                    if (!target) return;   // Komponente existiert nicht mehr
+                    if (!gr['by-components']) gr['by-components'] = [];
+                    let slot = gr['by-components'].find(x => x['component-uuid'] === target.uuid);
+                    if (!slot) {
+                        slot = { uuid: pbc.uuid || crypto.randomUUID(), 'component-uuid': target.uuid, description: '' };
+                        gr['by-components'].push(slot);
+                    }
+                    if (pbc.description) slot.description = pbc.description;
+                    if (pbc['implementation-status']) slot['implementation-status'] = pbc['implementation-status'];
+                    if (pbc.props) slot.props = pbc.props;
+                    if (pbc.remarks) slot.remarks = pbc.remarks;
+                    carried++;
+                });
+                if (pr.remarks && !gr.remarks) gr.remarks = pr.remarks;
+            });
+            /* Editor-Anlagen erhalten: Requirements zu Controls, die der
+               Generator selbst nicht ausgibt — typisch die über Komponenten-
+               Profile aufgelösten Controls, deren IDs der Generator gar nicht
+               kennt. Inhaltstragende Einträge werden angehängt; by-components
+               werden auf existierende Komponenten umgeschrieben, Verweise auf
+               verschwundene Komponenten entfallen. */
+            if (ci) (prevSsp['control-implementation']?.['implemented-requirements'] || []).forEach(pr => {
+                if (genByCid.has(pr['control-id'])) return;
+                const hatInhalt = pr.remarks || (pr['by-components'] || []).some(bc =>
+                    bc.description || bc['implementation-status'] || (bc.props || []).length || bc.remarks);
+                if (!hatInhalt) return;
+                const kopie = JSON.parse(JSON.stringify(pr));
+                kopie['by-components'] = (kopie['by-components'] || []).map(bc => {
+                    if (!compByUuid.has(bc['component-uuid'])) {
+                        const titel = prevTitleByUuid.get(bc['component-uuid']);
+                        const ziel = titel && compByTitle.get(titel);
+                        if (ziel) bc['component-uuid'] = ziel.uuid;
+                    }
+                    return bc;
+                }).filter(bc => compByUuid.has(bc['component-uuid']));
+                if (!kopie['by-components'].length && !kopie.remarks) return;
+                if (!kopie['by-components'].length) delete kopie['by-components'];
+                genReqs.push(kopie);
+                genByCid.set(kopie['control-id'], kopie);
+                carried++;
+            });
+            return carried;
+        }
+
+        async function syncBlueprint() {
+            if (typeof gppArtefacts === 'undefined' || !bpState.catalogs.length) return;
+            const fp = _genInputs();
+            if (fp === _genFp) return;
             const t = bpState.metadata.title || "Blaupause";
-            const profileData = generateProfile(t);
-            if (!profileData) return;
-
+            const profileData = generateProfile(t, true);
+            if (!profileData) { _genFp = fp; return; }   // nichts ausgewählt → nichts zu schreiben
             const safeName = t.replace(/\s+/g, '_');
-            downloadJSON(profileData, `${safeName}_Profile.json`);
-            // zusätzlich in den gemeinsamen Artefaktbestand (Übersicht in index.html);
-            // der Download oben bleibt davon unberührt
-            gppArtefacts.save({
-                stage: 'model', kind: 'profile', tool: GPP_TOOL_ID,
-                title: `${t} — OSCAL-Profil`, filename: `${safeName}_Profile.json`, data: profileData,
-            }).catch(e => console.warn('Artefakt (Profil) nicht abgelegt:', e));
+            try {
+                const savedProf = await gppArtefacts.save({
+                    stage: 'model', kind: 'profile', tool: GPP_TOOL_ID,
+                    title: `${t} — OSCAL-Profil`, filename: `${safeName}_Profile.json`, data: profileData,
+                    meta: { controls: (profileData.profile.imports || []).reduce((s, imp) => s + (imp['include-controls'] || []).reduce((x, ic) => x + (ic['with-ids'] || []).length, 0), 0) },
+                });
+                /* Profile sind keine Einzelstücke (mehrere Bausteine sind legitim) —
+                   die eigene alte Ablage nach einer Titeländerung räumen wir selbst. */
+                if (_profArtId && savedProf && savedProf.id !== _profArtId) {
+                    await gppArtefacts.remove(_profArtId).catch(() => {});
+                }
+                if (savedProf) _profArtId = savedProf.id;
+                await syncGeneratedSSP(t, safeName, profileData);
+                _genFp = fp;
+            } catch (e) {
+                aiLog('warn', 'Blaupause nicht ins Set geschrieben: ' + e.message);
+                if (typeof gppWriteBlockedBanner === 'function')
+                    gppWriteBlockedBanner('Blaupause wird derzeit NICHT gespeichert: ' + e.message + ' — in der Übersicht „Bearbeiten (sperren)" wählen.');
+            }
+        }
+        function scheduleLiveSync() { clearTimeout(_genT); _genT = setTimeout(() => { syncBlueprint().catch(e => console.warn('Live-Sync', e)); }, 2500); }
+        ['change', 'click', 'input'].forEach(ev => document.addEventListener(ev, () => scheduleLiveSync()));
+        setInterval(() => { syncBlueprint().catch(() => {}); }, 30000);
+        window.addEventListener('pagehide', () => { clearTimeout(_genT); syncBlueprint().catch(() => {}); });
+        document.addEventListener('visibilitychange', () => { if (document.hidden) { clearTimeout(_genT); syncBlueprint().catch(() => {}); } });
 
-            const generateSSPCheckbox = document.getElementById('generate-ssp-checkbox');
-            if (generateSSPCheckbox && generateSSPCheckbox.checked) {
+        async function syncGeneratedSSP(t, safeName, profileData) {
                 // Pin des Schwester-Profils: SHA-256 über exakt die Bytes der eben
                 // heruntergeladenen Profildatei (inkl. BOM, identische Serialisierung),
                 // damit der Hash im SSP die Datei nachprüfbar festnagelt.
                 const profileBytes = new TextEncoder().encode("\uFEFF" + JSON.stringify(profileData, null, 2));
                 const profileHash = await sha256Hex(profileBytes);
                 const sspData = generateSSP(t, profileData.profile.uuid, `${safeName}_Profile.json`, profileHash);
-                setTimeout(() => downloadJSON(sspData, `${safeName}_SSP.json`), 600);
-                gppArtefacts.save({
+                const prev = await gppArtefacts.latest('ssp');
+                const carried = mergeEditorWork(sspData['system-security-plan'], prev?.data?.['system-security-plan'] || null);
+                const reqs = sspData['system-security-plan']?.['control-implementation']?.['implemented-requirements'] || [];
+                await gppArtefacts.save({
                     stage: 'model', kind: 'ssp', tool: GPP_TOOL_ID,
-                    title: `${t} — Muster-SSP`, filename: `${safeName}_SSP.json`, data: sspData,
-                    meta: { profile: `${safeName}_Profile.json`, profileSha256: profileHash },
-                }).catch(e => console.warn('Artefakt (SSP) nicht abgelegt:', e));
-            }
+                    title: `${t} — SSP`, filename: `${safeName}_SSP.json`, data: sspData,
+                    meta: { controls: reqs.length, profile: `${safeName}_Profile.json`, profileSha256: profileHash },
+                });
+                aiLog('ok', `Blaupause ins Set geschrieben: Profil + SSP mit ${reqs.length} Controls${carried ? ` (${carried} Editor-Einträge übernommen)` : ''} — Editor und Prüfung lesen automatisch mit.`);
+            if (typeof gppWriteBlockedBanner === 'function') gppWriteBlockedBanner.clear();
         }
 
         function base64EncodeUnicode(str) {
@@ -5515,7 +5638,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             return btoa(utf8Bytes);
         }
 
-        function generateProfile(t) {
+        function generateProfile(t, quiet) {
             const ts = new Date().toISOString();
             const setParams = [], altersMap = new Map();
             const profileMetadataProps = [];
@@ -5629,7 +5752,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 }
             }
             if (profile.profile.imports.length === 0) {
-                alert("Keine Controls ausgewählt — es kann kein gültiges OSCAL-Profil erzeugt werden (imports wäre leer).");
+                if (!quiet) alert("Keine Controls ausgewählt — es kann kein gültiges OSCAL-Profil erzeugt werden (imports wäre leer).");
                 return null;
             }
 

@@ -85,6 +85,22 @@ resource "google_compute_firewall" "https" {
   }
 }
 
+# Optional: Öffentlicher Zugriff auf Port 8000 für API-Tests durch externe Agenten
+resource "google_compute_firewall" "public_api" {
+  count = var.allow_public_api ? 1 : 0
+
+  name          = "${var.name_prefix}-allow-kong-external"
+  network       = google_compute_network.vpc.name
+  direction     = "INGRESS"
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = [local.tag]
+
+  allow {
+    protocol = "tcp"
+    ports    = ["8000"]
+  }
+}
+
 # Feste Adresse: API_EXTERNAL_URL und der DNS-Record sollen ein Stop/Start der
 # VM überleben.
 resource "google_compute_address" "vm" {

@@ -61,7 +61,7 @@ main { max-width: 940px; margin: 0 auto; padding: 24px 20px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
 label.f { display: block; font-family: var(--mono); font-size: .62rem; letter-spacing: .1em;
   text-transform: uppercase; color: var(--text-quiet); margin: 0 0 5px; }
-input[type=text], input[type=password], select, textarea {
+input[type=text], input[type=password], input[type=url], input[type=search], select, textarea {
   width: 100%; background: oklch(0.10 0.02 280); color: var(--text-primary);
   border: 1px solid var(--border-2); border-radius: 8px; padding: 8px 10px;
   font-size: .82rem; font-family: inherit;
@@ -81,6 +81,16 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
 .saved { font-family: var(--mono); font-size: .6rem; letter-spacing: .1em; color: var(--green);
   opacity: 0; transition: opacity .2s; }
 .saved.show { opacity: 1; }
+/* Abschnitts-Navigation: klebt unter dem Header, Karten bekommen
+   scroll-margin, damit der Anker nicht unter den beiden Leisten landet. */
+.secnav { position: sticky; top: 62px; z-index: 4; display: flex; gap: 4px;
+  padding: 8px 20px; background: var(--bg-elev-1); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-1); overflow-x: auto; }
+.secnav a { color: var(--text-secondary); text-decoration: none; font-size: .78rem;
+  padding: 5px 11px; border: 1px solid transparent; border-radius: 8px; white-space: nowrap; }
+.secnav a:hover { color: var(--text-primary); background: var(--bg-elev-2); }
+.secnav a.active { color: var(--text-primary); background: var(--accent-soft); border-color: var(--border-2); }
+.card { scroll-margin-top: 118px; }
 .tabs { display: flex; gap: 4px; margin-bottom: 14px; flex-wrap: wrap; }
 .tabs button { flex: 0 0 auto; background: transparent; color: var(--text-secondary);
   border: 1px solid transparent; border-radius: 8px; padding: 6px 12px; font-size: .8rem;
@@ -108,8 +118,16 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
   <a class="btn" href="index.html">← Übersicht</a>
 </header>
 
+<nav class="secnav" aria-label="Abschnitte">
+  <a href="#sec-ki">KI-Zugang</a>
+  <a href="#sec-prompts">Prompts</a>
+  <a href="#sec-quellen">Quellen &amp; Pins</a>
+  <a href="#sec-zusammenarbeit">Zusammenarbeit</a>
+  <a href="#sec-speicher">Speicher</a>
+</nav>
+
 <main>
-  <div class="card">
+  <div class="card" id="sec-ki">
     <h2>KI-Zugang</h2>
     <p class="sub">Gilt für alle Tools der Sammlung. Backend, Schlüssel und Modell werden hier einmal gesetzt; die einzelnen Anwendungen haben keine eigenen Felder mehr. Die Schlüssel bleiben ausschließlich im <code>localStorage</code> dieses Browsers und werden nie an einen Server dieser Sammlung geschickt — nur direkt an den gewählten Anbieter.</p>
     <div class="grid">
@@ -228,14 +246,14 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" id="sec-prompts">
     <h2>Prompts</h2>
     <p class="sub">Jedes Tool meldet seine Prompts beim Start hier an — samt Standardtext. Bearbeitet wird also immer der aktuelle Stand des jeweiligen Tools, ohne dass die Texte doppelt gepflegt werden müssten. Ein Tool, das noch nie geöffnet wurde, taucht erst nach dem ersten Start auf.</p>
     <div class="tabs" id="prompt-tabs"></div>
     <div id="prompt-body"></div>
   </div>
 
-  <div class="card">
+  <div class="card" id="sec-quellen">
     <h2>Quellen und Pins</h2>
     <p class="sub">Kataloge und Hilfsdateien hängen an einem festen Commit, damit dieselbe Eingabe morgen dasselbe Ergebnis liefert (Handbuch 3.13/3.14, Grundregel 8). Aktuell bleiben Sie trotzdem: „Nach Updates suchen" holt den neuesten Commit der jeweiligen Datei, zeigt ihn an und übernimmt ihn erst auf Klick.</p>
     <div class="row" style="margin-bottom:12px">
@@ -255,9 +273,66 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
     <div id="src-body"></div>
   </div>
 
-  <div class="card">
+  <div class="card" id="sec-zusammenarbeit">
+    <h2>Zusammenarbeit</h2>
+    <p class="sub">Optional: eine gemeinsame Datenbank (PostgREST&nbsp;+&nbsp;GoTrue, z.&nbsp;B. Supabase — self-hosted oder gehostet).
+      Wer sich anmeldet, dessen Speichervorgänge gehen <b>zusätzlich</b> dorthin; ohne Server-URL verhält sich alles exakt wie bisher —
+      der Offline-Betrieb ist der Normalfall, nicht die Ausnahme. Das Passwort wird nirgends gespeichert; im
+      <code>localStorage</code> liegt allenfalls das Refresh-Token der Sitzung, das kurzlebige Access-Token nur im Speicher des Tabs.</p>
+    <div class="grid">
+      <div>
+        <label class="f" for="db-url">Server-URL</label>
+        <input type="url" id="db-url" placeholder="https://gpp-test.example.de" spellcheck="false">
+        <div class="note">Basis-Adresse der Instanz — erwartet werden <code>/auth/v1</code> und <code>/rest/v1</code> darunter. Leer = Zusammenarbeit aus.</div>
+      </div>
+      <div>
+        <label class="f" for="db-anonkey">Anon-Key</label>
+        <input type="text" id="db-anonkey" placeholder="eyJ…" spellcheck="false" autocomplete="off">
+        <div class="note">Der öffentliche API-Schlüssel der Instanz (kein Geheimnis — er landet in jedem Client). Rechte vergibt die Datenbank per Rolle, nicht dieser Schlüssel.</div>
+      </div>
+      <div>
+        <label class="f" for="db-mode">Anmeldeweg</label>
+        <select id="db-mode">
+          <option value="passwort">E-Mail und Passwort</option>
+          <option value="oidc">Unternehmens-IdP (OIDC)</option>
+        </select>
+      </div>
+      <div id="wrap-db-provider">
+        <label class="f" for="db-provider">OIDC-Provider</label>
+        <input type="text" id="db-provider" placeholder="keycloak" spellcheck="false">
+        <div class="note">Name des in GoTrue konfigurierten Providers (z.&nbsp;B. <code>keycloak</code>, <code>azure</code>).</div>
+      </div>
+    </div>
+    <div id="db-more" style="margin-top:14px">
+      <div class="grid" id="db-login-pw">
+        <div>
+          <label class="f" for="db-email">E-Mail</label>
+          <input type="text" id="db-email" placeholder="person@firma.de" spellcheck="false" autocomplete="username">
+        </div>
+        <div>
+          <label class="f" for="db-password">Passwort</label>
+          <input type="password" id="db-password" placeholder="wird nicht gespeichert" autocomplete="current-password">
+        </div>
+        <div style="align-self:end">
+          <button class="btn primary" id="btn-db-login">Anmelden</button>
+        </div>
+      </div>
+      <div class="row" id="db-login-oidc" style="display:none">
+        <button class="btn primary" id="btn-db-oidc">Anmelden über IdP</button>
+        <span class="note" style="margin:0">Leitet zum Identity Provider um und kehrt hierher zurück.</span>
+      </div>
+      <div class="note" id="db-login-note" style="margin-top:8px"></div>
+      <div id="db-status" style="margin-top:14px"></div>
+      <div id="db-admin" style="display:none;margin-top:18px"></div>
+    </div>
+    <div class="note" id="db-off-note" style="display:none">Ohne Server-URL bleibt dieser Abschnitt aus — alle Werkzeuge arbeiten rein lokal wie bisher.</div>
+  </div>
+
+  <div class="card" id="sec-speicher">
     <h2>Speicher</h2>
-    <p class="sub">Artefakte liegen in der IndexedDB <code>gpp-artefacts</code>, Einstellungen im <code>localStorage</code> unter <code>gpp:cfg:</code>. Beides gehört diesem Browserprofil und verlässt es nicht.</p>
+    <p class="sub">Artefakte liegen in der IndexedDB <code>gpp-artefacts</code>, Einstellungen im <code>localStorage</code> unter <code>gpp:cfg:</code>.
+      Ohne eingerichtete Zusammenarbeit verlässt beides diesen Browser nicht; mit angemeldeter Datenbank werden <b>Artefakte</b> zusätzlich dorthin
+      übertragen — API-Schlüssel, GitHub-Token und Prompts nie.</p>
     <div id="storage-body"></div>
     <div class="row" style="margin-top:14px">
       <a class="btn" href="index.html#artefacts">Artefakte ansehen und exportieren</a>
@@ -267,9 +342,12 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
   </div>
 </main>
 
-<script src="gpp-core.js?v=3.5"></script>
+<script src="gpp-core.js?v=3.9"></script>
 <script>
-if (typeof gppCfg === "undefined" || typeof GPP_CORE_VERSION === "undefined" || Number(GPP_CORE_VERSION) < 2) {
+/* Diese Seite unterdrückt den selbst einhängenden Status-Chip des Kerns —
+   der Zustand steht hier ausführlich im Abschnitt "Zusammenarbeit". */
+window.GPP_REMOTE_NO_CHIP = true;
+if (typeof gppCfg === "undefined" || typeof GPP_CORE_VERSION === "undefined" || Number(GPP_CORE_VERSION) < 3) {
   document.querySelector("main").innerHTML =
     '<div class="card"><h2 style="color:var(--red)">gpp-core.js fehlt</h2>' +
     '<p class="sub">Diese Seite braucht <code>gpp-core.js</code> im selben Ordner. ' +
@@ -296,6 +374,10 @@ const FIELDS = [
   ["run-concurrency", "run:concurrency"], ["run-chunk", "run:chunk"],
   ["run-chunkchars", "run:chunkchars"], ["run-retries", "run:retries"],
   ["ai-context", "ai:context"], ["gh-token", "gh:token"],
+  /* Zusammenarbeit — das Passwort-Feld fehlt hier mit Absicht: es wird nie
+     gespeichert, nur direkt an gppRemote.login() gereicht. */
+  ["db-url", "db:url"], ["db-anonkey", "db:anonkey"], ["db-mode", "db:auth:mode"],
+  ["db-provider", "db:auth:provider"], ["db-email", "db:email"],
 ];
 const TOGGLES = [["grounding", "ai:grounding"], ["or-structuredonly", "ai:or:structuredonly"]];
 
@@ -305,7 +387,11 @@ FIELDS.forEach(([id, key]) => {
   /* trim: Keys aus Passwortmanagern kommen gern mit Zeilenumbruch — der landet
      sonst als ungültiger HTTP-Header in den Tools. Debounce, weil jeder Write
      per storage-Event alle offenen Tabs neu rendern lässt. */
-  const write = () => { gppCfg.set(key, el.value.trim()); flashSaved(); if (key === "ai:backend") applyBackend(); };
+  const write = () => {
+    gppCfg.set(key, el.value.trim()); flashSaved();
+    if (key === "ai:backend") applyBackend();
+    if (key.startsWith("db:")) renderRemote();
+  };
   let t;
   el.addEventListener("input", () => { clearTimeout(t); t = setTimeout(write, 250); });
   el.addEventListener("change", () => { clearTimeout(t); write(); });
@@ -587,7 +673,46 @@ async function renderStorage() {
         <div class="note">${Object.entries(byStage).map(([k, v]) => `${k}: ${v}`).join(" · ") || "noch nichts abgelegt"}</div></div>
     </div>
     <div class="bar"><i style="width:${Math.min(100, cfgBytes / 5e6 * 100).toFixed(1)}%"></i></div>
-    <div class="note">localStorage-Auslastung (Einstellungen). Artefakte zählen nicht hierauf — deshalb liegen sie in der IndexedDB.</div>`;
+    <div class="note">localStorage-Auslastung (Einstellungen). Artefakte zählen nicht hierauf — deshalb liegen sie in der IndexedDB.</div>
+    <div id="trash-body" style="margin-top:14px"></div>`;
+  renderTrash();
+}
+/* Papierkorb: Artefakte, die der Server-Abgleich als „drüben gelöscht"
+   entfernt hat. Nichts davon ist verloren, bis hier geleert wird. */
+async function renderTrash() {
+  const box = $("trash-body");
+  if (!box) return;
+  /* set/kind/title stammen aus Serverzeilen anderer Nutzer — vor der
+     innerHTML-Interpolation escapen (Stored XSS; in dieser Origin liegen
+     gh:token und ai:key:* im localStorage). */
+  const h = s => String(s == null ? "" : s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+  let entries = [];
+  try { entries = await gppRemoteTrash.list(); } catch (e) { return; }
+  if (!entries.length) { box.innerHTML = ""; return; }
+  entries.sort((a, b) => (b.trashedAt || "").localeCompare(a.trashedAt || ""));
+  box.innerHTML = `
+    <div class="row"><b style="font-size:.85rem">Papierkorb</b>
+      <span class="pill warn">${entries.length}</span>
+      <span class="note" style="margin:0">Vom Server-Abgleich entfernte Artefakte (fremde Löschung). Wiederherstellen legt sie zurück ins Set und — bei Anmeldung — wieder in die Datenbank.</span>
+      <span style="flex:1"></span>
+      <button class="btn" id="btn-trash-clear">Papierkorb leeren</button>
+    </div>
+    ${entries.map(e => `<div class="row" style="margin-top:6px">
+      <code style="font-size:.68rem">${h(e.set)} · ${h(e.kind)}</code>
+      <span style="font-size:.8rem">${h(e.title || e.id)}</span>
+      <span class="note" style="margin:0">${(e.trashedAt || "").slice(0, 16).replace("T", " ")}</span>
+      <span style="flex:1"></span>
+      <button class="btn" data-restore="${gppAttrArg(e.id)}">Wiederherstellen</button>
+    </div>`).join("")}`;
+  box.querySelectorAll("button[data-restore]").forEach(b => b.addEventListener("click", async () => {
+    await gppRemoteTrash.restore(decodeURIComponent(b.dataset.restore));
+    renderTrash(); flashSaved();
+  }));
+  $("btn-trash-clear").addEventListener("click", async () => {
+    if (!confirm("Papierkorb endgültig leeren? Diese Stände sind danach nirgends mehr vorhanden.")) return;
+    await gppRemoteTrash.clear();
+    renderTrash();
+  });
 }
 renderStorage();
 window.addEventListener("gpp:artefacts-changed", renderStorage);
@@ -606,6 +731,236 @@ $("btn-forget-keys").addEventListener("click", () => {
   $("key-gemini").value = ""; $("key-openrouter").value = "";
   flashSaved();
 });
+
+/* ---------- Zusammenarbeit ----------
+   Die Eingabefelder stehen statisch im HTML und werden vom FIELDS-Mechanismus
+   gepflegt; renderRemote() fasst sie nicht an (sonst würde jedes storage-Event
+   dem Tippenden das Feld unterm Cursor neu setzen) und rendert nur
+   Sichtbarkeit und den Status-Block. */
+async function renderRemote() {
+  const s = await gppRemote.status();
+  const mode = gppCfg.get("db:auth:mode");
+  $("db-more").style.display = s.enabled ? "" : "none";
+  $("db-off-note").style.display = s.enabled ? "none" : "";
+  $("wrap-db-provider").style.opacity = mode === "oidc" ? "1" : ".45";
+  $("db-login-pw").style.display = s.enabled && !s.loggedIn && mode === "passwort" ? "" : "none";
+  $("db-login-oidc").style.display = s.enabled && !s.loggedIn && mode === "oidc" ? "" : "none";
+  if (!s.enabled) return;
+  const box = $("db-status");
+  if (!s.loggedIn) {
+    box.innerHTML = '<span class="pill warn">nicht angemeldet</span> <span class="note">Änderungen bleiben lokal, bis die Anmeldung steht.</span>';
+    return;
+  }
+  const u = s.user || {};
+  const sync = s.conflicts
+    ? `<span class="pill bad">${s.conflicts} Konflikt${s.conflicts > 1 ? "e" : ""}</span>`
+    : s.pending
+      ? `<span class="pill warn">${s.pending} ausstehend</span>`
+      : '<span class="pill ok">synchron</span>';
+  box.innerHTML = `
+    <div class="row">
+      <span class="pill ok">angemeldet</span>
+      ${u.email ? `<span class="note" style="margin:0">${u.email}</span>` : ""}
+      ${u.org ? `<span class="pill">Org ${String(u.org).slice(0, 8)}</span>` : ""}
+      ${u.role ? `<span class="pill">${u.role}</span>` : ""}
+      ${sync}
+      <span style="flex:1"></span>
+      <button class="btn" id="btn-db-sync">⟳ Jetzt synchronisieren</button>
+      ${s.conflicts ? '<button class="btn" id="btn-db-conflicts">Konflikte klären</button>' : ""}
+      <button class="btn" id="btn-db-logout">Abmelden</button>
+    </div>
+    <div class="note" id="db-sync-note" style="margin-top:6px">${
+      s.lastError ? "Letzter Fehler: " + s.lastError
+      : s.lastSync ? "Letzter Abgleich: " + s.lastSync.slice(0, 19).replace("T", " ")
+      : "Noch kein Abgleich in diesem Tab."}</div>`;
+  box.querySelector("#btn-db-sync").addEventListener("click", async ev => {
+    const btn = ev.currentTarget;
+    btn.disabled = true;
+    $("db-sync-note").textContent = "gleiche ab …";
+    try {
+      await gppRemote.flush();
+      const r = await gppRemote.pullAll();
+      $("db-sync-note").textContent = r.sets.length
+        ? `Abgeglichen — ${r.pulled} Artefakt(e) aus ${r.sets.length} zugänglichen Set(s) übernommen.`
+        : "Abgeglichen — keine zugänglichen Sets auf dem Server.";
+    } catch (e) {
+      $("db-sync-note").textContent = "Abgleich fehlgeschlagen: " + e.message;
+    }
+    btn.disabled = false;
+  });
+  const bc = box.querySelector("#btn-db-conflicts");
+  if (bc) bc.addEventListener("click", () => gppRemote.resolveConflicts());
+  box.querySelector("#btn-db-logout").addEventListener("click", async () => {
+    await gppRemote.logout();
+    renderRemote();
+  });
+}
+$("btn-db-login").addEventListener("click", async () => {
+  const note = $("db-login-note");
+  note.textContent = "melde an …";
+  try {
+    await gppRemote.login($("db-email").value.trim(), $("db-password").value);
+    $("db-password").value = "";
+    note.textContent = "";
+  } catch (e) {
+    note.textContent = "Anmeldung fehlgeschlagen: " + e.message;
+  }
+  renderRemote();
+});
+$("db-password").addEventListener("keydown", e => { if (e.key === "Enter") $("btn-db-login").click(); });
+$("btn-db-oidc").addEventListener("click", () => gppRemote.oidcStart());
+
+/* ---------- Benutzerverwaltung (nur Rolle admin) ----------
+   Die UI richtet sich nach rpc/whoami — den wirksamen Rechten aus der
+   Datenbank, nicht den bis zu 1 h alten Token-Claims. Durchgesetzt wird
+   serverseitig; alles hier ist Komfort. */
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g,
+  c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const GPP_ROLLEN = ["leser", "bearbeiter", "pruefer", "admin"];
+let adminCheck = { done: false, isAdmin: false, me: null };
+
+async function renderAdmin(recheck) {
+  const box = $("db-admin");
+  const s = await gppRemote.status();
+  if (!s.enabled || !s.loggedIn) { box.style.display = "none"; adminCheck.done = false; return; }
+  if (!adminCheck.done || recheck) {
+    try {
+      adminCheck.me = await gppRemote.whoami();
+      adminCheck.isAdmin = !!adminCheck.me && adminCheck.me.gpp_role === "admin";
+    } catch (e) {
+      adminCheck.isAdmin = false;   // Schema ohne whoami (v1) → keine Verwaltung anbieten
+    }
+    adminCheck.done = true;
+  }
+  if (!adminCheck.isAdmin) { box.style.display = "none"; return; }
+  box.style.display = "";
+
+  let users = [];
+  try {
+    users = await gppRemote.api("rpc/admin_list_users", { method: "POST", body: {} }) || [];
+  } catch (e) {
+    box.innerHTML = `<b style="font-size:.85rem">Benutzerverwaltung</b>
+      <div class="note" style="color:var(--amber)">Benutzerliste nicht abrufbar: ${esc(e.message)}</div>`;
+    return;
+  }
+
+  /* Set-Namen für die Vorschlagsliste: lokale Sets + alles, was die DB kennt */
+  const setNames = new Set((await gppArtefacts.sets()).map(x => x.name));
+  try { (await gppRemote.api("artefacts?select=set_name") || []).forEach(r => setNames.add(r.set_name)); } catch (e) { /* Vorschläge bleiben lokal */ }
+
+  const meId = adminCheck.me.user_id;
+  box.innerHTML = `
+    <b style="font-size:.85rem">Benutzerverwaltung</b>
+    <span class="pill" style="margin-left:6px">${users.length} Konten</span>
+    <button class="btn" id="db-admin-reload" style="margin-left:8px">⟳</button>
+    <div class="note" style="margin:4px 0 10px">Rollen: <b>leser</b> liest alles ·
+      <b>bearbeiter</b> schreibt alles außer AP/AR · <b>pruefer</b> schreibt nur AP/AR/POA&amp;M ·
+      <b>admin</b> alles plus Verwaltung. Ein Set-Recht überschreibt die globale Rolle für genau
+      dieses Set. Änderungen greifen <b>sofort</b> — die Rechte liegen in der Datenbank, nicht im Token.</div>
+    <datalist id="db-admin-sets">${[...setNames].sort().map(n => `<option value="${esc(n)}">`).join("")}</datalist>
+    ${users.map(u => {
+      const selbst = u.user_id === meId;
+      const rollen = GPP_ROLLEN.map(r => `<option value="${r}" ${r === u.gpp_role ? "selected" : ""}>${r}</option>`).join("");
+      const overrides = Object.entries(u.set_roles || {}).map(([set, rolle]) =>
+        `<span class="pill warn" title="Set-Recht — Klick auf × entfernt">${esc(set)}: ${esc(rolle)}
+           <a href="#" data-clear="${gppAttrArg(u.user_id)}|${gppAttrArg(set)}" style="color:inherit;text-decoration:none">×</a></span>`).join(" ");
+      return `<div class="src">
+        <div class="hd">
+          <span class="nm">${esc(u.email)}</span>${selbst ? '<span class="pill ok">das bin ich</span>' : ""}
+          <select data-role="${gppAttrArg(u.user_id)}" ${selbst ? "disabled" : ""} style="width:auto">${rollen}</select>
+          ${overrides}
+          <span style="flex:1"></span>
+          ${selbst ? "" : `<button class="btn" data-del="${gppAttrArg(u.user_id)}|${gppAttrArg(u.email)}">Konto löschen</button>`}
+        </div>
+        <div class="row">
+          <input type="text" data-set-input="${gppAttrArg(u.user_id)}" list="db-admin-sets"
+                 placeholder="Set-Name" style="width:200px">
+          <select data-set-role="${gppAttrArg(u.user_id)}" style="width:auto">
+            <option value="leser">leser</option><option value="bearbeiter" selected>bearbeiter</option><option value="pruefer">pruefer</option>
+          </select>
+          <button class="btn" data-grant="${gppAttrArg(u.user_id)}">Set-Recht setzen</button>
+        </div>
+      </div>`;
+    }).join("")}
+    <div class="row" style="margin-top:12px">
+      <input type="text" id="db-new-email" placeholder="neue@person.de" style="width:220px" autocomplete="off">
+      <input type="password" id="db-new-pass" placeholder="Startpasswort (min. 10)" style="width:200px" autocomplete="new-password">
+      <select id="db-new-role" style="width:auto">${GPP_ROLLEN.map(r => `<option ${r === "leser" ? "selected" : ""}>${r}</option>`).join("")}</select>
+      <button class="btn primary" id="db-new-create">Konto anlegen</button>
+    </div>
+    <div class="note" id="db-admin-note" style="margin-top:6px">Das Startpasswort dem neuen Konto sicher mitteilen; ändern kann es die Person selbst (GoTrue <code>PUT /auth/v1/user</code>).</div>`;
+
+  const note = msg => { box.querySelector("#db-admin-note").innerHTML = msg; };
+  const rpc = async (fn, body, okMsg) => {
+    try { await gppRemote.api("rpc/" + fn, { method: "POST", body }); note(okMsg); renderAdmin(); }
+    catch (e) { note(`<span style="color:var(--amber)">${esc(e.message)}</span>`); }
+  };
+  box.querySelector("#db-admin-reload").addEventListener("click", () => renderAdmin(true));
+  box.querySelectorAll("select[data-role]").forEach(el => el.addEventListener("change", () =>
+    rpc("admin_set_role", { p_user_id: decodeURIComponent(el.dataset.role), p_gpp_role: el.value }, "Rolle gesetzt.")));
+  box.querySelectorAll("button[data-del]").forEach(el => el.addEventListener("click", () => {
+    const [uid, email] = el.dataset.del.split("|").map(decodeURIComponent);
+    if (!confirm(`Konto „${email}" endgültig löschen? Artefakte bleiben, das Konto ist weg.`)) return;
+    rpc("admin_delete_user", { p_user_id: uid }, "Konto gelöscht.");
+  }));
+  box.querySelectorAll("button[data-grant]").forEach(el => el.addEventListener("click", () => {
+    const uid = decodeURIComponent(el.dataset.grant);
+    const set = box.querySelector(`input[data-set-input="${el.dataset.grant}"]`).value.trim();
+    const rolle = box.querySelector(`select[data-set-role="${el.dataset.grant}"]`).value;
+    if (!set) { note('<span style="color:var(--amber)">Set-Name fehlt.</span>'); return; }
+    rpc("admin_set_set_role", { p_user_id: uid, p_set_name: set, p_gpp_role: rolle }, `Set-Recht für „${esc(set)}" gesetzt.`);
+  }));
+  box.querySelectorAll("a[data-clear]").forEach(el => el.addEventListener("click", ev => {
+    ev.preventDefault();
+    const [uid, set] = el.dataset.clear.split("|").map(decodeURIComponent);
+    rpc("admin_clear_set_role", { p_user_id: uid, p_set_name: set }, `Set-Recht für „${esc(set)}" entfernt.`);
+  }));
+  box.querySelector("#db-new-create").addEventListener("click", () => {
+    const email = box.querySelector("#db-new-email").value.trim();
+    const pass = box.querySelector("#db-new-pass").value;
+    if (!email || !pass) { note('<span style="color:var(--amber)">E-Mail und Startpasswort angeben.</span>'); return; }
+    rpc("admin_create_user", { p_email: email, p_password: pass, p_gpp_role: box.querySelector("#db-new-role").value },
+      `Konto „${esc(email)}" angelegt.`);
+  });
+}
+
+/* Rückkehr aus Pfad B: Tokens aus dem URL-Fragment übernehmen, bevor gerendert wird */
+gppRemote.oidcComplete();
+renderRemote();
+renderAdmin();
+let remoteRedraw = null;
+let adminLastLogin = gppRemote.loggedIn();
+window.addEventListener("gpp:remote-changed", () => {
+  /* gebündelt: flush() feuert das Event je Eintrag */
+  clearTimeout(remoteRedraw);
+  remoteRedraw = setTimeout(() => {
+    renderRemote();
+    /* Die Verwaltung nur bei An-/Abmeldung neu aufbauen — sonst würde jeder
+       Sync-Push die Benutzerliste neu laden und Eingaben zerschlagen. */
+    const li = gppRemote.loggedIn();
+    if (li !== adminLastLogin) { adminLastLogin = li; renderAdmin(true); }
+  }, 150);
+});
+
+/* ---------- Abschnitts-Navigation: aktiven Abschnitt markieren ---------- */
+const secLinks = [...document.querySelectorAll(".secnav a")];
+const secCards = secLinks.map(a => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+let spyTick = false;
+function spy() {
+  spyTick = false;
+  /* letzte Karte, deren Oberkante über der Leselinie (unter den zwei Leisten)
+     liegt — robuster als IntersectionObserver bei sehr hohen Karten */
+  const line = 130;
+  let active = secCards[0];
+  for (const c of secCards) { if (c.getBoundingClientRect().top <= line) active = c; }
+  secLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + active.id));
+}
+/* In einem verborgenen Tab liefert requestAnimationFrame keinen Takt (siehe
+   gleiche Stelle in gpp-core.js) — dort springt ein Timeout ein. */
+const spySoon = () => (document.hidden ? setTimeout(spy, 50) : requestAnimationFrame(spy));
+addEventListener("scroll", () => { if (!spyTick) { spyTick = true; spySoon(); } }, { passive: true });
+addEventListener("hashchange", spySoon);
+spy();
 </script>
 </body>
 </html>

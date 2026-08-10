@@ -37,11 +37,15 @@ resource "google_compute_instance" "supabase" {
   metadata = {
     enable-oslogin = "TRUE"
 
-    gpp-domain       = var.domain
-    gpp-supabase-ref = var.supabase_ref
-    gpp-secret-pg    = google_secret_manager_secret.this["postgres-password"].secret_id
-    gpp-secret-jwt   = google_secret_manager_secret.this["jwt-secret"].secret_id
-    gpp-secret-dash  = google_secret_manager_secret.this["dashboard-password"].secret_id
+    gpp-domain          = var.domain
+    gpp-supabase-ref    = var.supabase_ref
+    gpp-admin-email     = var.admin_email
+    gpp-seed-test-users = var.seed_test_users ? "TRUE" : "FALSE"
+    gpp-secret-pg       = google_secret_manager_secret.this["postgres-password"].secret_id
+    gpp-secret-jwt      = google_secret_manager_secret.this["jwt-secret"].secret_id
+    gpp-secret-dash     = google_secret_manager_secret.this["dashboard-password"].secret_id
+    gpp-secret-admin    = google_secret_manager_secret.this["admin-password"].secret_id
+    gpp-schema-sql      = file("${path.module}/schema.sql")
   }
 
   metadata_startup_script = file("${path.module}/startup.sh")

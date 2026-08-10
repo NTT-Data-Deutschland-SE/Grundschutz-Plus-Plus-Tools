@@ -12,13 +12,17 @@
      localStorage  gpp:cfg:*   Konfiguration (klein, synchron beim Start lesbar)
      IndexedDB     gpp-artefacts/artefacts   Artefakte (OSCAL-Dokumente, oft > 500 kB;
                    localStorage wäre nach wenigen SSPs voll)
+     IndexedDB     gpp-remote/outbox   noch nicht übertragene Datenbank-Pushes
+                   (eigene DB, damit alte Kern-Stände im Cache nie an einer
+                   hochgezählten gpp-artefacts-Version scheitern)
    ———————————————————————————————————————————————————————————————————— */
 /* Wird erhöht, sobald der Kern etwas anbietet, ohne das die Werkzeuge nicht mehr
-   starten (v2: gppFloatingSave, gppAttrArg). Jede Seite prüft beim Start gegen
+   starten (v2: gppFloatingSave, gppAttrArg; v3: gppRemote — Sync mit der
+   gemeinsamen Datenbank). Jede Seite prüft beim Start gegen
    ihren Mindeststand — nur so fällt ein alter, aus dem Browser-Cache geladener
    Kern auf, statt beim ersten Aufruf einer neuen Funktion das ganze Skript
    abzubrechen. Die Prüfung auf ein beliebiges Symbol reicht dafür nicht. */
-const GPP_CORE_VERSION = "2";
+const GPP_CORE_VERSION = "3";
 const GPP_CFG_PREFIX = "gpp:cfg:";
 
 /* ---------- Konfiguration ---------- */
@@ -51,6 +55,13 @@ const GPP_CFG_DEFAULTS = {
   "run:chunk": "6",
   "run:chunkchars": "28000",
   "run:retries": "2",
+  // Gemeinsame Datenbank (optional, Abschnitt "Zusammenarbeit" in config.html).
+  // Ohne db:url verhält sich die Sammlung exakt wie ohne diese Schlüssel.
+  "db:url": "",
+  "db:anonkey": "",
+  "db:auth:mode": "passwort",
+  "db:auth:provider": "keycloak",
+  "db:email": "",
 };
 
 const gppCfg = {
@@ -355,6 +366,7 @@ const gppArtefacts = {
     localStorage.setItem(GPP_CFG_PREFIX + "artefacts:set", n);
     window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { setChanged: n } }));
     try { localStorage.setItem(GPP_CFG_PREFIX + "artefacts:touch", new Date().toISOString()); } catch (e) { /* Quota egal */ }
+    try { gppRemote.onSetChanged(n); } catch (e) { /* Sync bricht Lokales nie */ }
     return n;
   },
   /* Legt ein Artefakt ab. `data` ist das fertige OSCAL-Objekt (oder ein
@@ -393,6 +405,22 @@ const gppArtefacts = {
       meta: meta || {},
       data,
     };
+    /* Inhaltlich unverändert → echtes No-op: kein Schreiben, kein DB-Push und
+       keine Sperre nötig. Spart bei großen Dokumenten (SSP-Workspace ~400 kB)
+       das wiederholte Ablegen desselben Blobs bei jedem Autosave und lässt einen
+       Leser einen unveränderten „Speichervorgang" auslösen, ohne dass es wirft.
+       Verglichen wird der Inhalt (sha256) samt der beschreibenden Felder — eine
+       reine Titel-/Meta-Änderung geht weiterhin durch. */
+    if (existing && existing.sha256 === rec.sha256 && existing.title === rec.title &&
+        existing.stage === rec.stage && existing.kind === rec.kind &&
+        existing.filename === rec.filename &&
+        JSON.stringify(existing.meta || {}) === JSON.stringify(rec.meta || {})) {
+      return existing;
+    }
+    /* Ab hier ändert sich wirklich etwas: In der Zusammenarbeit ist die Sperre
+       Schreibvoraussetzung — wirft, wenn sie fehlt. Ohne DB/Anmeldung und bei
+       Netzausfall kein Eingriff. */
+    if (typeof gppRemote !== "undefined") await gppRemote.requireLock(st);
     await gppTx("readwrite", store => store.put(rec));
     /* Einzelstück-Sorten: ältere Exemplare derselben Sorte im Set weichen. */
     if (GPP_SINGLETON_KINDS.has(rec.kind)) {
@@ -401,6 +429,11 @@ const gppArtefacts = {
     }
     window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { id: rec.id, set: st } }));
     try { localStorage.setItem(GPP_CFG_PREFIX + "artefacts:touch", now); } catch (e) { /* Quota egal */ }
+    /* DB-Push NACH dem lokalen Erfolg anstoßen, nie davor (Leitprinzip:
+       IndexedDB ist die Wahrheit, die Datenbank ein Ziel, kein Nadelöhr).
+       existing.sha256 ist der Stand, den der Server zuletzt gesehen haben
+       kann — er dient drüben als Konfliktprüfung. */
+    try { gppRemote.onLocalSave(rec, existing ? existing.sha256 : null); } catch (e) { /* Sync bricht Lokales nie */ }
     return rec;
   },
   async get(id) {
@@ -422,10 +455,14 @@ const gppArtefacts = {
     return all.filter(r => want === "*" || gppSetOf(r) === want);
   },
   /* Neuestes Artefakt einer Sorte im aktiven Set — für die Tool-Übergabe
-     (Generator erzeugt SSP, der Editor bietet ihn automatisch an). */
-  async latest(kind, set) {
+     (Generator erzeugt SSP, der Editor bietet ihn automatisch an).
+     `tool` grenzt zusätzlich auf den Erzeuger ein: kind "workspace" schreiben
+     MEHRERE Werkzeuge — wer nur nach der Sorte fragt, bekommt sonst beim
+     Hin- und Herspringen den Arbeitsstand des jeweils anderen Werkzeugs
+     (und verwirft dann fälschlich den eigenen). */
+  async latest(kind, set, tool) {
     const rows = await this.list(set);
-    const hit = rows.find(r => r.kind === kind);
+    const hit = rows.find(r => r.kind === kind && (!tool || r.tool === tool));
     return hit ? await this.get(hit.id) : null;
   },
   /* Übersicht aller Sets mit Bestand */
@@ -442,14 +479,19 @@ const gppArtefacts = {
     return [...by.values()].sort((a, b) => a.name.localeCompare(b.name));
   },
   async remove(id) {
+    const rec = await this.get(id);
+    if (rec && typeof gppRemote !== "undefined") await gppRemote.requireLock(gppSetOf(rec));
     await gppTx("readwrite", store => store.delete(id));
     window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { id, removed: true } }));
+    try { gppRemote.onLocalRemove(id); } catch (e) { /* Sync bricht Lokales nie */ }
   },
   async removeSet(name) {
+    if (typeof gppRemote !== "undefined") await gppRemote.requireSetDeletion(name);
     const doomed = (await this.all("*")).filter(r => gppSetOf(r) === name);
     for (const r of doomed) await gppTx("readwrite", store => store.delete(r.id));
     window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { setRemoved: name } }));
     try { localStorage.setItem(GPP_CFG_PREFIX + "artefacts:touch", new Date().toISOString()); } catch (e) { /* Quota egal */ }
+    try { gppRemote.onLocalRemoveSet(name); } catch (e) { /* Sync bricht Lokales nie */ }
     return doomed.length;
   },
   async clear() {
@@ -457,6 +499,957 @@ const gppArtefacts = {
     window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { cleared: true } }));
   },
 };
+
+/* ---------- Gemeinsame Datenbank: gppRemote (Phase 2 des DB-Plans) ----------
+   Optionale Synchronisierung mit einer PostgREST+GoTrue-Instanz (Supabase-Stack,
+   self-hosted oder gehostet — derselbe Code). Ohne gesetzte db:url ist dieses
+   Modul vollständig inert; die Sammlung verhält sich wie bisher.
+
+   Leitprinzip: IndexedDB bleibt die Wahrheit für den laufenden Vorgang, die
+   Datenbank ist ein Ziel, kein Nadelöhr. save() liefert lokal zurück, der Push
+   hängt daran; scheitert er, wandert er in die Outbox (IndexedDB gpp-remote)
+   und wird bei nächster Gelegenheit erneut versucht.
+
+   SERVER-KONTRAKT (gegen die Testinstanz vom 2026-08-09 verifiziert):
+     POST {url}/auth/v1/token?grant_type=password       {email, password}
+     POST {url}/auth/v1/token?grant_type=refresh_token  {refresh_token}
+     POST {url}/auth/v1/logout
+     GET  {url}/auth/v1/authorize?provider=…&redirect_to=…   (Pfad B, OIDC)
+       → Token-Claims: sub, email, exp (≤ 1 h); org und gpp_role als eigene
+         Claims ODER in app_metadata — user() liest beide Stellen.
+     Tabelle {url}/rest/v1/artefacts — Spalten: id (PK), set_name, stage,
+       kind, title, filename, tool, created_at, updated_at, size, sha256,
+       meta, data; org und updated_by setzt der Server aus dem JWT.
+       RBAC macht die RLS-Policy, nicht der Client.
+       Schreiben ist Compare-and-Swap über den Zeilenfilter:
+         PATCH ?id=eq.…&sha256=eq.{prev}  + Prefer: return=representation
+           → []  heißt: Zeile fehlt ODER trägt einen anderen sha256.
+         Dann GET ?id=eq.…: Zeile da → Konflikt (fremde Änderung);
+         Zeile fehlt → POST (neue Zeile); 409/23505 dabei = Einfüge-Rennen,
+         wird beim nächsten flush als Konflikt gemeldet.
+       Einzelstück-Sorten (GPP_SINGLETON_KINDS) räumt der Client nach
+       erfolgreichem Push per DELETE …&kind=eq.…&id=neq.… nach — eine
+       serverseitige artefact_save()-Funktion, die Schreiben und Räumen in
+       einer Transaktion erledigt, bleibt das Phase-1-Soll; sobald sie
+       existiert, wandert _push() dorthin.
+     POST {url}/rest/v1/rpc/acquire_set_lock {p_set_name, p_holder_name}
+       → [Zeile] | [] (leer: jemand anderes hält die Sperre);
+       erneuter Aufruf = Heartbeat.
+     DELETE {url}/rest/v1/set_locks?set_name=eq.…   (Freigabe; RLS: nur
+       Halter oder admin)
+     POST {url}/rest/v1/rpc/whoami {} → {user_id, email, org, gpp_role,
+       set_roles} — wirksame Rechte aus der DB (memberships/set_permissions),
+       NICHT aus den Token-Claims: Admin-Änderungen greifen sofort, Claims
+       hängen bis zu 1 h nach. Die UI richtet sich danach; durchgesetzt wird
+       ohnehin serverseitig (RLS).
+     Benutzerverwaltung (nur Rolle admin, config.html):
+       POST rpc/admin_list_users {} · rpc/admin_create_user {p_email,
+       p_password, p_gpp_role} · rpc/admin_delete_user {p_user_id} ·
+       rpc/admin_set_role {p_user_id, p_gpp_role} · rpc/admin_set_set_role
+       {p_user_id, p_set_name, p_gpp_role} · rpc/admin_clear_set_role
+       {p_user_id, p_set_name}
+   Alle REST-Aufrufe mit apikey: {anon-key} und Authorization: Bearer {jwt}.
+
+   NICHT synchronisiert: gpp:cfg:* — insbesondere ai:key:* und gh:token
+   verlassen den Browser nicht. Vom Sitzungszustand liegt nur das Refresh-Token
+   im localStorage; das kurzlebige Access-Token lebt im Speicher des Tabs. */
+const GPP_REMOTE_DB = "gpp-remote";
+const GPP_REMOTE_STORE = "outbox";
+/* Papierkorb für spiegel-gelöschte Artefakte: Wenn der Abgleich eine fremde
+   Löschung nachvollzieht, kann er den LETZTEN existierenden Stand eines
+   Dokuments treffen — der Browser, der ihn hält, wurde nie gefragt. Deshalb
+   wird nicht vernichtet, sondern verschoben; gppRemoteTrash.list()/restore()
+   holen es zurück. Der eigene, bewusste Löschvorgang (removeSet mit
+   Rückfrage) läuft NICHT über den Papierkorb. */
+const GPP_REMOTE_TRASH = "trash";
+
+function gppRemoteDbOpen() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(GPP_REMOTE_DB, 2);
+    req.onupgradeneeded = () => {
+      if (!req.result.objectStoreNames.contains(GPP_REMOTE_STORE)) {
+        req.result.createObjectStore(GPP_REMOTE_STORE, { keyPath: "key" });
+      }
+      if (!req.result.objectStoreNames.contains(GPP_REMOTE_TRASH)) {
+        req.result.createObjectStore(GPP_REMOTE_TRASH, { keyPath: "id" });
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+/* Gleiches Muster wie gppTx: eine Operation je Transaktion, kein await darin. */
+async function gppRemoteTx(mode, fn, storeName = GPP_REMOTE_STORE) {
+  const db = await gppRemoteDbOpen();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, mode);
+    let result;
+    let req;
+    try { req = fn(tx.objectStore(storeName)); } catch (e) { db.close(); reject(e); return; }
+    if (req && typeof req === "object" && "onsuccess" in req) {
+      req.onsuccess = () => { result = req.result; };
+    }
+    tx.oncomplete = () => { db.close(); resolve(result); };
+    tx.onerror = () => { db.close(); reject(tx.error); };
+    tx.onabort = () => { db.close(); reject(tx.error); };
+  });
+}
+
+/* Zugriff auf den Papierkorb — bewusst klein: auflisten, wiederherstellen
+   (zurück in den Artefaktbestand UND als Push in die Datenbank, sofern
+   angemeldet), leeren. */
+const gppRemoteTrash = {
+  async list() { return (await gppRemoteTx("readonly", s => s.getAll(), GPP_REMOTE_TRASH)) || []; },
+  async restore(id) {
+    const entry = await gppRemoteTx("readonly", s => s.get(id), GPP_REMOTE_TRASH);
+    if (!entry) return null;
+    const { trashedAt, ...rec } = entry;
+    await gppTx("readwrite", store => store.put(rec));
+    await gppRemoteTx("readwrite", s => s.delete(id), GPP_REMOTE_TRASH);
+    window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { id: rec.id, restored: true } }));
+    try { gppRemote.onLocalSave(rec, null); } catch (e) { /* Push folgt beim nächsten Anlass */ }
+    return rec;
+  },
+  async clear() { await gppRemoteTx("readwrite", s => s.clear(), GPP_REMOTE_TRASH); },
+};
+
+const gppRemote = {
+  _access: null,          // Access-Token: nur im Speicher dieses Tabs
+  _exp: 0,
+  _flushing: false,
+  _debounceTimer: null,
+  _lastSync: "",
+  _lastError: "",
+  _refreshKey: GPP_CFG_PREFIX + "db:refresh",
+
+  url() { return (gppCfg.get("db:url") || "").trim().replace(/\/+$/, ""); },
+  anonKey() { return (gppCfg.get("db:anonkey") || "").trim(); },
+  enabled() { return !!this.url(); },
+  refreshToken() { return localStorage.getItem(this._refreshKey) || ""; },
+  loggedIn() { return !!this._access || !!this.refreshToken(); },
+
+  claims() {
+    if (!this._access) return null;
+    try {
+      const b64 = this._access.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+      return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(b64), c => c.charCodeAt(0))));
+    } catch (e) { return null; }
+  },
+  /* org und gpp_role stehen bei Pfad B als eigene Claims im Token, bei
+     GoTrue-Konten (Pfad A) je nach Hook-Konfiguration in app_metadata —
+     beide Stellen lesen, damit der Rest des Codes es nie wissen muss. */
+  user() {
+    const c = this.claims();
+    if (!c) return null;
+    const app = c.app_metadata || {};
+    return { email: c.email || "", org: c.org || app.org || "", role: c.gpp_role || app.gpp_role || "", exp: c.exp || 0 };
+  },
+
+  _setSession(json) {
+    this._access = json.access_token || null;
+    const c = this.claims();
+    this._exp = c && c.exp ? c.exp * 1000 : Date.now() + (json.expires_in || 3600) * 1000;
+    if (json.refresh_token) {
+      try { localStorage.setItem(this._refreshKey, json.refresh_token); } catch (e) { /* Quota */ }
+    }
+    this._emit();
+  },
+  _clearSession() {
+    this._access = null;
+    this._exp = 0;
+    localStorage.removeItem(this._refreshKey);
+    this._emit();
+  },
+
+  async _auth(pathAndQuery, body) {
+    const r = await fetch(this.url() + "/auth/v1/" + pathAndQuery, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: this.anonKey() },
+      body: JSON.stringify(body),
+    });
+    const json = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(json.error_description || json.msg || json.message || "HTTP " + r.status);
+    return json;
+  },
+  async login(email, password) {
+    const json = await this._auth("token?grant_type=password", { email, password });
+    this._setSession(json);
+    gppCfg.set("db:email", email);
+    this.flushSoon(500);
+    /* Frisch angemeldet: alle zugänglichen Sets holen, damit geteilte Stände
+       sofort auftauchen und nicht erst nach manuellem Setwechsel. */
+    this.pullAll().catch(() => {});
+    return this.user();
+  },
+  async refresh() {
+    /* Immer frisch aus dem localStorage lesen: GoTrue ROTIERT Refresh-Tokens,
+       und ein anderer Tab kann inzwischen rotiert haben. Gleichzeitige
+       Refreshes zweier Tabs deckt die Reuse-Toleranz von GoTrue ab. */
+    const rt = this.refreshToken();
+    if (!rt) throw new Error("keine Sitzung");
+    try {
+      this._setSession(await this._auth("token?grant_type=refresh_token", { refresh_token: rt }));
+    } catch (e) {
+      /* Abgelehnter Refresh = Sitzung beendet (abgelaufen, widerrufen).
+         Aufräumen statt endlos mit demselben Token wiederholen. */
+      this._clearSession();
+      throw e;
+    }
+  },
+  async token() {
+    if (this._access && Date.now() < this._exp - 60000) return this._access;
+    await this.refresh();
+    return this._access;
+  },
+  async logout() {
+    try {
+      if (this._access) {
+        await fetch(this.url() + "/auth/v1/logout", {
+          method: "POST",
+          headers: { Authorization: "Bearer " + this._access, apikey: this.anonKey() },
+        });
+      }
+    } catch (e) { /* lokal ist die Sitzung gleich ohnehin weg */ }
+    this._clearSession();
+  },
+  /* Pfad B: GoTrue führt den OIDC-Tanz serverseitig; der Browser wird nur
+     umgeleitet. Genau deshalb bauen wir Authorization Code + PKCE nicht selbst
+     (fehleranfälligste Stelle des Vorhabens, siehe Plan Abschnitt 3). */
+  oidcStart() {
+    const provider = gppCfg.get("db:auth:provider") || "keycloak";
+    const back = location.origin + location.pathname;
+    location.href = this.url() + "/auth/v1/authorize?provider=" + encodeURIComponent(provider) +
+      "&redirect_to=" + encodeURIComponent(back);
+  },
+  /* Rückkehr aus Pfad B: Tokens stehen im URL-Fragment. Das Fragment verlässt
+     den Browser nie — aber es gehört auch nicht in Verlauf oder Lesezeichen,
+     deshalb sofort aus der Adresszeile entfernen. */
+  oidcComplete() {
+    if (!location.hash.includes("access_token=")) return false;
+    const p = new URLSearchParams(location.hash.slice(1));
+    if (!p.get("access_token")) return false;
+    this._setSession({
+      access_token: p.get("access_token"),
+      refresh_token: p.get("refresh_token") || "",
+      expires_in: parseInt(p.get("expires_in") || "3600", 10),
+    });
+    history.replaceState(null, "", location.pathname + location.search);
+    this.flushSoon(500);
+    this.pullAll().catch(() => {});
+    return true;
+  },
+
+  /* REST-Aufruf mit Auth, Timeout und einmaligem Retry nach 401 (Token kann
+     zwischen Prüfung und Ankunft am Server ablaufen — die Claims sagen ≤ 1 h). */
+  async api(path, { method = "GET", body, headers = {}, retried = false } = {}) {
+    const tok = await this.token();
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 20000);
+    let r;
+    try {
+      r = await fetch(this.url() + "/rest/v1/" + path, {
+        method,
+        headers: { apikey: this.anonKey(), Authorization: "Bearer " + tok, "Content-Type": "application/json", ...headers },
+        body: body === undefined ? undefined : JSON.stringify(body),
+        signal: ctrl.signal,
+      });
+    } finally { clearTimeout(timer); }
+    if (r.status === 401 && !retried) {
+      await this.refresh();
+      return this.api(path, { method, body, headers, retried: true });
+    }
+    if (!r.ok) {
+      const json = await r.json().catch(() => ({}));
+      const err = new Error(json.message || json.hint || "HTTP " + r.status);
+      err.status = r.status;   // 401/403 = Rechte (bleibt am Eintrag), sonst Transport
+      throw err;
+    }
+    if (r.status === 204) return null;
+    const text = await r.text();
+    return text ? JSON.parse(text) : null;
+  },
+
+  /* ---- Outbox ---- */
+  async _outboxAll() { return (await gppRemoteTx("readonly", s => s.getAll())) || []; },
+  async _outboxGet(key) { return (await gppRemoteTx("readonly", s => s.get(key))) || null; },
+  async _outboxPut(e) { await gppRemoteTx("readwrite", s => s.put(e)); },
+  async _outboxDel(key) { await gppRemoteTx("readwrite", s => s.delete(key)); },
+
+  /* ---- Einhängepunkte der vier Schreibfunktionen ---- */
+  onLocalSave(rec, prevSha) {
+    if (!this.enabled()) return;
+    (async () => {
+      const key = "save:" + rec.id;
+      const alt = await this._outboxGet(key);
+      /* Baseline bewahren: prevSha ist der letzte Stand, den der Server kennt.
+         Hängt bereits ein unerledigter Push, hat der Server auch alle
+         zwischenzeitlichen lokalen Stände nie gesehen — der ÄLTESTE prevSha
+         bleibt der richtige Vergleichswert, sonst meldet der Server nie einen
+         Konflikt, obwohl er längst etwas anderes trägt. */
+      if (!alt) {
+        await this._outboxPut({ key, op: "save", id: rec.id, set: rec.set, prevSha: prevSha || null,
+          queuedAt: new Date().toISOString(), tries: 0 });
+      }
+      this._emit();
+      /* Kein Push mehr pro Speichern: die Outbox ist lokal sicher; in die
+         Datenbank geteilt wird beim Freigeben der Sperre, alle 5 min als
+         Sicherheitsnetz und beim Verstecken des Tabs — das spart bei großen
+         Arbeitsständen viel Netzwerk. */
+    })().catch(() => { /* Outbox nicht schreibbar → nächster save versucht es erneut */ });
+  },
+  onLocalRemove(id) {
+    if (!this.enabled()) return;
+    (async () => {
+      await this._outboxDel("save:" + id);   // ein Push für Gelöschtes wäre Unsinn
+      await this._outboxPut({ key: "remove:" + id, op: "remove", id, queuedAt: new Date().toISOString(), tries: 0 });
+      this._emit();
+    })().catch(() => {});
+  },
+  onLocalRemoveSet(name) {
+    if (!this.enabled()) return;
+    (async () => {
+      for (const e of await this._outboxAll()) {
+        if (e.set === name || (e.op === "remove" && String(e.id).startsWith(name + ":"))) await this._outboxDel(e.key);
+      }
+      await this._outboxPut({ key: "removeset:" + name, op: "removeset", set: name, queuedAt: new Date().toISOString(), tries: 0 });
+      this._emit();
+      /* Eine ganze-Set-Löschung ist selten und gewichtig → zeitnah spiegeln,
+         nicht bis zum nächsten Sicherheitsnetz warten. */
+      this.flushSoon(500);
+    })().catch(() => {});
+  },
+  onSetChanged(name) {
+    /* Beim Setwechsel den Serverstand nachziehen (Plan Phase 2) — verzögert,
+       damit der Wechsel selbst nicht auf das Netz wartet. Danach den
+       Sperrzustand des neuen Sets holen. */
+    if (!this.enabled() || !this.loggedIn()) return;
+    setTimeout(() => {
+      this.pullSet(name).catch(() => {});
+      this._refreshLock(name).catch(() => {});
+    }, 300);
+  },
+
+  /* Sammel-Timer für die Outbox. Es gibt keinen Push mehr pro Speichern (das
+     würde bei großen Arbeitsständen das Netz fluten); flushSoon dient den
+     bewussten Anlässen: Login, Rückkehr der Verbindung, Freigabe der Sperre,
+     Tab-Verstecken. */
+  flushSoon(ms) {
+    clearTimeout(this._debounceTimer);
+    this._debounceTimer = setTimeout(() => this.flush(), ms || 0);
+  },
+
+  async flush() {
+    if (this._flushing || !this.enabled() || !this.loggedIn()) return;
+    this._flushing = true;
+    try {
+      const entries = (await this._outboxAll())
+        .filter(e => !e.conflict)
+        .sort((a, b) => (a.queuedAt || "").localeCompare(b.queuedAt || ""));
+      for (const e of entries) {
+        try {
+          const pushedSha = await this._push(e);
+          /* Kam während des Pushes ein neuer Speichervorgang für dasselbe
+             Artefakt herein, hat onLocalSave den bestehenden Eintrag NICHT neu
+             angelegt — der neue Stand stünde dann weder auf dem Server noch als
+             eigener Eintrag. Den Eintrag mit dem gepushten sha als neuer
+             Baseline behalten statt löschen, damit der nächste Lauf ihn nachholt. */
+          if (e.op === "save" && pushedSha) {
+            const now = await gppArtefacts.get(e.id);
+            if (now && now.sha256 !== pushedSha) {
+              e.prevSha = pushedSha; e.tries = 0; delete e.lastError;
+              await this._outboxPut(e);
+              this._lastError = "";
+              continue;
+            }
+          }
+          await this._outboxDel(e.key);
+          if (e.op === "save") await this._markSeen(e.id);
+          this._lastError = "";
+        } catch (err) {
+          if (err && err.conflict) {
+            /* Fremde Änderung: niemand gewinnt automatisch (Plan Phase 2).
+               Der Eintrag bleibt markiert liegen, bis jemand entscheidet. */
+            e.conflict = err.conflict;
+            await this._outboxPut(e);
+            continue;
+          }
+          e.tries = (e.tries || 0) + 1;
+          e.lastError = String((err && err.message) || err);
+          await this._outboxPut(e);
+          this._lastError = e.lastError;
+          /* Rechteproblem (401/403) klebt am Eintrag — die übrigen können
+             trotzdem durchgehen. Transportfehler heißt: Server gerade nicht
+             erreichbar, der Rest scheitert genauso — abbrechen, Outbox hält. */
+          if (err && err.status) continue;
+          break;
+        }
+      }
+      this._lastSync = new Date().toISOString();
+    } finally {
+      this._flushing = false;
+      this._emit();
+    }
+  },
+  async _push(e) {
+    if (e.op === "save") {
+      const rec = await gppArtefacts.get(e.id);
+      if (!rec) return;   // inzwischen lokal gelöscht — der remove-Eintrag folgt
+      /* Erst die Sitzung sicherstellen: direkt nach einem Seiten-Reload gibt es
+         nur das Refresh-Token, und _toRow() läse leere Claims — updated_by
+         wäre null, obwohl der Urheber bekannt ist. */
+      await this.token();
+      const row = this._toRow(rec);
+      const id = encodeURIComponent(rec.id);
+      let geschrieben = false;
+      if (e.prevSha) {
+        /* Compare-and-Swap: der Filter trifft nur, wenn der Server noch den
+           Stand trägt, den dieser Client zuletzt gesehen hat. */
+        const hits = await this.api("artefacts?id=eq." + id + "&sha256=eq." + encodeURIComponent(e.prevSha),
+          { method: "PATCH", body: row, headers: { Prefer: "return=representation" } });
+        geschrieben = !!(hits && hits.length);
+      }
+      if (!geschrieben) {
+        const cur = await this.api("artefacts?id=eq." + id + "&select=sha256,updated_by,updated_at");
+        if (cur && cur.length) {
+          if (cur[0].sha256 === rec.sha256) return;   // identischer Inhalt liegt schon drüben (zweiter Tab)
+          if (e.prevSha && cur[0].sha256 === e.prevSha) {
+            /* Der Server trägt noch GENAU unseren Ausgangsstand — die CAS-PATCH
+               hat also nicht wegen einer fremden Änderung 0 Zeilen getroffen,
+               sondern weil die RLS-Policy (Rolle × kind) das Schreiben verwehrt.
+               Kein Konflikt, sondern ein Rechteproblem: so melden (bleibt am
+               Eintrag, keine Konfliktschleife, kein Datenverlust über „Übernehmen"). */
+            const err = new Error(`keine Schreibberechtigung für Sorte „${rec.kind}" im Set „${rec.set}"`);
+            err.status = 403;
+            throw err;
+          }
+          const err = new Error("Konflikt");
+          err.conflict = { serverSha: cur[0].sha256 || "", updatedBy: cur[0].updated_by || "", updatedAt: cur[0].updated_at || "" };
+          throw err;
+        }
+        await this.api("artefacts", { method: "POST", body: row });
+      }
+      /* Einzelstück-Sorten serverseitig nachziehen: das lokale save() hat
+         ältere Exemplare bereits ohne eigenen Push-Eintrag verdrängt. */
+      if (GPP_SINGLETON_KINDS.has(rec.kind)) {
+        await this.api("artefacts?set_name=eq." + encodeURIComponent(rec.set) +
+          "&kind=eq." + encodeURIComponent(rec.kind) + "&id=neq." + id, { method: "DELETE" });
+      }
+      return rec.sha256;   // gepushter Stand — flush erkennt daran ein Resave während des Pushes
+    } else if (e.op === "remove") {
+      /* return=representation, um 0 gelöschte Zeilen zu erkennen: entweder schon
+         fort (idempotent, ok) oder die RLS-Policy (Rolle × kind) verwehrt das
+         Löschen. Steht die Zeile danach noch, war es eine Verweigerung — als
+         Rechteproblem melden, sonst käme das Artefakt beim nächsten pullSet
+         stumm zurück. */
+      const del = await this.api("artefacts?id=eq." + encodeURIComponent(e.id),
+        { method: "DELETE", headers: { Prefer: "return=representation" } });
+      if (!(del && del.length)) {
+        const still = await this.api("artefacts?id=eq." + encodeURIComponent(e.id) + "&select=id");
+        if (still && still.length) {
+          const err = new Error("keine Berechtigung, dieses Artefakt zu löschen");
+          err.status = 403;
+          throw err;
+        }
+      }
+    } else if (e.op === "removeset") {
+      /* Über die admin-RPC, nicht über Zeilen-DELETEs: sie räumt Artefakte,
+         Sperre und Set-Rechte in einer Transaktion und prüft selbst auf
+         admin. Andere Clients spiegeln die Löschung beim nächsten pullAll —
+         in ihren Papierkorb, nicht ins Nichts. */
+      await this.api("rpc/admin_delete_set", { method: "POST", body: { p_set_name: e.set } });
+      this._held.delete(e.set);
+    }
+  },
+
+  /* Serverstand eines Sets in die lokale IndexedDB ziehen. Upsert, kein
+     Spiegel: lokale Artefakte, die der Server nicht kennt, bleiben stehen —
+     "Lokal zuerst" heißt auch, dass ein Pull nie Arbeit löscht. Artefakte mit
+     offenem Outbox-Eintrag werden übersprungen (die lokale, noch nicht
+     gepushte Fassung gewinnt bis zur Klärung). Geschrieben wird direkt per
+     gppTx, NICHT über save(): kein erneuter Push, keine Singleton-Räumung. */
+  async pullSet(setName) {
+    if (!this.enabled() || !this.loggedIn()) return { pulled: 0, total: 0 };
+    const name = setName || gppArtefacts.activeSet();
+    const outbox = await this._outboxAll();
+    /* Eigene, noch nicht ausgeführte Set-Löschung: die Zeilen stehen serverseitig
+       bis zum Push noch — nicht wieder einlesen, sonst kehrt das gerade gelöschte
+       Set zurück und landet nach dem Push als Phantom im Papierkorb. Der
+       removeset-Eintrag trägt keine id, greift also nicht über `pending`. */
+    if (outbox.some(e => e.op === "removeset" && e.set === name)) return { pulled: 0, removed: 0, total: 0 };
+    /* Delta-Abgleich: erst nur id+sha256 (wenige Bytes je Zeile), volle Zeilen
+       — inklusive data, oft > 500 kB — nur für tatsächlich geänderte ids. Bei
+       großen Sets entscheidet das über Sekunden je Seitenaufruf: der Boot-Pull
+       jeder Werkzeugseite zog sonst den kompletten Bestand durchs Netz, obwohl
+       fast immer alles schon lokal liegt. */
+    const head = await this.api("artefacts?set_name=eq." + encodeURIComponent(name) + "&select=id,sha256") || [];
+    const pending = new Set(outbox.map(e => e.id).filter(Boolean));
+    const need = [];
+    for (const row of head) {
+      if (pending.has(row.id)) continue;
+      const local = await gppArtefacts.get(row.id);
+      if (local && local.sha256 === row.sha256) continue;
+      need.push(row.id);
+    }
+    let pulled = 0;
+    /* Gebündelt über in.(...) und die URL kurz gehalten; ids sind frei gewählte
+       Texte, deshalb je Wert doppelt gequotet (PostgREST-Syntax). */
+    for (let i = 0; i < need.length; i += 40) {
+      const inList = need.slice(i, i + 40)
+        .map(id => encodeURIComponent('"' + String(id).replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"')).join(",");
+      const rows = await this.api("artefacts?set_name=eq." + encodeURIComponent(name) + "&id=in.(" + inList + ")" +
+        "&select=id,set_name,stage,kind,title,filename,tool,created_at,updated_at,size,sha256,meta,data") || [];
+      for (const row of rows) {
+        await gppTx("readwrite", store => store.put(this._toLocal(row)));
+        pulled++;
+      }
+    }
+    /* Gelöschtes spiegeln: führt der Server das Set (Zeilen vorhanden oder als
+       zugängliches Set bekannt), verschwinden lokale Zeilen, die er nicht mehr
+       hat — außer eigener, noch nicht gepushter Arbeit (Outbox). Rein lokale
+       Sets, die der Server nie kannte, bleiben vollständig unberührt. */
+    let removed = 0;
+    if (head.length > 0 || this.remoteSets().includes(name)) {
+      const serverIds = new Set(head.map(r => r.id));
+      for (const rec of await gppArtefacts.all(name)) {
+        if (serverIds.has(rec.id) || pending.has(rec.id)) continue;
+        if (!rec.remoteSeen) continue;   // nie synchronisiert → wartet auf Übertragung, keine fremde Löschung
+        await this._trash(rec);
+        removed++;
+      }
+    }
+    if (pulled || removed) {
+      window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { set: name, pulled, removed } }));
+      try { localStorage.setItem(GPP_CFG_PREFIX + "artefacts:touch", new Date().toISOString()); } catch (e) { /* Quota */ }
+    }
+    this._lastSync = new Date().toISOString();
+    this._emit();
+    return { pulled, removed, total: head.length };
+  },
+  /* Alle für den Benutzer zugänglichen Sets vom Server holen — nicht nur das
+     aktive. Ohne das entdeckt ein neu Hinzugekommener geteilte Sets nie: der
+     Setwechsel-Pull greift erst, wenn man den Namen schon kennt. Zwei Quellen:
+     Sets MIT Artefakten (RLS filtert auf die Org) und Sets, auf die eine
+     ausdrückliche Berechtigung besteht (die dürfen leer sein — der Admin hat
+     Zugang vergeben, bevor Inhalt existiert). Die Namen landen in
+     localStorage, damit index.html auch leere berechtigte Sets anzeigen kann. */
+  async pullAll() {
+    if (!this.enabled() || !this.loggedIn()) return { sets: [], pulled: 0 };
+    const vorher = this.remoteSets();   // VOR dem Überschreiben: für die Löscherkennung
+    const rows = await this.api("artefacts?select=set_name") || [];
+    const dataSets = [...new Set(rows.map(r => r.set_name))];
+    let permSets = [];
+    let permOk = true;
+    try { permSets = [...new Set((await this.api("set_permissions?select=set_name") || []).map(r => r.set_name))]; }
+    catch (e) { permOk = false; /* Recht auf die Sicht fehlt evtl. ODER transienter Fehler — „known" ist dann lückenhaft */ }
+    const known = [...new Set([...dataSets, ...permSets])].sort();
+    try { localStorage.setItem(GPP_CFG_PREFIX + "remote:sets", JSON.stringify(known)); } catch (e) { /* Quota */ }
+    let pulled = 0;
+    /* Über ALLE bekannten Sets, nicht nur die mit Serverdaten: ein per
+       Berechtigung bekanntes, drüben geleertes Set muss auch lokal leeren —
+       pullSet spiegelt Löschungen für server-bekannte Sets. */
+    for (const s of known) { try { pulled += (await this.pullSet(s)).pulled; } catch (e) { /* nächstes Set */ } }
+    /* Gelöschtes löschen — überall: ein Set, das der Server nachweislich
+       KANNTE (stand im letzten pullAll) und jetzt nicht mehr führt, wurde
+       drüben gelöscht und verschwindet auch hier. Rein lokale Sets, die nie
+       auf dem Server waren, bleiben unberührt; eigene noch nicht gepushte
+       Arbeit (Outbox) schützt den jeweiligen Datensatz. */
+    let removedSets = 0;
+    /* Löschungen nur spiegeln, wenn die Set-Liste vollständig ermittelt wurde:
+       schlug die set_permissions-Abfrage fehl, ist „known" lückenhaft und darf
+       kein Set als „drüben gelöscht" einstufen — sonst wischt eine einzige
+       fehlgeschlagene Anfrage lokalen Bestand in den Papierkorb. */
+    if (permOk) {
+      const pending = new Set((await this._outboxAll()).map(e => e.set).filter(Boolean));
+      for (const name of vorher) {
+        if (known.includes(name) || pending.has(name)) continue;
+        const doomed = (await gppArtefacts.all(name)).filter(r => r.remoteSeen);
+        for (const r of doomed) await this._trash(r);
+        if (doomed.length) {
+          removedSets++;
+          if (gppArtefacts.activeSet() === name && !(await gppArtefacts.all(name)).length) {
+            gppArtefacts.setActiveSet(GPP_DEFAULT_SET);
+          }
+        }
+      }
+    }
+    /* Auch ohne gezogene Zeilen neu rendern: die Set-Liste selbst hat sich
+       geändert (neue leere Berechtigung, entferntes Set). */
+    window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { knownSets: known, removedSets } }));
+    this._lastSync = new Date().toISOString();
+    this._emit();
+    return { sets: known, dataSets, permSets, pulled, removedSets };
+  },
+  /* Server-Set-Namen aus dem letzten pullAll — für die Set-Auswahl der UI,
+     auch für berechtigte, noch leere Sets. */
+  remoteSets() {
+    try { return JSON.parse(localStorage.getItem(GPP_CFG_PREFIX + "remote:sets") || "[]"); }
+    catch (e) { return []; }
+  },
+  /* Spiegel-Löschung: in den Papierkorb verschieben statt vernichten — die
+     fremde Löschung könnte den letzten existierenden Stand treffen. */
+  async _trash(rec) {
+    try { await gppRemoteTx("readwrite", s => s.put({ ...rec, trashedAt: new Date().toISOString() }), GPP_REMOTE_TRASH); }
+    catch (e) { /* Papierkorb voll/kaputt: lieber behalten als vernichten */ return; }
+    await gppTx("readwrite", store => store.delete(rec.id));
+  },
+  /* remoteSeen markiert Zeilen, die der Server nachweislich kennt (gepullt
+     oder erfolgreich gepusht). Nur solche darf der Lösch-Spiegel anfassen —
+     lokaler Altbestand, der NIE synchronisiert wurde, ist keine „drüben
+     gelöschte" Zeile, sondern wartet auf die Übertragung (Phase 5). Ein
+     lokaler Neu-Save baut den Datensatz ohne Marker; bis zum nächsten
+     erfolgreichen Push schützt ohnehin die Outbox. */
+  _toLocal(row) {
+    return { id: row.id, set: row.set_name, stage: row.stage, kind: row.kind, title: row.title,
+      filename: row.filename, tool: row.tool, createdAt: row.created_at, updatedAt: row.updated_at,
+      size: row.size, sha256: row.sha256, meta: row.meta || {}, data: row.data, remoteSeen: true };
+  },
+  async _markSeen(id) {
+    const rec = await gppArtefacts.get(id);
+    if (rec && !rec.remoteSeen) {
+      rec.remoteSeen = true;
+      await gppTx("readwrite", store => store.put(rec));
+    }
+  },
+  /* Zeitstempel und updated_by gehen mit: die Testinstanz (schema.sql) hat
+     keinen Trigger dafür, und andere Browser sollen beim Pull echte Zeiten
+     und den Urheber sehen — der speist die Konfliktmeldung. */
+  _toRow(rec) {
+    const c = this.claims() || {};
+    return { id: rec.id, set_name: rec.set, stage: rec.stage, kind: rec.kind, title: rec.title,
+      filename: rec.filename, tool: rec.tool, created_at: rec.createdAt, updated_at: rec.updatedAt,
+      size: rec.size, sha256: rec.sha256, meta: rec.meta || {}, data: rec.data,
+      updated_by: c.sub || null };
+  },
+
+  /* Konfliktklärung — bewusst schlicht (confirm), die Werkzeuge bekommen mit
+     Phase 4 eine richtige Anzeige. Übernehmen = Serverstand ersetzt den
+     eigenen; Erzwingen = eigener Stand überschreibt mit der Server-Baseline. */
+  async resolveConflicts() {
+    const entries = (await this._outboxAll()).filter(e => e.conflict);
+    for (const e of entries) {
+      const rec = await gppArtefacts.get(e.id);
+      const wer = (e.conflict.updatedBy || "jemand anderes") +
+        (e.conflict.updatedAt ? " (" + String(e.conflict.updatedAt).slice(0, 16).replace("T", " ") + ")" : "");
+      const titel = (rec && rec.title) || e.id;
+      if (confirm(`„${titel}": in der Datenbank liegt eine fremde Änderung von ${wer}.\n\nOK — fremde Änderung übernehmen (der eigene Stand wird ersetzt)\nAbbrechen — weiter entscheiden`)) {
+        const rows = await this.api("artefacts?id=eq." + encodeURIComponent(e.id) +
+          "&select=id,set_name,stage,kind,title,filename,tool,created_at,updated_at,size,sha256,meta,data");
+        if (rows && rows[0]) {
+          await gppTx("readwrite", store => store.put(this._toLocal(rows[0])));
+          window.dispatchEvent(new CustomEvent("gpp:artefacts-changed", { detail: { id: e.id, pulled: 1 } }));
+        }
+        await this._outboxDel(e.key);
+      } else if (confirm(`„${titel}": stattdessen den EIGENEN Stand erzwingen und die fremde Änderung überschreiben?`)) {
+        e.prevSha = e.conflict.serverSha || null;
+        delete e.conflict;
+        e.tries = 0;
+        await this._outboxPut(e);
+      }
+      /* zweimal Abbrechen: Eintrag bleibt als Konflikt liegen */
+    }
+    this._emit();
+    this.flushSoon(0);
+  },
+
+  /* ---- Sperren (Phase 4) ----
+     Beratend, nicht erzwingend: gegen böswillige Umgehung schützt die
+     RLS-Policy, nicht die Sperre. Erneutes Acquire = Heartbeat (60 s, solange
+     der Tab sichtbar ist). BEWUSST keine automatische Freigabe beim Schließen
+     des Tabs — die Sperre gehört dem Benutzer, nicht dem Tab, und ein zweites
+     offenes Werkzeug arbeitet womöglich weiter; abgestürzte Sitzungen räumt
+     die 5-Minuten-TTL des Servers ab. */
+  _held: new Set(),        // Sets, deren Sperre dieser Benutzer hält (Tab-Sicht)
+  _lockCache: null,        // letzter bekannter Sperrzustand des aktiven Sets
+
+  async lockAcquire(setName) {
+    const set = setName || gppArtefacts.activeSet();
+    const u = this.user() || {};
+    const rows = await this.api("rpc/acquire_set_lock", { method: "POST",
+      body: { p_set_name: set, p_holder_name: u.email || "unbekannt" } });
+    const lock = Array.isArray(rows) ? rows[0] : rows;
+    if (lock && !this._held.has(set)) {
+      /* Nur beim ERWERB den Serverstand ziehen (Plan Phase 2) — nicht bei
+         jedem Heartbeat, sonst pullten wir minütlich. */
+      this._held.add(set);
+      this.pullSet(set).catch(() => {});
+    }
+    await this._refreshLock(set);
+    return lock || null;
+  },
+  async lockRelease(setName) {
+    const set = setName || gppArtefacts.activeSet();
+    /* Erst alles Ausstehende teilen, DANN die Sperre lösen — nach dem Löschen
+       verweigert die RLS (gpp_holds_lock) jeden weiteren Push für dieses Set.
+       Scheitert der Flush (Netz), bleibt der Rest in der Outbox und geht beim
+       nächsten Anlass raus. */
+    try { await this.flush(); } catch (e) { /* Outbox hält */ }
+    await this.api("set_locks?set_name=eq." + encodeURIComponent(set), { method: "DELETE" });
+    this._held.delete(set);
+    await this._refreshLock(set);
+  },
+  async lockStatus(setName) {
+    const rows = await this.api("set_locks?set_name=eq." + encodeURIComponent(setName || gppArtefacts.activeSet()));
+    return (rows && rows[0]) || null;
+  },
+  /* Fremde Sperre brechen: löschen + neu erwerben. Bei Nicht-Admins löscht
+     das DELETE null Zeilen (RLS) und der Erwerb scheitert wie gehabt — die
+     Rechteprüfung bleibt beim Server. Der Sperrbruch steht im audit-Log. */
+  async lockTakeover(setName) {
+    const set = setName || gppArtefacts.activeSet();
+    await this.lockRelease(set).catch(() => {});
+    return this.lockAcquire(set);
+  },
+  /* Sperrzustand des aktiven Sets nachladen und bei Änderung Bescheid geben.
+     _held folgt dabei der Server-Wahrheit: Übernahme durch einen Admin oder
+     TTL-Ablauf beendet den eigenen Heartbeat von selbst. */
+  async _refreshLock(setName) {
+    if (!this.enabled() || !this.loggedIn()) { this._lockCache = null; return null; }
+    const set = setName || gppArtefacts.activeSet();
+    try {
+      let lock = await this.lockStatus(set);
+      /* Abgelaufene Sperre (5 min ohne Heartbeat) zählt wie keine — genau wie
+         serverseitig gpp_holds_lock/acquire_set_lock. Sonst hielte ein Halter
+         nach TTL-Ablauf fälschlich weiter (der Push würde zum Scheinkonflikt),
+         und eine fremde, abgestürzte Sitzung blockierte, obwohl der Server die
+         Sperre sofort neu vergäbe. */
+      if (lock && lock.heartbeat_at &&
+          Date.now() - new Date(lock.heartbeat_at).getTime() >= 5 * 60000) lock = null;
+      await this.token();
+      const me = (this.claims() || {}).sub || null;
+      const info = { set, lock, mine: !!(lock && me && lock.holder === me) };
+      if (info.mine) this._held.add(set); else this._held.delete(set);
+      /* Der Cache trägt die Anzeige (Chip, Übersicht) und meint das AKTIVE
+         Set — eine Abfrage für ein anderes Set darf ihn nicht überschreiben. */
+      if (set === gppArtefacts.activeSet()) {
+        const changed = JSON.stringify(info) !== JSON.stringify(this._lockCache);
+        this._lockCache = info;
+        if (changed) this._emit();
+      }
+      return info;
+    } catch (e) { return { set, transportError: true }; }
+  },
+
+  /* Schreib-Gate: In der Zusammenarbeit ist die Sperre Schreibvoraussetzung —
+     ohne sie wird auch LOKAL nichts geändert, sonst liefe der lokale Stand
+     vom Server weg und der Push scheiterte später an der RLS. Ohne DB oder
+     ohne Anmeldung bleibt alles frei (Offline-Betrieb ist der Normalfall);
+     bei Netzfehlern wird nicht blockiert — dann entscheidet der Server beim
+     Push, das ist der Offline-Weg. */
+  async requireLock(setName) {
+    if (!this.enabled() || !this.loggedIn()) return;
+    if (this._held.has(setName)) return;
+    const info = await this._refreshLock(setName);
+    /* Nur eine frische, GENAU dieses Set betreffende Antwort ohne eigene Sperre
+       blockiert. Ein Netzfehler (info.transportError) oder ein aus dem Cache
+       stammender Treffer für ein anderes Set blockiert NICHT — dann entscheidet
+       der Server beim Push (Offline-Weg: „bei Netzfehlern wird nicht blockiert").
+       Früher verschluckte _refreshLock den Netzfehler und lieferte den Cache, so
+       dass der Zweig unerreichbar war und der Offline-Fall fälschlich blockierte. */
+    if (info && !info.transportError && info.set === setName && !info.mine) {
+      throw new Error(`Set „${setName}" ist nicht gesperrt — in der Übersicht „Bearbeiten (sperren)" wählen. Ohne Sperre wird in der Zusammenarbeit nichts geändert.`);
+    }
+  },
+
+  /* Ein GANZES Set löschen ist Verwaltungssache: nur admin, und auch der nur
+     mit gehaltener Sperre. Einzelne Artefakte entfernen bleibt normales
+     Bearbeiten. Bei Netzfehlern kein Block — der Push landet dann an der
+     admin_delete_set-RPC, die serverseitig ablehnt, und der nächste Abgleich
+     stellt die lokale Kopie wieder her. */
+  async requireSetDeletion(setName) {
+    if (!this.enabled() || !this.loggedIn()) return;
+    let rolle = "";
+    try { rolle = ((await this.whoami()) || {}).gpp_role || ""; } catch (e) { return; }
+    if (rolle !== "admin") {
+      throw new Error("Ein geteiltes Set löscht nur die Rolle admin. Einzelne Artefakte lassen sich weiterhin entfernen (mit Sperre).");
+    }
+    await this.requireLock(setName);
+  },
+
+  /* Wirksame Rechte aus der Datenbank — für UI-Weichen wie die
+     Benutzerverwaltung. user() liest dagegen nur die Token-Claims. */
+  async whoami() {
+    return this.api("rpc/whoami", { method: "POST", body: {} });
+  },
+
+  /* Phase 5: bestehenden LOKALEN Bestand eines Sets in die Datenbank bringen.
+     Die Sync-Schicht kennt nur neue Speichervorgänge — was vor der Anmeldung
+     entstand, hat keinen Outbox-Eintrag und würde nie gepusht. Hier bekommt
+     jedes Artefakt des Sets einen, ohne Baseline: Kollisionen mit vorhandenen
+     Server-Zeilen laufen als Konflikt auf und werden bewusst entschieden;
+     identische Inhalte gehen still durch. Sperre vorausgesetzt. */
+  async pushSet(setName) {
+    if (!this.enabled() || !this.loggedIn()) throw new Error("nicht angemeldet");
+    const name = setName || gppArtefacts.activeSet();
+    await this.requireLock(name);
+    const recs = await gppArtefacts.all(name);
+    let queued = 0;
+    for (const rec of recs) {
+      const key = "save:" + rec.id;
+      if (!(await this._outboxGet(key))) {
+        await this._outboxPut({ key, op: "save", id: rec.id, set: name, prevSha: null,
+          queuedAt: new Date().toISOString(), tries: 0 });
+        queued++;
+      }
+    }
+    this._emit();
+    await this.flush();
+    const rest = await this.status();
+    return { queued, total: recs.length, pending: rest.pending, conflicts: rest.conflicts };
+  },
+
+  /* ---- Zustand für Anzeigen (config.html, Status-Chip) ---- */
+  async status() {
+    let entries = [];
+    if (this.enabled()) { try { entries = await this._outboxAll(); } catch (e) { /* Anzeige bleibt leer */ } }
+    return {
+      enabled: this.enabled(),
+      loggedIn: this.loggedIn(),
+      user: this.user(),
+      pending: entries.filter(e => !e.conflict).length,
+      conflicts: entries.filter(e => e.conflict).length,
+      lastSync: this._lastSync,
+      lastError: this._lastError,
+      lock: this._lockCache,   // Sperrzustand des aktiven Sets (letzter Stand)
+    };
+  },
+  _emit() { window.dispatchEvent(new CustomEvent("gpp:remote-changed")); },
+};
+
+/* Status-Chip: das Phase-3-Gegenstück zu gppConfigBanner, aber selbst
+   einhängend — kein Eingriff in die einzelnen Werkzeuge nötig. Erscheint nur,
+   wenn eine Server-URL konfiguriert ist; config.html unterdrückt ihn über
+   window.GPP_REMOTE_NO_CHIP und zeigt den Zustand selbst an. */
+function gppRemoteChip() {
+  if (window.GPP_REMOTE_NO_CHIP || !gppRemote.enabled()) return null;
+  const old = document.getElementById("gpp-remote-chip");
+  if (old) old.remove();
+  const chip = document.createElement("button");
+  chip.id = "gpp-remote-chip";
+  chip.type = "button";
+  chip.style.cssText = "position:fixed;right:14px;bottom:14px;z-index:119;cursor:pointer;" +
+    "font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.04em;padding:7px 11px;" +
+    "border-radius:999px;border:1px solid;background:rgba(15,23,42,.92);backdrop-filter:blur(10px)";
+  let conflicts = 0;
+  const render = async () => {
+    const s = await gppRemote.status();
+    conflicts = s.conflicts;
+    let text, farbe, hint;
+    const fremdeSperre = s.lock && s.lock.lock && !s.lock.mine;
+    if (s.conflicts) {
+      text = `DB · ${s.conflicts} Konflikt${s.conflicts > 1 ? "e" : ""}`;
+      farbe = "#f87171";
+      hint = "Fremde Änderungen in der Datenbank — klicken zum Klären.";
+    } else if (fremdeSperre) {
+      text = `DB · 🔒 ${s.lock.lock.holder_name || "gesperrt"}`;
+      farbe = "#fbbf24";
+      hint = `Set „${s.lock.set}" ist seit ${String(s.lock.lock.acquired_at || "").slice(11, 16)} von ${s.lock.lock.holder_name} gesperrt — eigene Änderungen riskieren Konflikte. Die Sperre ist beratend; verwaltet wird sie in der Übersicht.`;
+    } else if (!s.loggedIn) {
+      text = "DB · lokal";
+      farbe = "#fbbf24";
+      hint = "Nicht angemeldet — Änderungen bleiben in diesem Browser. Klicken für die Anmeldung.";
+    } else if (s.pending) {
+      text = `DB · ${s.pending} ausstehend`;
+      farbe = "#fbbf24";
+      hint = s.lastError ? "Letzter Fehler: " + s.lastError : "Wird übertragen, sobald der Server erreichbar ist.";
+    } else if (s.lock && !s.lock.lock) {
+      /* Angemeldet, Set frei, aber nicht gesperrt: Speichern würde am
+         Schreib-Gate scheitern — das soll man sehen, BEVOR man tippt. */
+      text = "DB · nur lesen";
+      farbe = "#94a3b8";
+      hint = `Set „${s.lock.set}" ist nicht gesperrt — zum Bearbeiten in der Übersicht „Bearbeiten (sperren)" wählen. Lesen und Export gehen immer.`;
+    } else {
+      const eigene = s.lock && s.lock.mine ? " ✏" : "";
+      text = "DB · synchron" + eigene;
+      farbe = "#34d399";
+      hint = "Alle Änderungen sind in der gemeinsamen Datenbank." +
+        (eigene ? ` Du hältst die Sperre für Set „${s.lock.set}".` : "") +
+        (s.user && s.user.email ? " Angemeldet: " + s.user.email : "");
+    }
+    chip.textContent = text;
+    chip.title = hint;
+    chip.style.color = farbe;
+    chip.style.borderColor = farbe;
+  };
+  chip.addEventListener("click", () => {
+    if (conflicts) gppRemote.resolveConflicts();
+    else window.open("config.html#sec-zusammenarbeit", "_blank", "noopener");
+  });
+  window.addEventListener("gpp:remote-changed", () => { render(); });
+  render();
+  document.body.appendChild(chip);
+  /* Nicht auf die Konsolen-Steuerung legen: eine eingeklappte Log-Konsole ist
+     nur noch eine schmale Leiste am unteren Rand — genau dort säße der Chip
+     und verdeckte den Auf-/Zuklapp-Schalter. Bodennahe schmale Konsolen
+     (.gpp-log-host, ≤ 96px hoch am unteren Rand) heben den Chip deshalb an;
+     eine aufgeklappte, hohe Konsole lässt ihn unten (dort liegt er höchstens
+     über Logzeilen, nie über Bedienelementen — die sitzen in der Kopfzeile). */
+  const reposition = () => {
+    let lift = 0;
+    document.querySelectorAll(".gpp-log-host").forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (!r.height || r.bottom < window.innerHeight - 40) return;
+      if (window.innerHeight - r.top <= 96) lift = Math.max(lift, window.innerHeight - r.top + 10);
+    });
+    chip.style.bottom = (lift || 14) + "px";
+  };
+  window.addEventListener("gpp:log-resize", reposition);
+  window.addEventListener("resize", reposition);
+  reposition();
+  setTimeout(reposition, 300);   // nach Layout/Schrift-Laden einmal nachmessen
+  return chip;
+}
+
+/* Anstöße für die Outbox: Rückkehr der Verbindung, Sichtbarwerden des Tabs,
+   Sicherheitsnetz-Intervall, und einmal kurz nach dem Laden. */
+if (typeof window !== "undefined") {
+  window.addEventListener("online", () => gppRemote.flushSoon(1000));
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      /* Tab wird versteckt (oft der Vorbote des Schließens): den geteilten Stand
+         noch rausschicken, solange die Seite lebt. Best effort — bei echtem
+         Schließen evtl. abgebrochen, dann greifen Intervall und Freigabe. */
+      if (gppRemote.enabled() && gppRemote.loggedIn()) gppRemote.flush();
+      return;
+    }
+    gppRemote.flushSoon(1500);
+    /* Zurück im Blick: gehaltene Sperren sofort bestätigen, bevor die TTL
+       während einer langen Hintergrundphase abläuft. */
+    if (gppRemote.enabled() && gppRemote.loggedIn()) {
+      for (const s of gppRemote._held) gppRemote.lockAcquire(s).catch(() => {});
+    }
+  });
+  /* Sicherheitsnetz: alle 5 min teilen, was noch in der Outbox liegt (lokal ist
+     ohnehin alles sicher). Häufiger muss es nicht sein — geteilt wird sonst beim
+     Freigeben der Sperre und beim Verstecken des Tabs. */
+  setInterval(() => { if (gppRemote.enabled() && gppRemote.loggedIn()) gppRemote.flush(); }, 300000);
+  /* Sperr-Takt: Heartbeat für gehaltene Sperren, Zustands-Abgleich fürs
+     aktive Set (auch Nicht-Halter sollen eine fremde Sperre sehen). Nur im
+     sichtbaren Tab — ein Dutzend Hintergrund-Tabs soll den Server nicht
+     minütlich zwölffach befragen. */
+  setInterval(() => {
+    if (document.hidden || !gppRemote.enabled() || !gppRemote.loggedIn()) return;
+    for (const s of gppRemote._held) {
+      if (s !== gppArtefacts.activeSet()) gppRemote.lockAcquire(s).catch(() => {});
+    }
+    gppRemote._refreshLock().then(info => {
+      if (info && info.mine) return gppRemote.lockAcquire(info.set);
+    }).catch(() => {});
+  }, 60000);
+  const gppRemoteBoot = () => {
+    if (gppRemote.enabled() && gppRemote.loggedIn()) {
+      gppRemote.flushSoon(1500);
+      /* Beim Laden jeder Seite die zugänglichen Sets nachziehen — so ist die
+         Set-Liste überall aktuell, nicht nur direkt nach dem Anmelden. */
+      setTimeout(() => gppRemote.pullAll().catch(() => {}), 1800);
+      /* Sperrzustand des aktiven Sets: hält dieser Benutzer sie (aus einem
+         früheren Seitenaufruf), übernimmt dieser Tab den Heartbeat. */
+      setTimeout(() => gppRemote._refreshLock().catch(() => {}), 1200);
+    }
+    gppRemoteChip();
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", gppRemoteBoot);
+  else gppRemoteBoot();
+}
 
 /* ---------- ZIP-Writer (store, ohne Kompression) ----------
    Bewusst selbst gebaut: die Sammlung bindet keine externen Bibliotheken ein,
@@ -581,6 +1574,9 @@ function gppDownloadBlob(name, blob) {
    der Schalter gehängt wird. Der Zustand überlebt den Reload je Werkzeug. */
 function gppCollapsibleLog({ consoleEl, headEl, toolId, label = "Log", defaultCollapsed = false }) {
   if (!consoleEl || !headEl) return null;
+  /* Markierung für den Status-Chip: bodennahe Konsolen heben ihn an, damit er
+     die Konsolen-Steuerung (diesen Schalter) nie überdeckt. */
+  consoleEl.classList.add("gpp-log-host");
   const key = GPP_CFG_PREFIX + "log:collapsed:" + (toolId || "tool");
   /* Einige Werkzeuge reichen die komplette Kopfzeile ein, andere nur deren
      Aktionsbereich. Fuer das Ein-/Ausblenden brauchen wir immer das direkte
@@ -594,12 +1590,20 @@ function gppCollapsibleLog({ consoleEl, headEl, toolId, label = "Log", defaultCo
   btn.style.cssText = "background:transparent;border:1px solid currentColor;border-radius:5px;" +
     "color:inherit;font:inherit;font-size:10px;line-height:1;padding:2px 7px;cursor:pointer;opacity:.75";
   /* Alles außer der Kopfzeile ausblenden — so braucht kein Werkzeug eigenes CSS.
-     Die vorherige Flex-Vorgabe wird gemerkt und beim Aufklappen zurückgesetzt. */
+     Die vorherigen Inline-Vorgaben werden gemerkt und beim Aufklappen
+     zurückgesetzt. height/min-height MÜSSEN überschrieben werden: mehrere
+     Konsolen tragen eine feste CSS-Höhe (height:var(--log-h)) — ohne Override
+     blieben sie beim Einklappen gleich groß, nur eben leer, und der Schalter
+     wirkte kaputt. */
   const prevFlex = consoleEl.style.flex;
+  const prevHeight = consoleEl.style.height;
+  const prevMinHeight = consoleEl.style.minHeight;
   const others = () => [...consoleEl.children].filter(el => el !== headerEl);
   const apply = (collapsed, persist = false) => {
     others().forEach(el => { el.style.display = collapsed ? "none" : ""; });
     consoleEl.style.flex = collapsed ? "0 0 auto" : prevFlex;
+    consoleEl.style.height = collapsed ? "auto" : prevHeight;
+    consoleEl.style.minHeight = collapsed ? "0" : prevMinHeight;
     consoleEl.classList.toggle("collapsed", collapsed);
     btn.textContent = collapsed ? "▲ " + label : "▼ " + label;
     btn.setAttribute("aria-expanded", String(!collapsed));
@@ -624,6 +1628,138 @@ function gppCollapsibleLog({ consoleEl, headEl, toolId, label = "Log", defaultCo
   btn.isCollapsed = () => consoleEl.classList.contains("collapsed");
   headEl.appendChild(btn);
   return btn;
+}
+
+/* ---------- Sichtbare Warnung: Schreiben derzeit blockiert ----------
+   In der Zusammenarbeit ist die Sperre Schreibvoraussetzung. Scheitert ein
+   Live-Save daran, reicht eine Logzeile nicht: man arbeitet sonst minutenlang
+   weiter und verliert alles beim Verlassen. Ein Banner oben am Fenster,
+   aktualisiert statt gestapelt; verschwindet, sobald wieder gespeichert
+   werden konnte (clear() aus dem Erfolgspfad). */
+function gppWriteBlockedBanner(msg) {
+  let b = document.getElementById("gpp-writeblock");
+  if (!b) {
+    b = document.createElement("div");
+    b.id = "gpp-writeblock";
+    b.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:200;padding:10px 44px 10px 16px;" +
+      "background:#7f1d1d;color:#fecaca;font:600 13px/1.4 system-ui,-apple-system,sans-serif;" +
+      "box-shadow:0 4px 16px rgba(0,0,0,.4)";
+    const text = document.createElement("span");
+    const x = document.createElement("button");
+    x.type = "button";
+    x.textContent = "✕";
+    x.title = "Warnung ausblenden";
+    x.style.cssText = "position:absolute;right:10px;top:8px;background:transparent;border:0;color:inherit;font-size:14px;cursor:pointer";
+    x.addEventListener("click", () => b.remove());
+    b.append(text, x);
+    document.body.appendChild(b);
+  }
+  b.firstChild.textContent = "⚠ " + msg;
+}
+gppWriteBlockedBanner.clear = () => { const b = document.getElementById("gpp-writeblock"); if (b) b.remove(); };
+
+/* ---------- Schwebende Filterleiste (links) ----------
+   Einheitliche, stets erreichbare Filter je Werkzeug: eine schmale, schwebende
+   Leiste am linken Rand, unabhängig vom Scrollzustand der Seite. Felder werden
+   deklarativ beschrieben (text/select) ODER vorhandene Elemente werden samt
+   ihrer Listener hineingezogen (adopt). Zustand (eingeklappt) überlebt den
+   Reload je Werkzeug. */
+function gppFilterDock({ toolId = "tool", title = "Filter", fields = [], adopt = [], top = 84, width = 200, onChange = null, defaultCollapsed = false } = {}) {
+  const old = document.getElementById(`gpp-filter-${toolId}`);
+  if (old) old.remove();
+  const key = GPP_CFG_PREFIX + "filter:collapsed:" + toolId;
+  const dock = document.createElement("aside");
+  dock.id = `gpp-filter-${toolId}`;
+  dock.setAttribute("aria-label", title);
+  dock.style.cssText = `position:fixed;left:14px;top:${top}px;z-index:117;width:${width}px;` +
+    "max-height:calc(100vh - " + (top + 90) + "px);display:flex;flex-direction:column;" +
+    "font:500 12px/1.35 system-ui,-apple-system,sans-serif;color:#e2e8f0;" +
+    "background:rgba(15,23,42,.94);border:1px solid rgba(148,163,184,.35);border-radius:9px;" +
+    "box-shadow:0 12px 32px rgba(0,0,0,.4);backdrop-filter:blur(12px)";
+  const head = document.createElement("button");
+  head.type = "button";
+  head.style.cssText = "display:flex;align-items:center;gap:7px;width:100%;padding:8px 10px;border:0;" +
+    "background:transparent;color:inherit;cursor:pointer;font:700 11px/1 inherit;letter-spacing:.05em;text-transform:uppercase";
+  const caret = document.createElement("span");
+  const headLabel = document.createElement("span");
+  headLabel.textContent = "⌕ " + title;
+  const countEl = document.createElement("span");
+  countEl.style.cssText = "margin-left:auto;font:600 10px/1 ui-monospace,Consolas,monospace;color:#94a3b8;text-transform:none";
+  head.append(caret, headLabel, countEl);
+  const body = document.createElement("div");
+  body.style.cssText = "display:flex;flex-direction:column;gap:8px;padding:2px 10px 10px;overflow:auto;min-height:0";
+  dock.append(head, body);
+
+  const inputCss = "width:100%;box-sizing:border-box;padding:5px 7px;border-radius:6px;" +
+    "border:1px solid rgba(148,163,184,.4);background:rgba(2,6,23,.6);color:#e2e8f0;font:500 12px/1.3 inherit";
+  const inputs = new Map();
+  const emit = () => { if (onChange) onChange(api.values()); };
+  fields.forEach(f => {
+    const wrap = document.createElement("label");
+    wrap.style.cssText = "display:flex;flex-direction:column;gap:3px";
+    const cap = document.createElement("span");
+    cap.textContent = f.label || f.id;
+    cap.style.cssText = "font:600 10px/1 inherit;color:#94a3b8;letter-spacing:.04em;text-transform:uppercase";
+    let inp;
+    if (f.type === "select") {
+      inp = document.createElement("select");
+      (f.options || []).forEach(o => {
+        const opt = document.createElement("option");
+        opt.value = o.value; opt.textContent = o.label;
+        inp.appendChild(opt);
+      });
+    } else {
+      inp = document.createElement("input");
+      inp.type = "search";
+      inp.placeholder = f.placeholder || "";
+    }
+    inp.style.cssText = inputCss;
+    if (f.value !== undefined) inp.value = f.value;
+    inp.addEventListener(f.type === "select" ? "change" : "input", emit);
+    inputs.set(f.id, inp);
+    wrap.append(cap, inp);
+    body.appendChild(wrap);
+  });
+  adopt.map(sel => typeof sel === "string" ? document.querySelector(sel) : sel)
+    .filter(Boolean).forEach(el => body.appendChild(el));
+
+  const apply = (collapsed, persist) => {
+    body.style.display = collapsed ? "none" : "flex";
+    countEl.style.display = collapsed ? "none" : "";
+    caret.textContent = collapsed ? "▸" : "▾";
+    head.setAttribute("aria-expanded", String(!collapsed));
+    if (persist) { try { localStorage.setItem(key, collapsed ? "1" : "0"); } catch (e) { /* Quota egal */ } }
+  };
+  head.addEventListener("click", () => apply(body.style.display !== "none", true));
+  const gespeichert = localStorage.getItem(key);
+  apply(gespeichert === null ? Boolean(defaultCollapsed) : gespeichert === "1");
+  document.body.appendChild(dock);
+
+  const api = {
+    el: dock, body,
+    values() {
+      const v = {};
+      inputs.forEach((inp, id) => { v[id] = inp.value; });
+      return v;
+    },
+    set(id, value) { const inp = inputs.get(id); if (inp) { inp.value = value; } },
+    input(id) { return inputs.get(id) || null; },
+    setOptions(id, options, keep = true) {
+      const inp = inputs.get(id);
+      if (!inp || inp.tagName !== "SELECT") return;
+      const prev = keep ? inp.value : "";
+      inp.innerHTML = "";
+      options.forEach(o => {
+        const opt = document.createElement("option");
+        opt.value = o.value; opt.textContent = o.label;
+        inp.appendChild(opt);
+      });
+      if ([...inp.options].some(o => o.value === prev)) inp.value = prev;
+    },
+    setCount(text) { countEl.textContent = text == null ? "" : String(text); },
+    setCollapsed(c) { apply(Boolean(c), false); },
+  };
+  return api;
 }
 
 /* ---------- Einheitliche, schwebende Speicheraktion ----------
@@ -738,7 +1874,14 @@ function gppFloatingSave({ buttons = [], consoleEl = null, hideContainers = [], 
   const syncAll = () => {
     actionButtons.forEach(item => item.sync());
     const nutzbar = actionButtons.some(item => !item.action.disabled);
-    dock.style.display = nutzbar ? "" : "none";
+    /* NUR bei echter Änderung schreiben. Sonst löst dieser Schreibvorgang den
+       document.body-MutationObserver (unten) aus, der syncAll erneut plant —
+       eine Endlosschleife je Frame: 100 % CPU, kein Netz, RAM wächst. Sichtbar
+       vor allem in großen DOMs (Prüfung, 87 Controls), wo sourceAvailable je
+       Knopf die getComputedStyle-Kette hochläuft. Die Knopf-Syncs oben sind aus
+       genau diesem Grund bereits abgesichert; hier fehlte es. */
+    const disp = nutzbar ? "" : "none";
+    if (dock.style.display !== disp) dock.style.display = disp;
     if (!nutzbar) closeMenu();
   };
   syncAll();
@@ -776,7 +1919,10 @@ function gppFloatingSave({ buttons = [], consoleEl = null, hideContainers = [], 
        hoeher als der Rest, und ein ungebremstes bottom schoebe Knopf UND Menue
        aus dem sichtbaren Bereich. */
     const maxBottom = Math.max(14, window.innerHeight - dock.offsetHeight - 8);
-    dock.style.bottom = `${Math.min(bottom, maxBottom)}px`;
+    /* Ebenfalls nur bei Änderung schreiben — sonst weckt jeder Aufruf (Resize,
+       ResizeObserver der Konsole) den MutationObserver unnötig. */
+    const val = `${Math.min(bottom, maxBottom)}px`;
+    if (dock.style.bottom !== val) dock.style.bottom = val;
   };
   placeAboveConsole();
   window.addEventListener("resize", placeAboveConsole, { signal });

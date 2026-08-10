@@ -84,6 +84,24 @@ variable "supabase_ref" {
   default     = "master"
 }
 
+variable "admin_email" {
+  description = "E-Mail des ersten admin-Kontos der Anwendung. Das Startskript legt es über die GoTrue-Admin-API an; das Passwort kommt aus dem Secret Manager (gpp-admin-password)."
+  type        = string
+  default     = "admin@example.com"
+}
+
+variable "allow_public_api" {
+  description = "Öffnet Port 8000 (Kong, KLARTEXT-HTTP) in der Firewall für 0.0.0.0/0 — nur bewusst opt-in für direkte API-Tests. Standard aus: sonst lägen Login-Passwörter und JWTs unverschlüsselt im Netz, entgegen der 0.0.0.0/0-Sperre von allowed_cidrs für 443."
+  type        = bool
+  default     = false
+}
+
+variable "seed_test_users" {
+  description = "Zusätzliche Testbenutzer (bearbeiter@example.com und leser@example.com) beim Boot automatisch anlegen. Standard ist false (nur Admin-Konto)."
+  type        = bool
+  default     = false
+}
+
 variable "billing_account" {
   description = "Abrechnungskonto-ID für das Budget-Alarm. Leer lassen, wenn keine Rechte darauf bestehen — dann entfällt das Budget."
   type        = string

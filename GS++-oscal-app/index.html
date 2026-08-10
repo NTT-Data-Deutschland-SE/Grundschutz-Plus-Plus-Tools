@@ -247,6 +247,10 @@
         <button class="btn" id="btn-set-new">+ Neues Set</button>
         <button class="btn" id="btn-set-upload" title="JSON-Dateien oder ein exportiertes Set-ZIP in ein Set laden">⤒ Hochladen</button>
         <input type="file" id="set-upload-input" accept=".json,.zip" multiple hidden>
+        <span id="lock-state" style="font-size:.72rem;display:none"></span>
+        <button class="btn" id="btn-lock" style="display:none"></button>
+        <button class="btn" id="btn-push-set" style="display:none"
+                title="Bestehenden lokalen Bestand dieses Sets in die gemeinsame Datenbank übertragen — für Arbeit, die vor der Anmeldung entstanden ist">⤒ In DB übertragen</button>
         <span style="flex:1"></span>
         <button class="btn" id="btn-set-delete">Set löschen</button>
       </div>
@@ -270,7 +274,7 @@
     </section>
   </div>
 
-  <script src="gpp-core.js?v=3.5"></script>
+  <script src="gpp-core.js?v=3.9"></script>
   <script>
     // Workflow order: Explorer → Katalog/Profil-Erstellung → Modellierung → Umsetzung → Prüfung → Abarbeiten → Validierung.
     // `stage` und `tool` verbinden die Kachel mit den Artefakten, die das Tool ablegt.
@@ -357,21 +361,69 @@
       .replace(/[^A-Za-z0-9._-]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 120) || "artefakt";
 
     let artefacts = [];
+    /* Control-Zahlen je Dokument: die Werkzeuge schreiben sie beim Ablegen in
+       meta.controls; für Alt- und Fremdbestände wird einmal je Inhaltsstand
+       (id+sha256) aus dem Volltext nachgezählt und im Speicher gemerkt. */
+    const _ctrlCache = new Map();
+    function countControls(doc) {
+      if (!doc) return 0;
+      if (doc.catalog) { let n = 0; const walk = g => { (g.controls || []).forEach(c => { n++; walk(c); }); (g.groups || []).forEach(walk); }; walk(doc.catalog); return n; }
+      if (doc.profile) return (doc.profile.imports || []).reduce((s, i) =>
+        s + (i["include-controls"] || []).reduce((x, c) => x + (c["with-ids"] || []).length, 0), 0);
+      if (doc["system-security-plan"]) return (doc["system-security-plan"]["control-implementation"]?.["implemented-requirements"] || []).length;
+      if (doc["assessment-plan"]) return (doc["assessment-plan"]["reviewed-controls"]?.["control-selections"] || []).reduce((s, cs) => s + (cs["include-controls"] || []).length, 0);
+      if (doc["assessment-results"]) { const ids = new Set(); (doc["assessment-results"].results || []).forEach(r => (r.findings || []).forEach(f => { const t = f.target?.["target-id"]; if (t) ids.add(t); })); return ids.size; }
+      if (doc["plan-of-action-and-milestones"]) return (doc["plan-of-action-and-milestones"]["poam-items"] || []).length;
+      return 0;
+    }
+    async function controlsOf(a) {
+      if (a.meta && Number.isFinite(a.meta.controls)) return a.meta.controls;
+      const key = a.id + ":" + (a.sha256 || "");
+      if (_ctrlCache.has(key)) return _ctrlCache.get(key);
+      let n = 0;
+      try { const rec = await gppArtefacts.get(a.id); n = countControls(rec && rec.data); } catch (e) { /* bleibt 0 */ }
+      _ctrlCache.set(key, n);
+      return n;
+    }
     async function refreshArtefacts() {
       if (!CORE_OK) return;
       try { artefacts = await gppArtefacts.list(); }
       catch (e) { artefacts = []; console.warn("Artefaktspeicher nicht lesbar", e); }
+      /* Einzelstück-Garantie auch für Altbestände: von ssp/ap/ar/poam überlebt
+         je Set nur das Neueste — ältere Duplikate (aus der Zeit vor der
+         Garantie oder aus der DB gespiegelt) werden still weggeräumt. Ohne
+         Sperre wirft remove(); dann bleibt es bis zum nächsten Anlauf. */
+      for (const kind of ["ssp", "ap", "ar", "poam"]) {
+        const dups = artefacts.filter(a => a.kind === kind).slice(1);   // Liste ist updatedAt-absteigend
+        for (const d of dups) {
+          try { await gppArtefacts.remove(d.id); artefacts = artefacts.filter(a => a.id !== d.id); }
+          catch (e) { break; }
+        }
+      }
       document.getElementById("art-h2").textContent = `Artefakte · Set „${gppArtefacts.activeSet()}"`;
       await renderSets();
-      // Zähler an den Reitern — nach Dokumentsorte, nicht nach erzeugendem Werkzeug
+      renderLock();   // Sperranzeige folgt dem aktiven Set
+      /* Zähler an den Reitern: die Zahl der CONTROLS in den Dokumenten des
+         Werkzeugs (SSP: implemented-requirements, AP: Prüf-Scope, AR: bewertete
+         Controls, POA&M: Items, Katalog/Profil: enthaltene Controls). Nur der
+         Validator zählt weiter seine Berichte — dort gibt es kein Control-Maß. */
       const byKind = {};
       artefacts.forEach(a => { byKind[a.kind] = (byKind[a.kind] || 0) + 1; });
-      document.querySelectorAll("[data-cnt]").forEach(el => {
+      const CONTROL_KINDS = new Set(["catalog", "profile", "ssp", "ap", "ar", "poam"]);
+      for (const el of document.querySelectorAll("[data-cnt]")) {
         const app = APPS.find(a => a.id === el.dataset.cnt);
-        const n = (app ? app.kinds : []).reduce((s, k) => s + (byKind[k] || 0), 0);
+        const kinds = app ? app.kinds : [];
+        const misstControls = kinds.some(k => CONTROL_KINDS.has(k));
+        let n = 0;
+        if (misstControls) {
+          for (const a of artefacts) if (kinds.includes(a.kind)) n += await controlsOf(a);
+        } else {
+          n = kinds.reduce((s, k) => s + (byKind[k] || 0), 0);
+        }
         el.textContent = n;
         el.classList.toggle("zero", n === 0);
-      });
+        el.title = misstControls ? `${n} Controls` : `${n} Artefakt(e)`;
+      }
       document.getElementById("art-total").textContent = artefacts.length ? " " + artefacts.length : "";
       renderSheet();
     }
@@ -425,7 +477,12 @@
     async function removeOne(id) {
       const rec = artefacts.find(a => a.id === id);
       if (!confirm(`Artefakt „${rec ? rec.title : id}" löschen? Bereits heruntergeladene Dateien bleiben davon unberührt.`)) return;
-      await gppArtefacts.remove(id);
+      try {
+        await gppArtefacts.remove(id);   // wirft in der Zusammenarbeit ohne Sperre (requireLock)
+      } catch (e) {
+        alert("Löschen nicht möglich: " + e.message);
+        return;
+      }
       refreshArtefacts();
     }
     /* Eindeutige Dateinamen — zwei Tools dürfen dieselbe filename liefern */
@@ -481,8 +538,15 @@
     document.getElementById("btn-clear-art").addEventListener("click", async () => {
       if (!artefacts.length) return;
       const set = gppArtefacts.activeSet();
-      if (!confirm(`Alle ${artefacts.length} Artefakte des Sets „${set}" löschen? Heruntergeladene Dateien bleiben erhalten. Vorher exportieren?`)) return;
-      await gppArtefacts.removeSet(set);
+      if (!confirm(`Alle ${artefacts.length} Artefakte des Sets „${set}" löschen? Heruntergeladene Dateien bleiben erhalten. Vorher exportieren?` +
+        (typeof gppRemote !== "undefined" && gppRemote.enabled() && gppRemote.loggedIn()
+          ? " Die Löschung wird auch in der gemeinsamen Datenbank und damit bei allen anderen wirksam." : ""))) return;
+      try {
+        await gppArtefacts.removeSet(set);
+      } catch (e) {
+        alert("Leeren nicht möglich: " + e.message);
+        return;
+      }
       refreshArtefacts();
     });
 
@@ -494,6 +558,14 @@
       try { sets = await gppArtefacts.sets(); } catch (e) { /* Store nicht lesbar */ }
       if (!sets.some(s => s.name === active)) sets.push({ name: active, count: 0, bytes: 0 });
       if (!sets.some(s => s.name === "standard")) sets.push({ name: "standard", count: 0, bytes: 0 });
+      /* Geteilte Sets vom Server ergänzen — auch solche, auf die nur eine
+         Berechtigung besteht und die lokal noch leer sind. Ohne das sähe ein
+         neu berechtigter Nutzer ein zugewiesenes Set nie, bevor es Inhalt hat. */
+      if (typeof gppRemote !== "undefined" && gppRemote.enabled()) {
+        for (const name of gppRemote.remoteSets()) {
+          if (!sets.some(s => s.name === name)) sets.push({ name, count: 0, bytes: 0, remote: true });
+        }
+      }
       sets.sort((a, b) => a.name.localeCompare(b.name));
       sel.innerHTML = sets.map(s =>
         `<option value="${escapeAttr(s.name)}" ${s.name === active ? "selected" : ""}>${escapeHtml(s.name)} (${s.count})</option>`).join("");
@@ -511,10 +583,121 @@
     document.getElementById("btn-set-delete").addEventListener("click", async () => {
       const set = gppArtefacts.activeSet();
       const n = artefacts.length;
-      if (!confirm(`Set „${set}" mit ${n} Artefakt(en) komplett löschen?`)) return;
-      await gppArtefacts.removeSet(set);
+      if (!confirm(`Set „${set}" mit ${n} Artefakt(en) komplett löschen?` +
+        (typeof gppRemote !== "undefined" && gppRemote.enabled() && gppRemote.loggedIn()
+          ? " Die Löschung wird auch in der gemeinsamen Datenbank und damit bei allen anderen wirksam." : ""))) return;
+      try {
+        await gppArtefacts.removeSet(set);
+      } catch (e) {
+        alert("Löschen nicht möglich: " + e.message);
+        return;
+      }
       gppArtefacts.setActiveSet("standard");
       refreshArtefacts();
+    });
+
+    /* ---------- Sperre des aktiven Sets (Phase 4) ----------
+       Anzeige und Knöpfe; entschieden wird serverseitig. Die Sperre ist
+       beratend — sie koordiniert, die RLS-Policy schützt. */
+    let meineRolle = null;   // aus whoami, einmal je Seite
+    async function renderLock() {
+      const state = document.getElementById("lock-state");
+      const btn = document.getElementById("btn-lock");
+      const neu = document.getElementById("btn-set-new");
+      const del = document.getElementById("btn-set-delete");
+      const leeren = document.getElementById("btn-clear-art");
+      if (typeof gppRemote === "undefined" || !gppRemote.enabled() || !gppRemote.loggedIn()) {
+        state.style.display = "none"; btn.style.display = "none";
+        neu.style.display = "";   // rein lokal: Sets anlegen und löschen bleibt frei
+        del.style.display = "";
+        leeren.style.display = "";
+        return;
+      }
+      if (meineRolle === null) {
+        try { meineRolle = ((await gppRemote.whoami()) || {}).gpp_role || ""; } catch (e) { /* nur einen erfolgreichen whoami cachen — transienter Fehler bleibt null und wird beim nächsten gpp:remote-changed erneut versucht, sonst blieben Sperr-/Verwaltungsknöpfe die ganze Sitzung verborgen */ }
+      }
+      /* Neue Sets anlegen und ganze Sets löschen/leeren ist in der
+         Zusammenarbeit admin-Sache — der Server lehnt Nicht-Admins ohnehin ab
+         (Set-Existenz-Regel bzw. admin_delete_set), die Knöpfe sollen nichts
+         versprechen, was scheitert. */
+      const istAdmin = meineRolle === "admin";
+      neu.style.display = istAdmin ? "" : "none";
+      del.style.display = istAdmin ? "" : "none";
+      leeren.style.display = istAdmin ? "" : "none";
+      const s = await gppRemote.status();
+      const info = s.lock && s.lock.set === gppArtefacts.activeSet() ? s.lock : null;
+      state.style.display = ""; btn.style.display = "";
+      btn.disabled = false;
+      /* Bestehenden Bestand übertragen: nur sinnvoll, solange man die Sperre
+         hält — dieselbe Voraussetzung wie jedes andere Schreiben. */
+      document.getElementById("btn-push-set").style.display = info && info.mine ? "" : "none";
+      if (!info || !info.lock) {
+        state.textContent = "nicht gesperrt — nur lesen";
+        state.style.color = "var(--text-quiet)";
+        if (meineRolle === "leser" || meineRolle === "") {
+          btn.style.display = "none";   // leser kann nicht sperren, also auch kein Knopf
+        } else {
+          btn.textContent = "Bearbeiten (sperren)";
+          btn.dataset.act = "acquire";
+        }
+      } else if (info.mine) {
+        state.textContent = `✏ von dir gesperrt seit ${String(info.lock.acquired_at || "").slice(11, 16)}`;
+        state.style.color = "var(--green, #34d399)";
+        btn.textContent = "Freigeben";
+        btn.dataset.act = "release";
+      } else {
+        state.textContent = `🔒 ${info.lock.holder_name} seit ${String(info.lock.acquired_at || "").slice(11, 16)}`;
+        state.style.color = "var(--amber, #fbbf24)";
+        if (meineRolle === null) {
+          try { meineRolle = ((await gppRemote.whoami()) || {}).gpp_role || ""; } catch (e) { /* nur einen erfolgreichen whoami cachen — transienter Fehler bleibt null und wird beim nächsten gpp:remote-changed erneut versucht, sonst blieben Sperr-/Verwaltungsknöpfe die ganze Sitzung verborgen */ }
+        }
+        if (meineRolle === "admin") {
+          btn.textContent = "Sperre übernehmen";
+          btn.dataset.act = "takeover";
+        } else {
+          btn.textContent = "gesperrt";
+          btn.disabled = true;
+          btn.dataset.act = "";
+        }
+      }
+    }
+    document.getElementById("btn-lock").addEventListener("click", async e => {
+      const btn = e.currentTarget;
+      const act = btn.dataset.act;
+      btn.disabled = true;
+      try {
+        if (act === "acquire") {
+          const lock = await gppRemote.lockAcquire();
+          if (!lock) alert("Sperre nicht bekommen — jemand anderes hält sie bereits.");
+        } else if (act === "release") {
+          await gppRemote.lockRelease();
+        } else if (act === "takeover") {
+          const info = (await gppRemote.status()).lock;
+          const wer = info && info.lock ? info.lock.holder_name : "unbekannt";
+          if (!confirm(`Sperre von ${wer} übernehmen? Der Vorgang wird protokolliert, und dessen ungesicherte Arbeit kann in Konflikte laufen.`)) { btn.disabled = false; return; }
+          const lock = await gppRemote.lockTakeover();
+          if (!lock) alert("Übernahme fehlgeschlagen — vermutlich fehlen die Rechte (nur admin).");
+        }
+      } catch (err) {
+        alert("Sperr-Vorgang fehlgeschlagen: " + err.message);
+      }
+      renderLock();
+    });
+    window.addEventListener("gpp:remote-changed", () => { renderLock(); });
+    document.getElementById("btn-push-set").addEventListener("click", async e => {
+      const btn = e.currentTarget;
+      const note = document.getElementById("export-note");
+      btn.disabled = true;
+      note.textContent = "übertrage …";
+      try {
+        const r = await gppRemote.pushSet();
+        note.textContent = `Übertragen: ${r.queued} von ${r.total} Artefakt(en) angestoßen` +
+          (r.pending ? `, ${r.pending} noch unterwegs` : "") +
+          (r.conflicts ? ` — ${r.conflicts} Konflikt(e), Klärung über den DB-Chip oder config.html.` : ".");
+      } catch (err) {
+        note.textContent = "Übertragung fehlgeschlagen: " + err.message;
+      }
+      btn.disabled = false;
     });
 
     /* Hochladen: JSON-Dateien einzeln oder ein exportiertes Set-ZIP (manifest.json
