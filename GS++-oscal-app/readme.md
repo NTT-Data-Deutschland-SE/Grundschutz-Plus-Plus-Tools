@@ -93,10 +93,14 @@ Der Prozess folgt einer klaren Kette von der Modellierung über die Umsetzung bi
 ### 1. Modellierung mit dem [SSP-Generator](./ssp_generator.html)
 In dieser Phase legen Sie das Fundament für Ihren Informationsverbund.
 * **Profil-Erstellung**: Das Tool generiert ein OSCAL-Profil auf Basis des gewählten ISMS-Typs.
+* **KI-Dokumentanalyse**: Vorhandene Dokumente (Strukturanalysen, Sicherheitskonzepte, Netzpläne — PDF, DOCX, TXT, Markdown, CSV, JSON, XML, HTML) werden per Drag & Drop eingelesen und in einer mehrstufigen Pipeline ausgewertet: Die KI **klassifiziert** jedes Dokument (Dokumenttyp und Extraktionsplan, ein Aufruf je Dokument), **extrahiert** anschließend chunk-weise Assets, Prozesse, Risiken, Maßnahmen und Implementierungsaussagen — nur Belegtes, nichts Erfundenes —, **ordnet** die Funde den G++-Zielobjektkategorien und Praktiken zu und prüft per **Abdeckungsprüfung**, welche extrahierten Maßnahmen bereits durch Katalog-Controls abgedeckt sind (exakte ID-Treffer werden vorher lokal aufgelöst, die KI sieht nur den Rest). So entsteht die Strukturanalyse aus dem, was die Organisation schon dokumentiert hat, statt bei null zu beginnen.
+* **KI-Ergebnisse bleiben erhalten**: Extraktionen werden je Chunk in der IndexedDB gecacht und die übernommene Analyse in die Back-Matter des SSP geschrieben — Re-Import und Cache-Restore kommen ohne erneute (kostenpflichtige) KI-Aufrufe aus. Aus der Analyse übernommene Assets und Controls tragen sichtbar ein ◉-KI-Badge.
+* **SSP-Beschreibung per KI**: Der Abschnitt „Zweck & Geltungsbereich" wird auf Wunsch aus dem Workspace-Kontext (Assets, Prozesse, Schutzbedarf, Methodik) generiert.
 * **Asset-Management**: Sie integrieren Muster-Assets oder laden eigene Zielobjekte direkt aus der GitHub-Bibliothek.
 * **Einfügen eigener Profiles**: Die mit [BSI 2 Profile](./Baustein_2_Profile.html) erstellten Profile hinzufügen.
-* **Risikoanalyse**: Die Anwendung enthält ein integriertes Risikomanagement inklusive der Erstellung von Custom Controls.
+* **Risikoanalyse**: Die Anwendung enthält ein integriertes Risikomanagement inklusive der Erstellung von Custom Controls. Die **KI-Risikoanalyse** nach BSI-Standard 200-3 schlägt aus SSP-Beschreibung, Assets, Prozessen und Katalog die wichtigsten Risiken samt mitigierender Controls vor — Schwerpunkt sind Assets mit erhöhtem Schutzbedarf, für die eine Risikoanalyse Pflicht ist; Duplikate zu bereits erfassten Risiken werden vermieden.
 * **Tailoring**: Sie passen Anforderungstexte und Parameter (z. B. Fristen oder Rollen) bereits hier an die lokale Situation an.
+* **Transparenz & Kontrolle**: Alle sechs KI-Prompts (System-Instruktion, Klassifikation, Extraktion, Zuordnung, Abdeckungsprüfung, Beschreibung/Risikoanalyse) sind über [config.html](./config.html) editierbar; Dokumentinhalte gehen erst nach ausdrücklicher Einwilligung an den KI-Provider, und eine Token-Anzeige zeigt den Verbrauch der Sitzung.
 * **Export**: Sie erhalten die Blaupause als Profil und einen darauf basierenden Muster-SSP.
 
 ### 2. Grundschutzcheck mit [SSP-Ausfüllen](./ssp_ausfuellen.html)
@@ -129,20 +133,26 @@ Das Tool überführt ungelöste Mängel in einen verbindlichen Maßnahmenplan, d
 * Trage Titel, Version und Zweck deiner Blaupause ein.
 * Das Tool übernimmt diese Angaben direkt in die Metadaten des späteren OSCAL-Profils.
 
-### 2. ISMS & Assets wählen
+### 2. KI-Dokumentanalyse (optional, empfohlen bei vorhandener Dokumentation)
+* Ziehe vorhandene Dokumente (PDF, DOCX, TXT, Markdown, CSV, JSON, XML, HTML) in den Analyse-Bereich und bestätige die Einwilligung zur Übermittlung an den KI-Provider (Backend und Key kommen aus `config.html`).
+* Starte die Analyse: Die KI klassifiziert jedes Dokument, extrahiert Assets, Prozesse, Risiken und Maßnahmen chunk-weise (mit Cache in der IndexedDB) und ordnet die Funde den G++-Zielobjektkategorien und Praktiken zu.
+* Prüfe die Vorschläge und übernimm sie in den Workspace — übernommene Einträge tragen ein ◉-KI-Badge und bleiben nach Export/Re-Import ohne neue KI-Aufrufe erhalten.
+
+### 3. ISMS & Assets wählen
 * Wähle ein Basis-ISMS (Standard oder Enhanced), um die Pflicht-Controls zu laden.
 * Importiere Muster-Assets aus der GitHub-Bibliothek, wodurch die App deren Anforderungen automatisch extrahiert.
 
-### 3. Tailoring (Anpassung)
+### 4. Tailoring (Anpassung)
 * Nutze den Button "⚙️ Modify", um Parameter-Werte innerhalb der Controls zu definieren.
 * Ergänze eigene Texte am Anfang oder Ende der Original-Anforderungen, um lokale Besonderheiten abzubilden.
 * Füge zusätzliche Control-IDs bei Bedarf manuell hinzu.
 
-### 4. Risikoanalyse durchführen
+### 5. Risikoanalyse durchführen
 * Erstelle Risiko-Einträge und ordne diese entweder dem gesamten System oder spezifischen Assets zu.
 * Verknüpfe mitigierende Maßnahmen aus dem Katalog oder erstelle eigene "Custom Controls".
+* Oder starte die **KI-Risikoanalyse** (BSI 200-3): Sie nutzt SSP-Beschreibung, Assets und Katalog als Kontext, priorisiert Assets mit erhöhtem Schutzbedarf und schlägt Risiken mit passenden mitigierenden Controls vor — fehlt die SSP-Beschreibung, wird sie zuerst generiert.
 
-### 5. OSCAL-Paket exportieren
+### 6. OSCAL-Paket exportieren
 * Aktiviere optional das Häkchen für den Muster-SSP (System Security Plan).
 * Klicke auf "Paket generieren", um die resultierenden JSON-Dateien für Profil und SSP herunterzuladen.
 
