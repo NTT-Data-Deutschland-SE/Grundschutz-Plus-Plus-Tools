@@ -91,14 +91,21 @@ PROMPT_CONFIG_PATH = os.path.join(SRC_ROOT, "assets/json/prompt_config.json")
 BAUSTEIN_TO_ZIELOBJEKT_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/baustein_to_zielobjekt_schema.json")
 ENHANCED_CONTROL_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/enhanced_control_response_schema.json")
 ED23_ANFORDERUNGEN_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_anforderungen_response_schema.json")
+ED23_VERIFY_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_verify_response_schema.json")
 PROZESSBAUSTEINE_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/prozessbausteine_response_schema.json")
 
 # --- AI Model Configuration ---
 # These default to current Gemini preview identifiers. They are env-overridable so a stable,
 # versioned Vertex AI model id can be pinned for reproducibility without a code change
 # (issue 4.1).
-GROUND_TRUTH_MODEL = os.environ.get("GROUND_TRUTH_MODEL", "gemini-3-flash-preview")
+GROUND_TRUTH_MODEL = os.environ.get("GROUND_TRUTH_MODEL", "gemini-3.7-flash")
 GROUND_TRUTH_MODEL_PRO = os.environ.get("GROUND_TRUTH_MODEL_PRO", "gemini-3.1-pro-preview")
+# Maker model for the ED23 candidate pass (stage_ed23_anforderungen). Deliberately a
+# different model than the verifier: gemini-3-flash-preview nominates candidates far more
+# generously (high recall), while the strict verification pass on GROUND_TRUTH_MODEL
+# (gemini-3.7-flash) restores precision. Measured on a 23-control sample: the 3.7 maker
+# never nominates certain valid candidates, so no checker could recover them.
+ED23_MAKER_MODEL = os.environ.get("ED23_MAKER_MODEL", "gemini-3-flash-preview")
 # How many ED2023 Anforderungen stage_prozessbausteine sends per request. The whole G++
 # catalog is the (cached) grounding corpus, so the chunk only bounds the *output* size and
 # keeps each 1:1 decision inside a context the model can still reason over reliably.
