@@ -575,7 +575,7 @@ gppCollapsibleLog({consoleEl:document.querySelector('.logbox'),
 /* Quelle für die Pin-Übersicht in config.html anmelden (Grundregel 8). */
 gppRegisterSources(GPP_TOOL_ID,[{id:'ed23-anforderungen',label:'G++/ED23 Anforderungen (Hilfsdatei)',
     repo:'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',path:'hilfsdateien/gpp_ed23_anforderungen.json',
-    default:'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/hilfsdateien/gpp_ed23_anforderungen.json'}]);
+    default:'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/621176f7f26c7fcda7e29cfdec5b83c6b25d9df7/hilfsdateien/gpp_ed23_anforderungen.json'}]);
 // ============================================================
 // LOG-KONSOLE (fünf Level, ms-Timestamps, Autoscroll, Clear)
 // ============================================================
@@ -2144,7 +2144,7 @@ function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace
 
 // --- BSI ED2023 Anforderungen (vorberechnet von Gpp-ai-tool, ohne Laufzeit-KI) ---
 let ED23_MAP={};
-const ED23_MAP_URL="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2ab904b0099f560a06a68950d2b47a8ad019571a/hilfsdateien/gpp_ed23_anforderungen.json";
+const ED23_MAP_URL="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/621176f7f26c7fcda7e29cfdec5b83c6b25d9df7/hilfsdateien/gpp_ed23_anforderungen.json";
 function buildEd23MapFromOscal(doc){if(doc&&doc.gpp_ed23_anforderungen_map)return doc.gpp_ed23_anforderungen_map;const out={},mc=doc&&doc["mapping-collection"];if(!mc)return out;(mc.mappings||[]).forEach(mp=>(mp.maps||[]).forEach(m=>{const src=(m.sources||[])[0];if(!src)return;const cid=src["id-ref"];(m.targets||[]).forEach(t=>{const label=(t.props||[]).find(p=>p.name==="label"||p.name==="title");(out[cid]=out[cid]||[]).push({id:t["id-ref"],name:(label&&label.value)||"",begruendung:m.remarks||""})})}));return out}
 async function loadED23Map(){try{const r=await fetch(gppSource('ed23-anforderungen',ED23_MAP_URL));if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();ED23_MAP=buildEd23MapFromOscal(d);L.ok(`BSI-ED23-Zuordnungen geladen: ${Object.keys(ED23_MAP).length} Controls`)}catch(e){console.warn('BSI ED23-Anforderungen nicht geladen:',e);L.warn('BSI-ED23-Anforderungen nicht geladen: '+shortErr(e.message));ED23_MAP={}}}
 function renderED23Table(list){
