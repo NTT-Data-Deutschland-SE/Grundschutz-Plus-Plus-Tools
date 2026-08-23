@@ -459,6 +459,19 @@ select{color-scheme:dark}
               </select>
             </div>
           </div>
+
+          <!-- Ein bestehendes Profil braucht keinen Pipeline-Lauf: aus dem
+               Arbeitsstand öffnen und direkt im Stufe-3-Editor weiterbearbeiten;
+               Änderungen fließen in DENSELBEN Set-Eintrag zurück. -->
+          <div style="margin-top:14px">
+            <label style="display:block;font-size:11px;color:var(--text-tertiary);margin-bottom:4px;font-weight:500">Oder: vorhandenes Profil aus dem Arbeitsstand bearbeiten (ohne Pipeline-Lauf)</label>
+            <div class="url-row">
+              <select id="edit-profile-pick" style="flex:1;background:var(--bg-elev-2);border:1px solid var(--border-1);color:var(--text-primary);font-family:'JetBrains Mono',monospace;font-size:11px;padding:7px 9px;border-radius:7px;outline:none">
+                <option value="">— Profil aus dem Set wählen —</option>
+              </select>
+              <button class="btn sm" id="btn-edit-profile">✎ Öffnen</button>
+            </div>
+          </div>
         </div>
 
         <!-- RUN CARD -->
@@ -632,7 +645,7 @@ const GPP_TOOL_ID = "Baustein_2_Profile";
    Konstante; keine handgepflegten Versionsstrings mehr im File.
    ════════════════════════════════════════════════════════════════════════ */
 
-const APP_VERSION  = "0.10.0";
+const APP_VERSION  = "0.11.0";
 const APP_NAME     = "Baustein_2_Profile";
 
 // Fallback, wenn zentral kein Gemini-Modell gesetzt ist (config.html).
@@ -796,6 +809,11 @@ const GPP_TOOLS_PIN_COMMIT = "2ab904b0099f560a06a68950d2b47a8ad019571a";
 // Commit genagelt; die Hilfsdatei auf den Stand des eigenen Repos.
 const ZOK_CSV_URL     = gppSource("zok-csv", `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/documentation/namespaces/target_object_categories.csv`);
 const ZO_CONTROLS_URL = gppSource("zielobjekt-controls", `https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/${GPP_TOOLS_PIN_COMMIT}/hilfsdateien/zielobjekt_controls.json`);
+// Vorberechnetes Matching G++-Control → ED23-Anforderungen (Gpp-ai-tool, ohne
+// Laufzeit-KI) — dieselbe Quelle und derselbe Pin wie im SSP-Generator. Es
+// ergänzt in Stufe 3 deterministisch den Ed2023-Wortlaut an Controls, die das
+// Satz-Mapping nicht (oder nicht vollständig) getroffen hat.
+const ED23_MAP_URL = gppSource("ed23-anforderungen", `https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/${GPP_TOOLS_PIN_COMMIT}/hilfsdateien/gpp_ed23_anforderungen.json`);
 // Quellen für die Pin-Übersicht in config.html anmelden (Update-Prüfung dort).
 gppRegisterSources(GPP_TOOL_ID, [
   /* fixed: der Katalog ist gegen GPP_CATALOG_PIN_SHA256 inhaltsgepinnt und die
@@ -808,7 +826,41 @@ gppRegisterSources(GPP_TOOL_ID, [
     path: "documentation/namespaces/target_object_categories.csv", default: ZOK_CSV_URL },
   { id: "zielobjekt-controls", label: "Zielobjekt-Controls (Hilfsdatei)", repo: "NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools",
     path: "hilfsdateien/zielobjekt_controls.json", default: ZO_CONTROLS_URL },
+  { id: "ed23-anforderungen", label: "G++/ED23 Anforderungen (Hilfsdatei)", repo: "NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools",
+    path: "hilfsdateien/gpp_ed23_anforderungen.json", default: ED23_MAP_URL },
 ]);
+
+/* Vorberechnetes Matching laden und in { controlId: [{id, name, begruendung}] }
+   abflachen — dieselbe Zerlegung wie im SSP-Generator (mapping-collection nach
+   OSCAL 1.2.2; das Altformat gpp_ed23_anforderungen_map wird weiter gelesen).
+   Lazy und einmalig: die Datei hat ~4,7 MB und wird erst gebraucht, wenn ein
+   Profil zusammengesetzt wird. */
+let _ed23MapPromise = null;
+function buildEd23MapFromOscal(doc) {
+  if (doc && doc.gpp_ed23_anforderungen_map) return doc.gpp_ed23_anforderungen_map;
+  const out = {}, mc = doc && doc["mapping-collection"];
+  if (!mc) return out;
+  (mc.mappings || []).forEach(mp => (mp.maps || []).forEach(m => {
+    const src = (m.sources || [])[0];
+    if (!src) return;
+    const cid = src["id-ref"];
+    (m.targets || []).forEach(t => {
+      const label = (t.props || []).find(p => p.name === "label" || p.name === "title");
+      (out[cid] = out[cid] || []).push({ id: t["id-ref"], name: (label && label.value) || "", begruendung: m.remarks || "" });
+    });
+  }));
+  return out;
+}
+function loadEd23Map() {
+  if (!_ed23MapPromise) {
+    _ed23MapPromise = (async () => {
+      const r = await fetch(ED23_MAP_URL);
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return buildEd23MapFromOscal(await r.json());
+    })().catch(e => { _ed23MapPromise = null; throw e; });
+  }
+  return _ed23MapPromise;
+}
 const GPP_CATALOG_PIN_SHA256 = "db3a1417d7e904315a0886f450129832e19c57324660358c830357349f552332";
 const GPP_CATALOG_PINNED_URL = `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json`;
 // uuid5(NAMESPACE_URL, GPP_CATALOG_PINNED_URL) — identisch zu den vom Pin-Skript
@@ -870,6 +922,11 @@ const state = {
   unmappedSentences: [],    // C1: sentences classified as context (no control mapping)
   customCatalog: null,      // C2 only
   profileDef: null,
+  // Bearbeitung eines BESTEHENDEN Set-Eintrags (statt Pipeline-Ergebnis):
+  // save schreibt dann unter genau dieser Artefakt-ID (und dem Ursprungs-Tool)
+  // weiter, statt eine Kopie unter eigenem Schlüssel anzulegen.
+  editArtId: null,
+  editTool: null,
 
   // runtime
   running: false,
@@ -2506,36 +2563,97 @@ async function assembleProfile() {
   const profileTitle = (bTit ? `${bId} ${bTit}` : bId)
     + (state.pipelineMode === "ZIELOBJEKT" && cat ? ` → ${cat}` : state.pipelineMode === "PROZESS" ? " → Prozess" : "");
 
-  // Only controls that actually received ≥1 mapped sentence end up in the profile.
   const matched = state.implReqs.filter(r => !r.pending && !r.error && r.coverage !== "missing");
-  const uniqueControls = [...new Set(matched.map(r => r.control_id))];
+  const matchedById = new Map(matched.map(r => [r.control_id, r]));
+
+  /* Welche Controls kommen ins Profil?
+     ZIELOBJEKT: der KOMPLETTE Pool der Kategorie — das Profil beschreibt das
+     Zielobjekt, nicht nur die Stellen, an denen das Satz-Mapping Treffer fand.
+     Der Ed2023-Wortlaut hängt dann an den Controls, für die es ihn gibt.
+     PROZESS und C.2: wie bisher nur Controls mit ≥1 gemapptem Satz — dort gibt
+     es keine Kategorie, deren Pool „vollständig" wäre. */
+  const catalogIds = new Set(state.catalogControls.map(c => c.id));
+  let uniqueControls;
+  if (state.pipelineMode === "ZIELOBJEKT") {
+    const pool = (state.poolControlIds || []).filter(id => catalogIds.has(id));
+    uniqueControls = [...new Set([...pool, ...matched.map(r => r.control_id)])];
+  } else {
+    uniqueControls = [...new Set(matched.map(r => r.control_id))];
+  }
   if (uniqueControls.length === 0) {
     // include-controls[].with-ids hat minItems:1 — ein leeres Profil wäre schema-invalid
     throw new Error("Kein Control erhielt ein Mapping — es kann kein gültiges Profil erzeugt werden (leere include-controls-Liste).");
   }
 
-  // OSCAL "alters": embed the verbatim Ed2023 PDF text at the matched control,
+  /* Vorberechnetes Matching (hilfsdateien/gpp_ed23_anforderungen.json) für
+     DIESEN Baustein invertieren: control-id → Anforderungen. Es ergänzt den
+     Wortlaut deterministisch, wo das Satz-Mapping nichts (oder nicht alles)
+     fand — der Text selbst kommt aus dem geparsten PDF, nie aus der Datei. */
+  const vorab = new Map();
+  const vorabZahl = { text: 0, ohnePdf: 0, ausserhalb: 0 };
+  if (state.pipelineMode !== "C2" && state.baustein?.id) {
+    try {
+      const map = await loadEd23Map();
+      const prefix = state.baustein.id + ".A";
+      const drin = new Set(uniqueControls);
+      for (const [cid, anfs] of Object.entries(map)) {
+        for (const a of (anfs || [])) {
+          if (!String(a.id || "").startsWith(prefix)) continue;
+          if (!drin.has(cid)) { vorabZahl.ausserhalb++; continue; }
+          if (!vorab.has(cid)) vorab.set(cid, []);
+          vorab.get(cid).push(a);
+        }
+      }
+    } catch (e) {
+      l.warn(`Vorberechnetes ED23-Matching nicht ladbar (${e.message}) — das Profil entsteht nur aus dem Laufzeit-Mapping.`);
+    }
+  }
+  const anfById = new Map((state.baustein?.requirements || []).map(a => [a.id, a]));
+
+  // OSCAL "alters": embed the verbatim Ed2023 PDF text at the control,
   // so the migrated requirement source is traceable inside the profile itself.
   const NS = "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools";
-  const alters = matched.map(r => {
-    const prose = (r.mapped_sentences || [])
-      .map(m => `[${m.anforderung_id}, Satz ${m.sentence_idx}] ${m.sentence_text}`)
-      .join("\n\n");
-    return {
-      "control-id": r.control_id,
+  const alters = [];
+  for (const cid of uniqueControls) {
+    const bloecke = [];
+    const abgedeckt = new Set();
+    const r = matchedById.get(cid);
+    if (r) {
+      (r.mapped_sentences || []).forEach(m => abgedeckt.add(m.anforderung_id));
+      const prose = (r.mapped_sentences || [])
+        .map(m => `[${m.anforderung_id}, Satz ${m.sentence_idx}] ${m.sentence_text}`)
+        .join("\n\n");
+      if (prose) bloecke.push(prose);
+    }
+    for (const a of (vorab.get(cid) || [])) {
+      if (abgedeckt.has(a.id)) continue;   // Wortlaut dieser Anforderung steht schon über das Satz-Mapping am Control
+      const anf = anfById.get(a.id);
+      if (!anf) { vorabZahl.ohnePdf++; continue; }   // PDF kennt die Anforderung nicht (Test Drive, abweichende Nummerierung)
+      abgedeckt.add(a.id);
+      vorabZahl.text++;
+      const voll = (anf.sentences || []).map(s => s.text).join(" ");
+      bloecke.push(`[${a.id} · vorberechnetes G++-Matching${anf.name ? " — " + anf.name : ""}] ${voll}`);
+    }
+    if (!bloecke.length) continue;   // Control ohne Ed2023-Bezug: im Profil, aber ohne alter
+    alters.push({
+      "control-id": cid,
       "adds": [{
         "position": "ending",
         "props": [{ "name": "source-baustein", "ns": NS, "value": bId }],
         "parts": [{
-          "id": `${r.control_id}_ed2023-quelle`,
+          "id": `${cid}_ed2023-quelle`,
           "name": "ed2023-quelle",
           "ns": NS,
           "title": `Quelle: BSI IT-Grundschutz Ed2023 · ${bId}`,
-          "prose": prose || `(kein Satz aus ${bId} gemappt)`,
+          "prose": bloecke.join("\n\n"),
         }],
       }],
-    };
-  });
+    });
+  }
+  l.ok(`Profil: ${uniqueControls.length} Controls (${state.pipelineMode === "ZIELOBJEKT" ? "kompletter Kategorie-Pool" : "nur gemappte"}) · ` +
+    `${alters.length} mit Ed2023-Wortlaut (${matched.length} per Satz-Mapping, ${vorabZahl.text} Anforderungen aus dem vorberechneten Matching ergänzt` +
+    `${vorabZahl.ausserhalb ? `; ${vorabZahl.ausserhalb} Matching-Treffer außerhalb des Pools ignoriert` : ""}` +
+    `${vorabZahl.ohnePdf ? `; ${vorabZahl.ohnePdf} ohne Text im PDF` : ""}).`);
 
   // C.2: die with-ids stammen aus dem lokal erzeugten Custom Catalog, nicht aus dem
   // G++-Katalog — der Import muss daher auf die Schwesterdatei des Custom Catalogs
@@ -2839,6 +2957,68 @@ $("btn-s3-json-apply").addEventListener("click", () => s3ApplyJson());
 window.addEventListener("pagehide", s3FlushSave);
 document.addEventListener("visibilitychange", () => { if (document.hidden) s3FlushSave(); });
 
+/* ───── Bestehendes Profil aus dem Arbeitsstand bearbeiten ─────
+   Der Stufe-3-Editor arbeitet auf state.profileDef — woher das Objekt kommt,
+   ist ihm gleich. Hier kommt es statt aus der Pipeline aus einem vorhandenen
+   Set-Eintrag; gespeichert wird unter GENAU dessen ID weiter (state.editArtId).
+   Die Blaupausen-Profile des SSP-Generators bleiben draußen: die schreibt
+   dessen Live-Sync bei jeder Änderung neu — eine Bearbeitung hier wäre beim
+   nächsten Generator-Besuch stillschweigend überschrieben. */
+async function refreshEditProfilePick() {
+  const sel = $("edit-profile-pick");
+  if (!sel) return;
+  let rows = [];
+  try { rows = await gppArtefacts.list(); } catch (e) { return; }
+  const profs = rows.filter(r => r.kind === "profile" && r.tool !== "ssp_generator");
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">— Profil aus dem Set wählen —</option>' +
+    profs.map(r => `<option value="${escapeHtml(r.id)}">${escapeHtml(r.title)} · ${escapeHtml(r.tool)}</option>`).join("");
+  if (prev && profs.some(r => r.id === prev)) sel.value = prev;
+  if (!profs.length) sel.options[0].textContent = "— Arbeitsstand enthält keine Profile —";
+}
+async function openProfileFromSet() {
+  const id = $("edit-profile-pick").value;
+  if (!id) return;
+  const rec = await gppArtefacts.get(id);
+  if (!rec) { l.warn("Eintrag nicht mehr im Set — Liste wird aktualisiert."); refreshEditProfilePick(); return; }
+  if (!rec.data?.profile) { l.err(`„${rec.title}" ist kein OSCAL-Profil.`); return; }
+  state.profileDef = rec.data;
+  state.profileName = rec.title || null;
+  state.editArtId = rec.id;
+  state.editTool = rec.tool || null;
+  const props = rec.data.profile.metadata?.props || [];
+  const bId = props.find(p => p.name === "source-baustein")?.value;
+  if (bId && !state.baustein) state.baustein = { id: bId, title: "", requirements: [] };
+  state.pipelineMode = props.find(p => p.name === "mapping-mode")?.value || state.pipelineMode || "?";
+  /* Reste eines früheren Pipeline-Laufs gehören nicht zu diesem Profil: die
+     Stufe-1/2-Karten (Klassifikation, Coverage) beschreiben den Lauf, nicht
+     den geöffneten Eintrag — ausblenden, implReqs leeren (Editor-Titel kommen
+     dann aus dem Anwenderkatalog). */
+  state.implReqs = [];
+  $("s1-result").classList.add("hidden");
+  $("s2-result").classList.add("hidden");
+  /* Wie renderStage3, aber OHNE den Auto-Save: bloßes Öffnen darf den Eintrag
+     nicht anfassen (updatedAt, DB-Push) — erst eine echte Änderung speichert. */
+  s3.removed = new Map();
+  s3.customFlat = null;
+  s3.lastArtId = rec.id;
+  const card = $("s3-result");
+  card.classList.remove("hidden");
+  $("btn-download-cat").classList.add("hidden");
+  s3SetView("editor");
+  renderS3Editor();
+  s3SyncJson();
+  s3SaveChip(`✓ im Set „${gppArtefacts.activeSet()}"`, "ok");
+  const anzImports = (rec.data.profile.imports || []).length;
+  l.ok(`Profil „${rec.title}" aus dem Set geöffnet (${anzImports} Import${anzImports === 1 ? "" : "s"}) — Änderungen fließen in denselben Eintrag zurück.` +
+    (anzImports > 1 ? " Der Editor bearbeitet den ersten Import; die JSON-Sicht zeigt alles." : ""));
+  card.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+$("btn-edit-profile").addEventListener("click", () => { openProfileFromSet().catch(e => l.err("Profil nicht ladbar: " + e.message)); });
+window.addEventListener("gpp:artefacts-changed", () => { refreshEditProfilePick(); });
+window.addEventListener("storage", e => { if (e.key === "gpp:cfg:artefacts:touch") refreshEditProfilePick(); });
+refreshEditProfilePick();
+
 /* Ein verweigertes Ablegen darf nicht stumm bleiben: In der Zusammenarbeit
    lehnt der Kern ohne gehaltene Sperre jedes Schreiben ab — die Zeile im Log
    allein ging unter (eingeklappte Konsole, Autoscroll), und der Anwender
@@ -2869,10 +3049,18 @@ async function saveProfileToSet({ ask, quiet } = { ask: true }) {
   state.profileName = name;
   const safe = name.replace(/[^A-Za-z0-9._-]+/g, "_").replace(/^_+|_+$/g, "") || "profil";
   try {
+    /* Über alle Imports zählen — ein aus dem Set geöffnetes Fremdprofil kann
+       mehrere tragen; der Editor bearbeitet zwar nur den ersten, aber die
+       Zahl an der Kachel soll das ganze Dokument meinen. */
+    const controls = (state.profileDef.profile.imports || []).reduce((s, imp) =>
+      s + (imp["include-controls"] || []).reduce((x, ic) => x + ((ic["with-ids"] || []).length), 0), 0);
     const rec = await gppArtefacts.save({
-      stage: "author", kind: "profile", tool: GPP_TOOL_ID,
+      /* Bestehenden Eintrag bearbeiten: unter GENAU seiner ID (und seinem
+         Ursprungs-Tool) weiterschreiben — kein Duplikat unter eigenem Schlüssel. */
+      ...(state.editArtId ? { id: state.editArtId } : {}),
+      stage: "author", kind: "profile", tool: state.editTool || GPP_TOOL_ID,
       title: name, filename: `${safe}.json`, data: state.profileDef,
-      meta: { controls: s3WithIds(state.profileDef.profile).length },
+      meta: { controls },
     });
     /* Umbenannt („Im Set speichern…" mit neuem Namen): die Ablage unter dem
        alten Namen räumen — sonst liegen zwei Stände desselben Profils im Set
@@ -3380,8 +3568,11 @@ $("btn-clear").addEventListener("click", () => {
   state.profileDef = null;
   /* Neuer Lauf = neues Profil: Name und Ablage-ID des vorigen Laufs vergessen,
      sonst schreibt der Auto-Save das neue Profil unter dem alten Namen und
-     überschreibt dessen Stand im Set. */
+     überschreibt dessen Stand im Set. Ebenso endet eine laufende Bearbeitung
+     eines bestehenden Eintrags — der Lauf erzeugt etwas Eigenes. */
   state.profileName = null;
+  state.editArtId = null;
+  state.editTool = null;
   s3.lastArtId = "";
   state.engines = { maker: null, checker: null };
   $("s1-result").classList.add("hidden");
