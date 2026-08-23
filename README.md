@@ -304,6 +304,8 @@ Die vorhandenen Dateien lassen sich in mehrere Gruppen einordnen:
 - `baustein_zielobjekt.json`
 - `prozessbausteine_mapping.json`
 - `zielobjekt_controls.json`
+- `gpp_ed23_anforderungen.json` – OSCAL Mapping Collection: ordnet jeder Grundschutz++-Maßnahme die inhaltlich passenden Anforderungen der Edition 2023 zu (1:n). Jede Zuordnung wird KI-gestützt in zwei Stufen erzeugt (Kandidatensuche plus strenge Einzelprüfung) und nennt in der Begründung die tragende **Teilanforderung** – den nummerierten Satz der ED23-Anforderung (`(Teilanforderung n)`, zusätzlich als `statement-sentence`-Prop). Der Begriff „Teilanforderung“ stammt aus keinem BSI-Standard; er wird lediglich in einem Absatz des BSI-Auditierungsschemas verwendet – wir übernehmen ihn hier, weil er das Gemeinte präzise trifft.
+- `ed23_anforderungen_stripped.json` – kompakte Projektion des ED23-Katalogs (ID, Name, Beschreibung als nummerierte Teilanforderungen/Sätze), die als Grundlage der Zuordnung dient und die Nummerierung nachvollziehbar macht.
 
 Diese Dateien unterstützen die Zuordnung zwischen Bausteinen, Zielobjekten, Controls und Anforderungen. Sie sind besonders wichtig für Automatisierung, Ableitungen und konsistente Referenzierung.
 

@@ -9,24 +9,45 @@ runtime, web-search-grounded AI call in GSpp-Viewer that frequently hallucinated
 internal per-control match map is serialized via `utils.oscal_mapping`.
 
 Grounding: the full ED2023 OSCAL catalog (BSI_2023_JSON) is stripped to a compact
-`id | name | prose` corpus of every Anforderung and supplied as the model's context. Because
-that corpus is identical for every control query, it is put into an explicit Vertex AI context
-cache once and reused per call (implicit caching does not engage for this model/region). Every
-returned ID is post-filtered against the real corpus so hallucinated / old-edition IDs cannot
-reach the output.
+`id | name | numbered sentences` corpus of every Anforderung and supplied as the model's
+context. Because that corpus is identical for every control query, it is put into an explicit
+Vertex AI context cache once and reused per call (implicit caching does not engage for this
+model/region). Every returned ID is post-filtered against the real corpus so hallucinated /
+old-edition IDs cannot reach the output.
+
+Precision measures (issue #28 — mappings were too broad and unspecific):
+
+* Per-control context is the full picture, not just the title: the statement prose with all
+  OSCAL `{{ insert: param, ... }}` directives resolved to their values, plus the control's
+  `guidance` part.
+* The sibling controls of the same Praktik (leaf group) are listed in the prompt as explicit
+  negative context — they are mapped separately, so content belonging primarily to a sibling
+  must not be matched to this control.
+* Each ED2023 Anforderung's prose is rendered as numbered sentences `(S1) ... (S2) ...`; the
+  model must name the sentence number carrying each match (`satz_nr`). The number is validated
+  against the real sentence count and prefixed to the Begründung as `(Teilanforderung n)`.
+  We call these numbered sentences "Teilanforderungen" — a term that appears in no BSI
+  standard and is only used in one paragraph of the BSI Auditierungsschema.
+* Maker-checker: the corpus-grounded query deliberately over-collects *candidates* (recall),
+  and every candidate is then re-judged by a strict, self-contained verification call
+  (control context + that one Anforderung's sentences — no corpus needed) that decides
+  match / satz_nr / Begründung (precision). Only verified candidates reach the output.
+  The two passes intentionally use different models (see ED23_MAKER_MODEL in constants):
+  the maker model nominates generously, the stricter default model judges.
 """
 
 import asyncio
 import json
 import logging
 import os
+import re
 import tempfile
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from config import app_config
 from clients.ai_client import AiClient
 from utils.data_loader import load_json_file, save_json_file
-from utils.oscal_utils import extract_all_gpp_controls, normalize_id
+from utils.oscal_utils import normalize_id
 from utils.oscal_mapping import to_oscal_mapping_collection
 from constants import (
     GPP_KOMPENDIUM_JSON_PATH,
@@ -35,10 +56,62 @@ from constants import (
     GPP_ED23_ANFORDERUNGEN_JSON_PATH,
     ED23_ANFORDERUNGEN_STRIPPED_JSON_PATH,
     ED23_ANFORDERUNGEN_RESPONSE_SCHEMA_PATH,
+    ED23_VERIFY_RESPONSE_SCHEMA_PATH,
+    ED23_MAKER_MODEL,
     PROMPT_CONFIG_PATH,
 )
 
 logger = logging.getLogger(__name__)
+
+# OSCAL parameter insert directive as it appears verbatim in catalog prose.
+_PARAM_INSERT_PATTERN = re.compile(r"\{\{\s*insert:\s*param,\s*([^}\s]+)\s*\}\}")
+
+# German abbreviations that end in a period but do not end a sentence. Kept conservative:
+# only forms that actually occur in BSI/G++ prose and are unambiguous.
+_ABBREVIATIONS = (
+    "z. B.", "z.B.", "d. h.", "d.h.", "u. a.", "u.a.", "u. U.", "o. Ä.", "o.Ä.",
+    "i. d. R.", "bzw.", "ggf.", "etc.", "evtl.", "inkl.", "vgl.", "bspw.",
+    "sog.", "ca.", "max.", "min.", "Nr.", "Abs.",
+)
+# Sentence boundary: terminal punctuation, whitespace, then an uppercase/quote/paren opener.
+_SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+(?=[A-ZÄÖÜ„\"(])")
+
+
+def _resolve_param_inserts(text: str, params: Dict[str, Dict[str, Any]]) -> str:
+    """Replaces `{{ insert: param, <id> }}` directives with the parameter's value.
+
+    The G++ resolved catalog keeps OSCAL insert directives in the prose while defining the
+    concrete values on the control itself (`params[].values`, `label` as fallback). Without
+    this substitution the model would see the raw directive instead of the most specific part
+    of the sentence. Unresolvable references are left verbatim.
+    """
+    def _replace(match: "re.Match[str]") -> str:
+        param = params.get(match.group(1))
+        if not param:
+            return match.group(0)
+        values = param.get("values") or ([param["label"]] if param.get("label") else [])
+        return ", ".join(values) if values else match.group(0)
+
+    return _PARAM_INSERT_PATTERN.sub(_replace, text or "")
+
+
+def _split_sentences(text: str) -> List[str]:
+    """Splits German prose into sentences without breaking at known abbreviations.
+
+    Used to number the sentences of every ED2023 Anforderung so the model can reference the
+    exact sentence (`satz_nr`) that carries a match. The same function validates the returned
+    numbers, so numbering is always self-consistent. Abbreviation periods are masked with a
+    sentinel before splitting (multi-word forms like "z. B." would otherwise split
+    internally) and restored afterwards.
+    """
+    normalized = " ".join((text or "").split())
+    if not normalized:
+        return []
+    sentinel = "\x00"
+    for abbr in sorted(_ABBREVIATIONS, key=len, reverse=True):
+        normalized = normalized.replace(abbr, abbr.replace(".", sentinel))
+    pieces = _SENTENCE_SPLIT.split(normalized)
+    return [p.replace(sentinel, ".").strip() for p in pieces if p.strip()]
 
 
 def _statement_prose(control: Dict[str, Any]) -> str:
@@ -81,15 +154,16 @@ def _statement_prose(control: Dict[str, Any]) -> str:
     return statement_in(parts) or first_prose(parts)
 
 
-def build_ed23_corpus(bsi_catalog: Dict[str, Any]) -> Tuple[List[Dict[str, str]], Dict[str, Dict[str, str]]]:
-    """Strips the ED2023 catalog to every Anforderung as `{id, name, prose}`.
+def build_ed23_corpus(bsi_catalog: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], Dict[str, Dict[str, Any]]]:
+    """Strips the ED2023 catalog to every Anforderung as `{id, name, prose, saetze}`.
 
-    Returns the stripped list and a lookup keyed by normalized id → `{id, name}` so the AI's
-    returned IDs can be validated and their canonical id/name restored. Nested sub-controls
-    are included.
+    `saetze` is the prose split into numbered sentences — the numbering the model references
+    via `satz_nr`. Returns the stripped list and a lookup keyed by normalized id →
+    `{id, name, n_saetze}` so the AI's returned IDs and sentence numbers can be validated and
+    the canonical id/name restored. Nested sub-controls are included.
     """
-    stripped: List[Dict[str, str]] = []
-    lookup: Dict[str, Dict[str, str]] = {}
+    stripped: List[Dict[str, Any]] = []
+    lookup: Dict[str, Dict[str, Any]] = {}
 
     def walk_controls(controls):
         for control in controls or []:
@@ -97,8 +171,9 @@ def build_ed23_corpus(bsi_catalog: Dict[str, Any]) -> Tuple[List[Dict[str, str]]
             if cid:
                 name = control.get("title", "") or ""
                 prose = (_statement_prose(control) or "").replace("\n", " ").strip()
-                stripped.append({"id": cid, "name": name, "prose": prose})
-                lookup[normalize_id(cid)] = {"id": cid, "name": name}
+                saetze = _split_sentences(prose)
+                stripped.append({"id": cid, "name": name, "prose": prose, "saetze": saetze})
+                lookup[normalize_id(cid)] = {"id": cid, "name": name, "n_saetze": len(saetze)}
             if control.get("controls"):
                 walk_controls(control["controls"])
 
@@ -112,14 +187,81 @@ def build_ed23_corpus(bsi_catalog: Dict[str, Any]) -> Tuple[List[Dict[str, str]]
     return stripped, lookup
 
 
-def _corpus_text(stripped: List[Dict[str, str]]) -> str:
-    """Renders the stripped corpus as one compact `id | name | prose` line per Anforderung."""
-    return "\n".join(f"{a['id']} | {a['name']} | {a['prose']}" for a in stripped)
+def _corpus_text(stripped: List[Dict[str, Any]]) -> str:
+    """Renders the corpus as one `id | name | (S1) ... (S2) ...` line per Anforderung."""
+    lines = []
+    for a in stripped:
+        numbered = " ".join(f"(S{i}) {s}" for i, s in enumerate(a["saetze"], start=1))
+        lines.append(f"{a['id']} | {a['name']} | {numbered}")
+    return "\n".join(lines)
 
 
-def _filter_matches(raw_matches: Any, id_lookup: Dict[str, Dict[str, str]]) -> List[Dict[str, str]]:
-    """Keeps only matches whose ID really exists in the ED23 corpus; restores canonical id/name."""
-    result: List[Dict[str, str]] = []
+def build_gpp_match_contexts(gpp_catalog: Dict[str, Any]) -> Dict[str, Dict[str, str]]:
+    """Extracts every G++ control with the full context the matching prompt needs.
+
+    Per control id this returns title, param-resolved statement prose and guidance, a
+    human-readable Praktik label (Baustein / Praktik), and `siblings`: the other controls of
+    the same Praktik (leaf group, nested sub-controls included) as `id | title | statement`
+    lines. The siblings are sent as negative context — they are mapped in their own queries,
+    so the model must not assign their content to this control (issue #28: matches were not
+    specific to the control within its Praktik).
+    """
+    contexts: Dict[str, Dict[str, str]] = {}
+    praktik_members: Dict[str, List[str]] = {}
+
+    def walk_control(control, praktik_key: str, praktik_label: str):
+        cid = control.get("id")
+        if cid:
+            params = {p.get("id"): p for p in control.get("params") or []}
+            statement, guidance = "", ""
+            for part in control.get("parts") or []:
+                if part.get("name") == "statement" and not statement:
+                    statement = part.get("prose", "") or ""
+                elif part.get("name") == "guidance" and not guidance:
+                    guidance = part.get("prose", "") or ""
+            if not statement and control.get("parts"):
+                statement = control["parts"][0].get("prose", "") or ""
+            contexts[cid] = {
+                "title": control.get("title", "") or "",
+                "prose": _resolve_param_inserts(statement, params).strip(),
+                "guidance": _resolve_param_inserts(guidance, params).strip(),
+                "praktik": praktik_label,
+            }
+            praktik_members.setdefault(praktik_key, []).append(cid)
+        for sub in control.get("controls") or []:
+            walk_control(sub, praktik_key, praktik_label)
+
+    def walk_groups(groups, baustein_title: Optional[str]):
+        for group in groups or []:
+            title = group.get("title", "") or ""
+            baustein = baustein_title or title
+            if group.get("controls"):
+                gid = group.get("id") or title
+                label = f"{baustein} / {title} ({gid})" if baustein != title else f"{title} ({gid})"
+                for control in group["controls"]:
+                    walk_control(control, gid, label)
+            walk_groups(group.get("groups"), baustein)
+
+    walk_groups(gpp_catalog.get("catalog", {}).get("groups", []), None)
+
+    for members in praktik_members.values():
+        for cid in members:
+            lines = [
+                f"- {sid} | {contexts[sid]['title']} | {contexts[sid]['prose']}"
+                for sid in members if sid != cid
+            ]
+            contexts[cid]["siblings"] = "\n".join(lines) if lines else "(keine)"
+    return contexts
+
+
+def _filter_matches(raw_matches: Any, id_lookup: Dict[str, Dict[str, Any]], control_id: str) -> List[Dict[str, Any]]:
+    """Keeps only matches whose ID really exists in the ED23 corpus; restores canonical id/name.
+
+    The model's `satz_nr` is validated against the Anforderung's real sentence count; a valid
+    number is kept and prefixed to the Begründung as `(Satz n)`, an invalid one is dropped
+    (the match itself is kept) and logged.
+    """
+    result: List[Dict[str, Any]] = []
     seen = set()
     if not isinstance(raw_matches, list):
         return result
@@ -130,10 +272,21 @@ def _filter_matches(raw_matches: Any, id_lookup: Dict[str, Dict[str, str]]) -> L
         if not canonical or canonical["id"] in seen:
             continue
         seen.add(canonical["id"])
+        satz_nr = item.get("satz_nr")
+        if not isinstance(satz_nr, int) or not (1 <= satz_nr <= canonical["n_saetze"]):
+            logger.warning(
+                f"Control '{control_id}': invalid satz_nr {satz_nr!r} for {canonical['id']} "
+                f"(has {canonical['n_saetze']} sentence(s)); keeping match without sentence ref."
+            )
+            satz_nr = None
+        begruendung = (item.get("begruendung", "") or "").strip()
+        if satz_nr:
+            begruendung = f"(Satz {satz_nr}) {begruendung}".strip()
         result.append({
             "id": canonical["id"],
             "name": canonical["name"],
-            "begruendung": item.get("begruendung", ""),
+            "begruendung": begruendung,
+            "satz_nr": satz_nr,
         })
     return result
 
@@ -141,19 +294,26 @@ def _filter_matches(raw_matches: Any, id_lookup: Dict[str, Dict[str, str]]) -> L
 async def _match_control(
     ai_client: AiClient,
     control_id: str,
-    control: Dict[str, Any],
+    control: Dict[str, str],
     prompt_template: str,
     schema: Dict[str, Any],
-    id_lookup: Dict[str, Dict[str, str]],
+    id_lookup: Dict[str, Dict[str, Any]],
     cached_content: str,
     inline_prefix: str,
     semaphore: asyncio.Semaphore,
-) -> Tuple[str, List[Dict[str, str]]]:
-    """Asks the AI for the ED23 Anforderungen matching one G++ control; returns filtered matches."""
+) -> Tuple[str, List[Dict[str, Any]]]:
+    """Asks the AI for ED23 Anforderungen *candidates* for one G++ control (recall pass).
+
+    The prompt deliberately over-collects; every returned candidate is subsequently
+    re-judged by `_verify_candidate` (precision pass). ID validation / dedup happens here.
+    """
     user_prompt = prompt_template.format(
+        control_id=control_id,
         title=control.get("title", ""),
         prose=control.get("prose", ""),
-        guidance="",
+        guidance=control.get("guidance") or "(keine)",
+        praktik=control.get("praktik", ""),
+        siblings=control.get("siblings") or "(keine)",
     )
     # When the cache is unavailable, inline the system + corpus so grounding still applies.
     prompt = user_prompt if cached_content else f"{inline_prefix}\n\n{user_prompt}"
@@ -165,13 +325,111 @@ async def _match_control(
                 json_schema=schema,
                 request_context_log=f"ED23Abgleich-{control_id}",
                 cached_content=cached_content,
+                model_override=ED23_MAKER_MODEL,
             )
         except Exception as e:
             logger.warning(f"AI matching failed for G++ control '{control_id}': {e}")
             return control_id, []
 
-    matches = _filter_matches(response, id_lookup)
-    logger.debug(f"Control '{control_id}': {len(matches)} ED23 Anforderung(en) matched.")
+    matches = _filter_matches(response, id_lookup, control_id)
+    logger.debug(f"Control '{control_id}': {len(matches)} ED23 candidate(s) found.")
+    return control_id, matches
+
+
+async def _verify_candidate(
+    ai_client: AiClient,
+    control_id: str,
+    control: Dict[str, str],
+    candidate: Dict[str, Any],
+    saetze_by_id: Dict[str, List[str]],
+    verify_prompt_template: str,
+    verify_schema: Dict[str, Any],
+    semaphore: asyncio.Semaphore,
+) -> Optional[Dict[str, Any]]:
+    """Strictly re-judges one candidate pair; returns the final match or None (checker pass).
+
+    The verification prompt is self-contained (control context + the candidate Anforderung's
+    numbered sentences), so it needs no corpus cache. The verifier's verdict replaces the
+    candidate's satz_nr and Begründung; an out-of-range satz_nr is dropped but the match kept.
+    """
+    saetze = saetze_by_id.get(candidate["id"], [])
+    numbered = "\n".join(f"(S{i}) {s}" for i, s in enumerate(saetze, start=1))
+    prompt = verify_prompt_template.format(
+        praktik=control.get("praktik", ""),
+        control_id=control_id,
+        title=control.get("title", ""),
+        prose=control.get("prose", ""),
+        guidance=control.get("guidance") or "(keine)",
+        siblings=control.get("siblings") or "(keine)",
+        anf_id=candidate["id"],
+        anf_name=candidate["name"],
+        anf_saetze=numbered or "(keine)",
+    )
+    async with semaphore:
+        try:
+            verdict = await ai_client.generate_validated_json_response(
+                prompt=prompt,
+                json_schema=verify_schema,
+                request_context_log=f"ED23Verify-{control_id}-{candidate['id']}",
+            )
+        except Exception as e:
+            logger.warning(
+                f"Verification failed for '{control_id}' -> '{candidate['id']}': {e}; dropping candidate."
+            )
+            return None
+
+    if not isinstance(verdict, dict) or not verdict.get("match"):
+        return None
+    satz_nr = verdict.get("satz_nr")
+    if not isinstance(satz_nr, int) or not (1 <= satz_nr <= len(saetze)):
+        logger.warning(
+            f"Control '{control_id}': verifier returned invalid satz_nr {satz_nr!r} for "
+            f"{candidate['id']} (has {len(saetze)} sentence(s)); keeping match without sentence ref."
+        )
+        satz_nr = None
+    begruendung = (verdict.get("begruendung", "") or "").strip()
+    if satz_nr:
+        # "Teilanforderung" is the project's term for a numbered sentence of an ED23
+        # Anforderung (not a BSI-standard term; used once in the BSI Auditierungsschema).
+        begruendung = f"(Teilanforderung {satz_nr}) {begruendung}".strip()
+    return {
+        "id": candidate["id"],
+        "name": candidate["name"],
+        "begruendung": begruendung,
+        "satz_nr": satz_nr,
+    }
+
+
+async def match_and_verify_control(
+    ai_client: AiClient,
+    control_id: str,
+    control: Dict[str, str],
+    prompt_template: str,
+    schema: Dict[str, Any],
+    verify_prompt_template: str,
+    verify_schema: Dict[str, Any],
+    id_lookup: Dict[str, Dict[str, Any]],
+    saetze_by_id: Dict[str, List[str]],
+    cached_content: str,
+    inline_prefix: str,
+    semaphore: asyncio.Semaphore,
+) -> Tuple[str, List[Dict[str, Any]]]:
+    """Full maker-checker flow for one G++ control: collect candidates, verify each, keep survivors."""
+    _, candidates = await _match_control(
+        ai_client, control_id, control, prompt_template, schema, id_lookup,
+        cached_content, inline_prefix, semaphore,
+    )
+    verified = await asyncio.gather(*(
+        _verify_candidate(
+            ai_client, control_id, control, candidate, saetze_by_id,
+            verify_prompt_template, verify_schema, semaphore,
+        )
+        for candidate in candidates
+    ))
+    matches = [m for m in verified if m]
+    logger.debug(
+        f"Control '{control_id}': {len(matches)} of {len(candidates)} candidate(s) verified."
+    )
     return control_id, matches
 
 
@@ -195,7 +453,7 @@ def _atomic_save_json(data: Dict[str, Any], path: str) -> None:
         raise
 
 
-def _load_checkpoint(path: str) -> Dict[str, List[Dict[str, str]]]:
+def _load_checkpoint(path: str) -> Dict[str, List[Dict[str, Any]]]:
     """Loads the per-control results from a prior run. Returns {} if absent or unreadable."""
     if not os.path.exists(path):
         return {}
@@ -231,15 +489,18 @@ async def run_stage_ed23_anforderungen() -> None:
 
     prompt_config = load_json_file(PROMPT_CONFIG_PATH)
     schema = load_json_file(ED23_ANFORDERUNGEN_RESPONSE_SCHEMA_PATH)
+    verify_schema = load_json_file(ED23_VERIFY_RESPONSE_SCHEMA_PATH)
     system_instruction = prompt_config["ed23_abgleich_system"]
     prompt_template = prompt_config["ed23_abgleich_prompt"]
+    verify_prompt_template = prompt_config["ed23_abgleich_verify_prompt"]
 
-    # G++ controls to map (all of them).
-    gpp_controls = extract_all_gpp_controls(gpp_catalog)
-    logger.info(f"Extracted {len(gpp_controls)} G++ controls.")
+    # G++ controls to map (all of them), each with statement, guidance, and Praktik siblings.
+    gpp_controls = build_gpp_match_contexts(gpp_catalog)
+    logger.info(f"Extracted {len(gpp_controls)} G++ controls with Praktik context.")
 
     # Stripped ED2023 corpus used as the cached grounding context.
     stripped, id_lookup = build_ed23_corpus(bsi_catalog)
+    saetze_by_id = {a["id"]: a["saetze"] for a in stripped}
     corpus_text = _corpus_text(stripped)
     logger.info(f"Built ED2023 corpus with {len(stripped)} Anforderungen ({len(corpus_text)} chars).")
     save_json_file({"ed23_anforderungen": stripped}, ED23_ANFORDERUNGEN_STRIPPED_JSON_PATH)
@@ -248,11 +509,14 @@ async def run_stage_ed23_anforderungen() -> None:
 
     # Explicit context cache: the corpus is the cached content, the short ED23 system prompt the
     # cached system instruction. Reused across every per-control call.
-    cached_content = ai_client.create_context_cache(content=corpus_text, system_instruction=system_instruction)
+    # The cache must live on the maker model — the candidate pass is the only cached caller.
+    cached_content = ai_client.create_context_cache(
+        content=corpus_text, system_instruction=system_instruction, model_override=ED23_MAKER_MODEL
+    )
     # Fallback prefix inlined into each prompt when caching is unavailable (system + corpus).
     inline_prefix = (
         f"{system_instruction}\n\nVerfügbare BSI ED2023 Anforderungen "
-        f"(Format: ID | Name | Beschreibung):\n{corpus_text}"
+        f"(Format: ID | Name | Beschreibung als nummerierte Sätze (S1) (S2) ...):\n{corpus_text}"
     )
 
     # Respect Test Mode (Rule 9.1): only the first 3 controls.
@@ -264,7 +528,7 @@ async def run_stage_ed23_anforderungen() -> None:
     # Resume support: load already-computed controls and only query the remaining ones. Each
     # completed control is appended to the checkpoint immediately, so a crash loses at most the
     # controls that were still in flight.
-    final_map: Dict[str, List[Dict[str, str]]] = _load_checkpoint(CHECKPOINT_PATH)
+    final_map: Dict[str, List[Dict[str, Any]]] = _load_checkpoint(CHECKPOINT_PATH)
     pending = [(cid, control) for cid, control in control_items if cid not in final_map]
     checkpoint_lock = asyncio.Lock()
 
@@ -275,8 +539,9 @@ async def run_stage_ed23_anforderungen() -> None:
     )
 
     async def _match_and_checkpoint(cid: str, control: Dict[str, Any]) -> None:
-        control_id, matches = await _match_control(
-            ai_client, cid, control, prompt_template, schema, id_lookup,
+        control_id, matches = await match_and_verify_control(
+            ai_client, cid, control, prompt_template, schema,
+            verify_prompt_template, verify_schema, id_lookup, saetze_by_id,
             cached_content, inline_prefix, semaphore,
         )
         # Serialize writes so the checkpoint file stays consistent under concurrency.

@@ -13,14 +13,19 @@
         "type": "string",
         "description": "The name/title of the Anforderung."
       },
+      "satz_nr": {
+        "type": "integer",
+        "description": "The number n of the sentence (S n) in the Anforderung's description that carries the match, per the numbering in the provided list."
+      },
       "begruendung": {
         "type": "string",
-        "description": "Short justification why this Anforderung matches the G++ control."
+        "description": "Short justification why exactly this sentence of the Anforderung matches the G++ control."
       }
     },
     "required": [
       "id",
       "name",
+      "satz_nr",
       "begruendung"
     ]
   }

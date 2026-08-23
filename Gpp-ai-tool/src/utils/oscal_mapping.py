@@ -12,7 +12,13 @@ Modelling choices (see the mapping metaschema for the authoritative vocabulary):
   the BSI IT-Grundschutz Edition 2023 catalog.
 * One ``map`` per (G++ control, ED2023 Anforderung) pair, so every match keeps
   its own justification: the Anforderung ``name`` becomes a ``label`` prop on the
-  target item and the ``begruendung`` becomes the map's ``remarks``.
+  target item and the ``begruendung`` becomes the map's ``remarks``. When the
+  match carries a validated ``satz_nr`` (the number of the "Teilanforderung" —
+  the numbered sentence of the Anforderung's prose that carries the match), it
+  is additionally recorded as a ``statement-sentence`` prop on the target item
+  (the Begründung text already starts with ``(Teilanforderung n)``). The term
+  "Teilanforderung" appears in no BSI standard; it is used only in one
+  paragraph of the BSI Auditierungsschema.
 * ``relationship`` defaults to ``intersects-with`` — the LLM identifies related /
   overlapping requirements, not proven equality (allowed tokens: equivalent-to,
   equal-to, subset-of, superset-of, intersects-with, no-relationship).
@@ -55,7 +61,8 @@ def to_oscal_mapping_collection(
 
     Args:
         per_control_map: Maps each G++ control id to a list of matching ED2023
-            Anforderungen, each ``{"id", "name", "begruendung"}``.
+            Anforderungen, each ``{"id", "name", "begruendung"}`` plus an
+            optional ``satz_nr`` (validated matching-sentence number).
         source_href / target_href: Hrefs recorded on the source/target catalog
             resource references (default to the project's catalog URLs).
         relationship: Mapping relationship token applied to every map entry.
@@ -78,9 +85,15 @@ def to_oscal_mapping_collection(
             if not target_id:
                 continue
             target: Dict[str, Any] = {"type": "control", "id-ref": target_id}
+            props: List[Dict[str, str]] = []
             name = (match.get("name") or "").strip()
             if name:
-                target["props"] = [{"name": "label", "value": name}]
+                props.append({"name": "label", "value": name})
+            satz_nr = match.get("satz_nr")
+            if isinstance(satz_nr, int) and satz_nr > 0:
+                props.append({"name": "statement-sentence", "value": str(satz_nr)})
+            if props:
+                target["props"] = props
 
             entry: Dict[str, Any] = {
                 "uuid": _uuid("map", control_id, target_id),
@@ -116,8 +129,13 @@ def to_oscal_mapping_collection(
                 "mapping-description": (
                     "Automatisch erzeugte Zuordnung jeder Grundschutz++ Control zu den "
                     "inhaltlich passenden BSI IT-Grundschutz Edition 2023 Anforderungen "
-                    "(LLM-gestützter semantischer Abgleich, jede ID gegen den ED2023-Katalog "
-                    "validiert)."
+                    "(LLM-gestützter semantischer Abgleich in zwei Stufen — Kandidatensuche "
+                    "und strenge Einzelprüfung —, jede ID gegen den ED2023-Katalog validiert). "
+                    "Jede Zuordnung nennt die tragende „Teilanforderung“: den nummerierten "
+                    "Satz der ED23-Anforderung (Begründungs-Präfix „(Teilanforderung n)“, "
+                    "Prop statement-sentence). Der Begriff „Teilanforderung“ stammt aus "
+                    "keinem BSI-Standard; er wird lediglich in einem Absatz des "
+                    "BSI-Auditierungsschemas verwendet."
                 ),
             },
             "mappings": [mapping],

@@ -46,7 +46,8 @@ The tool is configured via environment variables. Create a `.env` file or export
 | `GCP_PROJECT_ID` | Your Google Cloud Project ID (for Vertex AI / Gemini) | Yes |
 | `REGION` | GCP Region (default: `global`) | No |
 | `AI_ENDPOINT_ID` | Optional Vertex AI endpoint/model override (model id otherwise comes from `constants.GROUND_TRUTH_MODEL`) | No |
-| `GROUND_TRUTH_MODEL` / `GROUND_TRUTH_MODEL_PRO` | Override the default Gemini model ids (default: current preview ids) | No |
+| `GROUND_TRUTH_MODEL` / `GROUND_TRUTH_MODEL_PRO` | Override the default Gemini model ids (defaults: `gemini-3.7-flash` / `gemini-3.1-pro-preview`) | No |
+| `ED23_MAKER_MODEL` | Model for the ED23 candidate (maker) pass in `stage_ed23_anforderungen` (default: `gemini-3-flash-preview` — deliberately more generous than the strict verifier on `GROUND_TRUTH_MODEL`) | No |
 | `TEST` | Set to `true` for test mode (default: `false`) | No |
 | `MAX_CONCURRENT_AI_REQUESTS` | Limit parallel AI calls (default: `5`) | No |
 | `OVERWRITE_TEMP_FILES` | Regenerate existing output files (default: `false`) | No |
@@ -92,7 +93,7 @@ You can run specific stages using the `--stage` argument. The full pipeline runs
 | 3 | `stage_profiles` | No | Generates the **base OSCAL profiles** — one per Zielobjekt — each importing the G++ catalog and including **all** of that Zielobjektkategorie's controls. Output is split into `Zielobjektkategorien/profile/regular/` and `…/process/` (Methodik and `*_prozesse`). |
 | 4 | `stage_ED23_profiles_enhanced` | **Yes** | For each matched Baustein, takes the base profile (all controls of the Zielobjektkategorie) and enriches every control with maturity-level statements (levels 1–5) plus classifications (NIST class, ISMS phase, CIA) as OSCAL `alter` blocks. The enrichment is driven by best practices and the **description of the BSI Baustein** the profile is based on. Writes per-Baustein profiles to `ED23-Baustein-profile/DE/` as `[Zielobjektkategorie]_[Baustein-ID]_[Baustein-Name].json`. |
 | 5 | `stage_base_process_enhanced` | **Yes** | Enriches the process profiles (`Zielobjektkategorien/profile/process/`) the same way — maturity sub-statements plus classifications as `alter` blocks — writing `*_enhanced.json` next to each base process profile. |
-| 6 | `stage_ed23_anforderungen` | **Yes** | For every G++ control, finds **all** matching BSI ED2023 Anforderungen (grounded on a cached, stripped ED2023 corpus; returned IDs are validated against the real catalog). Writes the OSCAL mapping collection `hilfsdateien/gpp_ed23_anforderungen.json`, which the GS++-oscal-app use for the "Zeige BSI ED23 Anforderungen" panel. |
+| 6 | `stage_ed23_anforderungen` | **Yes** | For every G++ control, finds the **precisely** matching BSI ED2023 Anforderungen via a **maker-checker** design: a generous candidate pass (`ED23_MAKER_MODEL`, grounded on a cached, stripped ED2023 corpus with numbered sentences) followed by a strict per-candidate verification pass on the default model (self-contained prompt, no corpus). The prompts carry the control's full context — param-resolved statement, guidance, and the sibling controls of the same Praktik as explicit negative context — and every verified match names the **Teilanforderung** it rests on — the numbered ED23 sentence (`(Teilanforderung n)` in the Begründung, `statement-sentence` prop in OSCAL); IDs and sentence numbers are validated against the real catalog. ("Teilanforderung" is not a BSI-standard term; it appears only in one paragraph of the BSI Auditierungsschema.) Writes the OSCAL mapping collection `hilfsdateien/gpp_ed23_anforderungen.json`, which the GS++-oscal-app use for the "Zeige BSI ED23 Anforderungen" panel. |
 | 7 | `stage_prozessbausteine` | **Yes** | The inverse direction, 1:1: maps **every** Anforderung of the process-oriented ED2023 layers (ISMS, ORP, CON, OPS, DER) to its single best G++ control (Gemini Pro with thinking, grounded on the cached full G++ catalog). Runs in rounds until every Anforderung is mapped — unmatched ones are re-queried with a stricter prompt — and only publishes on full coverage. Writes `hilfsdateien/prozessbausteine_mapping.json`. |
 
 #### Data flow
@@ -108,7 +109,7 @@ catalogs + CSV (GitHub)
   4 ED23_profiles_enhanced ──► enriched profiles (+ alter blocks)   ED23-Baustein-profile/DE/   [AI, per Baustein]
   5 base_process_enhanced ──► enriched process profiles (*_enhanced.json)   …/profile/process/   [AI]
         │
-  6 ed23_anforderungen ──► gpp_ed23_anforderungen.json   (G++ control → ED23 Anforderungen, 1:n)   [AI]
+  6 ed23_anforderungen ──► gpp_ed23_anforderungen.json   (G++ control → ED23 Anforderungen, 1:n)   [AI, maker+checker]
   7 prozessbausteine  ──► prozessbausteine_mapping.json  (ED23 Anforderung → G++ control, 1:1)     [AI]
 ```
 
