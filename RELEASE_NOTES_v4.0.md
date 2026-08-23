@@ -76,6 +76,18 @@ Scheitert ein Live-Speichern — typisch: die Sperre fehlt —, erscheint ein **
 - **Schwebende Filterleiste links** (`gppFilterDock`) für Seiten ohne Filter in der Navigation — zuerst im SSP-Generator für die Tailoring-Suche.
 - **Log-Konsolen** klappen jetzt überall wirklich zusammen (auch bei fester CSS-Höhe), und der DB-Status-Chip weicht der eingeklappten Konsole aus, statt ihre Bedienung zu überdecken.
 
+## Präziseres G++ ↔ ED23-Mapping — mit Teilanforderungen
+
+Die vorberechnete Zuordnung jeder Grundschutz++-Maßnahme zu den Anforderungen der Edition 2023 (`hilfsdateien/gpp_ed23_anforderungen.json`, im Explorer das Panel „Zeige BSI ED23 Anforderungen") war unpräzise: oft zu viele Treffer, nicht spezifisch für die Maßnahme innerhalb ihrer Praktik (Issue #28). Die Ursache lag im Kontext — die KI sah nur Titel und einen einzelnen Statement-Satz; die Erläuterung wurde verworfen, bei einem Fünftel der Maßnahmen standen rohe Parameter-Platzhalter im Text, und von den Nachbar-Maßnahmen derselben Praktik wusste sie nichts.
+
+Die Zuordnung wurde vollständig neu erzeugt, mit drei Änderungen:
+
+- **Voller Kontext, klare Abgrenzung.** Jede Anfrage trägt jetzt Statement (Parameter aufgelöst), Erläuterung und Praktik — und die Nachbar-Maßnahmen als ausdrückliche Negativ-Liste: Was primär zu einer Nachbar-Maßnahme gehört, wird nicht dieser zugeordnet.
+- **Zwei Stufen statt einer.** Ein großzügiger Suchlauf sammelt Kandidaten (gegen den vollständigen, gecachten ED23-Korpus), danach prüft ein strengeres Modell jeden Kandidaten einzeln. Nur was die Prüfung besteht, erreicht die Datei. Im handgeprüften Sample blockiert das alle bekannten Fehlzuordnungs-Muster — thematische Nähe ohne inhaltliche Deckung überlebt die Einzelprüfung nicht.
+- **Jede Zuordnung nennt ihre Teilanforderung.** Die Beschreibungen der ED23-Anforderungen sind satzweise nummeriert; jede Zuordnung benennt den tragenden Satz — wir nennen ihn **Teilanforderung** — als Präfix `(Teilanforderung n)` in der Begründung und maschinenlesbar als `statement-sentence`-Prop. Damit ist jeder Treffer in Sekunden nachprüfbar: Man liest genau den Satz, auf dem er ruht. (Der Begriff „Teilanforderung" stammt aus keinem BSI-Standard; er wird lediglich in einem Absatz des BSI-Auditierungsschemas verwendet — wir übernehmen ihn, weil er das Gemeinte präzise trifft.)
+
+Das Ergebnis: **3.046 verifizierte Zuordnungen für 820 Maßnahmen** statt zuvor 5.521 für 1.000 — im Median 3 statt 5 pro Maßnahme. Dass 180 Maßnahmen jetzt ohne Treffer dastehen, ist beabsichtigt: G++-spezifische Konzepte (etwa die Strukturmodellierungs-Methodik) haben in der Edition 2023 schlicht kein Gegenstück, und eine leere Liste ist ehrlicher als eine ungefähre. Der Explorer zeigt die neuen Begründungen ohne eigene Änderung an; die Erzeugung ist im Gpp-ai-tool dokumentiert (Maker-Checker-Verfahren, `ED23_MAKER_MODEL`).
+
 ## Befunde aus dem Release-Candidate-Test
 
 Der Testlauf mit der Datenbank (Admin legt ein Set an, erzeugt ein Baustein-Profil, will es im SSP verwenden und Rechte vergeben) hat eine Kette stiller Ausfälle aufgedeckt — jeder für sich klein, zusammen ein „es geht nicht":
