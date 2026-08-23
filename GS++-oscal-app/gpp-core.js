@@ -1399,6 +1399,91 @@ function gppRemoteChip() {
   return chip;
 }
 
+/* Sperr-Pill: gut sichtbarer Hinweis OBEN in jedem Werkzeug, sobald das aktive
+   Set in der Zusammenarbeit nicht von MIR gesperrt ist — also jedes Speichern
+   verweigert würde. Der Status-Chip unten rechts ist leicht zu übersehen, und
+   das rote Banner (gppWriteBlockedBanner) erscheint erst NACH dem ersten
+   verweigerten Speichern; die Pill sagt es vorher und bietet das Sperren
+   direkt an, ohne Umweg über die Übersicht. Ohne Datenbank oder ohne Anmeldung
+   gibt es keine Pill (Offline-Betrieb ist der Normalfall). index.html
+   unterdrückt sie (window.GPP_NO_LOCK_PILL): dort steht die Sperr-Verwaltung
+   selbst, und die eingebetteten Werkzeuge bringen ihre eigene Pill mit —
+   zwei Pills übereinander wären Lärm. */
+function gppLockPill() {
+  if (window.GPP_REMOTE_NO_CHIP || window.GPP_NO_LOCK_PILL || !gppRemote.enabled()) return null;
+  const old = document.getElementById("gpp-lock-pill");
+  if (old) old.remove();
+  const pill = document.createElement("div");
+  pill.id = "gpp-lock-pill";
+  pill.style.cssText = "position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:150;display:none;" +
+    "align-items:center;gap:9px;font:600 11.5px/1.35 ui-monospace,Consolas,monospace;letter-spacing:.03em;" +
+    "padding:7px 13px;border-radius:999px;border:1px solid #fbbf24;color:#fbbf24;" +
+    "background:rgba(15,23,42,.94);backdrop-filter:blur(10px);box-shadow:0 8px 24px rgba(0,0,0,.35);" +
+    "max-width:min(92vw,760px)";
+  const text = document.createElement("span");
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.textContent = "Jetzt sperren";
+  btn.style.cssText = "border:1px solid #fbbf24;background:transparent;color:inherit;font:inherit;" +
+    "padding:3px 10px;border-radius:999px;cursor:pointer;white-space:nowrap;flex:none";
+  pill.append(text, btn);
+  let busy = false;
+  let fehler = "";   // letzte Fehlermeldung bleibt stehen, bis der Zustand sich wirklich ändert
+  btn.addEventListener("click", async () => {
+    if (busy) return;
+    busy = true;
+    btn.textContent = "sperre …";
+    try {
+      const lock = await gppRemote.lockAcquire();
+      /* Erfolg meldet sich selbst: lockAcquire → _refreshLock → Event → render
+         versteckt die Pill. Nur die Ablehnung braucht Worte. */
+      if (!lock) fehler = "Sperre nicht bekommen — jemand anderes hält sie bereits.";
+    } catch (e) {
+      /* Serverantworten sind hier die Erklärung: „keine Berechtigung, dieses
+         Set zu sperren" (leser) oder „Set existiert nicht — neue Sets legt
+         der admin an" (bearbeiter auf rein lokalem Set). */
+      fehler = "Sperren nicht möglich: " + ((e && e.message) || e);
+    } finally {
+      busy = false;
+      btn.textContent = "Jetzt sperren";
+      render();
+    }
+  });
+  const render = async () => {
+    const s = await gppRemote.status();
+    const info = s.lock;
+    const set = gppArtefacts.activeSet();
+    let show = false;
+    if (s.enabled && s.loggedIn && info && !info.transportError && info.set === set && !info.mine) {
+      show = true;
+      if (!info.lock) {
+        text.textContent = `🔓 Set „${set}" ist nicht gesperrt — Änderungen werden NICHT gespeichert.` +
+          (fehler ? " · " + fehler : "");
+        btn.style.display = "";
+      } else {
+        /* Fremde Sperre: nur ansagen. Brechen darf sie der admin — bewusst in
+           der Übersicht (mit Rückfrage und Audit), nicht per Ein-Klick hier. */
+        text.textContent = `🔒 Set „${set}" ist von ${info.lock.holder_name || "jemand anderem"} gesperrt — nur lesen.`;
+        btn.style.display = "none";
+        fehler = "";
+      }
+    } else {
+      fehler = "";
+    }
+    /* Nicht unter das rote Verweigerungs-Banner (z-index 200, oben) legen —
+       wenn beides ansteht, rückt die Pill darunter. */
+    pill.style.top = document.getElementById("gpp-writeblock") ? "56px" : "10px";
+    pill.style.display = show ? "inline-flex" : "none";
+  };
+  window.addEventListener("gpp:remote-changed", () => { render(); });
+  window.addEventListener("gpp:artefacts-changed", e => {
+    if (e.detail && (e.detail.setChanged || e.detail.knownSets)) render();
+  });
+  render();
+  document.body.appendChild(pill);
+  return pill;
+}
+
 /* Anstöße für die Outbox: Rückkehr der Verbindung, Sichtbarwerden des Tabs,
    Sicherheitsnetz-Intervall, und einmal kurz nach dem Laden. */
 if (typeof window !== "undefined") {
@@ -1446,6 +1531,7 @@ if (typeof window !== "undefined") {
       setTimeout(() => gppRemote._refreshLock().catch(() => {}), 1200);
     }
     gppRemoteChip();
+    gppLockPill();
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", gppRemoteBoot);
   else gppRemoteBoot();

@@ -258,6 +258,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
     <p class="sub">Kataloge und Hilfsdateien hängen an einem festen Commit, damit dieselbe Eingabe morgen dasselbe Ergebnis liefert (Handbuch 3.13/3.14, Grundregel 8). Aktuell bleiben Sie trotzdem: „Nach Updates suchen" holt den neuesten Commit der jeweiligen Datei, zeigt ihn an und übernimmt ihn erst auf Klick.</p>
     <div class="row" style="margin-bottom:12px">
       <button class="btn primary" id="btn-check-all">⟳ Alle Quellen prüfen</button>
+      <button class="btn" id="btn-update-all" title="Alle prüfbaren Quellen in einem Rutsch auf den jeweils neuesten Commit umpinnen (mit Rückfrage; inhaltsgepinnte Quellen bleiben unberührt)">⤒ Alle updaten</button>
       <button class="btn" id="btn-reset-src">Alle auf Tool-Standard zurücksetzen</button>
       <span class="note" id="src-summary" style="margin:0"></span>
     </div>
@@ -342,7 +343,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
   </div>
 </main>
 
-<script src="gpp-core.js?v=3.9"></script>
+<script src="gpp-core.js?v=4.0"></script>
 <script>
 /* Diese Seite unterdrückt den selbst einhängenden Status-Chip des Kerns —
    der Zustand steht hier ausführlich im Abschnitt "Zusammenarbeit". */
@@ -577,6 +578,43 @@ function sourceRegistrations() {
 }
 /* Pin-Zerlegung liegt im Core, damit Tools und diese Seite dieselbe Regel nutzen */
 const commitOf = gppCommitOf;
+function sourceRowHTML(s) {
+  const url = gppSource(s.id, s.default);
+  const pinned = !gppIsUnpinned(url);
+  const commit = commitOf(url);
+  const overridden = !!localStorage.getItem("gpp:cfg:src:" + s.id);
+  return `<div class="src" data-src="${s.id}">
+    <div class="hd">
+      <span class="nm">${s.label || s.id}</span>
+      <span class="pill ${pinned ? "ok" : "bad"}">${pinned ? "gepinnt " + (commit || "").slice(0, 10) : "Branch — ungepinnt"}</span>
+      ${overridden ? '<span class="pill warn">abweichend vom Tool-Standard</span>' : ""}
+      ${s.fixed ? '<span class="pill">inhaltsgepinnt (SHA-256)</span>' : ""}
+      <span style="flex:1"></span>
+      ${s.fixed ? "" : `<button class="btn" data-check="${s.id}">Nach Updates suchen</button>`}
+    </div>
+    <div class="note" style="margin:0 0 4px">${s.repo || ""}${s.path ? " · " + s.path : ""} — genutzt von ${(s.tools || []).join(", ")}</div>
+    <code>${url}</code>
+    <div class="note" data-result="${s.id}"></div>
+  </div>`;
+}
+function updateSourceSummary(regs) {
+  const unpinned = regs.filter(s => gppIsUnpinned(gppSource(s.id, s.default))).length;
+  $("src-summary").textContent = `${regs.length} Quellen · ${unpinned ? unpinned + " ungepinnt" : "alle gepinnt"}`;
+}
+/* Genau EINE Zeile neu aufbauen (Pill „gepinnt …", URL, Ergebnistext) —
+   NICHT die ganze Liste: Das frühere renderSources() nach jedem „umstellen"
+   wischte die Prüfergebnisse aller übrigen Quellen weg, und die Update-Prüfung
+   wirkte, als höre sie nach der ersten Quelle auf. */
+function refreshSourceRow(s, resultHtml) {
+  const row = $("src-body").querySelector(`[data-src="${s.id}"]`);
+  if (!row) return;
+  row.outerHTML = sourceRowHTML(s);
+  const neu = $("src-body").querySelector(`[data-src="${s.id}"]`);
+  const btn = neu.querySelector("button[data-check]");
+  if (btn) btn.addEventListener("click", () => checkSource(s));
+  if (resultHtml) neu.querySelector(`[data-result="${s.id}"]`).innerHTML = resultHtml;
+  updateSourceSummary(sourceRegistrations());
+}
 function renderSources() {
   const regs = sourceRegistrations();
   const body = $("src-body");
@@ -585,29 +623,23 @@ function renderSources() {
     $("src-summary").textContent = "";
     return;
   }
-  const unpinned = regs.filter(s => gppIsUnpinned(gppSource(s.id, s.default))).length;
-  $("src-summary").textContent = `${regs.length} Quellen · ${unpinned ? unpinned + " ungepinnt" : "alle gepinnt"}`;
-  body.innerHTML = regs.map(s => {
-    const url = gppSource(s.id, s.default);
-    const pinned = !gppIsUnpinned(url);
-    const commit = commitOf(url);
-    const overridden = !!localStorage.getItem("gpp:cfg:src:" + s.id);
-    return `<div class="src" data-src="${s.id}">
-      <div class="hd">
-        <span class="nm">${s.label || s.id}</span>
-        <span class="pill ${pinned ? "ok" : "bad"}">${pinned ? "gepinnt " + (commit || "").slice(0, 10) : "Branch — ungepinnt"}</span>
-        ${overridden ? '<span class="pill warn">abweichend vom Tool-Standard</span>' : ""}
-        ${s.fixed ? '<span class="pill">inhaltsgepinnt (SHA-256)</span>' : ""}
-        <span style="flex:1"></span>
-        ${s.fixed ? "" : `<button class="btn" data-check="${s.id}">Nach Updates suchen</button>`}
-      </div>
-      <div class="note" style="margin:0 0 4px">${s.repo || ""}${s.path ? " · " + s.path : ""} — genutzt von ${(s.tools || []).join(", ")}</div>
-      <code>${url}</code>
-      <div class="note" data-result="${s.id}"></div>
-    </div>`;
-  }).join("");
+  updateSourceSummary(regs);
+  body.innerHTML = regs.map(sourceRowHTML).join("");
   body.querySelectorAll("button[data-check]").forEach(b =>
     b.addEventListener("click", () => checkSource(regs.find(s => s.id === b.dataset.check))));
+}
+/* Jüngster Commit, der den Pfad der Quelle berührt — der Kandidat fürs Umpinnen. */
+async function latestCommitOf(s) {
+  const api = `https://api.github.com/repos/${s.repo}/commits?path=${encodeURIComponent(s.path)}&per_page=1`;
+  const tok = gppCfg.get("gh:token");
+  const r = await fetch(api, tok ? { headers: { Authorization: "Bearer " + tok } } : undefined);
+  if (!r.ok) throw new Error("HTTP " + r.status + (r.status === 403
+    ? (tok ? " (Token abgelehnt oder Limit erschöpft)" : " (API-Limit — oben einen GitHub-Token hinterlegen oder später erneut)")
+    : ""));
+  const [latest] = await r.json();
+  if (!latest) return null;
+  return { sha: latest.sha, datum: (latest.commit.author.date || "").slice(0, 10),
+    botschaft: (latest.commit.message || "").split("\n")[0].slice(0, 90) };
 }
 async function checkSource(s) {
   const box = $("src-body").querySelector(`[data-result="${s.id}"]`);
@@ -615,28 +647,23 @@ async function checkSource(s) {
   if (!s.repo || !s.path) { box.textContent = "Für diese Quelle ist kein Repository/Pfad hinterlegt — Update-Prüfung nicht möglich."; return; }
   box.textContent = "frage GitHub …";
   try {
-    const api = `https://api.github.com/repos/${s.repo}/commits?path=${encodeURIComponent(s.path)}&per_page=1`;
-    const tok = gppCfg.get("gh:token");
-    const r = await fetch(api, tok ? { headers: { Authorization: "Bearer " + tok } } : undefined);
-    if (!r.ok) throw new Error("HTTP " + r.status + (r.status === 403
-      ? (tok ? " (Token abgelehnt oder Limit erschöpft)" : " (API-Limit — oben einen GitHub-Token hinterlegen oder später erneut)")
-      : ""));
-    const [latest] = await r.json();
+    const latest = await latestCommitOf(s);
     if (!latest) { box.textContent = "Keine Commits gefunden."; return; }
     const cur = commitOf(gppSource(s.id, s.default));
     if (cur === latest.sha) {
-      box.innerHTML = `<span style="color:var(--green)">Aktuell — der Pin zeigt bereits auf den neuesten Commit (${latest.sha.slice(0, 10)}, ${(latest.commit.author.date || "").slice(0, 10)}).</span>`;
+      box.innerHTML = `<span style="color:var(--green)">Aktuell — der Pin zeigt bereits auf den neuesten Commit (${latest.sha.slice(0, 10)}, ${latest.datum}).</span>`;
       return;
     }
     const newUrl = gppRepinUrl(gppSource(s.id, s.default), latest.sha);
-    box.innerHTML = `Neuer Commit <code>${latest.sha.slice(0, 10)}</code> vom ${(latest.commit.author.date || "").slice(0, 10)}: ${(latest.commit.message || "").split("\n")[0].slice(0, 90)}
+    box.innerHTML = `Neuer Commit <code>${latest.sha.slice(0, 10)}</code> vom ${latest.datum}: ${latest.botschaft}
       <div class="row" style="margin-top:6px">
         <button class="btn primary" id="apply-${s.id}">Auf diesen Commit umstellen</button>
         <span class="note" style="margin:0">Änderungen an Katalogen können Ergebnisse verschieben — bewusst übernehmen.</span>
       </div>`;
     box.querySelector("#apply-" + s.id).addEventListener("click", () => {
       localStorage.setItem("gpp:cfg:src:" + s.id, newUrl);
-      flashSaved(); renderSources();
+      flashSaved();
+      refreshSourceRow(s, `<span style="color:var(--green)">Umgestellt auf ${latest.sha.slice(0, 10)} vom ${latest.datum}.</span>`);
     });
   } catch (e) {
     box.innerHTML = `<span style="color:var(--amber)">Update-Prüfung fehlgeschlagen: ${e.message}</span>`;
@@ -645,6 +672,40 @@ async function checkSource(s) {
 $("btn-check-all").addEventListener("click", async () => {
   /* parallel — jede Quelle schreibt in ihre eigene Ergebnisbox */
   await Promise.allSettled(sourceRegistrations().map(s => checkSource(s)));
+});
+/* Alle prüfbaren Quellen in einem Rutsch auf den jeweils neuesten Commit
+   umstellen. Aktualität bleibt ein sichtbarer, bewusster Klick (Grundregel 8) —
+   hier eben EIN Klick für alle, mit Rückfrage und Ergebnis je Quelle. */
+$("btn-update-all").addEventListener("click", async ev => {
+  const btn = ev.currentTarget;
+  const regs = sourceRegistrations().filter(s => !s.fixed && s.repo && s.path);
+  if (!regs.length) return;
+  if (!confirm(`Alle ${regs.length} prüfbaren Quellen auf den jeweils neuesten Commit umstellen?\n\nÄnderungen an Katalogen können Ergebnisse verschieben — inhaltsgepinnte Quellen bleiben unberührt.`)) return;
+  btn.disabled = true;
+  let umgestellt = 0, aktuell = 0, fehler = 0;
+  await Promise.allSettled(regs.map(async s => {
+    const box = $("src-body").querySelector(`[data-result="${s.id}"]`);
+    box.textContent = "frage GitHub …";
+    try {
+      const latest = await latestCommitOf(s);
+      if (!latest) { box.textContent = "Keine Commits gefunden."; fehler++; return; }
+      const cur = commitOf(gppSource(s.id, s.default));
+      if (cur === latest.sha) {
+        aktuell++;
+        box.innerHTML = `<span style="color:var(--green)">Aktuell (${latest.sha.slice(0, 10)}, ${latest.datum}).</span>`;
+        return;
+      }
+      localStorage.setItem("gpp:cfg:src:" + s.id, gppRepinUrl(gppSource(s.id, s.default), latest.sha));
+      umgestellt++;
+      refreshSourceRow(s, `<span style="color:var(--green)">Umgestellt auf ${latest.sha.slice(0, 10)} vom ${latest.datum}: ${latest.botschaft}</span>`);
+    } catch (e) {
+      fehler++;
+      box.innerHTML = `<span style="color:var(--amber)">Update-Prüfung fehlgeschlagen: ${e.message}</span>`;
+    }
+  }));
+  if (umgestellt) flashSaved();
+  $("src-summary").textContent += ` — ${umgestellt} umgestellt, ${aktuell} schon aktuell${fehler ? `, ${fehler} fehlgeschlagen` : ""}`;
+  btn.disabled = false;
 });
 $("btn-reset-src").addEventListener("click", () => {
   for (const k of Object.keys(localStorage)) if (k.startsWith("gpp:cfg:src:")) localStorage.removeItem(k);
@@ -817,20 +878,33 @@ $("btn-db-oidc").addEventListener("click", () => gppRemote.oidcStart());
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g,
   c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const GPP_ROLLEN = ["leser", "bearbeiter", "pruefer", "admin"];
-let adminCheck = { done: false, isAdmin: false, me: null };
+let adminCheck = { done: false, isAdmin: false, me: null, busy: false };
 
-async function renderAdmin(recheck) {
+async function renderAdmin(recheck, meldung) {
   const box = $("db-admin");
   const s = await gppRemote.status();
   if (!s.enabled || !s.loggedIn) { box.style.display = "none"; adminCheck.done = false; return; }
   if (!adminCheck.done || recheck) {
+    if (adminCheck.busy) return;   // whoami läuft bereits (Boot und Sync-Event gleichzeitig)
+    adminCheck.busy = true;
     try {
       adminCheck.me = await gppRemote.whoami();
       adminCheck.isAdmin = !!adminCheck.me && adminCheck.me.gpp_role === "admin";
+      adminCheck.done = true;
     } catch (e) {
-      adminCheck.isAdmin = false;   // Schema ohne whoami (v1) → keine Verwaltung anbieten
-    }
-    adminCheck.done = true;
+      /* Nicht als „kein admin" verbuchen: ein transienter Fehler (Token-Refresh
+         beim Laden, kurzer Netzaussetzer) ließ die Verwaltung sonst für die
+         ganze Sitzung verschwinden — ohne jeden Hinweis. Sichtbar machen und
+         beim nächsten Anlass (oder per Klick) erneut fragen. */
+      adminCheck.isAdmin = false;
+      adminCheck.done = false;
+      box.style.display = "";
+      box.innerHTML = `<b style="font-size:.85rem">Benutzerverwaltung</b>
+        <div class="note" style="color:var(--amber)">Wirksame Rechte nicht abrufbar (rpc/whoami): ${esc(e.message)}
+          <button class="btn" id="db-admin-retry" style="margin-left:8px">⟳ erneut versuchen</button></div>`;
+      box.querySelector("#db-admin-retry").addEventListener("click", () => renderAdmin(true));
+      return;
+    } finally { adminCheck.busy = false; }
   }
   if (!adminCheck.isAdmin) { box.style.display = "none"; return; }
   box.style.display = "";
@@ -844,9 +918,17 @@ async function renderAdmin(recheck) {
     return;
   }
 
-  /* Set-Namen für die Vorschlagsliste: lokale Sets + alles, was die DB kennt */
+  /* Set-Namen für die Vorschlagsliste: lokale Sets, das aktive Set (auch wenn
+     es noch leer ist — genau das ist ein frisch in der Übersicht angelegtes
+     Set), alle Sets mit Server-Rechten und alles, was die DB an Artefakten
+     kennt. Früher fehlten leere Sets, und ein neu angelegtes Set ließ sich
+     scheinbar nicht berechtigen. */
   const setNames = new Set((await gppArtefacts.sets()).map(x => x.name));
+  setNames.add(gppArtefacts.activeSet());
+  gppRemote.remoteSets().forEach(n => setNames.add(n));
   try { (await gppRemote.api("artefacts?select=set_name") || []).forEach(r => setNames.add(r.set_name)); } catch (e) { /* Vorschläge bleiben lokal */ }
+  try { (await gppRemote.api("set_permissions?select=set_name") || []).forEach(r => setNames.add(r.set_name)); } catch (e) { /* dito */ }
+  setNames.delete("");
 
   const meId = adminCheck.me.user_id;
   box.innerHTML = `
@@ -874,7 +956,7 @@ async function renderAdmin(recheck) {
         </div>
         <div class="row">
           <input type="text" data-set-input="${gppAttrArg(u.user_id)}" list="db-admin-sets"
-                 placeholder="Set-Name" style="width:200px">
+                 placeholder="Set-Name (Vorschlag wählen oder frei eintippen)" title="Auch ein Set, das noch keine Artefakte hat, lässt sich hier berechtigen — der Name genügt." style="width:260px">
           <select data-set-role="${gppAttrArg(u.user_id)}" style="width:auto">
             <option value="leser">leser</option><option value="bearbeiter" selected>bearbeiter</option><option value="pruefer">pruefer</option>
           </select>
@@ -888,11 +970,16 @@ async function renderAdmin(recheck) {
       <select id="db-new-role" style="width:auto">${GPP_ROLLEN.map(r => `<option ${r === "leser" ? "selected" : ""}>${r}</option>`).join("")}</select>
       <button class="btn primary" id="db-new-create">Konto anlegen</button>
     </div>
-    <div class="note" id="db-admin-note" style="margin-top:6px">Das Startpasswort dem neuen Konto sicher mitteilen; ändern kann es die Person selbst (GoTrue <code>PUT /auth/v1/user</code>).</div>`;
+    <div class="note" id="db-admin-note" style="margin-top:6px">${meldung
+      ? `<span style="color:var(--green)">${meldung}</span>`
+      : 'Das Startpasswort dem neuen Konto sicher mitteilen; ändern kann es die Person selbst (GoTrue <code>PUT /auth/v1/user</code>).'}</div>`;
 
   const note = msg => { box.querySelector("#db-admin-note").innerHTML = msg; };
+  /* Nach Erfolg neu aufbauen — und die Meldung dabei MITNEHMEN: das Neu-Rendern
+     setzte die Notiz sofort auf den Standardtext zurück, der Klick wirkte wie
+     ins Leere. */
   const rpc = async (fn, body, okMsg) => {
-    try { await gppRemote.api("rpc/" + fn, { method: "POST", body }); note(okMsg); renderAdmin(); }
+    try { await gppRemote.api("rpc/" + fn, { method: "POST", body }); renderAdmin(false, okMsg); }
     catch (e) { note(`<span style="color:var(--amber)">${esc(e.message)}</span>`); }
   };
   box.querySelector("#db-admin-reload").addEventListener("click", () => renderAdmin(true));
@@ -939,6 +1026,9 @@ window.addEventListener("gpp:remote-changed", () => {
        Sync-Push die Benutzerliste neu laden und Eingaben zerschlagen. */
     const li = gppRemote.loggedIn();
     if (li !== adminLastLogin) { adminLastLogin = li; renderAdmin(true); }
+    /* Rechte noch nicht ermittelt (whoami scheiterte): der nächste Sync-Anlass
+       ist ein guter Zeitpunkt für einen neuen Versuch. */
+    else if (li && !adminCheck.done) renderAdmin(true);
   }, 150);
 });
 
