@@ -4321,43 +4321,189 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             }
         }
 
+        /* Quell-CDef laden, hashen und auf G++-Controls mappen. Gemeinsamer Weg für
+           den Import aus der Auswahlliste (addBsiComponent) und die Wiederherstellung
+           aus dem SSP beim Seitenstart (restoreBsiComponentsFromSSP) — beide müssen
+           dieselbe Struktur liefern, sonst schreibt der nächste Live-Sync etwas anderes
+           ins Set als vorher drinstand. */
+        async function loadBsiComponentDefinition(url, name) {
+            // Bytes laden und hashen: Die Quell-CDef wird im SSP als gepinnte
+            // back-matter-Resource (rlink + SHA-256, Grundregel 8) geführt.
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status} beim Laden von ${url}`);
+            const buf = await res.arrayBuffer();
+            const sha256 = await sha256Hex(buf);
+            const data = JSON.parse(new TextDecoder().decode(buf));
+            const cd = data['component-definition'];
+            if (!cd) throw new Error('Keine component-definition im Dokument.');
+            let mapped = 0, unmapped = 0;
+            const components = (cd.components || []).map(c => {
+                const impls = [];
+                (c['control-implementations'] || []).forEach(ci => {
+                    (ci['implemented-requirements'] || []).forEach(req => {
+                        // control-id ist "_<uuid>" aus dem Kernel-Katalog; Mapping auf die
+                        // G++-ID über das alt-identifier-Prop des Anwenderkatalogs.
+                        const key = String(req['control-id'] || '').replace(/^_/, '').trim().toLowerCase();
+                        const gppId = bpState.altIdIndex.get(key);
+                        if (gppId) { impls.push({ gppId, text: req.description || '' }); mapped++; }
+                        else unmapped++;
+                    });
+                });
+                // Instanz-UUID statt CDef-UUID: Die SSP-Komponente ist eine Kopie
+                // (Instanziierung), nicht die Quellkomponente selbst. Die Herkunft
+                // bleibt als sourceUuid erhalten (wird als Prop exportiert).
+                return { uuid: crypto.randomUUID(), sourceUuid: c.uuid || null, title: c.title || 'Komponente', type: c.type || 'software', description: c.description || '', impls };
+            });
+            return { uuid: cd.uuid || crypto.randomUUID(), name, source: url, sha256, components, mapped, unmapped, reloaded: true };
+        }
+
         async function addBsiComponent() {
             const dd = document.getElementById('dd-sdt-comp');
             const url = dd?.value;
             if (!url) return alert('Bitte zuerst eine BSI-Komponente auswählen.');
             if (bpState.bsiComponents.some(bc => bc.source === url)) return alert('Diese BSI-Komponente ist bereits importiert.');
             try {
-                // Bytes laden und hashen: Die Quell-CDef wird im SSP als gepinnte
-                // back-matter-Resource (rlink + SHA-256, Grundregel 8) geführt.
-                const buf = await (await fetch(url)).arrayBuffer();
-                const sha256 = await sha256Hex(buf);
-                const data = JSON.parse(new TextDecoder().decode(buf));
-                const cd = data['component-definition'];
-                if (!cd) throw new Error('Keine component-definition im Dokument.');
                 const name = dd.options[dd.selectedIndex].text;
-                let mapped = 0, unmapped = 0;
-                const components = (cd.components || []).map(c => {
-                    const impls = [];
-                    (c['control-implementations'] || []).forEach(ci => {
-                        (ci['implemented-requirements'] || []).forEach(req => {
-                            // control-id ist "_<uuid>" aus dem Kernel-Katalog; Mapping auf die
-                            // G++-ID über das alt-identifier-Prop des Anwenderkatalogs.
-                            const key = String(req['control-id'] || '').replace(/^_/, '').trim().toLowerCase();
-                            const gppId = bpState.altIdIndex.get(key);
-                            if (gppId) { impls.push({ gppId, text: req.description || '' }); mapped++; }
-                            else unmapped++;
-                        });
-                    });
-                    // Instanz-UUID statt CDef-UUID: Die SSP-Komponente ist eine Kopie
-                    // (Instanziierung), nicht die Quellkomponente selbst. Die Herkunft
-                    // bleibt als sourceUuid erhalten (wird als Prop exportiert).
-                    return { uuid: crypto.randomUUID(), sourceUuid: c.uuid || null, title: c.title || 'Komponente', type: c.type || 'software', description: c.description || '', impls };
-                });
-                bpState.bsiComponents.push({ uuid: cd.uuid || crypto.randomUUID(), name, source: url, sha256, components, mapped, unmapped });
+                bpState.bsiComponents.push(await loadBsiComponentDefinition(url, name));
                 renderBsiComponentsList();
             } catch (e) {
                 alert('BSI-Komponente konnte nicht geladen werden: ' + e.message);
             }
+        }
+
+        /* Anzeigename einer CDef wie in der Auswahlliste (fetchSdtComponents):
+           Dateiname ohne das Suffix "-component_definition.json". */
+        function bsiComponentNameFromUrl(url) {
+            let file = String(url || '').split('/').pop() || '';
+            try { file = decodeURIComponent(file); } catch (e) { /* Rohform behalten */ }
+            return file.replace('-component_definition.json', '').replace(/\.json$/, '') || 'BSI-Komponente';
+        }
+
+        /* BSI-Komponenten aus einem SSP zurückholen (Gegenstück zu generateSSP).
+           Ohne diesen Schritt fehlten sie nach einem Seitenstart in bpState, und der
+           nächste Live-Sync schrieb den SSP OHNE sie ins Set zurück — stiller Datenverlust.
+           Erkennung: Komponenten mit Link rel="component-definition" auf eine
+           back-matter-Resource, deren rlink die Quell-CDef (URL + SHA-256) nennt.
+           Primärweg: CDef erneut laden (derselbe Weg wie addBsiComponent), dabei die
+           SSP-UUIDs der Bauteile übernehmen, damit die by-components der
+           implemented-requirements weiter passen. Fallback bei Netz-/Katalogfehler:
+           Bauteile samt Zuordnungen aus dem SSP selbst rekonstruieren (reloaded:false),
+           damit der nächste Sync sie durchreicht statt löscht. */
+        async function restoreBsiComponentsFromSSP(ssp, bsiSspComponents) {
+            const restored = [];
+            if (!ssp || !bsiSspComponents.length) return restored;
+            const resources = ssp['back-matter']?.resources || [];
+            const reqs = ssp['control-implementation']?.['implemented-requirements'] || [];
+            const RES_TITLE_PREFIX = 'BSI-Komponente (Component Definition):';
+
+            // Nach Resource (= eine CDef) gruppieren; Links ohne auflösbare Resource
+            // landen unter ihrem Fragment, damit sie nicht verloren gehen.
+            const groups = new Map();
+            bsiSspComponents.forEach(({ c, href }) => {
+                const key = String(href || '');
+                if (!groups.has(key)) groups.set(key, []);
+                groups.get(key).push(c);
+            });
+
+            // Zuordnungen aus dem SSP: by-components, die auf ein BSI-Bauteil zeigen.
+            // Nur Controls des Basis-Katalogs (wie das alt-identifier-Mapping) — sie
+            // wandern über generateProfile in den Basis-Import; Controls aus
+            // Zusatzkatalogen tragen ihren Editor-Text über mergeEditorWork weiter.
+            // Ist der Katalog-Index leer (Ladefehler), wird nichts verworfen.
+            const baseControls = bpState.catalogs[0]?.controls || new Set();
+            const inBaseCatalog = cid => !baseControls.size || baseControls.has(cid);
+            const implsFromSsp = (compUuid) => {
+                const impls = [];
+                reqs.forEach(r => {
+                    const cid = r['control-id'];
+                    if (!cid || cid === 'PLACEHOLDER' || !inBaseCatalog(cid)) return;
+                    (r['by-components'] || []).forEach(bc => {
+                        if (bc['component-uuid'] !== compUuid) return;
+                        if (impls.some(i => i.gppId === cid)) return;
+                        impls.push({ gppId: cid, text: bc.description || '' });
+                    });
+                });
+                return impls;
+            };
+
+            for (const [href, comps] of groups) {
+                const res = href.startsWith('#') ? resources.find(r => r.uuid === href.slice(1)) : null;
+                const source = res?.rlinks?.[0]?.href || (href.startsWith('#') ? null : href);
+                const sha256 = (res?.rlinks?.[0]?.hashes || []).find(h => /sha-?256/i.test(h.algorithm || ''))?.value || null;
+                const name = (res?.title || '').startsWith(RES_TITLE_PREFIX)
+                    ? res.title.slice(RES_TITLE_PREFIX.length).trim()
+                    : bsiComponentNameFromUrl(source);
+                const stripPrefix = t => (t && t.startsWith(`${name}: `)) ? t.slice(name.length + 2) : (t || 'Komponente');
+                const sourceUuidOf = c => (c.props || []).find(p => p.name === 'source-component-uuid')?.value || null;
+
+                // Dublette über die Quell-URL (z. B. zwei Resources auf dieselbe CDef):
+                // Bauteile dem vorhandenen Eintrag zuschlagen, nicht doppelt anlegen.
+                const dup = source && restored.find(bc => bc.source === source);
+                if (dup) {
+                    comps.forEach(c => {
+                        if (dup.components.some(x => x.uuid === c.uuid)) return;
+                        const impls = implsFromSsp(c.uuid);
+                        dup.components.push({ uuid: c.uuid, sourceUuid: sourceUuidOf(c), title: stripPrefix(c.title), type: c.type || 'software', description: c.description || '', impls });
+                        dup.mapped += impls.length;
+                    });
+                    continue;
+                }
+
+                // Fallback-Eintrag aus dem SSP (wird genutzt, wenn das Nachladen scheitert).
+                const fromSsp = () => {
+                    const components = comps.map(c => ({
+                        uuid: c.uuid, sourceUuid: sourceUuidOf(c), title: stripPrefix(c.title),
+                        type: c.type || 'software', description: c.description || '', impls: implsFromSsp(c.uuid)
+                    }));
+                    return {
+                        uuid: crypto.randomUUID(), name, source, sha256, components,
+                        mapped: components.reduce((s, c) => s + c.impls.length, 0), unmapped: 0, reloaded: false
+                    };
+                };
+
+                if (!source) {
+                    aiLog('warn', `BSI-Komponente „${name}": Quelle im SSP nicht auflösbar (${href}) — Bauteile aus dem SSP übernommen, Zuordnungen bleiben erhalten.`);
+                    restored.push(fromSsp());
+                    continue;
+                }
+
+                try {
+                    const bc = await loadBsiComponentDefinition(source, name);
+                    if (sha256 && bc.sha256 !== sha256) {
+                        aiLog('warn', `BSI-Komponente „${name}": Inhalt der Quelle weicht vom im SSP gepinnten SHA-256 ab — neuer Stand wird übernommen.`);
+                    }
+                    // SSP-UUIDs wiederverwenden: Zuordnung über die Quell-Komponenten-UUID
+                    // (Prop source-component-uuid), ersatzweise über den Titel.
+                    const used = new Set();
+                    bc.components.forEach(comp => {
+                        let match = comp.sourceUuid && comps.find(c => !used.has(c.uuid) && sourceUuidOf(c) === comp.sourceUuid);
+                        if (!match) match = comps.find(c => !used.has(c.uuid) && stripPrefix(c.title) === comp.title);
+                        if (!match) return;
+                        used.add(match.uuid);
+                        comp.uuid = match.uuid;
+                    });
+                    // Bauteile, die der SSP kennt, die CDef aber nicht (mehr) liefert,
+                    // bleiben mit ihren SSP-Zuordnungen erhalten.
+                    comps.filter(c => !used.has(c.uuid)).forEach(c => {
+                        const impls = implsFromSsp(c.uuid);
+                        bc.components.push({ uuid: c.uuid, sourceUuid: sourceUuidOf(c), title: stripPrefix(c.title), type: c.type || 'software', description: c.description || '', impls });
+                        bc.mapped += impls.length;
+                    });
+                    // Kein einziges Mapping, obwohl der SSP Zuordnungen trägt: dann fehlt
+                    // der alt-identifier-Index (Katalog nicht geladen) — SSP-Stand behalten.
+                    const sspImplCount = comps.reduce((s, c) => s + implsFromSsp(c.uuid).length, 0);
+                    if (bc.mapped === 0 && sspImplCount > 0) {
+                        aiLog('warn', `BSI-Komponente „${name}": Mapping auf G++-Controls nicht möglich (Katalog-Index fehlt) — ${sspImplCount} Zuordnungen aus dem SSP beibehalten.`);
+                        restored.push(fromSsp());
+                        continue;
+                    }
+                    restored.push(bc);
+                } catch (e) {
+                    aiLog('warn', `BSI-Komponente „${name}": Quelle nicht nachgeladen (${e.message}) — Bauteile und Zuordnungen aus dem SSP beibehalten; beim nächsten Sync bleiben sie erhalten.`);
+                    restored.push(fromSsp());
+                }
+            }
+            return restored;
         }
 
         function removeBsiComponent(uuid) {
@@ -4374,6 +4520,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     <span class="text-white">
                         <span class="font-semibold text-amber-300">${esc(bc.name)}</span>
                         <span class="text-slate-400 ml-2">${bc.components.length} Komponente(n), ${bc.mapped} Anforderungen auf G++ gemappt${bc.unmapped ? `, ${bc.unmapped} ohne Mapping` : ''}</span>
+                        ${bc.reloaded === false ? `<span class="text-amber-400 ml-2" title="Die Quell-Component-Definition konnte beim Seitenstart nicht nachgeladen werden. Bauteile und Zuordnungen stammen aus dem gespeicherten SSP und bleiben beim nächsten Sync erhalten.">⚠ aus dem SSP wiederhergestellt, Quelle nicht nachgeladen</span>` : ''}
                     </span>
                     <button onclick="removeBsiComponent('${esc(bc.uuid)}')" class="text-red-400 hover:text-red-300 font-bold ml-3" title="Entfernen">✕</button>
                 </li>`).join('');
@@ -5309,6 +5456,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             bpState.manualControls = new Set();
             bpState.modifications = new Map();
             bpState.components = [];
+            bpState.bsiComponents = [];
             bpState.riskData = [];
             bpState.customControls = new Map();
             bpState.aiAnalysis = null;
@@ -5377,12 +5525,22 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             }
 
             // --- Methodik, Praktiken, Assets (from SSP components) ---
+            // BSI-Komponenten (Link rel="component-definition") werden hier nur
+            // eingesammelt und unten gemeinsam je Quell-CDef wiederhergestellt.
+            const bsiSspComponents = [];
+            let riskCompUuid = null;
             if (ssp) {
                 for (const c of sspComponents) {
                     if (!c.title) continue;
                     if (c.type === 'this-system') continue;
-                    if (c.title === 'Risikoanalyse Controls') continue;
+                    if (c.title === 'Risikoanalyse Controls') { riskCompUuid = c.uuid; continue; }
                     if (c.title.startsWith('Katalog-Umsetzung:')) continue;
+
+                    // Vor den übrigen Zweigen abfangen: ein CDef-Bauteil ist weder
+                    // Methodik noch Prozess noch Zielobjekt (sein Link ist ein Fragment
+                    // auf die back-matter-Resource, kein Profil).
+                    const cdefLink = (c.links || []).find(l => l.rel === 'component-definition');
+                    if (cdefLink) { bsiSspComponents.push({ c, href: cdefLink.href }); continue; }
 
                     const link = (c.links || [])[0];
                     const href = link && link.href;
@@ -5470,6 +5628,16 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     }
                 }
 
+                // --- BSI-Komponenten (SdT implementation_layer) wiederherstellen ---
+                if (bsiSspComponents.length) {
+                    bpState.bsiComponents = await restoreBsiComponentsFromSSP(ssp, bsiSspComponents);
+                    const n = bpState.bsiComponents.length;
+                    const stale = bpState.bsiComponents.filter(bc => bc.reloaded === false).length;
+                    aiLog(stale ? 'warn' : 'ok', `${n} BSI-Komponente(n) aus dem SSP wiederhergestellt${stale ? ` (${stale} davon ohne Nachladen der Quelle)` : ''}.`);
+                }
+                const bsiCids = new Set();
+                bpState.bsiComponents.forEach(bc => bc.components.forEach(c => (c.impls || []).forEach(i => bsiCids.add(i.gppId))));
+
                 // --- Manual controls: implemented-requirements whose by-components target the risk component
                 //     AND which aren't covered by methodik / praktiken / assets / catalogs.
                 const reqs = ssp['control-implementation']?.['implemented-requirements'] || [];
@@ -5482,7 +5650,12 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 reqs.forEach(r => {
                     const cid = r['control-id'];
                     if (!cid || cid === 'PLACEHOLDER') return;
-                    if (!knownCids.has(cid)) bpState.manualControls.add(cid);
+                    if (knownCids.has(cid)) return;
+                    // Ein Control, das nur über eine BSI-Komponente hereinkommt, ist kein
+                    // manuelles Control — es sei denn, der Eintrag zielt zusätzlich auf die
+                    // Risiko-Komponente (dann war es vor dem Reload beides).
+                    if (bsiCids.has(cid) && !(r['by-components'] || []).some(bc => riskCompUuid && bc['component-uuid'] === riskCompUuid)) return;
+                    bpState.manualControls.add(cid);
                 });
 
                 // --- Risk data and AI document analysis from SSP back-matter ---
@@ -5633,6 +5806,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             // --- Re-render UI ---
             renderCatalogsList();
             renderAssetsList();
+            renderBsiComponentsList();
             // Prozess-Liste passend zur importierten Methodik (Standard/Erweitert) neu laden,
             // damit die wiederhergestellten Prozesse als angehakt erscheinen.
             await fetchPraktikenProfiles();
@@ -6581,10 +6755,14 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     title: `BSI-Komponente (Component Definition): ${bc.name}`,
                     description: 'Quell-Component-Definition aus der Stand-der-Technik-Bibliothek (implementation_layer). Komponenten und Umsetzungsbeschreibungen wurden bei der Generierung per Kopie instanziiert (kein Live-Import); Änderungen an der Quelle wirken nicht automatisch auf diesen SSP.',
                     props: [{ name: 'source-type', ns: OSCAL_NAMESPACES.componentDefinition, value: 'component-definition' }],
-                    rlinks: [{
-                        href: bc.source,
-                        ...(bc.sha256 ? { hashes: [{ algorithm: 'SHA-256', value: bc.sha256 }] } : {})
-                    }]
+                    // Ohne bekannte Quelle (aus einem SSP ohne auflösbare Resource
+                    // wiederhergestellt) keinen rlink mit leerem href schreiben.
+                    ...(bc.source ? {
+                        rlinks: [{
+                            href: bc.source,
+                            ...(bc.sha256 ? { hashes: [{ algorithm: 'SHA-256', value: bc.sha256 }] } : {})
+                        }]
+                    } : {})
                 });
             });
             if (bpState.riskData.length > 0) {
