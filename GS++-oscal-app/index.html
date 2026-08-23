@@ -274,8 +274,12 @@
     </section>
   </div>
 
-  <script src="gpp-core.js?v=3.9"></script>
+  <script src="gpp-core.js?v=4.0"></script>
   <script>
+    /* Keine Sperr-Pill in der Übersicht: Die Sperr-Verwaltung steht hier selbst
+       (Artefakte-Fläche), und jedes eingebettete Werkzeug bringt seine eigene
+       Pill mit — zwei übereinander wären Lärm. */
+    window.GPP_NO_LOCK_PILL = true;
     // Workflow order: Explorer → Katalog/Profil-Erstellung → Modellierung → Umsetzung → Prüfung → Abarbeiten → Validierung.
     // `stage` und `tool` verbinden die Kachel mit den Artefakten, die das Tool ablegt.
     // `kinds` sind die Dokumentsorten, an denen das Werkzeug arbeitet — danach wird
