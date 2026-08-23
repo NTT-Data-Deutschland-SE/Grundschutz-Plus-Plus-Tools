@@ -817,20 +817,33 @@ $("btn-db-oidc").addEventListener("click", () => gppRemote.oidcStart());
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g,
   c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const GPP_ROLLEN = ["leser", "bearbeiter", "pruefer", "admin"];
-let adminCheck = { done: false, isAdmin: false, me: null };
+let adminCheck = { done: false, isAdmin: false, me: null, busy: false };
 
-async function renderAdmin(recheck) {
+async function renderAdmin(recheck, meldung) {
   const box = $("db-admin");
   const s = await gppRemote.status();
   if (!s.enabled || !s.loggedIn) { box.style.display = "none"; adminCheck.done = false; return; }
   if (!adminCheck.done || recheck) {
+    if (adminCheck.busy) return;   // whoami läuft bereits (Boot und Sync-Event gleichzeitig)
+    adminCheck.busy = true;
     try {
       adminCheck.me = await gppRemote.whoami();
       adminCheck.isAdmin = !!adminCheck.me && adminCheck.me.gpp_role === "admin";
+      adminCheck.done = true;
     } catch (e) {
-      adminCheck.isAdmin = false;   // Schema ohne whoami (v1) → keine Verwaltung anbieten
-    }
-    adminCheck.done = true;
+      /* Nicht als „kein admin" verbuchen: ein transienter Fehler (Token-Refresh
+         beim Laden, kurzer Netzaussetzer) ließ die Verwaltung sonst für die
+         ganze Sitzung verschwinden — ohne jeden Hinweis. Sichtbar machen und
+         beim nächsten Anlass (oder per Klick) erneut fragen. */
+      adminCheck.isAdmin = false;
+      adminCheck.done = false;
+      box.style.display = "";
+      box.innerHTML = `<b style="font-size:.85rem">Benutzerverwaltung</b>
+        <div class="note" style="color:var(--amber)">Wirksame Rechte nicht abrufbar (rpc/whoami): ${esc(e.message)}
+          <button class="btn" id="db-admin-retry" style="margin-left:8px">⟳ erneut versuchen</button></div>`;
+      box.querySelector("#db-admin-retry").addEventListener("click", () => renderAdmin(true));
+      return;
+    } finally { adminCheck.busy = false; }
   }
   if (!adminCheck.isAdmin) { box.style.display = "none"; return; }
   box.style.display = "";
@@ -844,9 +857,17 @@ async function renderAdmin(recheck) {
     return;
   }
 
-  /* Set-Namen für die Vorschlagsliste: lokale Sets + alles, was die DB kennt */
+  /* Set-Namen für die Vorschlagsliste: lokale Sets, das aktive Set (auch wenn
+     es noch leer ist — genau das ist ein frisch in der Übersicht angelegtes
+     Set), alle Sets mit Server-Rechten und alles, was die DB an Artefakten
+     kennt. Früher fehlten leere Sets, und ein neu angelegtes Set ließ sich
+     scheinbar nicht berechtigen. */
   const setNames = new Set((await gppArtefacts.sets()).map(x => x.name));
+  setNames.add(gppArtefacts.activeSet());
+  gppRemote.remoteSets().forEach(n => setNames.add(n));
   try { (await gppRemote.api("artefacts?select=set_name") || []).forEach(r => setNames.add(r.set_name)); } catch (e) { /* Vorschläge bleiben lokal */ }
+  try { (await gppRemote.api("set_permissions?select=set_name") || []).forEach(r => setNames.add(r.set_name)); } catch (e) { /* dito */ }
+  setNames.delete("");
 
   const meId = adminCheck.me.user_id;
   box.innerHTML = `
@@ -874,7 +895,7 @@ async function renderAdmin(recheck) {
         </div>
         <div class="row">
           <input type="text" data-set-input="${gppAttrArg(u.user_id)}" list="db-admin-sets"
-                 placeholder="Set-Name" style="width:200px">
+                 placeholder="Set-Name (Vorschlag wählen oder frei eintippen)" title="Auch ein Set, das noch keine Artefakte hat, lässt sich hier berechtigen — der Name genügt." style="width:260px">
           <select data-set-role="${gppAttrArg(u.user_id)}" style="width:auto">
             <option value="leser">leser</option><option value="bearbeiter" selected>bearbeiter</option><option value="pruefer">pruefer</option>
           </select>
@@ -888,11 +909,16 @@ async function renderAdmin(recheck) {
       <select id="db-new-role" style="width:auto">${GPP_ROLLEN.map(r => `<option ${r === "leser" ? "selected" : ""}>${r}</option>`).join("")}</select>
       <button class="btn primary" id="db-new-create">Konto anlegen</button>
     </div>
-    <div class="note" id="db-admin-note" style="margin-top:6px">Das Startpasswort dem neuen Konto sicher mitteilen; ändern kann es die Person selbst (GoTrue <code>PUT /auth/v1/user</code>).</div>`;
+    <div class="note" id="db-admin-note" style="margin-top:6px">${meldung
+      ? `<span style="color:var(--green)">${meldung}</span>`
+      : 'Das Startpasswort dem neuen Konto sicher mitteilen; ändern kann es die Person selbst (GoTrue <code>PUT /auth/v1/user</code>).'}</div>`;
 
   const note = msg => { box.querySelector("#db-admin-note").innerHTML = msg; };
+  /* Nach Erfolg neu aufbauen — und die Meldung dabei MITNEHMEN: das Neu-Rendern
+     setzte die Notiz sofort auf den Standardtext zurück, der Klick wirkte wie
+     ins Leere. */
   const rpc = async (fn, body, okMsg) => {
-    try { await gppRemote.api("rpc/" + fn, { method: "POST", body }); note(okMsg); renderAdmin(); }
+    try { await gppRemote.api("rpc/" + fn, { method: "POST", body }); renderAdmin(false, okMsg); }
     catch (e) { note(`<span style="color:var(--amber)">${esc(e.message)}</span>`); }
   };
   box.querySelector("#db-admin-reload").addEventListener("click", () => renderAdmin(true));
@@ -939,6 +965,9 @@ window.addEventListener("gpp:remote-changed", () => {
        Sync-Push die Benutzerliste neu laden und Eingaben zerschlagen. */
     const li = gppRemote.loggedIn();
     if (li !== adminLastLogin) { adminLastLogin = li; renderAdmin(true); }
+    /* Rechte noch nicht ermittelt (whoami scheiterte): der nächste Sync-Anlass
+       ist ein guter Zeitpunkt für einen neuen Versuch. */
+    else if (li && !adminCheck.done) renderAdmin(true);
   }, 150);
 });
 

@@ -257,6 +257,25 @@ select{color-scheme:dark}
   padding:14px 16px;border-radius:8px;outline:none;resize:vertical;line-height:1.55;
 }
 
+/* Stufe 3 — Profil-Editor: eine Zeile je Control (Checkbox, ID, Titel, Ergänzung).
+   Abgewählte Controls bleiben sichtbar (gedimmt), damit ein Fehlgriff reversibel ist. */
+.s3-meta,.s3-add{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.s3-note{color:var(--text-quiet);font-size:10.5px}
+.s3-row{display:grid;grid-template-columns:22px 110px 1fr;gap:10px;align-items:start;
+  padding:9px 12px;background:var(--bg-elev-2);border:1px solid var(--border-1);
+  border-radius:8px;margin-bottom:6px;font-size:11.5px;line-height:1.5}
+.s3-row.out{opacity:.5}
+.s3-row.out .s3-text{display:none}
+.s3-row input[type=checkbox]{margin:3px 0 0;accent-color:var(--accent)}
+.s3-row .s3-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.s3-row .s3-ttl{font-weight:500}
+.s3-row .s3-src{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--text-quiet)}
+.s3-text{width:100%;margin-top:6px;min-height:54px;background:var(--bg-deep);border:1px solid var(--border-1);
+  color:var(--text-secondary);font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.55;
+  padding:7px 9px;border-radius:6px;outline:none;resize:vertical}
+.s3-text:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft);color:var(--text-primary)}
+.s3-text::placeholder{color:var(--text-quiet);font-style:italic}
+
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
 .stat-sub{padding:14px 16px;background:var(--bg-elev-2);border:1px solid var(--border-1);
   border-radius:10px}
@@ -526,13 +545,47 @@ select{color-scheme:dark}
             <div class="card-title"><span class="num">▸ stage 3</span> OSCAL Profile</div>
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
               <span class="chip accent" id="s3-chip">—</span>
+              <span class="chip" id="s3-save-chip" title="Änderungen im Editor fließen automatisch in den Arbeitsstand">—</span>
+              <button class="btn sm ghost" id="btn-s3-view-editor" title="Controls und Ergänzungen bearbeiten">☰ Controls</button>
+              <button class="btn sm ghost" id="btn-s3-view-json" title="Rohes OSCAL-JSON anzeigen und bearbeiten">{ } JSON</button>
               <button class="btn sm" id="btn-save-set" title="Profil unter einem Namen im aktiven Arbeitsstand ablegen">⌸ Im Set speichern…</button>
               <button class="btn sm" id="btn-download">⤓ Profile</button>
               <button class="btn sm hidden" id="btn-download-cat">⤓ Custom-Catalog (C.2)</button>
               <button class="btn sm ghost" id="btn-copy">⌕ copy</button>
             </div>
           </div>
-          <textarea class="output-area" id="s3-output" spellcheck="false"></textarea>
+          <!-- Sicht 1: strukturierter Editor — Titel, Controls an-/abwählen, Ergänzungen
+               (alters) je Control bearbeiten, Controls aus dem Katalog ergänzen.
+               Eine Wahrheit: state.profileDef; jede Änderung wird ins Set zurückgeschrieben. -->
+          <div id="s3-editor" class="result-section">
+            <div class="s3-meta">
+              <div class="field" style="flex:1;min-width:240px">
+                <input type="text" id="s3-title" placeholder="Profil-Titel (metadata.title)" spellcheck="false">
+              </div>
+              <select id="s3-filter" class="btn sm">
+                <option value="all">alle Controls</option>
+                <option value="in">nur im Profil</option>
+                <option value="out">nur abgewählt</option>
+                <option value="text">nur mit Ergänzung</option>
+              </select>
+            </div>
+            <div id="s3-controls"></div>
+            <div class="s3-add">
+              <div class="field" style="flex:1;min-width:200px">
+                <input type="text" id="s3-add-id" list="s3-catalog-ids" placeholder="Control aus dem Katalog ergänzen (ID, z. B. ORP.1.A1)" spellcheck="false" autocomplete="off">
+                <datalist id="s3-catalog-ids"></datalist>
+              </div>
+              <button class="btn sm" id="btn-s3-add">+ Control aufnehmen</button>
+            </div>
+          </div>
+          <!-- Sicht 2: rohes JSON, editierbar; „übernehmen" macht den Text zur Wahrheit -->
+          <div id="s3-json" class="hidden">
+            <textarea class="output-area" id="s3-output" spellcheck="false"></textarea>
+            <div class="s3-add" style="margin-top:6px">
+              <button class="btn sm" id="btn-s3-json-apply">JSON übernehmen</button>
+              <span class="s3-note" id="s3-json-note">Änderungen im Textfeld gelten erst nach „JSON übernehmen".</span>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -579,7 +632,7 @@ const GPP_TOOL_ID = "Baustein_2_Profile";
    Konstante; keine handgepflegten Versionsstrings mehr im File.
    ════════════════════════════════════════════════════════════════════════ */
 
-const APP_VERSION  = "0.9.2";
+const APP_VERSION  = "0.10.0";
 const APP_NAME     = "Baustein_2_Profile";
 
 // Fallback, wenn zentral kein Gemini-Modell gesetzt ist (config.html).
@@ -2544,21 +2597,266 @@ async function assembleProfile() {
   return profile;
 }
 
+/* ════════════════════════════════════════════════════════════════════════
+   STAGE 3 — Profil-Editor
+   state.profileDef ist die EINZIGE Wahrheit. Der Editor ändert das Objekt in
+   place (Titel, with-ids, alters), spiegelt es ins JSON-Feld und schreibt es
+   entprellt in den Arbeitsstand — wie die Live-Sets der anderen Werkzeuge.
+   Download und Set-Ablage lesen dasselbe Objekt; das frühere Nebeneinander
+   (Download aus dem Textfeld, Set aus dem Objekt) ließ Textfeld-Änderungen
+   still am Set vorbeigehen.
+   ════════════════════════════════════════════════════════════════════════ */
+const S3_NS = "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools";
+const s3 = { removed: new Map(), view: "editor", saveTimer: null, textTimer: null, customFlat: null, lastArtId: "" };
+
+function s3Profile() { return state.profileDef?.profile || null; }
+/* with-ids des ersten include-controls im ersten Import — genau dort schreibt
+   assembleProfile; fremde Profile mit mehreren Imports bearbeitet dieses
+   Werkzeug nicht. */
+function s3WithIds(p) {
+  const imp = (p.imports = p.imports || [{}])[0];
+  const inc = (imp["include-controls"] = imp["include-controls"] || [{}])[0];
+  return (inc["with-ids"] = inc["with-ids"] || []);
+}
+function s3Alters(p) { return p.modify?.alters || []; }
+function s3AlterOf(p, cid) { return s3Alters(p).find(a => a["control-id"] === cid) || null; }
+function s3ProseOf(alter) { return alter?.adds?.[0]?.parts?.[0]?.prose || ""; }
+function s3SetAlters(p, alters) {
+  if (alters.length) (p.modify = p.modify || {}).alters = alters;
+  else if (p.modify) { delete p.modify.alters; if (!Object.keys(p.modify).length) delete p.modify; }
+}
+/* Ergänzungstext eines Controls setzen. Vorhandene Parts behalten ihren Namen
+   (ed2023-quelle samt ns/id/title); ein neuer Text an einem Control ohne
+   Ergänzung bekommt einen eigenen, als manuell gekennzeichneten Part. Leerer
+   Text entfernt die Ergänzung. */
+function s3SetProse(p, cid, text) {
+  const alters = [...s3Alters(p)];
+  const i = alters.findIndex(a => a["control-id"] === cid);
+  if (!text.trim()) { if (i >= 0) alters.splice(i, 1); }
+  else if (i >= 0) {
+    const add = (alters[i].adds = alters[i].adds || [{ position: "ending", parts: [] }])[0];
+    const part = (add.parts = add.parts || [])[0] || (add.parts[0] = { id: `${cid}_ergaenzung`, name: "ergaenzung", ns: S3_NS, title: "Ergänzung (manuell)" });
+    part.prose = text;
+  } else {
+    alters.push({ "control-id": cid, adds: [{ position: "ending",
+      parts: [{ id: `${cid}_ergaenzung`, name: "ergaenzung", ns: S3_NS, title: "Ergänzung (manuell)", prose: text }] }] });
+  }
+  s3SetAlters(p, alters);
+}
+/* Anzeige-Infos je Control: zuerst Stufe 2 (Titel, Modalverb, Coverage,
+   Quellen), sonst der Anwenderkatalog bzw. der eigene C.2-Katalog. */
+function s3Info(cid) {
+  const r = state.implReqs.find(x => x.control_id === cid);
+  const c = (state.catalogControls || []).find(x => x.id === cid);
+  if (!s3.customFlat && state.customCatalog) { try { s3.customFlat = flattenCatalog(state.customCatalog); } catch (e) { s3.customFlat = []; } }
+  const cc = (s3.customFlat || []).find(x => x.id === cid);
+  return {
+    title: r?.control_title || c?.title || cc?.title || "",
+    modalverb: r?.control_modalverb || c?.modalverb || cc?.modalverb || "",
+    coverage: r?.coverage || "",
+    sources: r?.source_anforderungen || [],
+    known: !!(r || c || cc),
+  };
+}
+function s3KnownIds() {
+  const ids = new Set((state.catalogControls || []).map(c => c.id));
+  if (!s3.customFlat && state.customCatalog) { try { s3.customFlat = flattenCatalog(state.customCatalog); } catch (e) { s3.customFlat = []; } }
+  (s3.customFlat || []).forEach(c => ids.add(c.id));
+  return ids;
+}
+
+function s3SetView(view) {
+  s3.view = view;
+  $("s3-editor").classList.toggle("hidden", view !== "editor");
+  $("s3-json").classList.toggle("hidden", view !== "json");
+  $("btn-s3-view-editor").classList.toggle("ghost", view !== "editor");
+  $("btn-s3-view-json").classList.toggle("ghost", view !== "json");
+  if (view === "json") s3SyncJson();
+}
+function s3SyncJson() { $("s3-output").value = state.profileDef ? JSON.stringify(state.profileDef, null, 2) : ""; }
+function s3Chip() {
+  const p = s3Profile(); if (!p) return;
+  $("s3-chip").textContent = `${state.pipelineMode || "?"} · ${s3WithIds(p).length} Controls · ${s3Alters(p).length} Ergänzungen`;
+}
+function s3SaveChip(text, color) {
+  const el = $("s3-save-chip");
+  el.textContent = text;
+  el.className = "chip" + (color ? " " + color : "");
+}
+/* Entprellt ins Set: 1,2 s nach der letzten Änderung; beim Verstecken oder
+   Verlassen der Seite sofort (pagehide/visibilitychange unten). */
+function s3SaveSoon() {
+  s3SyncJson(); s3Chip();
+  s3SaveChip("… wird gespeichert", "warn");
+  clearTimeout(s3.saveTimer);
+  s3.saveTimer = setTimeout(() => { s3.saveTimer = null; saveProfileToSet({ ask: false, quiet: true }); }, 1200);
+}
+function s3FlushSave() {
+  if (!s3.saveTimer) return;
+  clearTimeout(s3.saveTimer); s3.saveTimer = null;
+  saveProfileToSet({ ask: false, quiet: true });
+}
+
 function renderStage3() {
   const card = $("s3-result");
   card.classList.remove("hidden");
-  $("s3-output").value = JSON.stringify(state.profileDef, null, 2);
-  const n = state.profileDef?.["profile"]?.["imports"]?.[0]?.["include-controls"]?.[0]?.["with-ids"]?.length || 0;
-  const a = state.profileDef?.["profile"]?.["modify"]?.["alters"]?.length || 0;
-  $("s3-chip").textContent = `${state.pipelineMode} · ${n} Controls · ${a} alters`;
+  s3.removed = new Map();
+  s3.customFlat = null;
   $("btn-download-cat").classList.toggle("hidden", state.pipelineMode !== "C2" || !state.customCatalog);
+  s3SetView(s3.view);
+  renderS3Editor();
+  s3SyncJson();
   // Fertiges Profil sofort in den Arbeitsstand legen — nicht erst beim Download.
   saveProfileToSet({ ask: false });
 }
 
+function renderS3Editor() {
+  const p = s3Profile();
+  if (!p) return;
+  if (document.activeElement !== $("s3-title")) $("s3-title").value = p.metadata?.title || "";
+  const ids = s3WithIds(p);
+  const filter = $("s3-filter").value;
+  const rows = [
+    ...ids.map((cid, idx) => ({ cid, idx, inProfile: true })),
+    ...[...s3.removed.entries()].map(([cid, r]) => ({ cid, idx: r.idx, inProfile: false })),
+  ].sort((a, b) => a.idx - b.idx || a.cid.localeCompare(b.cid));
+  const shown = rows.filter(r => {
+    if (filter === "in") return r.inProfile;
+    if (filter === "out") return !r.inProfile;
+    if (filter === "text") return r.inProfile && !!s3AlterOf(p, r.cid);
+    return true;
+  });
+  const covColor = cov => cov === "full" ? "var(--green)" : cov === "partial" ? "var(--amber)" : cov === "missing" ? "var(--red)" : "var(--text-quiet)";
+  $("s3-controls").innerHTML = shown.map(({ cid, inProfile }) => {
+    const info = s3Info(cid);
+    const prose = inProfile ? s3ProseOf(s3AlterOf(p, cid)) : s3ProseOf(s3.removed.get(cid)?.alter);
+    const src = info.sources.slice(0, 4).join(", ") + (info.sources.length > 4 ? "…" : "");
+    return `<div class="s3-row${inProfile ? "" : " out"}" data-cid="${escapeHtml(cid)}">
+      <input type="checkbox" data-act="toggle" ${inProfile ? "checked" : ""} title="${inProfile ? "aus dem Profil entfernen" : "wieder ins Profil aufnehmen"}">
+      <div class="req-id">${escapeHtml(cid)}${info.modalverb ? `<span class="mv">${escapeHtml(info.modalverb)}</span>` : ""}</div>
+      <div>
+        <div class="s3-head">
+          <span class="s3-ttl">${escapeHtml(info.title || (info.known ? "" : "nicht im geladenen Katalog"))}</span>
+          ${info.coverage ? `<span class="req-ctrl" style="color:${covColor(info.coverage)}">${escapeHtml(info.coverage)}</span>` : ""}
+          ${src ? `<span class="s3-src">src: ${escapeHtml(src)}</span>` : ""}
+          ${inProfile ? "" : `<span class="s3-src" style="color:var(--amber)">abgewählt — Häkchen setzt es zurück</span>`}
+        </div>
+        <textarea class="s3-text" data-act="prose" rows="3" spellcheck="false"
+          placeholder="Ergänzung zu diesem Control (OSCAL alters → adds → prose) — leer lassen heißt: keine Ergänzung">${escapeHtml(prose)}</textarea>
+      </div>
+    </div>`;
+  }).join("") || `<div class="s3-note" style="padding:8px 0">Keine Controls in dieser Sicht.</div>`;
+  s3Chip();
+  // Vorschlagsliste fürs Ergänzen: alle Katalog-IDs, die noch nicht im Profil stehen
+  const drin = new Set(ids);
+  $("s3-catalog-ids").innerHTML = [...s3KnownIds()].filter(id => !drin.has(id)).sort()
+    .map(id => `<option value="${escapeHtml(id)}">`).join("");
+}
+
+/* Control an-/abwählen. Abgewählte bleiben mit ihrer Ergänzung im Gedächtnis
+   (und an ihrem Platz in der Reihenfolge), bis das Profil neu erzeugt wird. */
+function s3Toggle(cid, on) {
+  const p = s3Profile(); if (!p) return;
+  const ids = s3WithIds(p);
+  if (!on) {
+    const idx = ids.indexOf(cid);
+    if (idx < 0) return;
+    ids.splice(idx, 1);
+    const alter = s3AlterOf(p, cid);
+    s3.removed.set(cid, { idx, alter });
+    s3SetAlters(p, s3Alters(p).filter(a => a["control-id"] !== cid));
+    if (!ids.length) l.warn("Profil ohne Controls: include-controls/with-ids verlangt mindestens einen Eintrag — so ist das Profil nicht schema-gültig.");
+  } else {
+    const r = s3.removed.get(cid);
+    s3.removed.delete(cid);
+    if (!ids.includes(cid)) ids.splice(Math.min(r ? r.idx : ids.length, ids.length), 0, cid);
+    if (r && r.alter) s3SetAlters(p, [...s3Alters(p), r.alter]);
+  }
+  renderS3Editor();
+  s3SaveSoon();
+}
+function s3AddControl() {
+  const inp = $("s3-add-id");
+  const cid = inp.value.trim();
+  if (!cid) return;
+  const p = s3Profile(); if (!p) return;
+  if (s3WithIds(p).includes(cid)) { l.warn(`${cid} steht bereits im Profil.`); return; }
+  if (s3.removed.has(cid)) { s3Toggle(cid, true); inp.value = ""; return; }
+  if (!s3KnownIds().has(cid)) {
+    if (!confirm(`„${cid}" ist nicht im geladenen Katalog. Trotzdem aufnehmen?`)) return;
+  }
+  s3WithIds(p).push(cid);
+  inp.value = "";
+  renderS3Editor();
+  s3SaveSoon();
+  l.ok(`${cid} ins Profil aufgenommen.`);
+}
+
+$("s3-controls").addEventListener("change", ev => {
+  const row = ev.target.closest(".s3-row"); if (!row) return;
+  if (ev.target.dataset.act === "toggle") s3Toggle(row.dataset.cid, ev.target.checked);
+});
+$("s3-controls").addEventListener("input", ev => {
+  if (ev.target.dataset.act !== "prose") return;
+  const row = ev.target.closest(".s3-row"); if (!row || row.classList.contains("out")) return;
+  const p = s3Profile(); if (!p) return;
+  // Nicht bei jedem Tastendruck die Liste neu bauen — nur das Objekt nachziehen.
+  clearTimeout(s3.textTimer);
+  const cid = row.dataset.cid, text = ev.target.value;
+  s3.textTimer = setTimeout(() => { s3SetProse(p, cid, text); s3SaveSoon(); }, 300);
+});
+$("s3-title").addEventListener("input", () => {
+  const p = s3Profile(); if (!p) return;
+  (p.metadata = p.metadata || {}).title = $("s3-title").value;
+  s3SaveSoon();
+});
+$("s3-filter").addEventListener("change", renderS3Editor);
+$("btn-s3-add").addEventListener("click", s3AddControl);
+$("s3-add-id").addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); s3AddControl(); } });
+$("btn-s3-view-editor").addEventListener("click", () => s3SetView("editor"));
+$("btn-s3-view-json").addEventListener("click", () => s3SetView("json"));
+/* JSON-Sicht: das Textfeld wird erst auf Klick zur Wahrheit — mit Prüfung. */
+function s3ApplyJson({ quiet } = {}) {
+  const note = $("s3-json-note");
+  try {
+    const parsed = JSON.parse($("s3-output").value.replace(/^\uFEFF/, ""));
+    if (!parsed || !parsed.profile) throw new Error(`Wurzelschlüssel „profile" fehlt — das ist kein OSCAL-Profil.`);
+    state.profileDef = parsed;
+    s3.removed = new Map();
+    renderS3Editor();
+    s3SaveSoon();
+    note.textContent = "JSON übernommen — Editor und Arbeitsstand sind nachgezogen.";
+    note.style.color = "var(--green)";
+    return true;
+  } catch (e) {
+    note.textContent = "JSON nicht übernommen: " + e.message;
+    note.style.color = "var(--amber)";
+    if (!quiet) l.err("JSON nicht übernommen: " + e.message);
+    return false;
+  }
+}
+$("btn-s3-json-apply").addEventListener("click", () => s3ApplyJson());
+window.addEventListener("pagehide", s3FlushSave);
+document.addEventListener("visibilitychange", () => { if (document.hidden) s3FlushSave(); });
+
+/* Ein verweigertes Ablegen darf nicht stumm bleiben: In der Zusammenarbeit
+   lehnt der Kern ohne gehaltene Sperre jedes Schreiben ab — die Zeile im Log
+   allein ging unter (eingeklappte Konsole, Autoscroll), und der Anwender
+   suchte das Profil vergeblich in der Übersicht. Deshalb zusätzlich der rote
+   Balken des Kerns (wie in Generator, Editor, Prüfung und POA&M), der beim
+   nächsten gelungenen Ablegen wieder verschwindet. */
+function ablageVerweigert(was, e) {
+  const msg = `${was}: ${e && e.message || e}`;
+  l.err(msg);
+  if (typeof gppWriteBlockedBanner === "function") gppWriteBlockedBanner(msg);
+}
+function ablageGelungen() {
+  if (typeof gppWriteBlockedBanner === "function") gppWriteBlockedBanner.clear();
+}
+
 /* Legt das erzeugte Profil (und einen etwaigen eigenen Katalog) im aktiven Set ab.
    `ask` fragt vorher nach einem Namen; ohne Rückfrage gilt die Baustein-ID. */
-async function saveProfileToSet({ ask } = { ask: true }) {
+async function saveProfileToSet({ ask, quiet } = { ask: true }) {
   if (!state.profileDef) return;
   const bId = state.baustein?.id || "baustein";
   const vorschlag = state.profileName || `${bId} — G++ Profil (${state.pipelineMode || "?"})`;
@@ -2571,25 +2869,43 @@ async function saveProfileToSet({ ask } = { ask: true }) {
   state.profileName = name;
   const safe = name.replace(/[^A-Za-z0-9._-]+/g, "_").replace(/^_+|_+$/g, "") || "profil";
   try {
-    await gppArtefacts.save({
+    const rec = await gppArtefacts.save({
       stage: "author", kind: "profile", tool: GPP_TOOL_ID,
       title: name, filename: `${safe}.json`, data: state.profileDef,
+      meta: { controls: s3WithIds(state.profileDef.profile).length },
     });
+    /* Umbenannt („Im Set speichern…" mit neuem Namen): die Ablage unter dem
+       alten Namen räumen — sonst liegen zwei Stände desselben Profils im Set
+       und der SSP-Generator bietet beide an. */
+    if (s3.lastArtId && rec && rec.id !== s3.lastArtId) {
+      await gppArtefacts.remove(s3.lastArtId).catch(() => {});
+    }
+    if (rec) s3.lastArtId = rec.id;
     if (state.customCatalog) {
       await gppArtefacts.save({
         stage: "author", kind: "catalog", tool: GPP_TOOL_ID,
         title: `${name} — eigener Katalog`, filename: `${safe}_catalog.json`, data: state.customCatalog,
       });
     }
-    l.ok(`Profil „${name}" im Set „${gppArtefacts.activeSet()}" gespeichert.`);
-  } catch (e) { l.warn("Profil nicht ins Set gelegt: " + e.message); }
+    if (!quiet) l.ok(`Profil „${name}" im Set „${gppArtefacts.activeSet()}" gespeichert.`);
+    s3SaveChip(`✓ im Set „${gppArtefacts.activeSet()}"`, "ok");
+    ablageGelungen();
+  } catch (e) {
+    s3SaveChip("✕ nicht gespeichert", "err");
+    ablageVerweigert("Profil NICHT ins Set gelegt", e);
+  }
 }
 
 $("btn-save-set").addEventListener("click", () => saveProfileToSet({ ask: true }));
 
 $("btn-download").addEventListener("click", () => {
   if (!state.profileDef) return;
-  const text = $("s3-output").value;
+  /* In der JSON-Sicht zählt, was im Textfeld steht — ungültiges JSON bricht
+     den Download ab, statt still das alte Objekt auszuliefern. */
+  if (s3.view === "json" && $("s3-output").value.trim() !== JSON.stringify(state.profileDef, null, 2).trim()) {
+    if (!s3ApplyJson()) return;
+  }
+  const text = JSON.stringify(state.profileDef, null, 2);
   const bId  = state.baustein?.id || "baustein";
   const blob = new Blob([text], { type: "application/json" });
   const url  = URL.createObjectURL(blob);
@@ -2599,14 +2915,10 @@ $("btn-download").addEventListener("click", () => {
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
   l.ok(`download · ${a.download}`);
-  // zusätzlich in den gemeinsamen Artefaktbestand (Übersicht in index.html)
-  try {
-    gppArtefacts.save({
-      stage: "author", kind: "profile", tool: GPP_TOOL_ID,
-      title: `${bId} — G++ Profil (${state.pipelineMode || "?"})`,
-      filename: a.download, data: JSON.parse(text),
-    }).catch(e => l.warn("Artefakt nicht abgelegt: " + e.message));
-  } catch (e) { l.warn("Artefakt nicht abgelegt (kein gültiges JSON im Ausgabefeld)."); }
+  /* Zusätzlich in den Arbeitsstand — derselbe Datensatz wie der Live-Save des
+     Editors (gleicher Name), keine zweite Kopie unter dem Dateinamen. */
+  clearTimeout(s3.saveTimer); s3.saveTimer = null;
+  saveProfileToSet({ ask: false });
 });
 
 $("btn-download-cat").addEventListener("click", () => {
@@ -2624,7 +2936,8 @@ $("btn-download-cat").addEventListener("click", () => {
   gppArtefacts.save({
     stage: "author", kind: "catalog", tool: GPP_TOOL_ID,
     title: `${bId} — eigener Katalog`, filename: a.download, data: state.customCatalog,
-  }).catch(e => l.warn("Artefakt nicht abgelegt: " + e.message));
+  }).then(() => { l.ok(`Katalog im Set „${gppArtefacts.activeSet()}" abgelegt.`); ablageGelungen(); })
+    .catch(e => ablageVerweigert("Katalog NICHT ins Set gelegt", e));
 });
 
 $("btn-copy").addEventListener("click", async () => {
@@ -3065,6 +3378,11 @@ $("btn-clear").addEventListener("click", () => {
   state.unmappedSentences = [];
   state.customCatalog = null;
   state.profileDef = null;
+  /* Neuer Lauf = neues Profil: Name und Ablage-ID des vorigen Laufs vergessen,
+     sonst schreibt der Auto-Save das neue Profil unter dem alten Namen und
+     überschreibt dessen Stand im Set. */
+  state.profileName = null;
+  s3.lastArtId = "";
   state.engines = { maker: null, checker: null };
   $("s1-result").classList.add("hidden");
   $("s2-result").classList.add("hidden");

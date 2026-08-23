@@ -76,6 +76,16 @@ Scheitert ein Live-Speichern — typisch: die Sperre fehlt —, erscheint ein **
 - **Schwebende Filterleiste links** (`gppFilterDock`) für Seiten ohne Filter in der Navigation — zuerst im SSP-Generator für die Tailoring-Suche.
 - **Log-Konsolen** klappen jetzt überall wirklich zusammen (auch bei fester CSS-Höhe), und der DB-Status-Chip weicht der eingeklappten Konsole aus, statt ihre Bedienung zu überdecken.
 
+## Befunde aus dem Release-Candidate-Test
+
+Der Testlauf mit der Datenbank (Admin legt ein Set an, erzeugt ein Baustein-Profil, will es im SSP verwenden und Rechte vergeben) hat eine Kette stiller Ausfälle aufgedeckt — jeder für sich klein, zusammen ein „es geht nicht":
+
+- **„BSI → G++ Profil" verweigerte stumm.** Ohne gehaltene Sperre lehnt der Kern das Ablegen ab — das Werkzeug schrieb das nur in seine (oft eingeklappte) Log-Konsole, und das Profil fehlte in der Übersicht. Jetzt erscheint das rote Banner des Kerns wie in den anderen Werkzeugen; der Chip neben Stufe 3 zeigt, ob die Ablage gelungen ist. Außerdem vergaß das Werkzeug den Profilnamen zwischen zwei Läufen nicht: Ein zweiter Baustein hätte das Profil des ersten im Set überschrieben.
+- **Profile aus dem Arbeitsstand als Zielobjekt.** Der Generator bot Set-Profile nur unter „Zusätzliche Kataloge" an (Import in den SSP). Jetzt gibt es beides: dort als Import, unter „Zielobjekte anlegen" als Grundlage eines Zielobjekts — mit allen Controls im Tailoring und den mitgebrachten `alters` als Anpassungen, die beim Export unverändert wieder hinausgehen (Original-Parts wie `ed2023-quelle` werden nicht zu `statement` umgedeutet).
+- **Der Generator hielt fremde Profile für seine.** Beim Start las er das jüngste Profil *irgendeines* Werkzeugs als Blaupausen-Profil; seit Baustein-Profile im Set liegen, kamen Titel und Zusatzkataloge aus dem falschen Dokument. Er liest jetzt nur sein eigenes. Und die Rekonstruktion aus dem Set erkannte Zielobjekte am OSCAL-Typ `service` — fast alle sind aber `hardware`, `software`, `network` oder `physical` und verschwanden beim Neuladen; der nächste Live-Sync schrieb den SSP dann ohne sie. Erkannt wird jetzt der Profil-Link, `set://`-Quellen kommen aus dem Artefaktspeicher.
+- **Profil-Editor in Stufe 3.** Das erzeugte Profil lässt sich direkt bearbeiten (Titel, Controls an- und abwählen, Controls aus dem Katalog ergänzen, Ergänzungstexte je Control), mit JSON-Sicht daneben. Eine Wahrheit für Download, Set und beide Sichten — vorher konnten Textfeld-Änderungen still am Set vorbeigehen.
+- **Set-Rechte für neue Sets.** Die Vorschlagsliste in `config.html` kannte nur Sets mit Artefakten — ein frisch angelegtes, noch leeres Set fehlte und schien nicht berechtigbar. Jetzt stehen aktives Set, Server-Rechte und Server-Artefakte drin, der Name darf auch frei eingetippt werden, und die Erfolgsmeldung überlebt das Neu-Rendern der Liste. Scheitert `whoami` beim Laden (Token-Refresh, Netz), blieb die Benutzerverwaltung bisher die ganze Sitzung verborgen — jetzt wird der Fehler angezeigt und beim nächsten Anlass oder per Klick erneut versucht.
+
 ## Nicht im Umfang von 4.0
 
 * Die produktive Härtung des Backends (TLS auf dem öffentlichen Port, GoTrue-Admin-API statt direkter `auth.users`-Schreibzugriff bei der Konto-Anlage) — die Terraform-Umgebung ist eine Testinstanz.
@@ -87,9 +97,9 @@ Scheitert ein Live-Speichern — typisch: die Sperre fehlt —, erscheint ein **
 | gemeinsamer Kern (gpp-core.js) | 3 · Cache-Buster v3.9 |
 | Übersicht (index.html) | 1.4 |
 | OSCAL Schema Validator | 1.11.2 |
-| SSP-Generator (G++) | V5.10.0 |
+| SSP-Generator (G++) | V5.11.0 |
 | GS++ Explorer (GSpp-Viewer) | v9.8 |
-| BSI → G++ Profil (Baustein_2_Profile) | 0.9.2 |
+| BSI → G++ Profil (Baustein_2_Profile) | 0.10.0 |
 | SSP-Editor (ssp_ausfuellen) | v1.3.0 |
 | Prüfung AP/AR (pruefung_ap_ar) | build 9.5.2 |
 | POA&M-Generator | v2.4 |

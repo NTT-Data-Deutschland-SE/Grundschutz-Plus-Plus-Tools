@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.10.0</title>
+    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.11.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -655,7 +655,7 @@
 
         <div class="topbar-actions">
             <div id="catalog-status" class="pill"><span class="dot animate-pulse"></span>Lade Basis-Katalog…</div>
-            <div class="pill pill-quiet">BUILD V5.10.0</div>
+            <div class="pill pill-quiet">BUILD V5.11.0</div>
         </div>
 
         <div class="progress-track"><div id="ai-doc-progress-bar" class="progress-fill"></div></div>
@@ -711,7 +711,7 @@
             </div>
         </div>
 
-        <div class="rail-foot">BUILD V5.10.0</div>
+        <div class="rail-foot">BUILD V5.11.0</div>
     </aside>
 
     <div id="rail-splitter" class="splitter" title="Rail-Breite ziehen"></div>
@@ -1492,6 +1492,20 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
             }
             renderMainStructure();
+            /* Die drei Zielobjekt-Quellen schließen einander aus: eine Wahl setzt
+               die anderen zurück (ddN/ddG regeln das untereinander in
+               fetchGitHubComponents — das gelingt dort aber nur, wenn GitHub
+               antwortet; die Set-Quelle braucht kein Netz und hängt hier). */
+            {
+                const ddS = document.getElementById('dd-set-profile');
+                const ddN = document.getElementById('dd-nutzer');
+                const ddG = document.getElementById('dd-gplus');
+                if (ddS) {
+                    ddS.addEventListener('change', () => { if (ddS.value) { ddN.selectedIndex = 0; ddG.selectedIndex = 0; } });
+                    [ddN, ddG].forEach(dd => dd.addEventListener('change', () => { if (dd.value) ddS.selectedIndex = 0; }));
+                }
+            }
+            refreshSetSourceOptions();
             initSidebar();
             initAIRunSettings();
             initAIPrompts();
@@ -1516,7 +1530,12 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             try {
                 if (typeof gppArtefacts !== 'undefined') {
                     const sspArt = await gppArtefacts.latest('ssp');
-                    const profArt = await gppArtefacts.latest('profile');
+                    /* Nur das EIGENE Blaupausen-Profil, nicht das jüngste Profil
+                       irgendeines Werkzeugs: Seit Baustein-Profile im Set liegen,
+                       hielte der Generator sonst ein fremdes Profil für seines —
+                       Titel, Zusatzkataloge (imports[1..]) und Anpassungen kämen
+                       aus dem falschen Dokument. */
+                    const profArt = await gppArtefacts.latest('profile', undefined, GPP_TOOL_ID);
                     const ssp = sspArt?.data?.['system-security-plan'] || null;
                     const prof = profArt?.data?.profile || null;
                     if (ssp || prof) {
@@ -3521,8 +3540,9 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 const analysisAssetByName = new Map((bpState.aiAnalysis?.assets || []).map(a => [a.name.toLowerCase(), a]));
                 lines.push('Assets/Komponenten:');
                 bpState.components.forEach(c => {
-                    const kategorie = decodeURIComponent((c.source || '').split('/').pop() || '')
-                        .replace(/_profile.*$/i, '').replace(/_/g, ' ');
+                    const kategorie = c.kategorie || (String(c.source || '').startsWith('set://') ? ''
+                        : decodeURIComponent((c.source || '').split('/').pop() || '')
+                            .replace(/_profile.*$/i, '').replace(/_/g, ' '));
                     const detail = cleanAIString(analysisAssetByName.get(c.name.toLowerCase())?.description);
                     lines.push(`- ${c.name} (Zielobjektkategorie: ${kategorie || 'unbekannt'}, Schutzbedarf: ${c.schutzbedarf || 'normal-SdT'}, ${c.controls.size} Controls)${detail ? `: ${detail}` : ''}`);
                 });
@@ -3825,15 +3845,71 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
            „set://<id>", der SHA-256 wird über die abgelegten Bytes gebildet. */
         async function refreshSetSourceOptions() {
             const sel = document.getElementById('set-source-select');
-            if (!sel || typeof gppArtefacts === 'undefined') return;
+            const selAsset = document.getElementById('dd-set-profile');
+            if ((!sel && !selAsset) || typeof gppArtefacts === 'undefined') return;
             let rows = [];
             try { rows = await gppArtefacts.list(); } catch (e) { return; }
-            const usable = rows.filter(r => r.kind === 'catalog' || r.kind === 'profile');
-            const prev = sel.value;
-            sel.innerHTML = '<option value="">— aus dem Arbeitsstand wählen —</option>' +
-                usable.map(r => `<option value="${escapeHTML(r.id)}">${escapeHTML(r.title)} · ${r.kind}</option>`).join('');
-            if (prev) sel.value = prev;
-            if (!usable.length) sel.options[0].textContent = '— Arbeitsstand enthält keine Kataloge/Profile —';
+            /* Das eigene Blaupausen-Profil liegt durch das Live-Set immer mit im
+               Arbeitsstand — es sich selbst als Katalog oder Zielobjekt anzubieten
+               wäre zirkulär, deshalb bleibt es draußen. */
+            const fremd = rows.filter(r => !(r.kind === 'profile' && r.tool === GPP_TOOL_ID));
+            const fill = (el, list, leer, leerText) => {
+                if (!el) return;
+                const prev = el.value;
+                el.innerHTML = `<option value="">${leer}</option>` +
+                    list.map(r => `<option value="${escapeHTML(r.id)}">${escapeHTML(r.title)} · ${r.kind}</option>`).join('');
+                if (prev && list.some(r => r.id === prev)) el.value = prev;
+                if (!list.length) el.options[0].textContent = leerText;
+            };
+            fill(sel, fremd.filter(r => r.kind === 'catalog' || r.kind === 'profile'),
+                '— aus dem Arbeitsstand wählen —', '— Arbeitsstand enthält keine Kataloge/Profile —');
+            fill(selAsset, fremd.filter(r => r.kind === 'profile'),
+                '— Profil aus dem Set wählen —', '— Arbeitsstand enthält keine Profile —');
+        }
+
+        /* Alle Control-IDs eines Profils — über ALLE imports und include-controls.
+           Die Baustein-Profile tragen einen Import, fremde Profile gern mehrere;
+           wer nur imports[0] liest, verliert bei letzteren still Controls. */
+        function profileControlIds(doc) {
+            const ids = new Set();
+            (doc?.profile?.imports || []).forEach(imp =>
+                (imp['include-controls'] || []).forEach(inc => (inc['with-ids'] || []).forEach(cid => ids.add(cid))));
+            return ids;
+        }
+        /* Herkunft eines Profils aus dem Arbeitsstand für Typ und Kategorie des
+           Zielobjekts: Die GitHub-Profile tragen die Kategorie im Dateinamen —
+           eine Artefakt-ID („set://…") sagt darüber nichts. Baustein-Profile aus
+           „BSI → G++ Profil" nennen den Baustein als Prop (source-baustein, die
+           Schicht ergibt den OSCAL-Typ) und die Zielobjektkategorie hinter „→"
+           im Titel. */
+        function profilHerkunft(doc) {
+            const meta = doc?.profile?.metadata || {};
+            const props = meta.props || [];
+            const baustein = props.find(p => p.name === 'source-baustein')?.value || '';
+            const m = String(meta.title || '').match(/→\s*([^→]+)$/);
+            const kategorie = m ? m[1].trim() : '';
+            return { titel: meta.title || '', bausteine: baustein ? [baustein] : [], kategorie };
+        }
+
+        /* Die alters eines Profils als Tailoring-Anpassungen je Control: Baustein-
+           Profile bringen so den gemappten Ed2023-Originaltext mit (Part
+           „ed2023-quelle"), andere Profile ihre statement-Ergänzungen. Der
+           Original-Part bleibt als `raw` erhalten und wird beim Profil-Export
+           unverändert wieder ausgegeben — ein Quellen-Zitat soll nicht als
+           „statement" wiedergeboren werden. */
+        function profileAltersAsMods(doc) {
+            const byCid = new Map();
+            (doc?.profile?.modify?.alters || []).forEach(a => {
+                const cid = a['control-id'];
+                if (!cid) return;
+                (a.adds || []).forEach(add => {
+                    const part = (add.parts || []).find(p => p.name === 'statement') || (add.parts || [])[0];
+                    const text = part?.prose || (part?.props || []).find(p => p.name === 'statement')?.value || '';
+                    if (!byCid.has(cid)) byCid.set(cid, []);
+                    byCid.get(cid).push({ type: 'add', position: add.position || 'ending', text, raw: JSON.parse(JSON.stringify(add)) });
+                });
+            });
+            return byCid;
         }
 
         window.addCatalogFromSet = async function () {
@@ -4030,7 +4106,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
                 <div class="pt-2">
                     <h3 class="text-sm font-bold text-slate-300 uppercase mb-2">4. Zielobjekte anlegen</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <p class="text-xs text-slate-400 mb-4">Ein Zielobjekt entsteht aus einem Profil: aus den vorbereiteten Bausteinen (Nutzergeneriert), den G++-Zielobjektkategorien oder einem Profil aus dem aktiven Arbeitsstand (z.&nbsp;B. aus „BSI → G++ Profil"). Die Controls des Profils landen beim Zielobjekt und sind im Tailoring anpassbar; mitgebrachte Ergänzungen (<code>alters</code>) werden als Anpassungen übernommen.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Nutzergeneriert</label>
                             <select id="dd-nutzer" class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white"><option value="">Lade...</option></select>
@@ -4038,6 +4115,10 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase mb-1">G++ Zielobjekte</label>
                             <select id="dd-gplus" class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white"><option value="">Lade...</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Aus dem Arbeitsstand (Profil)</label>
+                            <select id="dd-set-profile" class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white"><option value="">— Profil aus dem Set wählen —</option></select>
                         </div>
                     </div>
 
@@ -4344,40 +4425,71 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         async function addAssetComponent() {
             const ddN = document.getElementById('dd-nutzer');
             const ddG = document.getElementById('dd-gplus');
+            const ddS = document.getElementById('dd-set-profile');
             const customNameInput = document.getElementById('asset-custom-name');
             const stateInput = document.getElementById('asset-state');
 
-            let url = '', originalName = '';
+            /* Drei Herkünfte, ein Knopf: GitHub-Profil (Nutzergeneriert / G++-
+               Zielobjekt) oder ein Profil aus dem aktiven Arbeitsstand. Letzteres
+               liegt bereits geparst im Artefaktspeicher — kein Netz, kein Pin. */
+            let url = '', originalName = '', setId = '';
             if (ddN.value) { url = ddN.value; originalName = ddN.options[ddN.selectedIndex].text; }
             else if (ddG.value) { url = ddG.value; originalName = ddG.options[ddG.selectedIndex].text; }
+            else if (ddS && ddS.value) { setId = ddS.value; }
             else return alert("Bitte wähle ein Asset.");
 
-            const finalName = customNameInput.value.trim() || originalName;
             const finalState = stateInput.value;
             const schutzbedarfInput = document.getElementById('asset-schutzbedarf');
             const finalSchutzbedarf = schutzbedarfInput.value;
 
-            toggleLoader(true, `Lade ${finalName}...`);
+            toggleLoader(true, `Lade ${customNameInput.value.trim() || originalName || 'Profil aus dem Set'}...`);
             try {
-                const res = await fetch(url);
-                const data = await res.json();
-
-                const extractedControls = new Set();
-                if (data['profile']) {
-                    const includeControls = data['profile']?.['imports']?.[0]?.['include-controls']?.[0]?.['with-ids'] || [];
-                    includeControls.forEach(id => extractedControls.add(id));
+                let data, setMods = null;
+                if (setId) {
+                    const rec = await gppArtefacts.get(setId);
+                    if (!rec) throw new Error('Eintrag nicht mehr im Set — Liste wird aktualisiert.');
+                    data = rec.data;
+                    if (!data?.profile) throw new Error('Der Eintrag ist kein OSCAL-Profil.');
+                    url = `set://${rec.id}`;
+                    originalName = rec.title || data.profile.metadata?.title || rec.filename;
+                    setMods = profileAltersAsMods(data);
+                } else {
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    data = await res.json();
                 }
+                const finalName = customNameInput.value.trim() || originalName;
+                if (!data?.profile) throw new Error('Die Quelle ist kein OSCAL-Profil.');
+                const extractedControls = profileControlIds(data);
+                if (!extractedControls.size) aiLog('warn', `Profil „${finalName}" enthält keine Controls (include-controls leer) — Zielobjekt wird ohne Controls angelegt.`);
 
-                bpState.components.push({
+                const comp = {
                     id: crypto.randomUUID(),
                     name: finalName,
                     source: url,
                     state: finalState,
                     schutzbedarf: finalSchutzbedarf,
                     controls: extractedControls
+                };
+                if (setId) {
+                    const h = profilHerkunft(data);
+                    if (h.bausteine.length) comp.bausteine = h.bausteine;
+                    if (h.kategorie) comp.kategorie = h.kategorie;
+                    if (h.titel) comp.profilTitel = h.titel;
+                }
+                bpState.components.push(comp);
+                /* Ergänzungen des Profils (alters) hängen am neuen Zielobjekt: im
+                   Tailoring sichtbar und änderbar, beim Export wieder im Profil. */
+                let mitgebracht = 0;
+                if (setMods) setMods.forEach((mods, cid) => {
+                    if (!extractedControls.has(cid)) return;
+                    bpState.modifications.set(`${comp.id}||${cid}`, mods);
+                    mitgebracht += mods.length;
                 });
+                if (setId) aiLog('ok', `Zielobjekt „${finalName}" aus dem Arbeitsstand angelegt (${extractedControls.size} Controls${mitgebracht ? `, ${mitgebracht} Anpassungen übernommen` : ''}) — Tailoring unter „Asset: ${finalName}".`);
 
                 ddN.selectedIndex = 0; ddG.selectedIndex = 0;
+                if (ddS) ddS.selectedIndex = 0;
                 customNameInput.value = '';
                 stateInput.selectedIndex = 0;
                 schutzbedarfInput.selectedIndex = 0;
@@ -4385,6 +4497,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 renderAssetsList();
                 renderTailoredList();
                 refreshRiskUI();
+                if (setId) refreshSetSourceOptions();
             } catch (e) {
                 alert("Fehler beim Verarbeiten des Assets: " + e.message);
             } finally {
@@ -4491,7 +4604,13 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
         window.removeAsset = function (i) {
             const removed = bpState.components[i];
-            if (removed) bpState.aiImportedComponentIds.delete(removed.id);
+            if (removed) {
+                bpState.aiImportedComponentIds.delete(removed.id);
+                // Anpassungen des Zielobjekts gehen mit — wie bei removeCatalog.
+                bpState.modifications.forEach((_, key) => {
+                    if (key.startsWith(`${removed.id}||`)) bpState.modifications.delete(key);
+                });
+            }
             bpState.components.splice(i, 1);
             renderAssetsList();
             renderTailoredList();
@@ -5309,23 +5428,45 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                         continue;
                     }
 
-                    // Asset component (service + profile link)
-                    if (c.type === 'service' && href) {
+                    // Asset component: erkennbar am Profil-Link, NICHT am OSCAL-Typ —
+                    // mapZielobjektComponentType vergibt hardware/software/network/
+                    // physical, nur Cloud/Outsourcing wird „service". Die frühere
+                    // Typ-Abfrage ließ alle anderen Zielobjekte beim Neuladen aus
+                    // dem Set verschwinden; der nächste Live-Sync schrieb den SSP
+                    // dann ohne sie zurück.
+                    const profLink = (c.links || []).find(l => l.rel === 'profile');
+                    if (profLink && profLink.href && !(c.links || []).some(l => l.rel === 'component-definition')) {
+                        const quelle = profLink.href;
                         try {
-                            const res = await fetch(href);
-                            const data = await res.json();
-                            const controls = new Set();
-                            (data.profile?.['imports']?.[0]?.['include-controls']?.[0]?.['with-ids'] || []).forEach(id => controls.add(id));
+                            let data;
+                            if (quelle.startsWith('set://')) {
+                                /* Zielobjekt aus dem Arbeitsstand: das Profil liegt im
+                                   Artefaktspeicher, nicht im Netz. */
+                                const rec = await gppArtefacts.get(quelle.slice('set://'.length));
+                                if (!rec) throw new Error('Profil nicht mehr im Set');
+                                data = rec.data;
+                            } else {
+                                const res = await fetch(quelle);
+                                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                                data = await res.json();
+                            }
                             const schutzProp = (c.props || []).find(p => p.name === 'sicherheitsniveau');
-                            bpState.components.push({
+                            const comp = {
                                 id: c.uuid,
                                 name: c.title,
-                                source: href,
+                                source: quelle,
                                 state: c.status?.state || 'operational',
                                 schutzbedarf: schutzProp?.value || 'normal-SdT',
-                                controls
-                            });
-                        } catch (e) { console.warn('Asset konnte nicht geladen werden', href, e); }
+                                controls: profileControlIds(data)
+                            };
+                            if (quelle.startsWith('set://')) {
+                                const h = profilHerkunft(data);
+                                if (h.bausteine.length) comp.bausteine = h.bausteine;
+                                if (h.kategorie) comp.kategorie = h.kategorie;
+                                if (h.titel) comp.profilTitel = h.titel;
+                            }
+                            bpState.components.push(comp);
+                        } catch (e) { console.warn('Asset konnte nicht geladen werden', quelle, e); }
                     }
                 }
 
@@ -5457,11 +5598,17 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                             ? prosePart.prose
                             : (oldStmt || prosePart?.prose || '');
                         if (!bpState.modifications.has(key)) bpState.modifications.set(key, []);
-                        bpState.modifications.get(key).push({
-                            type: 'add',
-                            position: add.position || 'ending',
-                            text
-                        });
+                        /* Ergänzungen ohne statement-Part (z. B. „ed2023-quelle" aus einem
+                           Zielobjekt-Profil) wurden bisher zu leeren Anpassungen zerrieben —
+                           der Original-Part bleibt jetzt erhalten und geht beim Export
+                           unverändert wieder hinaus (siehe generateProfile). */
+                        const mod = { type: 'add', position: add.position || 'ending', text };
+                        if (!prosePart) {
+                            const erster = (add.parts || [])[0];
+                            mod.text = erster?.prose || '';
+                            mod.raw = JSON.parse(JSON.stringify(add));
+                        }
+                        bpState.modifications.get(key).push(mod);
                     });
                 });
 
@@ -5651,7 +5798,16 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     if (m.type === 'set-parameter') setParams.push({ "param-id": m.paramId, values: [m.value] });
                     else {
                         if (!altersMap.has(cid)) altersMap.set(cid, []);
-                        altersMap.get(cid).push({ position: m.position, parts: [{ name: "statement", prose: m.text }] });
+                        /* Aus einem Profil übernommene Ergänzungen (Zielobjekt aus dem
+                           Arbeitsstand) tragen ihren Original-Part (z. B. „ed2023-quelle"
+                           samt ns/id/props) — der geht unverändert wieder hinaus. */
+                        const add = m.raw
+                            ? JSON.parse(JSON.stringify(m.raw))
+                            : { position: m.position, parts: [{ name: "statement", prose: m.text }] };
+                        /* Zwei Zielobjekte aus demselben Profil brächten dieselbe
+                           Ergänzung (mit derselben Part-id) doppelt — einmal reicht. */
+                        const schluessel = JSON.stringify(add);
+                        if (!altersMap.get(cid).some(x => JSON.stringify(x) === schluessel)) altersMap.get(cid).push(add);
                     }
                 });
             });
@@ -5881,6 +6037,16 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             });
 
             bpState.components.forEach(c => {
+                /* Zielobjekt aus dem Arbeitsstand: Profilname statt Artefakt-ID in
+                   Beschreibung und Bemerkung, Kategorie aus dem Profil selbst. */
+                const ausSet = String(c.source || '').startsWith('set://');
+                const profilName = ausSet ? (c.profilTitel || c.name) : c.source.split('/').pop();
+                /* Kategorie in derselben Schreibweise wie aus den Profil-Dateinamen
+                   (anwendungen, raeume_fuer_technische_infrastruktur …), damit der
+                   Prop-Wert über beide Herkünfte hinweg vergleichbar bleibt. */
+                const kategorieSlug = String(c.kategorie || '').toLowerCase()
+                    .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+                    .replace(/\s+/g, '_').replace(/[^a-z0-9_-]/g, '');
                 const props = [
                     {
                         name: "sicherheitsniveau",
@@ -5891,10 +6057,16 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     {
                         name: "zielobjektkategorie",
                         ns: OSCAL_NAMESPACES.sourceProfile,
-                        value: zielobjektKategorieFromSource(c.source) || 'unbekannt',
-                        remarks: `Zugeordnetes Zielobjekt-Profil: ${c.source.split('/').pop()}.`
+                        value: kategorieSlug || (ausSet ? '' : zielobjektKategorieFromSource(c.source)) || 'unbekannt',
+                        remarks: `Zugeordnetes Zielobjekt-Profil: ${profilName}${ausSet ? ' (aus dem Arbeitsstand)' : ''}.`
                     }
                 ];
+                if (c.bausteine && c.bausteine.length) props.push({
+                    name: 'source-baustein',
+                    ns: 'https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',   // derselbe ns wie im Baustein-Profil
+                    value: c.bausteine.join(', '),
+                    remarks: 'BSI-Baustein, aus dem das Zielobjekt-Profil abgeleitet wurde (BSI → G++ Profil).'
+                });
                 // Issue #29: source-id der Dokumentanalyse mitführen — sonst erscheint
                 // dasselbe Asset später ein zweites Mal als KI-Komponente.
                 if (c.sourceId) props.push({
@@ -5905,12 +6077,12 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 });
                 sspComponents.push({
                     uuid: c.id,
-                    type: mapZielobjektComponentType(c.source),
+                    type: mapZielobjektComponentType(kategorieSlug || c.source, c.bausteine),
                     title: c.name,
                     // Substanzbeschreibung schlägt Generator-Boilerplate (SSP-7)
                     description: c.description
-                        ? `${c.description} (Zielobjekt-Profil: ${c.source.split('/').pop()})`
-                        : `Instanz '${c.name}', basierend auf Profil ${c.source.split('/').pop()}.`,
+                        ? `${c.description} (Zielobjekt-Profil: ${profilName})`
+                        : `Instanz '${c.name}', basierend auf Profil ${profilName}.`,
                     status: { state: c.state || "operational" },
                     props,
                     links: [{ href: c.source, rel: "profile" }]
