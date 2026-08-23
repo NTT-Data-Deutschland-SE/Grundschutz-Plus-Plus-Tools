@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.11.0</title>
+    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.12.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -655,7 +655,7 @@
 
         <div class="topbar-actions">
             <div id="catalog-status" class="pill"><span class="dot animate-pulse"></span>Lade Basis-Katalog…</div>
-            <div class="pill pill-quiet">BUILD V5.11.0</div>
+            <div class="pill pill-quiet">BUILD V5.12.0</div>
         </div>
 
         <div class="progress-track"><div id="ai-doc-progress-bar" class="progress-fill"></div></div>
@@ -711,7 +711,7 @@
             </div>
         </div>
 
-        <div class="rail-foot">BUILD V5.11.0</div>
+        <div class="rail-foot">BUILD V5.12.0</div>
     </aside>
 
     <div id="rail-splitter" class="splitter" title="Rail-Breite ziehen"></div>
@@ -796,14 +796,13 @@
                         onclick="switchModifyTab('alter')">Text ergänzen (Alter)</button>
                 </div>
 
+                <!-- Nur sichtbar, wenn das Control im Katalog Parameter trägt — angeboten
+                     werden die ECHTEN Parameter-IDs (z. B. gc.1.1-prm1), keine geratenen. -->
                 <div id="tab-param-content" class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Parameter ID</label>
-                        <div class="flex rounded-lg overflow-hidden border">
-                            <span id="m-param-prefix" class="px-3 py-2 bg-slate-700 text-slate-400 text-sm font-mono border-r"></span>
-                            <input type="text" id="m-param-suffix"
-                                class="flex-1 px-3 py-2 text-sm font-mono focus:outline-none" placeholder="_prm_1">
-                        </div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Parameter</label>
+                        <select id="m-param-id" class="w-full px-3 py-2 rounded-lg text-sm font-mono outline-none"></select>
+                        <div id="m-param-hint" class="text-xs text-slate-500 mt-1"></div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Neuer Wert (Überschreiben)</label>
@@ -814,19 +813,29 @@
                 </div>
 
                 <div id="tab-alter-content" class="space-y-4" style="display:none">
+                    <!-- Vorhandene Ergänzungen dieses Controls (in diesem Kontext) —
+                         direkt hier editierbar, nicht nur als Zeile in der Liste unten.
+                         Auch die aus einem Set-Profil mitgebrachten (ed2023-quelle). -->
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Position der Ergänzung</label>
-                        <select id="m-alter-pos" class="w-full px-4 py-2 rounded-lg text-sm outline-none">
-                            <option value="ending">Am Ende anfügen (ending)</option>
-                            <option value="starting">Am Anfang einfügen (starting)</option>
-                        </select>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Vorhandene Ergänzungen</label>
+                        <div id="m-alter-list" class="space-y-3"></div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Zusätzlicher Text (Prose)</label>
-                        <textarea id="m-alter-text" rows="3" class="w-full px-4 py-2 rounded-lg text-sm outline-none"></textarea>
+                    <div class="pt-4 border-t border-slate-700 space-y-4">
+                        <label class="block text-xs font-bold text-slate-400 uppercase">Neue Ergänzung</label>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Position</label>
+                            <select id="m-alter-pos" class="w-full px-4 py-2 rounded-lg text-sm outline-none">
+                                <option value="ending">Am Ende anfügen (ending)</option>
+                                <option value="starting">Am Anfang einfügen (starting)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Zusätzlicher Text (Prose)</label>
+                            <textarea id="m-alter-text" rows="3" class="w-full px-4 py-2 rounded-lg text-sm outline-none"></textarea>
+                        </div>
+                        <button type="button" onclick="addModification('alter')"
+                            class="w-full py-2 bg-purple-600 rounded-lg text-sm font-bold transition-colors">Text-Ergänzung hinzufügen</button>
                     </div>
-                    <button type="button" onclick="addModification('alter')"
-                        class="w-full py-2 bg-purple-600 rounded-lg text-sm font-bold transition-colors">Text-Ergänzung speichern</button>
                 </div>
 
                 <div class="mt-8 pt-4 border-t">
@@ -2901,9 +2910,13 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 partial: 'partial', teilweise: 'partial', 'teilweise umgesetzt': 'partial',
                 planned: 'planned', geplant: 'planned', open: 'planned', offen: 'planned',
                 alternative: 'alternative', kompensiert: 'alternative',
+                /* Vokabular-Erweiterung (Issue #2272/PR #2273 an usnistgov/OSCAL):
+                   eine im Dokument festgestellte Nicht-Umsetzung ist kein "geplant". */
+                'not-implemented': 'not-implemented', 'not implemented': 'not-implemented',
+                'nicht umgesetzt': 'not-implemented', 'nicht implementiert': 'not-implemented',
                 'not-applicable': 'not-applicable', 'not applicable': 'not-applicable', 'nicht anwendbar': 'not-applicable'
             };
-            return aliases[normalized] || (['implemented', 'partial', 'planned', 'alternative', 'not-applicable'].includes(normalized) ? normalized : 'planned');
+            return aliases[normalized] || (['implemented', 'partial', 'planned', 'not-implemented', 'alternative', 'not-applicable'].includes(normalized) ? normalized : 'planned');
         }
 
         function normalizeRiskLevel(value) {
@@ -3368,6 +3381,59 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 }
             }
 
+            /* Risiken der Dokumentanalyse in die Risikoanalyse-Tabelle übernehmen —
+               bisher flossen sie nur unsichtbar beim SSP-Export ein: Die Risiko-
+               Sektion blieb leer, und die Funde waren weder sichtbar noch editier-
+               oder löschbar. Dedupe über die Analyse-UUID bzw. den Titel, denn
+               apply läuft mehrfach (Cache-Restore, Re-Import, Methodik-Wechsel). */
+            const vorhandeneAiUuids = new Set(bpState.riskData.map(r => r.aiUuid).filter(Boolean));
+            const vorhandeneTitel = new Set(bpState.riskData.map(r => (r.title || '').toLowerCase()));
+            const compBySourceId = new Map();
+            bpState.components.forEach(c => { if (c.sourceId) compBySourceId.set(String(c.sourceId).toLowerCase(), c); });
+            const compByName2 = new Map(bpState.components.map(c => [c.name.toLowerCase(), c]));
+            let risikenNeu = 0;
+            for (const risk of (analysis.risks || [])) {
+                const titel = cleanAIString(risk.title);
+                if (!titel) continue;
+                if ((risk.uuid && vorhandeneAiUuids.has(risk.uuid)) || vorhandeneTitel.has(titel.toLowerCase())) continue;
+                vorhandeneTitel.add(titel.toLowerCase());
+                /* Ziel: targetRefs tragen die Quell-IDs des Dokuments (z. B. "S007") —
+                   die Komponenten aus derselben Analyse kennen sie als sourceId. */
+                const refs = (risk.targetRefs || []).map(x => cleanAIString(x)).filter(Boolean);
+                const zielComp = refs.map(ref => compBySourceId.get(ref.toLowerCase()) || compByName2.get(ref.toLowerCase())).find(Boolean) || null;
+                const targetComponent = zielComp ? zielComp.id : 'global';
+                const mitigatingControls = stringArray(risk.mitigatingControlIds).map(id => {
+                    if (bpState.controlsIndex.has(id)) return { id, source: 'catalog' };
+                    /* Von der Analyse referenziert, aber nirgends definiert (weder im
+                       Katalog noch unter den extrahierten Maßnahmen): als Custom-Control
+                       mit Minimalgerüst führen, damit Anzeige und Export nicht ins
+                       Leere zeigen — der Text ist im Review zu ergänzen. */
+                    if (!bpState.customControls.has(id)) {
+                        bpState.customControls.set(id, { id, title: id,
+                            statement: 'Aus der KI-Dokumentanalyse referenzierte mitigierende Maßnahme (in den extrahierten Maßnahmen nicht näher beschrieben — im Review ergänzen).' });
+                    }
+                    return { id, source: 'custom' };
+                });
+                mitigatingControls.forEach(c => {
+                    if (c.source === 'custom' || targetComponent === 'global') bpState.manualControls.add(c.id);
+                    else zielComp.controls.add(c.id);
+                });
+                bpState.riskData.push({
+                    uuid: crypto.randomUUID(),
+                    aiUuid: risk.uuid || null,
+                    title: titel,
+                    description: cleanAIString(risk.description),
+                    threat: cleanAIString(risk.threat),
+                    likelihood: normalizeRiskLevel(risk.likelihood),
+                    impact: normalizeRiskLevel(risk.impact),
+                    targetComponent,
+                    mitigatingControls,
+                    aiGenerated: true
+                });
+                risikenNeu++;
+            }
+            if (risikenNeu) aiLog('ok', `${risikenNeu} Risiko(en) aus der Dokumentanalyse in die Risikoanalyse übernommen — dort sichtbar, änder- und löschbar.`);
+
             renderAssetsList();
             renderTailoredList(document.getElementById('tailoring-search-input')?.value || '');
             if (praktikAdded) fetchPraktikenProfiles();
@@ -3704,10 +3770,21 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                                 });
                             }
                         }
+                        /* Parameter des Controls mitnehmen (echte IDs wie gc.1.1-prm1):
+                           Der Anpassen-Dialog bietet nur diese an — ein frei geratenes
+                           „<cid>_prm_1" existiert im Katalog nicht, und ein set-parameter
+                           auf eine unbekannte ID läuft bei der Profil-Auflösung ins Leere. */
+                        const params = (i.params || []).map(p => ({
+                            id: p.id,
+                            label: p.label || '',
+                            usage: p.usage || '',
+                            values: Array.isArray(p.values) ? p.values : [],
+                        })).filter(p => p.id);
                         controls.set(i.id, {
                             title: i.title,
                             text: text,
                             modalverb: modalverb,
+                            ...(params.length ? { params } : {}),
                             catalogHref: catalogRef.href || '',
                             catalogName: catalogRef.name || catalogData?.catalog?.metadata?.title || 'OSCAL Katalog'
                         });
@@ -4991,17 +5068,46 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             const info = bpState.controlsIndex.get(cid);
             document.getElementById('m-catalog-title').textContent = info?.title || "Details unbekannt";
             document.getElementById('m-catalog-prose').textContent = info?.text || "Kein Text verfügbar.";
-            document.getElementById('m-param-prefix').textContent = cid;
-            document.getElementById('m-param-suffix').value = '_prm_1';
+            /* Parameter gibt es nur, wenn der Katalog welche am Control führt —
+               dann werden GENAU die angeboten (echte IDs wie gc.1.1-prm1). Ohne
+               Parameter verschwindet der Reiter; das frühere freie ID-Feld
+               erzeugte set-parameters auf IDs, die es im Katalog nie gab. */
+            const params = info?.params || [];
+            document.getElementById('tab-param-btn').style.display = params.length ? '' : 'none';
+            if (params.length) {
+                const sel = document.getElementById('m-param-id');
+                sel.innerHTML = params.map(p =>
+                    `<option value="${escapeHTML(p.id)}">${escapeHTML(p.id)}${p.label ? ' — ' + escapeHTML(p.label) : ''}</option>`).join('');
+                updateParamHint();
+            }
             document.getElementById('m-param-value').value = '';
             document.getElementById('m-alter-text').value = '';
 
             refreshModifyList();
+            renderModifyAlterList();
 
             const modal = document.getElementById('modify-modal');
             modal.classList.remove('hidden');
-            switchModifyTab('param');
+            switchModifyTab(params.length ? 'param' : 'alter');
         }
+        /* Katalogwert des gewählten Parameters als Hinweis unter der Auswahl —
+           man soll sehen, WAS man überschreibt. */
+        function updateParamHint() {
+            const cid = currentActiveControlId;
+            const p = (bpState.controlsIndex.get(cid)?.params || [])
+                .find(x => x.id === document.getElementById('m-param-id').value);
+            const hint = document.getElementById('m-param-hint');
+            if (!p) { hint.textContent = ''; return; }
+            const wert = p.values.length ? p.values.join(' · ') : (p.label || '—');
+            hint.textContent = `Katalogwert: „${wert}"${p.usage ? ` · ${p.usage}` : ''}`;
+            const inp = document.getElementById('m-param-value');
+            inp.placeholder = wert === '—' ? 'neuer Wert' : wert;
+            /* Bereits gesetzter Wert (frühere Anpassung) erscheint im Feld. */
+            const mods = bpState.modifications.get(`${currentModifySourceId}||${cid}`) || [];
+            const vorhanden = mods.find(m => m.type === 'set-parameter' && m.paramId === p.id);
+            inp.value = vorhanden ? vorhanden.value : '';
+        }
+        document.addEventListener('change', e => { if (e.target && e.target.id === 'm-param-id') updateParamHint(); });
 
         window.closeModifyModal = function () {
             document.getElementById('modify-modal').classList.add('hidden');
@@ -5011,6 +5117,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         }
 
         window.switchModifyTab = function (t) {
+            // Ohne Katalog-Parameter gibt es den Param-Reiter nicht anzusteuern.
+            if (t === 'param' && document.getElementById('tab-param-btn').style.display === 'none') t = 'alter';
             document.getElementById('tab-param-content').style.display = t === 'param' ? 'block' : 'none';
             document.getElementById('tab-alter-content').style.display = t === 'alter' ? 'block' : 'none';
             document.getElementById('tab-param-btn').className = t === 'param' ? "flex-1 py-2 text-center text-emerald-400 border-b-2 border-emerald-500 font-bold text-sm" : "flex-1 py-2 text-center text-slate-500 hover:text-slate-300 border-b-2 border-transparent font-medium text-sm";
@@ -5023,14 +5131,12 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             const mods = bpState.modifications.get(modKey) || [];
 
             if (type === 'param') {
-                const s = document.getElementById('m-param-suffix').value.trim();
+                const pid = document.getElementById('m-param-id').value;
                 const v = document.getElementById('m-param-value').value.trim();
-                if (!s || !v) return;
-                const pid = `${currentActiveControlId}${s}`;
+                if (!pid || !v) return;
                 const idx = mods.findIndex(m => m.type === 'set-parameter' && m.paramId === pid);
                 if (idx > -1) mods.splice(idx, 1);
                 mods.push({ type: 'set-parameter', paramId: pid, value: v });
-                document.getElementById('m-param-value').value = '';
             } else {
                 const pos = document.getElementById('m-alter-pos').value;
                 const txt = document.getElementById('m-alter-text').value.trim();
@@ -5040,6 +5146,52 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             }
             bpState.modifications.set(modKey, mods);
             refreshModifyList();
+            renderModifyAlterList();
+        }
+
+        /* Vorhandene Text-Ergänzungen im Alter-Reiter — editierbar, nicht nur
+           gelistet: Text und Position wirken direkt auf die Modifikation; bei
+           Ergänzungen mit Original-Part (raw, z. B. ed2023-quelle aus einem
+           Set-Profil) zieht der Text im Part mit, der Part-Name bleibt. */
+        function renderModifyAlterList() {
+            const box = document.getElementById('m-alter-list');
+            if (!box || !currentActiveControlId) return;
+            const modKey = `${currentModifySourceId}||${currentActiveControlId}`;
+            const mods = bpState.modifications.get(modKey) || [];
+            const adds = mods.map((m, i) => ({ m, i })).filter(x => x.m.type !== 'set-parameter');
+            if (!adds.length) {
+                box.innerHTML = '<p class="text-xs text-slate-500 italic">Noch keine Text-Ergänzung an diesem Control (in diesem Kontext).</p>';
+                return;
+            }
+            box.innerHTML = adds.map(({ m, i }) => `
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-3" data-mod-idx="${i}">
+                    <div class="flex items-center gap-2 mb-2 flex-wrap">
+                        <span class="font-bold text-purple-400 bg-purple-900/50 px-1.5 py-0.5 rounded text-[10px] uppercase">Alter</span>
+                        <select data-alter-pos class="px-2 py-1 rounded text-xs outline-none">
+                            <option value="ending" ${m.position !== 'starting' ? 'selected' : ''}>am Ende (ending)</option>
+                            <option value="starting" ${m.position === 'starting' ? 'selected' : ''}>am Anfang (starting)</option>
+                        </select>
+                        ${m.raw && m.raw.parts && m.raw.parts[0] ? `<span class="text-[10px] text-slate-500" title="Aus einem Profil übernommen — der Original-Part bleibt beim Export erhalten.">Part: ${escapeHTML(m.raw.parts[0].name || 'statement')}</span>` : ''}
+                        <span class="flex-1"></span>
+                        <button data-alter-del class="text-red-400 hover:text-red-300 font-bold px-2" title="Ergänzung entfernen">✕</button>
+                    </div>
+                    <textarea data-alter-text rows="3" class="w-full px-3 py-2 rounded text-sm outline-none">${escapeHTML(m.text || '')}</textarea>
+                </div>`).join('');
+            box.querySelectorAll('[data-mod-idx]').forEach(row => {
+                const idx = parseInt(row.dataset.modIdx, 10);
+                const mod = mods[idx];
+                row.querySelector('[data-alter-text]').addEventListener('input', ev => {
+                    mod.text = ev.target.value;
+                    if (mod.raw && mod.raw.parts && mod.raw.parts[0]) mod.raw.parts[0].prose = ev.target.value;
+                    refreshModifyList();
+                });
+                row.querySelector('[data-alter-pos]').addEventListener('change', ev => {
+                    mod.position = ev.target.value;
+                    if (mod.raw) mod.raw.position = ev.target.value;
+                    refreshModifyList();
+                });
+                row.querySelector('[data-alter-del]').addEventListener('click', () => removeMod(idx));
+            });
         }
 
         function refreshModifyList() {
@@ -5062,6 +5214,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         window.removeMod = function (i) {
             bpState.modifications.get(`${currentModifySourceId}||${currentActiveControlId}`).splice(i, 1);
             refreshModifyList();
+            renderModifyAlterList();
         }
 
         // --- SECTION 4: RISK ANALYSIS ---
@@ -5740,12 +5893,16 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 };
 
                 const setParams = profile.modify?.['set-parameters'] || [];
+                /* param-id → Control über den Katalog-Index auflösen: echte Katalog-IDs
+                   (gc.1.1-prm1) tragen die Control-ID nicht im alten "_prm_"-Muster —
+                   das bleibt nur als Fallback für Altbestände. */
+                const paramZuControl = new Map();
+                bpState.controlsIndex.forEach((info, ctlId) => (info.params || []).forEach(p => paramZuControl.set(p.id, ctlId)));
                 setParams.forEach(sp => {
                     const paramId = sp['param-id'];
                     if (!paramId) return;
-                    // Derive control-id: everything before "_prm_" (best-effort)
                     const m = paramId.match(/^(.*?)_prm_/);
-                    const cid = m ? m[1] : paramId;
+                    const cid = paramZuControl.get(paramId) || (m ? m[1] : paramId);
                     const sourceId = findSourceId(cid);
                     const key = `${sourceId}||${cid}`;
                     if (!bpState.modifications.has(key)) bpState.modifications.set(key, []);
@@ -6415,7 +6572,14 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 }
             });
 
-            (aiAnalysis?.risks || []).forEach(risk => {
+            /* Analyse-Risiken, die applyAIMappingsToWorkspace bereits in die
+               Risikoanalyse-Tabelle übernommen hat, laufen über den riskData-Pfad —
+               sie hier ein zweites Mal aus der Analyse zu ziehen ergäbe doppelte
+               identified-risk-Props und doppelte Control-Zuordnungen. Der Rest
+               (z. B. aus einem alten SSP importierte Analysen) bleibt der Fallback. */
+            const risikenInTabelle = new Set(bpState.riskData.map(r => r.aiUuid).filter(Boolean));
+            const aiRestRisiken = (aiAnalysis?.risks || []).filter(r => !(r.uuid && risikenInTabelle.has(r.uuid)));
+            aiRestRisiken.forEach(risk => {
                 const targetRefs = risk.targetRefs?.length ? risk.targetRefs : ['global'];
                 targetRefs.forEach(targetRef => {
                     const targetUuid = resolveAITarget(targetRef, riskCompUuid);
@@ -6438,7 +6602,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     riskControlTargets.get(c.id).add(r.targetComponent === 'global' ? riskCompUuid : r.targetComponent);
                 });
             });
-            (aiAnalysis?.risks || []).forEach(risk => {
+            aiRestRisiken.forEach(risk => {
                 (risk.mitigatingControlIds || []).forEach(controlId => {
                     if (!riskControlTargets.has(controlId)) riskControlTargets.set(controlId, new Set());
                     (risk.targetRefs?.length ? risk.targetRefs : ['global']).forEach(targetRef => {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.3.0</title>
+    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.4.0</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
@@ -930,7 +930,7 @@
     // CONFIG & STATE
     // ============================================================
     // Build-Version der App (nicht zu verwechseln mit dem Session-Format `_v`).
-    const BUILD_VERSION = 'v1.3.0';
+    const BUILD_VERSION = 'v1.4.0';
 
     // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
     // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
@@ -2384,7 +2384,7 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         let totalMatches = 0;
 
         let navHtml = '';
-        let filterOpts = { status: new Set(['open', 'implemented', 'partial', 'planned', 'alternative', 'not-applicable']) };
+        let filterOpts = { status: new Set(['open', 'implemented', 'partial', 'planned', 'not-implemented', 'alternative', 'not-applicable']) };
         const allowedFilters = ['status', 'modal_verb', 'modalverb', 'sec_level', 'class', 'phase', 'tags', 'tag'];
         const addFilter = (k, v) => {
             if(!k || !v) return;
@@ -2695,11 +2695,16 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         return `<div class="ctrl-entry border border-slate-700 bg-slate-800 rounded-lg p-3 shadow-sm" data-cid="${cid}" data-comp="${comp.uuid}" data-filter="${fStr}" data-search="${sStr}">
             <div class="flex justify-between items-start mb-2">
                 <h4 class="font-bold text-white text-sm"><span class="text-blue-400 font-mono mr-1">${cid}</span> ${title}</h4>
-                <select id="state-${rk}" onchange="updateStatus(this)" class="inp text-xs py-1 px-2 w-32 font-bold ${st==='implemented'?'text-emerald-400':st==='not-applicable'?'text-slate-500':'text-amber-400'}">
+                <select id="state-${rk}" onchange="updateStatus(this)" class="inp text-xs py-1 px-2 w-32 font-bold ${st==='implemented'?'text-emerald-400':st==='not-implemented'?'text-red-400':st==='not-applicable'?'text-slate-500':'text-amber-400'}">
                     <option value="" ${st===''?'selected':''}>Offen</option>
                     <option value="implemented" ${st==='implemented'?'selected':''}>Umgesetzt</option>
                     <option value="partial" ${st==='partial'?'selected':''}>Teilweise</option>
                     <option value="planned" ${st==='planned'?'selected':''}>Geplant</option>
+                    <!-- Bewusste Erweiterung des NIST-Vokabulars (Issue #2272/PR #2273
+                         an usnistgov/OSCAL): "nicht umgesetzt" ist eine FESTSTELLUNG,
+                         kein Plan — die Prüfung übernimmt sie als "nicht erfüllt",
+                         das POA&M macht daraus eine Maßnahme. -->
+                    <option value="not-implemented" ${st==='not-implemented'?'selected':''}>Nicht umgesetzt</option>
                     <option value="alternative" ${st==='alternative'?'selected':''}>Alternativ</option>
                     <option value="not-applicable" ${st==='not-applicable'?'selected':''}>N/A</option>
                 </select>

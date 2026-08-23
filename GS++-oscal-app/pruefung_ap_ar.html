@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Assessment Plan & Results Generator v9 (build 9.5.2 — Backends Gemini | OpenRouter, editierbare Prompts, Structured Outputs)</title>
+    <title>OSCAL Assessment Plan & Results Generator v9 (build 9.6.0 — Backends Gemini | OpenRouter, editierbare Prompts, Structured Outputs)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -427,7 +427,7 @@ textarea.inp{min-height:80px;line-height:1.55}
         <span class="sub">OSCAL AP &amp; AR — SSP → Prüfung → Assessment Plan + Results</span>
     </div>
     <div class="topbar-meta">
-        <span class="pill">build 9.5.2</span>
+        <span class="pill">build 9.6.0</span>
         <span id="cat-status" class="pill">Katalog wird geladen …</span>
         <span id="ssp-status" class="pill">Kein SSP</span>
         <span id="comp-status" class="pill hidden"></span>
@@ -478,7 +478,7 @@ textarea.inp{min-height:80px;line-height:1.55}
                 <select id="flt-modal" onchange="fltC()" class="inp text-[10px]"><option value="">Modalverb: Alle</option><option value="MUSS">MUSS</option><option value="SOLL">SOLL</option><option value="KANN">KANN</option></select>
                 <select id="flt-class" onchange="fltC()" class="inp text-[10px]"><option value="">Klasse: Alle</option><option value="Technical">Technical</option><option value="Organizational">Organizational</option></select>
                 <select id="flt-sec" onchange="fltC()" class="inp text-[10px]"><option value="">Sicherheitsniv.: Alle</option><option value="normal-SdT">Normal</option><option value="hoch-SdT">Hoch</option><option value="sehr hoch-SdT">Sehr hoch</option></select>
-                <select id="flt-status" onchange="fltC()" class="inp text-[10px]"><option value="">Status: Alle</option><option value="implemented">Impl.</option><option value="partial">Teilw.</option><option value="planned">Geplant</option><option value="alternative">Altern.</option><option value="nicht-angegeben">Kein St.</option><option value="nur-komponente">Nur Def</option></select>
+                <select id="flt-status" onchange="fltC()" class="inp text-[10px]"><option value="">Status: Alle</option><option value="implemented">Impl.</option><option value="partial">Teilw.</option><option value="planned">Geplant</option><option value="alternative">Altern.</option><option value="not-implemented">Nicht umges.</option><option value="nicht-angegeben">Kein St.</option><option value="nur-komponente">Nur Def</option></select>
                 <div id="flt-count" class="text-[10px] text-emerald-400 font-mono"></div>
             </div>
         </div>
@@ -709,6 +709,9 @@ const STM={
     'partial':{l:'Teilweise',b:'oklch(0.80 0.15 80)'},
     'planned':{l:'Geplant',b:'oklch(0.70 0.15 240)'},
     'alternative':{l:'Alternativ',b:'oklch(0.68 0.19 330)'},
+    /* Bewusste Vokabular-Erweiterung (Issue #2272/PR #2273 an usnistgov/OSCAL):
+       eine deklarierte Nicht-Umsetzung aus dem SSP — kraeftiger als "Kein Status". */
+    'not-implemented':{l:'Nicht umgesetzt',b:'oklch(0.58 0.22 25)'},
     'not-applicable':{l:'N/A',b:'oklch(0.75 0.02 280)'},
     'nicht-angegeben':{l:'Kein Status',b:'oklch(0.65 0.20 25)'},
     'nur-komponente':{l:'Nur Komp.-Def.',b:'oklch(0.70 0.18 300)'}
@@ -716,7 +719,7 @@ const STM={
 function badgeStyle(col){return `color:${col};border-color:color-mix(in oklab,${col} 40%,transparent);background:color-mix(in oklab,${col} 14%,transparent)`}
 Object.values(STM).forEach(m=>{m.st=badgeStyle(m.b)});
 // Reihenfolge für Charts und Legenden.
-const STM_ORDER=['implemented','partial','planned','alternative','nicht-angegeben','nur-komponente','not-applicable'];
+const STM_ORDER=['implemented','partial','planned','alternative','not-implemented','nicht-angegeben','nur-komponente','not-applicable'];
 // Befundstatus — Farben wie die Befund-Punkte in der Control-Liste.
 const FINDING_COL={satisfied:'oklch(0.75 0.18 145)','not-satisfied':'oklch(0.65 0.20 25)',
                    other:'oklch(0.80 0.15 80)',offen:'oklch(0.55 0.02 280)'};
@@ -727,7 +730,7 @@ const METHOD_COL={EXAMINE:'oklch(0.70 0.15 240)',INTERVIEW:'oklch(0.80 0.15 80)'
 // ============================================================
 document.addEventListener('DOMContentLoaded',()=>{
     initSplitter();
-    L.info('OSCAL AP & AR — build 9.5.2 gestartet');
+    L.info('OSCAL AP & AR — build 9.6.0 gestartet');
     L.debug('Bei CORS-Fehlern: Ordner mit `python -m http.server` bedienen und über http://localhost:8000/ öffnen.');
     initPrompts();
     loadAICfg();
@@ -1008,7 +1011,17 @@ async function mergeSSP(ssp){
        Lauf nicht ladbar war). Sie ruhen dann nur: buildAR exportiert allein
        Controls im aktuellen Scope, aber nichts geht verloren. */
     let kept=0,ruht=0;
-    keepF.forEach((f,c)=>{S.findings.set(c,f);if(f.status){if(S.allCids.has(c))kept++;else ruht++}});
+    keepF.forEach((f,c)=>{
+        /* Ein alter Eintrag OHNE Urteil darf eine frische Vorbelegung (SSP sagt
+           not-implemented → "nicht erfuellt") nicht wieder leeren — die Notizen
+           des Pruefers bleiben, das vorbelegte Urteil auch. Ein echtes altes
+           Urteil gewinnt weiterhin. */
+        const neu=S.findings.get(c);
+        if(!f.status&&neu&&neu.status){
+            S.findings.set(c,{status:neu.status,observation:f.observation||neu.observation,risk:f.risk||neu.risk,remarks:f.remarks||neu.remarks});
+            return;
+        }
+        S.findings.set(c,f);if(f.status){if(S.allCids.has(c))kept++;else ruht++}});
     keepM.forEach((m,c)=>{S.methods.set(c,m)});
     keepX.forEach(c=>{if(S.allCids.has(c))S.excluded.add(c)});
     S.sspArtSha=ssp.sha256||'';
@@ -1091,6 +1104,7 @@ async function initSSP(){
         S.compGroups.set(c.uuid,new Map());
     });
 
+    let nichtUmgesetzt=0;
     (ssp['control-implementation']?.['implemented-requirements']||[]).forEach(r=>{
         const cid=r['control-id'];S.allCids.add(cid);
         S.methods.set(cid,new Set(['EXAMINE']));S.findings.set(cid,{status:'',observation:'',risk:'',remarks:''});
@@ -1102,7 +1116,18 @@ async function initSSP(){
             date:bc.props?.find(p=>p.name==='implementation-date')?.value||'',
             desc:bc.description||'',stmtId:bc.props?.find(p=>p.name==='implemented-statement-id')?.value||'',fromDef:false
         })});
+        /* SSP sagt "not-implemented" (Vokabular-Erweiterung, Issue #2272 an usnistgov/
+           OSCAL): eine DEKLARIERTE Nicht-Umsetzung ist bereits ein Befund — das Finding
+           wird als "nicht erfuellt" vorbelegt, damit es im AR steht und das POA&M eine
+           Massnahme daraus macht. Nur wenn ALLE Status-tragenden by-components so
+           deklarieren; ein spaeter importiertes AR (echtes Pruefurteil) ueberschreibt. */
+        const states=bcs.map(bc=>bc['implementation-status']?.state).filter(Boolean);
+        if(states.length&&states.every(s=>s==='not-implemented')){
+            S.findings.set(cid,{status:'not-satisfied',observation:'',risk:'Im SSP als „nicht umgesetzt" (not-implemented) deklariert — die Umsetzung fehlt.',remarks:''});
+            nichtUmgesetzt++;
+        }
     });
+    if(nichtUmgesetzt)L.info(`${nichtUmgesetzt} Control(s) im SSP als "not-implemented" deklariert — Befund "nicht erfuellt" vorbelegt (ein importiertes AR ueberschreibt).`);
 
     S.sspRisks=extractSSPRisks(ssp);
     const riskTxt=S.sspRisks.length?`, ${S.sspRisks.length} Risiken`:'';
