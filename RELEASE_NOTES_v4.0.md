@@ -105,6 +105,12 @@ Der Testlauf mit der Datenbank (Admin legt ein Set an, erzeugt ein Baustein-Prof
 - **Sperr-Pill in jedem Werkzeug.** Der Status-Chip unten rechts („nur lesen") war zu leise, das rote Banner kam erst nach dem ersten verweigerten Speichern. Jetzt hängt oben eine deutliche Pill, solange das aktive Set nicht von einem selbst gesperrt ist — mit „Jetzt sperren" direkt an Ort und Stelle (Kern, Cache-Buster v4.0; die Übersicht unterdrückt sie, dort steht die Sperr-Verwaltung selbst).
 - **Set-Rechte für neue Sets.** Die Vorschlagsliste in `config.html` kannte nur Sets mit Artefakten — ein frisch angelegtes, noch leeres Set fehlte und schien nicht berechtigbar. Jetzt stehen aktives Set, Server-Rechte und Server-Artefakte drin, der Name darf auch frei eingetippt werden, und die Erfolgsmeldung überlebt das Neu-Rendern der Liste. Scheitert `whoami` beim Laden (Token-Refresh, Netz), blieb die Benutzerverwaltung bisher die ganze Sitzung verborgen — jetzt wird der Fehler angezeigt und beim nächsten Anlass oder per Klick erneut versucht.
 
+## Nachtrag 26.08.2026 — Terraform-Testumgebung
+
+Beim Neuaufbau der Testumgebung nach dem Release fiel auf, dass das Admin-Konto beim ersten Boot **keine `admin`-Mitgliedschaft** bekam: psql ersetzt seine `:'variablen'` nicht innerhalb von `DO $$ … $$`-Blöcken, der Schritt brach mit einem Syntaxfehler ab, und der Admin sah nichts. `startup.sh` legt die Mitgliedschaft jetzt mit einem gewöhnlichen `INSERT … ON CONFLICT` an — für den Admin und, bei `seed_test_users = true`, für die Testkonten.
+
+Dazu die Betriebsanleitung (`infra/terraform/README.md`) überarbeitet: keine Zugangsdaten und keine feste IP mehr im Text; stattdessen, wie `ANON_KEY` und `SERVICE_ROLE_KEY` von der VM zu holen sind (sie entstehen dort, nicht in Terraform), und ein Abschnitt „Zugriffsweg wählen" — ohne `allow_public_api` oder `domain` läuft die Datenbank nur durch den IAP-Tunnel, was die Werkzeuge im Browser nicht erreichen. Beide Schalter stehen jetzt kommentiert in `terraform.tfvars.example`.
+
 ## Nicht im Umfang von 4.0
 
 * Die produktive Härtung des Backends (TLS auf dem öffentlichen Port, GoTrue-Admin-API statt direkter `auth.users`-Schreibzugriff bei der Konto-Anlage) — die Terraform-Umgebung ist eine Testinstanz.
