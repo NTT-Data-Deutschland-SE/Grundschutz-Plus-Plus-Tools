@@ -26,10 +26,10 @@ resource "random_password" "admin" {
 
 locals {
   secrets = {
-    postgres-password = random_password.postgres.result
-    jwt-secret        = random_password.jwt_secret.result
+    postgres-password  = random_password.postgres.result
+    jwt-secret         = random_password.jwt_secret.result
     dashboard-password = random_password.dashboard.result
-    admin-password    = random_password.admin.result
+    admin-password     = random_password.admin.result
   }
 }
 
