@@ -3,7 +3,16 @@
 project_id = "gpp-db-test"
 
 # Phase 1 (curl-Abnahme): domain und allowed_cidrs leer lassen. Dann steht
-# kein Port offen, alles läuft durch den IAP-Tunnel.
+# kein Port offen, alles läuft durch den IAP-Tunnel. Die Werkzeuge im Browser
+# erreichen die API dann NUR über den Tunnel (http://localhost:8000).
+
+# Port 8000 (Kong) für alle öffnen — KLARTEXT-HTTP, Passwörter und JWTs gehen
+# unverschlüsselt durchs Netz. Nur für kurze Browser-Tests; danach wieder aus.
+# allow_public_api = true
+
+# Testkonten bearbeiter@/leser@example.com beim ersten Boot mit anlegen
+# (sonst nachträglich: ./seed_users.sh --vm --project <project_id>).
+# seed_test_users = true
 
 # Phase 2 und später — der Browser muss die DB erreichen:
 # domain        = "gpp-test.example.de"

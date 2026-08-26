@@ -6,7 +6,7 @@ set -euo pipefail
 #   1. Direkt über IAP/SSH auf der VM (Standard):
 #      ./seed_users.sh --vm
 #   2. Gegen eine öffentliche IP oder URL:
-#      ./seed_users.sh --url http://35.246.185.192:8000 --service-key <SERVICE_ROLE_KEY>
+#      ./seed_users.sh --url http://<external_ip>:8000 --service-key <SERVICE_ROLE_KEY>
 
 URL="http://localhost:8000"
 SERVICE_KEY=""
@@ -109,7 +109,7 @@ fi
 
 if [[ -z "$SERVICE_KEY" ]]; then
   echo "Fehler: --service-key erforderlich, wenn nicht --vm genutzt wird."
-  echo "Beispiel: ./seed_users.sh --url http://35.246.185.192:8000 --service-key <SERVICE_ROLE_KEY>"
+  echo "Beispiel: ./seed_users.sh --url http://<external_ip>:8000 --service-key <SERVICE_ROLE_KEY>"
   exit 1
 fi
 

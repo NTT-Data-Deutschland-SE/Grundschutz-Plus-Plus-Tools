@@ -18,12 +18,12 @@ auftreten, sollen dieselben sein, die dort auftreten.
 |---|---|
 | VPC + Subnetz `10.10.0.0/24` | eigenes Netz, Flow-Logs an |
 | Firewall `allow-iap` | 22, 5432, 8000 **nur** aus `35.235.240.0/20` (IAP) |
-| Firewall `allow-kong-external` | Port 8000 für externe Test-Agenten freigegeben |
+| Firewall `allow-kong-external` | nur mit `allow_public_api = true`: Port 8000 (Kong, **Klartext-HTTP**) für `0.0.0.0/0` |
 | Firewall `allow-acme` / `allow-https` | nur mit `domain`: 80 offen für Let's Encrypt, 443 für `allowed_cidrs` |
-| Feste externe IP | damit `API_EXTERNAL_URL` ein Stop/Start überlebt (`35.246.185.192`) |
+| Feste externe IP | damit `API_EXTERNAL_URL` ein Stop/Start überlebt (`terraform output external_ip`) |
 | VM `gpp-supabase` | Debian 12, Shielded VM, Docker + Compose-Stack |
-| Dienstkonto | `logWriter`, `metricWriter`, `secretAccessor` auf genau drei Secrets |
-| Drei Secrets | Postgres-Passwort, `JWT_SECRET`, Studio-Passwort |
+| Dienstkonto | `logWriter`, `metricWriter`, `secretAccessor` auf genau vier Secrets |
+| Vier Secrets | Postgres-Passwort, `JWT_SECRET`, Studio-Passwort, Admin-Passwort der Anwendung |
 
 ---
 
@@ -37,15 +37,37 @@ auftreten, sollen dieselben sein, die dort auftreten.
 ```bash
 cd infra/terraform
 cp terraform.tfvars.example terraform.tfvars
-# project_id = "gpp-agentic-3" eintragen
+# project_id eintragen, Zugriffsweg wählen (siehe unten)
 terraform init
 terraform apply -auto-approve
 ```
+
+### Zugriffsweg wählen
+
+Ohne weitere Einstellung steht **kein** Port offen; alles läuft durch den IAP-Tunnel. Das reicht für `curl` und `psql`, aber **nicht** für die Werkzeuge im Browser — die rufen die API direkt auf, und ein Aufruf an die externe IP verhallt dann ohne Antwort. Drei Stufen, in `terraform.tfvars`:
+
+| Stufe | Einstellung | Wirkung | Wofür |
+|---|---|---|---|
+| Tunnel | *(nichts)* | nur IAP; Browser mit `http://localhost:8000` nach `start-iap-tunnel` | Abnahme per curl, Migrationen |
+| Offen | `allow_public_api = true` | Port 8000 für alle, **Klartext-HTTP** — Passwörter und JWTs unverschlüsselt | kurze Browser-Tests, externe Test-Agenten |
+| TLS | `domain` + `allowed_cidrs` | Caddy mit Let's Encrypt auf 443, nur für die eigenen Netze; Werkzeuge und API unter einem HTTPS-Ursprung | alles, was länger als einen Nachmittag läuft |
+
+Ein Wechsel ist jederzeit ein `terraform apply`; die VM und ihre Daten bleiben.
 
 Fortschritt des ersten Boots prüfen:
 ```bash
 gcloud compute ssh gpp-supabase --zone europe-west3-b --tunnel-through-iap -- 'sudo tail -f /var/log/gpp-startup.log'
 ```
+
+### Zugangsdaten auslesen
+
+`terraform output` zeigt IP, SSH- und Tunnel-Befehle; `terraform output secret_commands` liefert die `gcloud secrets`-Befehle für Postgres-, JWT-, Dashboard- und Admin-Passwort.
+
+**`ANON_KEY` und `SERVICE_ROLE_KEY` stehen nicht im Terraform-Output.** Sie werden nicht von Terraform erzeugt, sondern beim ersten Boot auf der VM aus dem `JWT_SECRET` signiert (`startup.sh`, Funktion `gen_jwt`) und nur in die `.env` des Compose-Stacks geschrieben. Auslesen:
+```bash
+gcloud compute ssh gpp-supabase --zone europe-west3-b --tunnel-through-iap -- 'sudo grep -E "^(ANON_KEY|SERVICE_ROLE_KEY)=" /opt/gpp/supabase/.env'
+```
+Die Keys sind pro VM-Installation stabil (Reboots ändern nichts), nach `terraform destroy` oder neuem `JWT_SECRET` aber neu. Wer `JWT_SECRET` kennt, kann beide Keys jederzeit selbst ausstellen — das Secret ist der eigentliche Schutzwert, nicht der `ANON_KEY`.
 
 ---
 
@@ -67,6 +89,8 @@ Das Startskript der VM (`startup.sh`) übernimmt beim Erststart automatisch:
 ./seed_users.sh --vm --zone europe-west3-b --project gpp-agentic-3
 ```
 
+Das Skript ist idempotent (GoTrue-Admin-API + `ON CONFLICT`), kann also nach jedem Neuaufbau wiederholt werden.
+
 #### Standard-Testkonten (wenn aktiviert oder ge-seedet)
 | Email | Passwort | Rolle (`gpp_role`) | Zweck |
 |---|---|---|---|
@@ -80,17 +104,23 @@ Das Startskript der VM (`startup.sh`) übernimmt beim Erststart automatisch:
 
 ### A. Direktes Testen über die öffentliche IP (für externe Agenten)
 
-* **Öffentliche Basis-URL**: `http://35.246.185.192:8000`
-* **GoTrue Auth**: `POST http://35.246.185.192:8000/auth/v1/token?grant_type=password`
-* **PostgREST API**: `http://35.246.185.192:8000/rest/v1/`
-* **`ANON_KEY`**:
-  `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzg2MjY0NTM0LCJleHAiOjIxMDE2MjQ1MzR9.uB71k-N3jfAH1EPP98zSf_9ijK5CUMo0xHCTlXmgXjo`
+Setzt `allow_public_api = true` voraus (Abschnitt 1, „Zugriffsweg wählen"); sonst lässt die Firewall Port 8000 nur für IAP durch und die Anfrage bleibt ohne Antwort. Bei gesetztem `domain` ist die Basis-URL stattdessen `https://<domain>` (`terraform output app_url`).
+
+Basis-URL und Key kommen aus der Installation — sie stehen bewusst **nicht** in dieser Datei, da beide je Deploy wechseln:
+```bash
+BASE="http://$(terraform output -raw external_ip):8000"
+ANON_KEY="$(gcloud compute ssh gpp-supabase --zone europe-west3-b --tunnel-through-iap -- \
+  'sudo grep ^ANON_KEY= /opt/gpp/supabase/.env | cut -d= -f2-' 2>/dev/null)"
+```
+
+* **GoTrue Auth**: `POST $BASE/auth/v1/token?grant_type=password`
+* **PostgREST API**: `$BASE/rest/v1/`
 
 #### Auth-Token anfordern (`curl` Example)
 ```bash
-curl -s -X POST "http://35.246.185.192:8000/auth/v1/token?grant_type=password" \
+curl -s -X POST "$BASE/auth/v1/token?grant_type=password" \
   -H "Content-Type: application/json" \
-  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzg2MjY0NTM0LCJleHAiOjIxMDE2MjQ1MzR9.uB71k-N3jfAH1EPP98zSf_9ijK5CUMo0xHCTlXmgXjo" \
+  -H "apikey: $ANON_KEY" \
   -d '{
     "email": "bearbeiter@example.com",
     "password": "TestPassword123!"
@@ -99,14 +129,14 @@ curl -s -X POST "http://35.246.185.192:8000/auth/v1/token?grant_type=password" \
 
 #### Artefakte abfragen (Authentifiziert)
 ```bash
-curl -s -X GET "http://35.246.185.192:8000/rest/v1/artefacts" \
-  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzg2MjY0NTM0LCJleHAiOjIxMDE2MjQ1MzR9.uB71k-N3jfAH1EPP98zSf_9ijK5CUMo0xHCTlXmgXjo" \
+curl -s -X GET "$BASE/rest/v1/artefacts" \
+  -H "apikey: $ANON_KEY" \
   -H "Authorization: Bearer <ACCESS_TOKEN>"
 ```
 
 ### B. Testen über IAP-Tunnel (Lokale Entwicklung)
 
-Kong per Tunnel auf den eigenen Rechner holen:
+Kong per Tunnel auf den eigenen Rechner holen — danach gelten die Beispiele aus A mit `BASE=http://localhost:8000`, und die Werkzeuge im Browser bekommen diese URL als DB-Adresse:
 ```bash
 gcloud compute start-iap-tunnel gpp-supabase 8000 --local-host-port=localhost:8000 --zone europe-west3-b
 ```

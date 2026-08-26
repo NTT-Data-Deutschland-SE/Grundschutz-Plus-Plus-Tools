@@ -267,26 +267,16 @@ if [ -n "$ADMIN_EMAIL" ] && [ -n "$SECRET_ADMIN" ]; then
   # Mitgliedschaft direkt in der DB — die Rolle lebt in public.memberships.
   # E-Mail als psql-Variable, quoted Heredoc (<<'SQL'): kein Splicing in die
   # SQL-Zeichenkette (Apostroph bräche sie / schleuste SQL als postgres ein);
-  # :'admin_email' quotet psql selbst, $$ braucht so keine Shell-Maskierung.
+  # :'admin_email' quotet psql selbst. Bewusst KEIN DO-$$-Block: innerhalb von
+  # Dollar-Quoting ersetzt psql seine :'variablen' nicht (Syntaxfehler).
+  # Fehlt der User oder das Schema, passiert schlicht nichts (0 Zeilen / Fehler
+  # geschluckt) — seed_users.sh zieht nach.
   docker exec -i supabase-db psql -U postgres -d postgres -v ON_ERROR_STOP=0 \
     -v admin_email="$ADMIN_EMAIL" <<'SQL' || true
-DO $$
-DECLARE v_id uuid;
-BEGIN
-  IF to_regclass('public.memberships') IS NULL THEN
-    RAISE NOTICE 'Schema noch nicht eingespielt - Mitgliedschaft folgt mit seed_users.sh';
-    RETURN;
-  END IF;
-  SELECT id INTO v_id FROM auth.users WHERE lower(email) = lower(:'admin_email');
-  IF v_id IS NULL THEN
-    RAISE NOTICE 'Admin-Konto nicht gefunden';
-    RETURN;
-  END IF;
-  INSERT INTO public.memberships (user_id, org_id, gpp_role)
-  VALUES (v_id, '00000000-0000-0000-0000-000000000001', 'admin')
-  ON CONFLICT (user_id, org_id) DO UPDATE SET gpp_role = 'admin';
-END
-$$;
+INSERT INTO public.memberships (user_id, org_id, gpp_role)
+SELECT id, '00000000-0000-0000-0000-000000000001', 'admin'
+  FROM auth.users WHERE lower(email) = lower(:'admin_email')
+ON CONFLICT (user_id, org_id) DO UPDATE SET gpp_role = 'admin';
 SQL
 fi
 
@@ -304,19 +294,13 @@ if [ "$SEED_TEST_USERS" = "TRUE" ]; then
       -H "Content-Type: application/json" \
       -d "{\"email\":\"$email\",\"password\":\"$pass\",\"email_confirm\":true}" || true
 
+    # Kein DO-$$-Block — siehe Admin-Konto oben.
     docker exec -i supabase-db psql -U postgres -d postgres -v ON_ERROR_STOP=0 \
       -v email="$email" -v role="$role" <<'SQL' || true
-DO $$
-DECLARE v_id uuid;
-BEGIN
-  SELECT id INTO v_id FROM auth.users WHERE lower(email) = lower(:'email');
-  IF v_id IS NOT NULL THEN
-    INSERT INTO public.memberships (user_id, org_id, gpp_role)
-    VALUES (v_id, '00000000-0000-0000-0000-000000000001', :'role')
-    ON CONFLICT (user_id, org_id) DO UPDATE SET gpp_role = :'role';
-  END IF;
-END
-$$;
+INSERT INTO public.memberships (user_id, org_id, gpp_role)
+SELECT id, '00000000-0000-0000-0000-000000000001', :'role'
+  FROM auth.users WHERE lower(email) = lower(:'email')
+ON CONFLICT (user_id, org_id) DO UPDATE SET gpp_role = EXCLUDED.gpp_role;
 SQL
   }
 
