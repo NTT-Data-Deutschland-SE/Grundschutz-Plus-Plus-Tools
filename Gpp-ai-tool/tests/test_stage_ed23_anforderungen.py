@@ -3,8 +3,11 @@ import unittest
 
 from pipeline.stage_ed23_anforderungen import (
     anforderung_label,
+    batch_controls_block,
     build_ed23_corpus,
     build_gpp_match_contexts,
+    distribute_batch_response,
+    split_bestaetigte,
     _corpus_text,
     _filter_matches,
     _resolve_param_inserts,
@@ -140,8 +143,11 @@ class TestBuildGppMatchContexts(unittest.TestCase):
     def test_siblings_list_other_praktik_controls_only(self):
         siblings = self.contexts["GC.1.1"]["siblings"]
         self.assertNotIn("GC.1.1 |", siblings)  # never lists itself
-        self.assertIn("- GC.1.1.1 | Sub-Maßnahme | Sub-Statement.", siblings)
-        self.assertIn("- GC.1.2 | Freigabe des ISMS | MUSS das ISMS autorisieren.", siblings)
+        # Sibling-Diät (Kostenplan Maßnahme 4): id + title only, no statement prose.
+        self.assertIn("- GC.1.1.1 | Sub-Maßnahme", siblings)
+        self.assertIn("- GC.1.2 | Freigabe des ISMS", siblings)
+        self.assertNotIn("Sub-Statement.", siblings)
+        self.assertNotIn("MUSS das ISMS autorisieren.", siblings)
 
     def test_lone_control_has_no_siblings(self):
         lone = {
@@ -235,6 +241,53 @@ class TestFilterMatches(unittest.TestCase):
     def test_non_list_returns_empty(self):
         self.assertEqual(_filter_matches({"id": "SYS.1.1.A1"}, self.lookup, "GC.1.1"), [])
         self.assertEqual(_filter_matches(None, self.lookup, "GC.1.1"), [])
+
+
+class TestBatchHelpers(unittest.TestCase):
+    def test_controls_block_renders_every_control(self):
+        batch = [
+            ("GC.1.1", {"title": "t1", "prose": "p1", "guidance": "g1", "praktik": "P", "siblings": "- GC.1.2 | x"}),
+            ("GC.1.2", {"title": "t2", "prose": "p2", "guidance": "", "praktik": "P", "siblings": ""}),
+        ]
+        block = batch_controls_block(batch)
+        self.assertIn("### GC.1.1 — t1", block)
+        self.assertIn("### GC.1.2 — t2", block)
+        self.assertIn("Erläuterung: (keine)", block)  # empty guidance normalized
+
+    def test_distribute_marks_missing_controls_as_none(self):
+        response = {"ergebnisse": [
+            {"control_id": "GC.1.1", "treffer": [{"id": "ISMS.1.A1", "satz_nr": 1, "begruendung": "x"}]},
+            {"control_id": "UNBEKANNT.9", "treffer": []},
+        ]}
+        out = distribute_batch_response(response, ["GC.1.1", "GC.1.2"])
+        self.assertEqual(len(out["GC.1.1"]), 1)
+        self.assertIsNone(out["GC.1.2"])  # missing -> None, caller warns instead of silent empty
+
+    def test_distribute_tolerates_garbage(self):
+        self.assertEqual(distribute_batch_response(None, ["A"]), {"A": None})
+        self.assertEqual(distribute_batch_response({"ergebnisse": ["kaputt"]}, ["A"]), {"A": None})
+
+
+class TestSplitBestaetigte(unittest.TestCase):
+    def test_preverified_triples_skip_verification(self):
+        bestaetigt = {("isms.1.a1", 2, "GC.1.1"): "deckt Satz 2 ab"}
+        candidates = [
+            {"id": "ISMS.1.A1", "name": "Übernahme (B)", "begruendung": "(Satz 2) alt", "satz_nr": 2},
+            {"id": "SYS.1.1.A1", "name": "Zugriffsschutz (B)", "begruendung": "(Satz 1) neu", "satz_nr": 1},
+            {"id": "ISMS.1.A1", "name": "Übernahme (B)", "begruendung": "ohne Satz", "satz_nr": None},
+        ]
+        uebernommen, zu_pruefen = split_bestaetigte("GC.1.1", candidates, bestaetigt)
+        self.assertEqual(len(uebernommen), 1)
+        self.assertEqual(uebernommen[0]["begruendung"], "(Teilanforderung 2) deckt Satz 2 ab")
+        self.assertEqual(uebernommen[0]["satz_nr"], 2)
+        # different control / no satz_nr must NOT be skipped
+        self.assertEqual([c["id"] for c in zu_pruefen], ["SYS.1.1.A1", "ISMS.1.A1"])
+
+    def test_empty_lookup_verifies_everything(self):
+        candidates = [{"id": "ISMS.1.A1", "name": "n", "begruendung": "b", "satz_nr": 1}]
+        uebernommen, zu_pruefen = split_bestaetigte("GC.1.1", candidates, {})
+        self.assertEqual(uebernommen, [])
+        self.assertEqual(len(zu_pruefen), 1)
 
 
 class TestToOscalMappingCollection(unittest.TestCase):

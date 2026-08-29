@@ -110,6 +110,19 @@ class AiClient:
         
         logger.debug(f"System Message Context includes today's date: {current_date}")
 
+        # Cumulative token bookkeeping across every successful call (docs/token-kostenplan.md,
+        # Maßnahme 8): stages log the totals at the end so cost surprises show up in the log,
+        # not on the invoice. Single event loop -> plain dict is safe.
+        self.usage = {"calls": 0, "prompt": 0, "cached": 0, "output": 0}
+
+    def log_usage_summary(self, label: str = "run") -> None:
+        """Logs the cumulative token totals of this client instance."""
+        u = self.usage
+        logger.info(
+            f"[{label}] Token-Bilanz: {u['calls']} Calls, prompt={u['prompt']:,} "
+            f"(davon cached={u['cached']:,}), output={u['output']:,}."
+        )
+
     def _create_cache_resource(self, content: str, system_instruction: str, model: str) -> str:
         """Creates one Vertex context cache and returns its resource name (raises on failure)."""
         ttl_seconds = self.config.context_cache_ttl_seconds
@@ -271,6 +284,10 @@ class AiClient:
         cached = getattr(um, "cached_content_token_count", None) or 0
         prompt = getattr(um, "prompt_token_count", None) or 0
         output = getattr(um, "candidates_token_count", None) or 0
+        self.usage["calls"] += 1
+        self.usage["prompt"] += prompt
+        self.usage["cached"] += cached
+        self.usage["output"] += output
         if cache_active and cached:
             logger.info(
                 f"[{request_context_log}] tokens: prompt={prompt} cached(saved)={cached} output={output}"

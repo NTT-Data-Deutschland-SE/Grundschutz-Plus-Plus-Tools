@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "description": "Candidate results for a BATCH of G++ controls (one result object per requested control).",
+  "properties": {
+    "ergebnisse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "control_id": {
+            "type": "string",
+            "description": "The G++ control id exactly as given in the request block."
+          },
+          "treffer": {
+            "type": "array",
+            "description": "Candidate ED2023 Anforderungen for this control; empty if none.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Exact ED2023 Anforderung id from the provided corpus."
+                },
+                "satz_nr": {
+                  "type": "integer",
+                  "description": "Number n of the carrying sentence (S n)."
+                },
+                "begruendung": {
+                  "type": "string",
+                  "description": "Short justification."
+                }
+              },
+              "required": ["id", "satz_nr", "begruendung"]
+            }
+          }
+        },
+        "required": ["control_id", "treffer"]
+      }
+    }
+  },
+  "required": ["ergebnisse"]
+}

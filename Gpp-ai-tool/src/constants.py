@@ -95,6 +95,7 @@ BAUSTEIN_TO_ZIELOBJEKT_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/baus
 ENHANCED_CONTROL_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/enhanced_control_response_schema.json")
 ED23_ANFORDERUNGEN_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_anforderungen_response_schema.json")
 ED23_VERIFY_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_verify_response_schema.json")
+ED23_BATCH_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_batch_response_schema.json")
 ED23_SATZ_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_satz_response_schema.json")
 ED23_SATZ_VERIFY_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_satz_verify_response_schema.json")
 ED23_RELATION_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_relation_response_schema.json")
@@ -112,6 +113,10 @@ GROUND_TRUTH_MODEL_PRO = os.environ.get("GROUND_TRUTH_MODEL_PRO", "gemini-3.1-pr
 # (gemini-3.7-flash) restores precision. Measured on a 23-control sample: the 3.7 maker
 # never nominates certain valid candidates, so no checker could recover them.
 ED23_MAKER_MODEL = os.environ.get("ED23_MAKER_MODEL", "gemini-3-flash-preview")
+# Controls per maker call in stage_ed23_anforderungen (docs/token-kostenplan.md, Maßnahme 3):
+# the cached corpus is billed per CALL, so batching divides the dominant cached-input cost
+# by the batch size. Keep small — per-control attention (recall) must not suffer.
+ED23_MAKER_BATCH_SIZE = int(os.environ.get("ED23_MAKER_BATCH_SIZE", "5"))
 # How many ED2023 Anforderungen stage_prozessbausteine sends per request. The whole G++
 # catalog is the (cached) grounding corpus, so the chunk only bounds the *output* size and
 # keeps each 1:1 decision inside a context the model can still reason over reliably.

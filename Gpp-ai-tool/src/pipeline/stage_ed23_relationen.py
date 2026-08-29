@@ -283,6 +283,7 @@ async def run_stage_ed23_relationen() -> None:
         f"stage_ed23_relationen finished. {len(classified)} of {len(all_pairs)} pairs "
         f"classified; distribution: {dict(sorted(histogram.items()))}."
     )
+    ai_client.log_usage_summary("stage_ed23_relationen")
 
 
 if __name__ == "__main__":

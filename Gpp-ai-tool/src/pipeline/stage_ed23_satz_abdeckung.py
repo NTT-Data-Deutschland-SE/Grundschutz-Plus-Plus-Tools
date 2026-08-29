@@ -417,6 +417,7 @@ async def run_stage_ed23_satz_abdeckung() -> None:
         f"{covered_norm}/{total_norm} normative sentences covered by {total_hits} verified "
         "(satz, control) pairs."
     )
+    ai_client.log_usage_summary("stage_ed23_satz_abdeckung")
 
 
 if __name__ == "__main__":

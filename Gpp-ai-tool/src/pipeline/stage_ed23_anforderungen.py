@@ -35,6 +35,13 @@ Precision measures (issue #28 — mappings were too broad and unspecific):
   match / satz_nr / Begründung (precision). Only verified candidates reach the output.
   The two passes intentionally use different models (see ED23_MAKER_MODEL in constants):
   the maker model nominates generously, the stricter default model judges.
+
+Cost measures (docs/token-kostenplan.md): the maker runs in BATCHES of
+ED23_MAKER_BATCH_SIZE controls per call (the cached corpus is billed per call); sibling
+negative context carries id+title only; candidates already verified by the ED23-seitige
+Satz-Abdeckung (same criteria, opposite direction, official numbering) skip the verify
+call; maker candidate lists are checkpointed before verification so a crash in either
+phase loses almost nothing; the client logs a token totals line at the end.
 """
 
 import asyncio
@@ -43,6 +50,7 @@ import logging
 import os
 import re
 import tempfile
+import time
 from typing import Any, Dict, List, Optional, Tuple
 
 from config import app_config
@@ -56,9 +64,11 @@ from constants import (
     GPP_CATALOG_PIN_SHA256,
     GPP_ED23_ANFORDERUNGEN_JSON_PATH,
     ED23_ANFORDERUNGEN_STRIPPED_JSON_PATH,
-    ED23_ANFORDERUNGEN_RESPONSE_SCHEMA_PATH,
+    ED23_BATCH_RESPONSE_SCHEMA_PATH,
     ED23_VERIFY_RESPONSE_SCHEMA_PATH,
+    ED23_SATZ_ABDECKUNG_JSON_PATH,
     ED23_MAKER_MODEL,
+    ED23_MAKER_BATCH_SIZE,
     PROMPT_CONFIG_PATH,
 )
 
@@ -188,10 +198,14 @@ def build_gpp_match_contexts(gpp_catalog: Dict[str, Any]) -> Dict[str, Dict[str,
 
     walk_groups(gpp_catalog.get("catalog", {}).get("groups", []), None)
 
+    # Sibling-Diät (docs/token-kostenplan.md, Maßnahme 4): the negative context only needs
+    # to make the neighbours NAMEABLE — id and title suffice for "belongs primarily to a
+    # sibling". Full statements here were the single biggest uncached token driver
+    # (Praktiken like BER carry 92 controls, repeated in every maker AND verify prompt).
     for members in praktik_members.values():
         for cid in members:
             lines = [
-                f"- {sid} | {contexts[sid]['title']} | {contexts[sid]['prose']}"
+                f"- {sid} | {contexts[sid]['title']}"
                 for sid in members if sid != cid
             ]
             contexts[cid]["siblings"] = "\n".join(lines) if lines else "(keine)"
@@ -235,49 +249,133 @@ def _filter_matches(raw_matches: Any, id_lookup: Dict[str, Dict[str, Any]], cont
     return result
 
 
-async def _match_control(
+def batch_controls_block(batch: List[Tuple[str, Dict[str, str]]]) -> str:
+    """Renders the per-control context blocks of one maker batch prompt."""
+    blocks = []
+    for control_id, control in batch:
+        blocks.append(
+            f"### {control_id} — {control.get('title', '')} "
+            f"(Praktik \"{control.get('praktik', '')}\")\n"
+            f"Anforderungstext: {control.get('prose', '')}\n"
+            f"Erläuterung: {control.get('guidance') or '(keine)'}\n"
+            f"Nachbar-Maßnahmen (Negativkontext):\n{control.get('siblings') or '(keine)'}"
+        )
+    return "\n\n".join(blocks)
+
+
+def distribute_batch_response(response: Any, batch_ids: List[str]) -> Dict[str, Optional[list]]:
+    """Maps a batch maker response back to {control_id: raw_treffer or None}.
+
+    None marks a requested control the model failed to answer for — the caller records an
+    empty candidate list and a warning instead of silently treating it as "no matches".
+    Unknown control_ids in the response are ignored.
+    """
+    wanted = {cid: None for cid in batch_ids}
+    if isinstance(response, dict):
+        for block in response.get("ergebnisse") or []:
+            if not isinstance(block, dict):
+                continue
+            cid = (block.get("control_id") or "").strip()
+            if cid in wanted and wanted[cid] is None:
+                wanted[cid] = block.get("treffer") or []
+    return wanted
+
+
+async def _match_batch(
     ai_client: AiClient,
-    control_id: str,
-    control: Dict[str, str],
+    batch: List[Tuple[str, Dict[str, str]]],
     prompt_template: str,
     schema: Dict[str, Any],
     id_lookup: Dict[str, Dict[str, Any]],
     cached_content: str,
     inline_prefix: str,
     semaphore: asyncio.Semaphore,
-) -> Tuple[str, List[Dict[str, Any]]]:
-    """Asks the AI for ED23 Anforderungen *candidates* for one G++ control (recall pass).
+) -> Dict[str, List[Dict[str, Any]]]:
+    """Maker recall pass for a BATCH of controls in one call (Kostenplan Maßnahme 3).
 
-    The prompt deliberately over-collects; every returned candidate is subsequently
-    re-judged by `_verify_candidate` (precision pass). ID validation / dedup happens here.
+    The cached corpus is billed per call, so batching divides the dominant cost by the
+    batch size. Each control is answered independently; ID/satz validation and dedup run
+    per control via `_filter_matches`.
     """
+    batch_ids = [cid for cid, _ in batch]
     user_prompt = prompt_template.format(
-        control_id=control_id,
-        title=control.get("title", ""),
-        prose=control.get("prose", ""),
-        guidance=control.get("guidance") or "(keine)",
-        praktik=control.get("praktik", ""),
-        siblings=control.get("siblings") or "(keine)",
+        n=len(batch), controls_block=batch_controls_block(batch)
     )
-    # When the cache is unavailable, inline the system + corpus so grounding still applies.
     prompt = user_prompt if cached_content else f"{inline_prefix}\n\n{user_prompt}"
-
+    label = f"ED23Abgleich-Batch-{batch_ids[0]}..{batch_ids[-1]}"
     async with semaphore:
         try:
             response = await ai_client.generate_validated_json_response(
                 prompt=prompt,
                 json_schema=schema,
-                request_context_log=f"ED23Abgleich-{control_id}",
+                request_context_log=label,
                 cached_content=cached_content,
                 model_override=ED23_MAKER_MODEL,
             )
         except Exception as e:
-            logger.warning(f"AI matching failed for G++ control '{control_id}': {e}")
-            return control_id, []
+            logger.warning(f"AI matching failed for batch {batch_ids}: {e}")
+            return {cid: [] for cid in batch_ids}
 
-    matches = _filter_matches(response, id_lookup, control_id)
-    logger.debug(f"Control '{control_id}': {len(matches)} ED23 candidate(s) found.")
-    return control_id, matches
+    distributed = distribute_batch_response(response, batch_ids)
+    result: Dict[str, List[Dict[str, Any]]] = {}
+    for cid in batch_ids:
+        raw = distributed[cid]
+        if raw is None:
+            logger.warning(f"Batch response missing control '{cid}'; recording no candidates.")
+            raw = []
+        result[cid] = _filter_matches(raw, id_lookup, cid)
+    return result
+
+
+def load_satz_bestaetigt(path: str) -> Dict[Tuple[str, int, str], str]:
+    """Loads verified (Anforderung, satz_nr, control) triples from the Satz-Abdeckung.
+
+    Those pairs were already strictly verified by stage_ed23_satz_abdeckung (same criteria,
+    opposite direction, official sentence numbering) — re-verifying them would buy nothing
+    (Kostenplan Maßnahme 6: die bezahlten Urteile wiederverwenden). Returns {} when the
+    artifact is absent.
+    """
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            doc = json.load(f)["ed23_satz_abdeckung"]
+    except (OSError, KeyError, json.JSONDecodeError) as e:
+        logger.warning(f"Could not read Satz-Abdeckung '{path}' ({e}); no verify skips.")
+        return {}
+    lookup: Dict[Tuple[str, int, str], str] = {}
+    for rid, rec in (doc.get("anforderungen") or {}).items():
+        for hit in rec.get("treffer") or []:
+            try:
+                key = (normalize_id(rid), int(hit["satz_nr"]), hit["control_id"])
+            except (KeyError, TypeError, ValueError):
+                continue
+            lookup[key] = (hit.get("begruendung") or "").strip()
+    return lookup
+
+
+def split_bestaetigte(
+    control_id: str,
+    candidates: List[Dict[str, Any]],
+    bestaetigt: Dict[Tuple[str, int, str], str],
+) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    """Splits candidates into (already verified by the Satz-Abdeckung, still to verify)."""
+    uebernommen: List[Dict[str, Any]] = []
+    zu_pruefen: List[Dict[str, Any]] = []
+    for candidate in candidates:
+        satz_nr = candidate.get("satz_nr")
+        key = (normalize_id(candidate["id"]), satz_nr or 0, control_id)
+        if satz_nr and key in bestaetigt:
+            begruendung = bestaetigt[key]
+            uebernommen.append({
+                "id": candidate["id"],
+                "name": candidate["name"],
+                "begruendung": f"(Teilanforderung {satz_nr}) {begruendung}".strip(),
+                "satz_nr": satz_nr,
+            })
+        else:
+            zu_pruefen.append(candidate)
+    return uebernommen, zu_pruefen
 
 
 async def _verify_candidate(
@@ -344,72 +442,57 @@ async def _verify_candidate(
     }
 
 
-async def match_and_verify_control(
-    ai_client: AiClient,
-    control_id: str,
-    control: Dict[str, str],
-    prompt_template: str,
-    schema: Dict[str, Any],
-    verify_prompt_template: str,
-    verify_schema: Dict[str, Any],
-    id_lookup: Dict[str, Dict[str, Any]],
-    saetze_by_id: Dict[str, List[str]],
-    cached_content: str,
-    inline_prefix: str,
-    semaphore: asyncio.Semaphore,
-) -> Tuple[str, List[Dict[str, Any]]]:
-    """Full maker-checker flow for one G++ control: collect candidates, verify each, keep survivors."""
-    _, candidates = await _match_control(
-        ai_client, control_id, control, prompt_template, schema, id_lookup,
-        cached_content, inline_prefix, semaphore,
-    )
-    verified = await asyncio.gather(*(
-        _verify_candidate(
-            ai_client, control_id, control, candidate, saetze_by_id,
-            verify_prompt_template, verify_schema, semaphore,
-        )
-        for candidate in candidates
-    ))
-    matches = [m for m in verified if m]
-    logger.debug(
-        f"Control '{control_id}': {len(matches)} of {len(candidates)} candidate(s) verified."
-    )
-    return control_id, matches
-
-
-# The checkpoint sits next to the final output and holds the per-control results accumulated
-# so far, so a crashed run (e.g. cache/network failure) can be resumed instead of re-querying
-# every control from scratch. It is deleted once the final output is written successfully.
+# The checkpoint sits next to the final output. It holds BOTH the finished per-control
+# results and the maker candidate lists still awaiting verification, so a crash in either
+# phase loses at most a handful of calls (docs/token-kostenplan.md, Maßnahme 7 — the
+# 265M-token maker phase of the crashed v2 run lived only in RAM).
 CHECKPOINT_PATH = GPP_ED23_ANFORDERUNGEN_JSON_PATH + ".partial"
+CHECKPOINT_KEY = "gpp_ed23_anforderungen_map"
+CANDIDATES_KEY = "ed23_maker_kandidaten"
 
 
 def _atomic_save_json(data: Dict[str, Any], path: str) -> None:
-    """Writes JSON via a temp file + os.replace so a crash mid-write never corrupts `path`."""
+    """Writes JSON via a temp file + os.replace so a crash mid-write never corrupts `path`.
+
+    os.replace is retried with backoff: on Windows a virus scanner or indexer can hold a
+    transient lock on the freshly written target, making the rename fail with WinError 5.
+    """
     os.makedirs(os.path.dirname(path), exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=os.path.dirname(path), suffix=".tmp")
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
-        os.replace(tmp, path)
+        for attempt in range(5):
+            try:
+                os.replace(tmp, path)
+                break
+            except PermissionError:
+                if attempt == 4:
+                    raise
+                time.sleep(0.2 * (attempt + 1))
     except Exception:
         if os.path.exists(tmp):
             os.remove(tmp)
         raise
 
 
-def _load_checkpoint(path: str) -> Dict[str, List[Dict[str, Any]]]:
-    """Loads the per-control results from a prior run. Returns {} if absent or unreadable."""
+def _load_checkpoint(path: str) -> Tuple[Dict[str, List[Dict[str, Any]]], Dict[str, List[Dict[str, Any]]]]:
+    """Loads finished results and pending maker candidates from a prior run."""
     if not os.path.exists(path):
-        return {}
+        return {}, {}
     try:
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
-        done = data.get("gpp_ed23_anforderungen_map", {})
-        logger.info(f"Resuming from checkpoint '{path}': {len(done)} G++ controls already done.")
-        return done
+        done = data.get(CHECKPOINT_KEY, {})
+        kandidaten = data.get(CANDIDATES_KEY, {})
+        logger.info(
+            f"Resuming from checkpoint '{path}': {len(done)} controls done, "
+            f"{len(kandidaten)} with maker candidates awaiting verification."
+        )
+        return done, kandidaten
     except Exception as e:
         logger.warning(f"Could not read checkpoint '{path}' ({e}); starting fresh.")
-        return {}
+        return {}, {}
 
 
 async def run_stage_ed23_anforderungen() -> None:
@@ -434,11 +517,18 @@ async def run_stage_ed23_anforderungen() -> None:
     official, _rejected = load_official_xml(xml_bytes)
 
     prompt_config = load_json_file(PROMPT_CONFIG_PATH)
-    schema = load_json_file(ED23_ANFORDERUNGEN_RESPONSE_SCHEMA_PATH)
+    batch_schema = load_json_file(ED23_BATCH_RESPONSE_SCHEMA_PATH)
     verify_schema = load_json_file(ED23_VERIFY_RESPONSE_SCHEMA_PATH)
     system_instruction = prompt_config["ed23_abgleich_system"]
-    prompt_template = prompt_config["ed23_abgleich_prompt"]
+    batch_prompt_template = prompt_config["ed23_abgleich_batch_prompt"]
     verify_prompt_template = prompt_config["ed23_abgleich_verify_prompt"]
+
+    # Verified triples from the ED23-seitige Satz-Abdeckung: identical criteria, opposite
+    # direction, same official numbering — candidates it already confirmed skip the verify
+    # call entirely (Kostenplan: die bezahlten Urteile wiederverwenden).
+    satz_bestaetigt = load_satz_bestaetigt(ED23_SATZ_ABDECKUNG_JSON_PATH)
+    if satz_bestaetigt:
+        logger.info(f"Satz-Abdeckung loaded: {len(satz_bestaetigt)} pre-verified triples usable as verify skips.")
 
     # G++ controls to map (all of them), each with statement, guidance, and Praktik siblings.
     gpp_controls = build_gpp_match_contexts(gpp_catalog)
@@ -471,51 +561,100 @@ async def run_stage_ed23_anforderungen() -> None:
         control_items = control_items[:3]
         logger.info("TEST mode: limiting to the first 3 G++ controls.")
 
-    # Resume support: load already-computed controls and only query the remaining ones. Each
-    # completed control is appended to the checkpoint immediately, so a crash loses at most the
-    # controls that were still in flight.
-    final_map: Dict[str, List[Dict[str, Any]]] = _load_checkpoint(CHECKPOINT_PATH)
+    # Resume support: finished controls and pending maker candidate lists both live in the
+    # checkpoint, so a crash in either phase costs at most the last few (throttled) steps.
+    final_map, kandidaten_map = _load_checkpoint(CHECKPOINT_PATH)
     pending = [(cid, control) for cid, control in control_items if cid not in final_map]
     checkpoint_lock = asyncio.Lock()
-
     semaphore = asyncio.Semaphore(app_config.max_concurrent_ai_requests)
+
+    since_save = 0
+
+    def _save_checkpoint(force: bool = False) -> None:
+        # Throttled full-file writes (always called under checkpoint_lock): a write per
+        # step invites transient Windows locks and buys no extra safety.
+        nonlocal since_save
+        since_save += 1
+        if force or since_save >= 10:
+            _atomic_save_json(
+                {CHECKPOINT_KEY: final_map, CANDIDATES_KEY: kandidaten_map}, CHECKPOINT_PATH
+            )
+            since_save = 0
+
+    # --- Phase A: maker recall in batches over the cached corpus ---
+    to_match = [(cid, c) for cid, c in pending if cid not in kandidaten_map]
+    batches = [
+        to_match[i:i + ED23_MAKER_BATCH_SIZE]
+        for i in range(0, len(to_match), ED23_MAKER_BATCH_SIZE)
+    ]
     logger.info(
-        f"Matching {len(pending)} of {len(control_items)} G++ controls against the ED2023 corpus "
-        f"({len(final_map)} restored from checkpoint)..."
+        f"Phase A: {len(to_match)} of {len(control_items)} controls need maker candidates "
+        f"({len(batches)} batches à ≤{ED23_MAKER_BATCH_SIZE}; "
+        f"{len(final_map)} done + {len(kandidaten_map)} candidate lists restored)."
     )
 
-    async def _match_and_checkpoint(cid: str, control: Dict[str, Any]) -> None:
-        control_id, matches = await match_and_verify_control(
-            ai_client, cid, control, prompt_template, schema,
-            verify_prompt_template, verify_schema, id_lookup, saetze_by_id,
+    async def _match_and_store(batch) -> None:
+        result = await _match_batch(
+            ai_client, batch, batch_prompt_template, batch_schema, id_lookup,
             cached_content, inline_prefix, semaphore,
         )
-        # Serialize writes so the checkpoint file stays consistent under concurrency.
         async with checkpoint_lock:
-            final_map[control_id] = matches
-            _atomic_save_json({"gpp_ed23_anforderungen_map": final_map}, CHECKPOINT_PATH)
+            kandidaten_map.update(result)
+            _save_checkpoint()
+
+    try:
+        if batches:
+            await asyncio.gather(*(_match_and_store(b) for b in batches))
+    finally:
+        # The cache serves only the maker phase; release it before the (long) verify phase.
+        ai_client.delete_context_cache(cached_content)
+    async with checkpoint_lock:
+        _save_checkpoint(force=True)
+
+    # --- Phase B: strict verification per candidate, skipping pre-verified triples ---
+    gespart = 0
+    logger.info(f"Phase B: verifying candidates for {len(pending)} controls...")
+
+    async def _verify_and_checkpoint(cid: str, control: Dict[str, Any]) -> None:
+        nonlocal gespart
+        candidates = kandidaten_map.get(cid, [])
+        uebernommen, zu_pruefen = split_bestaetigte(cid, candidates, satz_bestaetigt)
+        verified = await asyncio.gather(*(
+            _verify_candidate(
+                ai_client, cid, control, candidate, saetze_by_id,
+                verify_prompt_template, verify_schema, semaphore,
+            )
+            for candidate in zu_pruefen
+        ))
+        matches = sorted(
+            uebernommen + [m for m in verified if m],
+            key=lambda m: (m["id"], m.get("satz_nr") or 0),
+        )
+        async with checkpoint_lock:
+            gespart += len(uebernommen)
+            final_map[cid] = matches
+            kandidaten_map.pop(cid, None)
+            _save_checkpoint()
 
     if pending:
-        try:
-            await asyncio.gather(*(_match_and_checkpoint(cid, c) for cid, c in pending))
-        finally:
-            ai_client.delete_context_cache(cached_content)
+        await asyncio.gather(*(_verify_and_checkpoint(cid, c) for cid, c in pending))
     else:
-        ai_client.delete_context_cache(cached_content)
-        logger.info("All G++ controls already present in checkpoint; nothing to query.")
+        logger.info("All G++ controls already present in checkpoint; nothing to verify.")
+    logger.info(f"Verify skips via Satz-Abdeckung: {gespart} candidate pair(s) reused without a call.")
 
     # The .partial checkpoint stays in the internal {control_id: [matches]} shape (simple to
     # resume); only the final, published artifact is serialized as OSCAL.
     output_data = to_oscal_mapping_collection(final_map)
     save_json_file(output_data, GPP_ED23_ANFORDERUNGEN_JSON_PATH)
-    # Final output is committed; the checkpoint is now redundant.
-    if os.path.exists(CHECKPOINT_PATH):
+    # Final output is written; the checkpoint is redundant once every control is covered.
+    if os.path.exists(CHECKPOINT_PATH) and len(final_map) >= len(control_items):
         os.remove(CHECKPOINT_PATH)
     total = sum(len(m) for m in final_map.values())
     logger.info(
         f"stage_ed23_anforderungen finished. Mapped {len(final_map)} G++ controls "
-        f"to {total} ED2023 Anforderung references."
+        f"to {total} ED2023 Anforderung references ({gespart} verifies saved via Satz-Abdeckung)."
     )
+    ai_client.log_usage_summary("stage_ed23_anforderungen")
 
 
 if __name__ == "__main__":
