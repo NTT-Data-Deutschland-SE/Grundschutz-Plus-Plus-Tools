@@ -1,10 +1,10 @@
 # ED23-Lücken-Kreuzanalyse: Welche Anforderungen der Edition 2023 deckt Grundschutz++ nicht ab?
 
-*Generiert am 2026-08-29 von `Gpp-ai-tool/scripts/analyze_ed23_coverage.py` (Repo-Stand ee9cf89). Deterministisch reproduzierbar, siehe Abschnitt 9.*
+*Generiert am 2026-08-29 von `Gpp-ai-tool/scripts/analyze_ed23_coverage.py` (Repo-Stand 2bd65be). Deterministisch reproduzierbar, siehe Abschnitt 8.*
 
 **Bewertung der Autoren, aus den Messwerten dieses Reports abgeleitet:**
 
-Ein gepflegter Grundschutz-Check trägt Umsetzungsstatus und Nachweise zu den 1.834 aktiven Anforderungen; dazu kommen Sicherheitskonzepte, Verträge und Zertifikatsauflagen, die wörtlich auf Kompendiums-IDs verweisen. Für den Übertrag dieser Arbeit nach Grundschutz++ ist die amtliche Brücke das GSMap-Mapping — und das deckt 510 Anforderungen (27,8 %); allein 392 der 563 Basis-Anforderungen bleiben dort ohne Zuordnung, das UA-Zerlegungsschema ist unveröffentlicht, und der Status ist draft. Was die amtliche Brücke nicht trägt, ist beim Umstieg neu zu erbringen: Neuzuordnung von Nachweisen von Hand, Anforderung für Anforderung, in jeder Institution einzeln — ein Community-Draft wie das hier vermessene Gegen-Mapping ersetzt gegenüber Auditoren keine amtliche Tabelle, so vollständig es auch ist. Diese Bürokratiekosten entstehen nicht nur an der fehlenden Brücke; im neue Standard sind diese Anforderungen einfach nicht mehr enthalten, weil es keine spezifischen Anforderungen aus den Bausteinen mehr gibt und damit alle hinweise auf das *wie* zu bestimmten Technologien verloren gegangen ist.
+Ein gepflegter Grundschutz-Check trägt Umsetzungsstatus und Nachweise zu den 1.834 aktiven Anforderungen; dazu kommen Sicherheitskonzepte, Verträge und Zertifikatsauflagen, die wörtlich auf Kompendiums-IDs verweisen. Für den Übertrag dieser Arbeit nach Grundschutz++ ist die amtliche Brücke das GSMap-Mapping — und das deckt 510 Anforderungen (27,8 %); allein 392 der 563 Basis-Anforderungen bleiben dort ohne Zuordnung, das UA-Zerlegungsschema ist unveröffentlicht, und der Status ist draft. Was die amtliche Brücke nicht trägt, ist beim Umstieg neu zu erbringen: Neuzuordnung von Nachweisen von Hand, Anforderung für Anforderung, in jeder Institution einzeln — ein Community-Draft wie das hier vermessene Gegen-Mapping ersetzt gegenüber Auditoren keine amtliche Tabelle, so vollständig es auch ist. Diese Bürokratiekosten entstehen nicht nur an der fehlenden Brücke: Im neuen Standard sind diese Anforderungen schlicht nicht mehr enthalten, weil es keine spezifischen Anforderungen aus den Bausteinen mehr gibt, und damit sind alle Hinweise auf das WIE zu bestimmten Technologien verloren gegangen.
 
 Das technologiespezifische WIE der 111 Bausteine hat im veröffentlichten GS++-Bestand keinen Träger, und die als Ersatzort vorgesehenen Stand-der-Technik-Kataloge decken diesen Umfang bisher nicht. Konsequenz aus beidem: Mapping und WIE-Kataloge gehören als Pflichtartefakte zu jedem Katalog-Release — sonst bezahlt jede Institution die fehlende Brücke einzeln, mit eigener Arbeitszeit.
 
@@ -19,11 +19,11 @@ Gap-Analyse in der Gegenrichtung: nicht „wohin zeigt jede GS++-Maßnahme?“, 
 | Quelle | Richtung | Umfang | Methode | Pin |
 |---|---|---|---|---|
 | Offizielles BSI-XML-Kompendium 2023 | (Nenner) | 1.834 aktive + 290 entfallene Anforderungen | amtlicher Wortlaut | sha256 `dd41a7467464…` |
-| Unser Mapping (`gpp_ed23_anforderungen.json`) | GS++ → ED23 | 5.145 Maps, 867 Maßnahmen, 1.607 Ziele | LLM Maker-Checker, status draft | Repo `ee9cf89` |
+| Unser Mapping (`gpp_ed23_anforderungen.json`) | GS++ → ED23 | 5.145 Maps, 867 Maßnahmen, 1.607 Ziele | LLM Maker-Checker, status draft | Repo `2bd65be` |
 | BSI GSMap (`ITGS-to-GS++-mapping_collection.json`) | ED23-UA → GS++ | 1.185 Maps, 824 Teilanforderungen | menschlich (GSMap-Tool) | Commit `8f0bcd1fbb4f…` |
-| Prozessbaustein-Mapping | ED23 → GS++ (1:1) | 687 Einträge, nur ISMS/ORP/CON/OPS/DER | LLM, vollständigkeitsgetrieben | Repo `ee9cf89` |
+| Prozessbaustein-Mapping | ED23 → GS++ (1:1) | 687 Einträge, nur ISMS/ORP/CON/OPS/DER | LLM, vollständigkeitsgetrieben | Repo `2bd65be` |
 | GS++-Katalog (resolved) | (Universum) | 1.000 Maßnahmen | — | Commit `36a0fac473c6…` |
-| Satz-Beurteilung (`ed23_satz_abdeckung.json`) | ED23-Satz → GS++ | 1.834 Anforderungen, 4.600 verifizierte Zuordnungen | LLM Maker-Checker (gemini-3-flash-preview / gemini-3.7-flash), amtliches XML | Repo `ee9cf89` |
+| Satz-Beurteilung (`ed23_satz_abdeckung.json`) | ED23-Satz → GS++ | 1.834 Anforderungen, 4.600 verifizierte Zuordnungen | LLM Maker-Checker (gemini-3-flash-preview / gemini-3.7-flash), amtliches XML | Repo `2bd65be` |
 
 ## 3. Methode und Ehrlichkeitsgrenzen
 
@@ -179,7 +179,7 @@ Bei 475 Anforderungen tragen beide Mappings Teilanforderungs-Indizes (unsere `st
 
 Verteilung der 133 Maßnahmen ohne Treffer in unserem Mapping nach Praktik-Gruppe: ARCH 5, ASST 5, BER 18, BES 16, DET 17, DEV 3, DLS 2, GC 6, GEB 10, KONF 11, NOT 6, PERF 2, PERS 1, REA 2, RISK 3, SENS 13, STM 8, TEST 2, UMS 1, VRB 2. Vollständige Listen in `ed23_gap_analyse.json` unter `forward_gaps`.
 
-## 8. Kreuzbefunde zwischen den Quellen
+## 7. Kreuzbefunde zwischen den Quellen
 
 - Ziel-Klassen unseres Mappings: {"official": 1607}. NTT-eigene (nicht-amtliche) Ziele: 0, Ziele auf ENTFALLENE Anforderungen: 0, dangling: 0.
 - Quell-Klassen des BSI GSMap: {"official": 510}; ENTFALLEN-gemappt: 0, dangling: 0.
@@ -193,7 +193,7 @@ Verteilung der 133 Maßnahmen ohne Treffer in unserem Mapping nach Praktik-Grupp
 - NTT-eigene Zusatz-Anforderungen innerhalb amtlicher Bausteine: 0.
 - Alle dokumentierten Anker-Zahlen (Handbuch 10.3, Release Notes 4.0) wurden reproduziert.
 
-## 9. Reproduktion
+## 8. Reproduktion
 
 ```bash
 uv run Gpp-ai-tool/scripts/analyze_ed23_coverage.py --date 2026-08-29

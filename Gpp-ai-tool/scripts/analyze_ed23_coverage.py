@@ -811,7 +811,37 @@ def render_report(result: dict) -> str:
     add("# ED23-Lücken-Kreuzanalyse: Welche Anforderungen der Edition 2023 deckt Grundschutz++ nicht ab?")
     add("")
     add(f"*Generiert am {meta['generated']} von `{meta['script']}` (Repo-Stand {meta['repo_head']}). "
-        "Deterministisch reproduzierbar, siehe Abschnitt 9.*")
+        "Deterministisch reproduzierbar, siehe Abschnitt 8.*")
+    add("")
+    # Die Einordnung steht bewusst VOR den Messwerten (redaktionelle Entscheidung des
+    # Autors, Web-Edit vom 29.08. — hier in den Generator zurückgespielt, damit sie
+    # Regenerierungen überlebt).
+    basis = a["by_level"].get("B", {})
+    add("**Bewertung der Autoren, aus den Messwerten dieses Reports abgeleitet:**")
+    add("")
+    add(f"Ein gepflegter Grundschutz-Check trägt Umsetzungsstatus und Nachweise zu den "
+        f"{de(denom)} aktiven Anforderungen; dazu kommen Sicherheitskonzepte, Verträge und "
+        "Zertifikatsauflagen, die wörtlich auf Kompendiums-IDs verweisen. Für den Übertrag "
+        "dieser Arbeit nach Grundschutz++ ist die amtliche Brücke das GSMap-Mapping — und "
+        f"das deckt {de(a['abgedeckt']['itgs'])} Anforderungen "
+        f"({pct(a['abgedeckt']['itgs'], denom)}); allein "
+        f"{de(basis.get('ohne_itgs', 0))} der {de(basis.get('aktiv', 0))} Basis-Anforderungen "
+        "bleiben dort ohne Zuordnung, das UA-Zerlegungsschema ist unveröffentlicht, und der "
+        "Status ist draft. Was die amtliche Brücke nicht trägt, ist beim Umstieg neu zu "
+        "erbringen: Neuzuordnung von Nachweisen von Hand, Anforderung für Anforderung, in "
+        "jeder Institution einzeln — ein Community-Draft wie das hier vermessene "
+        "Gegen-Mapping ersetzt gegenüber Auditoren keine amtliche Tabelle, so vollständig "
+        "es auch ist. Diese Bürokratiekosten entstehen nicht nur an der fehlenden Brücke: "
+        "Im neuen Standard sind diese Anforderungen schlicht nicht mehr enthalten, weil es "
+        "keine spezifischen Anforderungen aus den Bausteinen mehr gibt, und damit sind alle "
+        "Hinweise auf das WIE zu bestimmten Technologien verloren gegangen.")
+    add("")
+    add("Das technologiespezifische WIE der 111 Bausteine hat im veröffentlichten "
+        "GS++-Bestand keinen Träger, und die als Ersatzort vorgesehenen "
+        "Stand-der-Technik-Kataloge decken diesen Umfang bisher nicht. Konsequenz aus "
+        "beidem: Mapping und WIE-Kataloge gehören als Pflichtartefakte zu jedem "
+        "Katalog-Release — sonst bezahlt jede Institution die fehlende Brücke einzeln, "
+        "mit eigener Arbeitszeit.")
     add("")
     add("## 1. Kernaussage")
     add("")
@@ -1103,34 +1133,7 @@ def render_report(result: dict) -> str:
         "unter `forward_gaps`.")
     add("")
 
-    add("## 7. Einordnung: Migrationsfolgen und Bürokratiekosten")
-    add("")
-    add("**Bewertung der Autoren, aus den Messwerten dieses Reports abgeleitet:**")
-    add("")
-    basis = a["by_level"].get("B", {})
-    add(f"Ein gepflegter Grundschutz-Check trägt Umsetzungsstatus und Nachweise zu den "
-        f"{de(denom)} aktiven Anforderungen; dazu kommen Sicherheitskonzepte, Verträge und "
-        "Zertifikatsauflagen, die wörtlich auf Kompendiums-IDs verweisen. Für den Übertrag "
-        "dieser Arbeit nach Grundschutz++ ist die amtliche Brücke das GSMap-Mapping — und "
-        f"das deckt {de(ab['itgs'])} Anforderungen ({pct(ab['itgs'], denom)}); allein "
-        f"{de(basis.get('ohne_itgs', 0))} der {de(basis.get('aktiv', 0))} Basis-Anforderungen "
-        "bleiben dort ohne Zuordnung, das UA-Zerlegungsschema ist unveröffentlicht, und der "
-        "Status ist draft. Was die amtliche Brücke nicht trägt, ist beim Umstieg neu zu "
-        "erbringen: Neuzuordnung von Nachweisen von Hand, Anforderung für Anforderung, in "
-        "jeder Institution einzeln — ein Community-Draft wie das hier vermessene "
-        "Gegen-Mapping ersetzt gegenüber Auditoren keine amtliche Tabelle, so vollständig "
-        "es auch ist. Diese Bürokratiekosten entstehen an der fehlenden Brücke; der neue "
-        "Standard selbst kann nichts dafür.")
-    add("")
-    add("Dazu kommt der Substanzverlust aus Abschnitt 5.2: Das technologiespezifische WIE "
-        "der 111 Bausteine hat im veröffentlichten GS++-Bestand keinen Träger, und die als "
-        "Ersatzort vorgesehenen Stand-der-Technik-Kataloge decken diesen Umfang bisher "
-        "nicht. Konsequenz aus beidem: Mapping und WIE-Kataloge gehören als Pflichtartefakte "
-        "zu jedem Katalog-Release — sonst bezahlt jede Institution die fehlende Brücke "
-        "einzeln, mit eigener Arbeitszeit.")
-    add("")
-
-    add("## 8. Kreuzbefunde zwischen den Quellen")
+    add("## 7. Kreuzbefunde zwischen den Quellen")
     add("")
     add(f"- Ziel-Klassen unseres Mappings: {json.dumps(k['ours_zielklassen'], ensure_ascii=False)}. "
         f"NTT-eigene (nicht-amtliche) Ziele: {de(len(k['ours_ziele_ntt_custom']))}, "
@@ -1170,7 +1173,7 @@ def render_report(result: dict) -> str:
         add("- Alle dokumentierten Anker-Zahlen (Handbuch 10.3, Release Notes 4.0) wurden reproduziert.")
     add("")
 
-    add("## 9. Reproduktion")
+    add("## 8. Reproduktion")
     add("")
     add("```bash")
     add("uv run Gpp-ai-tool/scripts/analyze_ed23_coverage.py --date " + meta["generated"])
