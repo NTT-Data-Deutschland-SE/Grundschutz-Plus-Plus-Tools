@@ -641,6 +641,17 @@ async function latestCommitOf(s) {
   return { sha: latest.sha, datum: (latest.commit.author.date || "").slice(0, 10),
     botschaft: (latest.commit.message || "").split("\n")[0].slice(0, 90) };
 }
+/* Git-Blob-SHA der Datei bei einem bestimmten Ref — für den Inhaltsvergleich beim
+   Update-Check: Ein Pin auf einem NEUEREN Repo-Stand trägt denselben Datei-Inhalt wie
+   der letzte Datei-Commit; nur der Commit-Vergleich würde dann ein Downgrade anbieten. */
+async function blobShaAt(s, ref) {
+  const pfad = s.path.split("/").map(encodeURIComponent).join("/");
+  const api = `https://api.github.com/repos/${s.repo}/contents/${pfad}?ref=${ref}`;
+  const tok = gppCfg.get("gh:token");
+  const r = await fetch(api, tok ? { headers: { Authorization: "Bearer " + tok } } : undefined);
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return (await r.json()).sha;
+}
 async function checkSource(s) {
   const box = $("src-body").querySelector(`[data-result="${s.id}"]`);
   if (s.fixed) { box.textContent = "Inhaltsgepinnt: das Tool prüft diese Quelle gegen einen festen SHA-256 — Umpinnen würde die Integritätsprüfung brechen."; return; }
@@ -653,6 +664,17 @@ async function checkSource(s) {
     if (cur === latest.sha) {
       box.innerHTML = `<span style="color:var(--green)">Aktuell — der Pin zeigt bereits auf den neuesten Commit (${latest.sha.slice(0, 10)}, ${latest.datum}).</span>`;
       return;
+    }
+    /* Pin und letzter Datei-Commit unterscheiden sich — aber vielleicht nur, weil der Pin
+       auf einem neueren Repo-Stand steht. Erst der Datei-Inhalt entscheidet. */
+    if (cur && /^[0-9a-f]{40}$/.test(cur)) {
+      try {
+        const [pinBlob, neuBlob] = await Promise.all([blobShaAt(s, cur), blobShaAt(s, latest.sha)]);
+        if (pinBlob === neuBlob) {
+          box.innerHTML = `<span style="color:var(--green)">Aktuell — der Pin (${cur.slice(0, 10)}) trägt inhaltlich denselben Datei-Stand wie der letzte Datei-Commit (${latest.sha.slice(0, 10)}, ${latest.datum}); er steht lediglich auf einem neueren Repo-Stand.</span>`;
+          return;
+        }
+      } catch (e) { /* Inhaltsvergleich nicht möglich (Limit/Netz) — konservativ den Vorschlag zeigen */ }
     }
     const newUrl = gppRepinUrl(gppSource(s.id, s.default), latest.sha);
     box.innerHTML = `Neuer Commit <code>${latest.sha.slice(0, 10)}</code> vom ${latest.datum}: ${latest.botschaft}
