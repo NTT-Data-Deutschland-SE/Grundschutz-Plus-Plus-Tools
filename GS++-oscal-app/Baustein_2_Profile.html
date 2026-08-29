@@ -798,7 +798,7 @@ const DEFAULTS = {
 // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
 // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
 // Katalog-Update = bewusster Pin-Wechsel an allen Stellen zugleich.
-const GPP_CATALOG_PIN_COMMIT = "47de2824a341812438ef3f044b3f65ce2cad6e32";
+const GPP_CATALOG_PIN_COMMIT = "36a0fac473c630dd76c83fdfb13a201770b4e1bd";
 // Pin des eigenen Repos für die Hilfsdateien (zielobjekt_controls.json).
 const GPP_TOOLS_PIN_COMMIT = "621176f7f26c7fcda7e29cfdec5b83c6b25d9df7";
 
@@ -861,11 +861,11 @@ function loadEd23Map() {
   }
   return _ed23MapPromise;
 }
-const GPP_CATALOG_PIN_SHA256 = "db3a1417d7e904315a0886f450129832e19c57324660358c830357349f552332";
+const GPP_CATALOG_PIN_SHA256 = "7c3c5172806d60b219bd210f7b51a8b492c5d18dd603c95039a8ed2d35a41146";
 const GPP_CATALOG_PINNED_URL = `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json`;
 // uuid5(NAMESPACE_URL, GPP_CATALOG_PINNED_URL) — identisch zu den vom Pin-Skript
 // migrierten Profilen, damit Browser- und Pipeline-Artefakte ununterscheidbar sind.
-const GPP_CATALOG_RESOURCE_UUID = "944d9eb5-aa84-5c12-86d3-94ed8e2569f5";
+const GPP_CATALOG_RESOURCE_UUID = "20c8096f-0598-5473-99c9-78349f90b504";
 
 async function sha256Hex(buf) {
   const d = await crypto.subtle.digest("SHA-256", buf);

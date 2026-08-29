@@ -605,17 +605,17 @@
 
             <select id="quickSelect" class="filter-select" onchange="updateUrlFromSelect()" style="border-color: oklch(0.7 0.18 300 / 0.4);">
                 <option value="">-- Schnellauswahl --</option>
-                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/47de2824a341812438ef3f044b3f65ce2cad6e32/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json">Anwenderkatalog (GS++, Pin 47de2824a341)</option>
-                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/d304c60c0ba37277a59fa40adf6e6be3d452878e/control_layer/Grundschutz%2B%2B/sources/catalogs/Methodik-Grundschutz%2B%2B/BSI-Methodik-Grundschutz%2B%2B-catalog.json">Methodik (GS++)</option>
-                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/d304c60c0ba37277a59fa40adf6e6be3d452878e/control_layer/Grundschutz%2B%2B/sources/catalogs/Kernel/BSI-Stand-der-Technik-Kernel-catalog.json">Kernel (SdT)</option>
-                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/d304c60c0ba37277a59fa40adf6e6be3d452878e/control_layer/Risikomanagement/BSI-Anforderungen-zum-Risikomanagement-catalog.json">Risikomanagement</option>
+                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/36a0fac473c630dd76c83fdfb13a201770b4e1bd/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json">Anwenderkatalog (GS++, Pin 36a0fac473c6)</option>
+                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/36a0fac473c630dd76c83fdfb13a201770b4e1bd/control_layer/Grundschutz%2B%2B/sources/catalogs/Methodik-Grundschutz%2B%2B/BSI-Methodik-Grundschutz%2B%2B-catalog.json">Methodik (GS++)</option>
+                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/36a0fac473c630dd76c83fdfb13a201770b4e1bd/control_layer/Grundschutz%2B%2B/sources/catalogs/Kernel/BSI-Stand-der-Technik-Kernel-catalog.json">Kernel (SdT)</option>
+                <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/36a0fac473c630dd76c83fdfb13a201770b4e1bd/control_layer/Risikomanagement/BSI-Anforderungen-zum-Risikomanagement-catalog.json">Risikomanagement</option>
                 <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9dbb6c505c9de510d2c2b97b712cbd837314df5f/kataloge/c5-2026-oscal-catalog.json">C5:2026</option>
                 <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/621176f7f26c7fcda7e29cfdec5b83c6b25d9df7/kataloge/c3a_oscal_catalog.json">C3A - Criteria enabling Cloud Computing Autonomy</option>
                 <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/621176f7f26c7fcda7e29cfdec5b83c6b25d9df7/beispiel-kataloge/kritis_oscal_catalog.json">KRITIS (Beispiel, Test-Katalog)</option>
                 <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9dbb6c505c9de510d2c2b97b712cbd837314df5f/beispiel-kataloge/dsgvo_oscal_catalog.json">DSGVO (Beispiel, Test-Katalog)</option>
             </select>
 
-            <input type="text" id="urlInput" class="filter-select" placeholder="URL zum OSCAL-Katalog..." value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/47de2824a341812438ef3f044b3f65ce2cad6e32/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json">
+            <input type="text" id="urlInput" class="filter-select" placeholder="URL zum OSCAL-Katalog..." value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/36a0fac473c630dd76c83fdfb13a201770b4e1bd/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json">
 
             <button class="btn-primary" onclick="loadFromURL()">▶ Katalog hinzufügen</button>
 
@@ -695,7 +695,7 @@
             consoleEl: document.querySelector('.logconsole'), toolId: GPP_TOOL_ID });
         /* Quellen für die Pin-Übersicht in config.html anmelden. Gepinnt ist der
            Normalfall (Grundregel 8); die Update-Prüfung sitzt in config.html. */
-        const STDT_PIN = 'd304c60c0ba37277a59fa40adf6e6be3d452878e';
+        const STDT_PIN = '36a0fac473c630dd76c83fdfb13a201770b4e1bd';
         const GPPT_PIN = '621176f7f26c7fcda7e29cfdec5b83c6b25d9df7';
         const GPP_SOURCES = [
             { id: 'methodik-katalog', label: 'G++ Methodik-Katalog', repo: 'BSI-Bund/Stand-der-Technik-Bibliothek',
@@ -903,8 +903,8 @@
         // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
         // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Profile.
         // Katalog-Update = bewusster Pin-Wechsel an allen Stellen zugleich.
-        const GPP_CATALOG_PIN_COMMIT = "47de2824a341812438ef3f044b3f65ce2cad6e32";
-        const GPP_CATALOG_PIN_SHA256 = "db3a1417d7e904315a0886f450129832e19c57324660358c830357349f552332";
+        const GPP_CATALOG_PIN_COMMIT = "36a0fac473c630dd76c83fdfb13a201770b4e1bd";
+        const GPP_CATALOG_PIN_SHA256 = "7c3c5172806d60b219bd210f7b51a8b492c5d18dd603c95039a8ed2d35a41146";
         const GPP_CATALOG_PINNED_URL = "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/" + GPP_CATALOG_PIN_COMMIT + "/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json";
 
         async function sha256Hex(buf) {
