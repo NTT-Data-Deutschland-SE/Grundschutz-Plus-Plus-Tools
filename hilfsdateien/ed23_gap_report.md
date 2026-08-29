@@ -2,6 +2,12 @@
 
 *Generiert am 2026-08-29 von `Gpp-ai-tool/scripts/analyze_ed23_coverage.py` (Repo-Stand ee9cf89). Deterministisch reproduzierbar, siehe Abschnitt 9.*
 
+**Bewertung der Autoren, aus den Messwerten dieses Reports abgeleitet:**
+
+Ein gepflegter Grundschutz-Check trägt Umsetzungsstatus und Nachweise zu den 1.834 aktiven Anforderungen; dazu kommen Sicherheitskonzepte, Verträge und Zertifikatsauflagen, die wörtlich auf Kompendiums-IDs verweisen. Für den Übertrag dieser Arbeit nach Grundschutz++ ist die amtliche Brücke das GSMap-Mapping — und das deckt 510 Anforderungen (27,8 %); allein 392 der 563 Basis-Anforderungen bleiben dort ohne Zuordnung, das UA-Zerlegungsschema ist unveröffentlicht, und der Status ist draft. Was die amtliche Brücke nicht trägt, ist beim Umstieg neu zu erbringen: Neuzuordnung von Nachweisen von Hand, Anforderung für Anforderung, in jeder Institution einzeln — ein Community-Draft wie das hier vermessene Gegen-Mapping ersetzt gegenüber Auditoren keine amtliche Tabelle, so vollständig es auch ist. Diese Bürokratiekosten entstehen nicht nur an der fehlenden Brücke; im neue Standard sind diese Anforderungen einfach nicht mehr enthalten, weil es keine spezifischen Anforderungen aus den Bausteinen mehr gibt und damit alle hinweise auf das *wie* zu bestimmten Technologien verloren gegangen ist.
+
+Das technologiespezifische WIE der 111 Bausteine hat im veröffentlichten GS++-Bestand keinen Träger, und die als Ersatzort vorgesehenen Stand-der-Technik-Kataloge decken diesen Umfang bisher nicht. Konsequenz aus beidem: Mapping und WIE-Kataloge gehören als Pflichtartefakte zu jedem Katalog-Release — sonst bezahlt jede Institution die fehlende Brücke einzeln, mit eigener Arbeitszeit.
+
 ## 1. Kernaussage
 
 Das offizielle IT-Grundschutz-Kompendium Edition 2023 enthält 1.834 aktive Anforderungen in 111 Bausteinen (zuzüglich 290 entfallene). 227 davon (12,4 %) haben im GS++→ED23-Mapping (5.145 verifizierte Zuordnungen, amtliche Satz-Nummerierung) keine Maßnahme, die auf sie zeigt; nach dem BSI-eigenen GSMap-Mapping sind es 1.324 (72,2 %). Über alle drei Quellen zusammen (unser Mapping, BSI-GSMap, Prozessbaustein-Mapping) bleiben 139 Anforderungen (7,6 %) ohne jede Zuordnung. Gegenüber dem ungeprüften Erststand (5.521 Zuordnungen) deckt der aktuelle Stand 1.607 statt 1.306 Anforderungen ab (94 verloren, 395 hinzugekommen). Die satzgenaue Beurteilung jedes normativen Satzes des amtlichen Wortlauts gegen den GS++-Katalog (LLM-Maker-Checker) ergibt: 3.615 von 6.611 normativen Teilanforderungen (54,7 %) sind durch mindestens eine GS++-Maßnahme abgedeckt; 273 Anforderungen haben keinen einzigen abgedeckten normativen Satz. In der Gegenrichtung haben 133 von 1.000 GS++-Maßnahmen keine ED23-Entsprechung.
@@ -172,14 +178,6 @@ Bei 475 Anforderungen tragen beide Mappings Teilanforderungs-Indizes (unsere `st
 | **in keiner der drei Quellen** | **100** |
 
 Verteilung der 133 Maßnahmen ohne Treffer in unserem Mapping nach Praktik-Gruppe: ARCH 5, ASST 5, BER 18, BES 16, DET 17, DEV 3, DLS 2, GC 6, GEB 10, KONF 11, NOT 6, PERF 2, PERS 1, REA 2, RISK 3, SENS 13, STM 8, TEST 2, UMS 1, VRB 2. Vollständige Listen in `ed23_gap_analyse.json` unter `forward_gaps`.
-
-## 7. Einordnung: Migrationsfolgen und Bürokratiekosten
-
-**Bewertung der Autoren, aus den Messwerten dieses Reports abgeleitet:**
-
-Ein gepflegter Grundschutz-Check trägt Umsetzungsstatus und Nachweise zu den 1.834 aktiven Anforderungen; dazu kommen Sicherheitskonzepte, Verträge und Zertifikatsauflagen, die wörtlich auf Kompendiums-IDs verweisen. Für den Übertrag dieser Arbeit nach Grundschutz++ ist die amtliche Brücke das GSMap-Mapping — und das deckt 510 Anforderungen (27,8 %); allein 392 der 563 Basis-Anforderungen bleiben dort ohne Zuordnung, das UA-Zerlegungsschema ist unveröffentlicht, und der Status ist draft. Was die amtliche Brücke nicht trägt, ist beim Umstieg neu zu erbringen: Neuzuordnung von Nachweisen von Hand, Anforderung für Anforderung, in jeder Institution einzeln — ein Community-Draft wie das hier vermessene Gegen-Mapping ersetzt gegenüber Auditoren keine amtliche Tabelle, so vollständig es auch ist. Diese Bürokratiekosten entstehen nicht nur an der fehlenden Brücke; im neue Standard sind diese Anforderungen einfach nicht mehr enthalten, weil es keine spezifischen Anforderungen aus den Bausteinen mehr gibt und damit alle hinweise auf das *wie* zu bestimmten Technologien verloren gegangen ist.
-
-Das technologiespezifische WIE der 111 Bausteine hat im veröffentlichten GS++-Bestand keinen Träger, und die als Ersatzort vorgesehenen Stand-der-Technik-Kataloge decken diesen Umfang bisher nicht. Konsequenz aus beidem: Mapping und WIE-Kataloge gehören als Pflichtartefakte zu jedem Katalog-Release — sonst bezahlt jede Institution die fehlende Brücke einzeln, mit eigener Arbeitszeit.
 
 ## 8. Kreuzbefunde zwischen den Quellen
 
