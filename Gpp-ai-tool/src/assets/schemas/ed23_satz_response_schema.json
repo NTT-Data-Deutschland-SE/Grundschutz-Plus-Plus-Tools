@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "description": "All G++ control candidates covering individual normative sentences of one official ED2023 Anforderung. Empty array if no sentence has a candidate.",
+  "items": {
+    "type": "object",
+    "properties": {
+      "satz_nr": {
+        "type": "integer",
+        "description": "The number n of the sentence (S n) of the Anforderung, per the numbering in the prompt."
+      },
+      "control_id": {
+        "type": "string",
+        "description": "The exact ID of the candidate G++ control, copied verbatim from the provided list (e.g. 'KONF.2.1')."
+      },
+      "begruendung": {
+        "type": "string",
+        "description": "Short justification why this control covers exactly this sentence's demanded activity."
+      }
+    },
+    "required": [
+      "satz_nr",
+      "control_id",
+      "begruendung"
+    ]
+  }
+}

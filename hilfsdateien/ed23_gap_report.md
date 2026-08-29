@@ -1,6 +1,6 @@
 # ED23-Lücken-Kreuzanalyse: Welche Anforderungen der Edition 2023 deckt Grundschutz++ nicht ab?
 
-*Generiert am 2026-08-29 von `Gpp-ai-tool/scripts/analyze_ed23_coverage.py` (Repo-Stand e87e9d8). Deterministisch reproduzierbar, siehe Abschnitt 8.*
+*Generiert am 2026-08-29 von `Gpp-ai-tool/scripts/analyze_ed23_coverage.py` (Repo-Stand 8fd1e10). Deterministisch reproduzierbar, siehe Abschnitt 8.*
 
 ## 1. Kernaussage
 
@@ -13,10 +13,10 @@ Gap-Analyse in der Gegenrichtung: nicht „wohin zeigt jede GS++-Maßnahme?“, 
 | Quelle | Richtung | Umfang | Methode | Pin |
 |---|---|---|---|---|
 | Offizielles BSI-XML-Kompendium 2023 | (Nenner) | 1.834 aktive + 290 entfallene Anforderungen | amtlicher Wortlaut | sha256 `dd41a7467464…` |
-| Unser Mapping (`gpp_ed23_anforderungen.json`) | GS++ → ED23 | 3.046 Maps, 820 Maßnahmen, 1.329 Ziele | LLM Maker-Checker, status draft | Repo `e87e9d8` |
+| Unser Mapping (`gpp_ed23_anforderungen.json`) | GS++ → ED23 | 3.046 Maps, 820 Maßnahmen, 1.329 Ziele | LLM Maker-Checker, status draft | Repo `8fd1e10` |
 | BSI GSMap (`ITGS-to-GS++-mapping_collection.json`) | ED23-UA → GS++ | 1.185 Maps, 824 Teilanforderungen | menschlich (GSMap-Tool) | Commit `8f0bcd1fbb4f…` |
-| Prozessbaustein-Mapping | ED23 → GS++ (1:1) | 687 Einträge, nur ISMS/ORP/CON/OPS/DER | LLM, vollständigkeitsgetrieben | Repo `e87e9d8` |
-| GS++-Katalog (resolved) | (Universum) | 1.000 Maßnahmen | — | Commit `47de2824a341…` |
+| Prozessbaustein-Mapping | ED23 → GS++ (1:1) | 687 Einträge, nur ISMS/ORP/CON/OPS/DER | LLM, vollständigkeitsgetrieben | Repo `8fd1e10` |
+| GS++-Katalog (resolved) | (Universum) | 1.000 Maßnahmen | — | Commit `36a0fac473c6…` |
 
 ## 3. Methode und Ehrlichkeitsgrenzen
 
@@ -102,6 +102,12 @@ Vor der Maker-Checker-Verifikation deckte das Mapping 1.306 der 1.834 aktiven An
 **BSI GSMap (UA-Ebene):** 824 Unteranforderungen gemappt. Das UA-Universum ist unveröffentlicht; aus den maximal beobachteten Indizes ergibt sich eine Untergrenze von 1.430 UAs in den berührten Anforderungen — darunter 606 beweisbar ungemappte (Index kleiner als ein gemappter Nachbar).
 
 **Projektion auf den offiziellen Wortlaut:** Das XML enthält 6.611 normative Sätze (MUSS/SOLLTE/DARF, zzgl. 0 KANN-Sätze). Projiziert über das Satz-Alignment sind 3.166 davon (47,9 %) abgedeckt. Alignment-Qualität je Anforderung: 668× aligned, 66× teilweise, 471× grob (= Anforderungs-Abdeckung pauschal auf alle Sätze übertragen). Diese Ebene ist eine transparente Näherung — belastbar sind die Ebenen (a) und (b).
+
+### 5.1 Deterministischer Zerlegungs-Vergleich der Teilanforderungs-Indizes
+
+Bei 397 Anforderungen tragen beide Mappings Teilanforderungs-Indizes (unsere `statement-sentence` vs. BSI-`UA.n`). Mengenvergleich der Indizes: 111 identisch (28,0 %), 171 überlappend (43,1 %), 115 disjunkt (29,0 %). Die beiden Nummerierungen zählen verschiedene Zerlegungen (NTT-Paraphrase-Sätze bzw. das unveröffentlichte UA-Schema des GSMap) — Index-Gleichheit ist ein Strukturindiz, keine bewiesene inhaltliche Übereinstimmung.
+
+Kardinalitäten-Abgleich gegen den amtlichen Wortlaut: Bei 2 Anforderungen übersteigt schon die UA-Untergrenze des GSMap die Zahl der normativen XML-Sätze (das BSI zerlegt dort feiner als die Modalverb-Satzzählung, oder zählt Kontextsätze mit). Unsere Paraphrase-Zerlegung trifft die amtliche Satzzahl bei 416 von 1.205 gemappten Anforderungen (34,5 %). Vollständige ID-Listen im JSON unter `summary.teilanforderungen.zerlegungsvergleich`.
 
 ## 6. Gegenrichtung: GS++-Maßnahmen ohne ED23-Entsprechung
 

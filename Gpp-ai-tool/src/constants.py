@@ -74,6 +74,9 @@ PROZZESSBAUSTEINE_CONTROLS_JSON_PATH = os.path.join(SDT_HELPER_OUTPUT_DIR, "proz
 GPP_ED23_ANFORDERUNGEN_JSON_PATH = os.path.join(SDT_HELPER_OUTPUT_DIR, "gpp_ed23_anforderungen.json")
 # A compact projection of the ED23 catalog (id | name | prose) used as the cached grounding corpus.
 ED23_ANFORDERUNGEN_STRIPPED_JSON_PATH = os.path.join(SDT_HELPER_OUTPUT_DIR, "ed23_anforderungen_stripped.json")
+# Per-sentence coverage judgment of the OFFICIAL ED23 Kompendium (amtliches XML) against the
+# G++ catalog (stage_ed23_satz_abdeckung). Consumed by scripts/analyze_ed23_coverage.py.
+ED23_SATZ_ABDECKUNG_JSON_PATH = os.path.join(SDT_HELPER_OUTPUT_DIR, "ed23_satz_abdeckung.json")
 SDT_PROFILES_REGULAR_DIR = os.path.abspath(
     os.environ.get("SDT_PROFILES_REGULAR_DIR", os.path.join(OUTPUT_ROOT, "Zielobjektkategorien/profile/regular"))
 )
@@ -92,6 +95,8 @@ BAUSTEIN_TO_ZIELOBJEKT_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/baus
 ENHANCED_CONTROL_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/enhanced_control_response_schema.json")
 ED23_ANFORDERUNGEN_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_anforderungen_response_schema.json")
 ED23_VERIFY_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_verify_response_schema.json")
+ED23_SATZ_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_satz_response_schema.json")
+ED23_SATZ_VERIFY_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_satz_verify_response_schema.json")
 PROZESSBAUSTEINE_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/prozessbausteine_response_schema.json")
 
 # --- AI Model Configuration ---

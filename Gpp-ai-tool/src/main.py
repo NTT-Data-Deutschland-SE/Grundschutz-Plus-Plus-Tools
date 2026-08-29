@@ -10,7 +10,7 @@ import logging
 import asyncio
 import argparse
 
-from pipeline import stage_ED23_profiles_enhanced, stage_base_process_enhanced, stage_gpp, stage_match_bausteine, stage_profiles, stage_ed23_anforderungen, stage_prozessbausteine, processing
+from pipeline import stage_ED23_profiles_enhanced, stage_base_process_enhanced, stage_gpp, stage_match_bausteine, stage_profiles, stage_ed23_anforderungen, stage_ed23_satz_abdeckung, stage_prozessbausteine, processing
 from utils.logger import setup_logging
 
 
@@ -29,7 +29,7 @@ async def main() -> None:
         "--stage",
         type=str,
         required=False,
-        choices=["stage_gpp", "stage_match_bausteine", "stage_profiles", "stage_ED23_profiles_enhanced", "stage_base_process_enhanced", "stage_ed23_anforderungen", "stage_prozessbausteine"],
+        choices=["stage_gpp", "stage_match_bausteine", "stage_profiles", "stage_ED23_profiles_enhanced", "stage_base_process_enhanced", "stage_ed23_anforderungen", "stage_ed23_satz_abdeckung", "stage_prozessbausteine"],
         help="The pipeline stage to execute. If not provided, the full pipeline will run.",
     )
     args = parser.parse_args()
@@ -49,6 +49,8 @@ async def main() -> None:
             await stage_base_process_enhanced.run_stage_base_process_enhanced()
         elif args.stage == "stage_ed23_anforderungen":
             await stage_ed23_anforderungen.run_stage_ed23_anforderungen()
+        elif args.stage == "stage_ed23_satz_abdeckung":
+            await stage_ed23_satz_abdeckung.run_stage_ed23_satz_abdeckung()
         elif args.stage == "stage_prozessbausteine":
             await stage_prozessbausteine.run_stage_prozessbausteine()
     else:

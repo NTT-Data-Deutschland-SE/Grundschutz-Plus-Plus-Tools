@@ -36,36 +36,38 @@ Exit codes: 0 = OK (soft anchor drift is warned), 1 = hard invariant violated or
 
 import argparse
 import difflib
-import hashlib
 import json
+import logging
 import os
 import re
 import subprocess
 import sys
-import urllib.request
-import xml.etree.ElementTree as ET
 from collections import Counter
 from datetime import date
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, os.path.join(REPO_ROOT, "Gpp-ai-tool", "src"))
 
-from utils.sentence_split import split_sentences  # noqa: E402
 from constants import (  # noqa: E402
     GPP_KOMPENDIUM_JSON_PATH,
     GPP_CATALOG_PIN_COMMIT,
     GPP_CATALOG_PIN_SHA256,
     PROZESSBAUSTEINE_LAYERS,
 )
+# XML parsing, modal-verb semantics and the pinned download live in utils.ed23_xml (shared
+# with pipeline/stage_ed23_satz_abdeckung); re-imported names keep this module's public
+# surface (tests) unchanged.
+from utils.ed23_xml import (  # noqa: E402,F401
+    BSI_XML_URL,
+    NORMATIVE_RE,
+    KANN_RE,
+    fetch_cached,
+    fetch_official_xml,
+    load_official_xml,
+    parse_requirement_title,
+)
 
 # --- Pinned sources ------------------------------------------------------------------------
-# The v=4 parameter selects the published Edition-2023 file; the sha256 pin is the real
-# reproducibility guarantee (fill in after the first successful download, then enforced).
-BSI_XML_URL = (
-    "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Grundschutz/IT-GS-Kompendium/"
-    "XML_Kompendium_2023.xml?__blob=publicationFile&v=4"
-)
-BSI_XML_SHA256 = "dd41a7467464982a79307a322be9abb7a07356a1104dd64583bab29138e410ae"
 # Commit that last touched the GSMap mapping file (2026-07-27) — pinned instead of `main`.
 ITGS_PIN_COMMIT = "8f0bcd1fbb4f47a7bec911fc20118ce6e8ef4dad"
 ITGS_MAPPING_URL = (
@@ -81,6 +83,9 @@ OLD_MAPPING_GIT_REF = "d188329"
 OURS_PATH = os.path.join(REPO_ROOT, "hilfsdateien", "gpp_ed23_anforderungen.json")
 STRIPPED_PATH = os.path.join(REPO_ROOT, "hilfsdateien", "ed23_anforderungen_stripped.json")
 PROZESS_PATH = os.path.join(REPO_ROOT, "hilfsdateien", "prozessbausteine_mapping.json")
+# Per-sentence coverage judgment from pipeline/stage_ed23_satz_abdeckung (optional input;
+# when absent, tier (d) is omitted from JSON and report).
+SATZ_ABDECKUNG_PATH = os.path.join(REPO_ROOT, "hilfsdateien", "ed23_satz_abdeckung.json")
 DEFAULT_CACHE_DIR = os.path.join(REPO_ROOT, "Gpp-ai-tool", ".cache", "ed23_gap")
 DEFAULT_JSON_OUT = os.path.join(REPO_ROOT, "hilfsdateien", "ed23_gap_analyse.json")
 DEFAULT_REPORT_OUT = os.path.join(REPO_ROOT, "hilfsdateien", "ed23_gap_report.md")
@@ -107,12 +112,7 @@ EXPECTED_ANCHORS = {
     "official_bausteine": 111,
 }
 
-DB = "{http://docbook.org/ns/docbook}"
-REQ_ID_RE = re.compile(r"^\s*([A-Z]{2,7}(?:\.\d+)+\.A\d+)\s+(.*)$", re.S)
 UA_RE = re.compile(r"^(?P<req>.+?)-UA\.(?P<idx>\d+)$")
-# BSI-Verbindlichkeitssprache: only fully uppercase modal verbs are normative.
-NORMATIVE_RE = re.compile(r"\b(MUSS|MÜSSEN|DARF|DÜRFEN|SOLLTE|SOLLTEN)\b")
-KANN_RE = re.compile(r"\b(KANN|KÖNNEN)\b")
 # Modal verbs are stripped before similarity scoring: the stripped corpus is the NTT
 # maturity-level-3 paraphrase which systematically rewrites "MUSS ... übernehmen" as
 # "übernimmt", so keeping them would depress every score.
@@ -123,12 +123,6 @@ ALIGN_THRESHOLD = 0.5   # minimum similarity for a satz-to-satz assignment
 GROB_MEAN_SCORE = 0.4   # below this mean best score the whole requirement falls back to "grob"
 GROB_LEN_FACTOR = 2.0   # sentence-count mismatch beyond this factor also falls back
 
-SUBSECTION_LEVEL = {
-    "Basis-Anforderungen": "B",
-    "Standard-Anforderungen": "S",
-    "Anforderungen bei erhöhtem Schutzbedarf": "H",
-}
-
 
 def log(msg: str) -> None:
     print(msg, flush=True)
@@ -138,64 +132,7 @@ def warn(msg: str) -> None:
     print(f"WARNUNG: {msg}", flush=True)
 
 
-# --- Layer 1: acquisition ------------------------------------------------------------------
-
-def fetch_cached(url: str, cache_name: str, expected_sha256, cache_dir: str, offline: bool):
-    """Returns (bytes, sha256) of a pinned remote source, downloading at most once.
-
-    The cache file is the reproducibility unit: once present and hash-matching it is never
-    re-fetched. A pinned hash mismatch is fatal (supply-chain gate, Grundregel 8); an
-    unpinned source logs its computed hash so the pin can be filled in.
-    """
-    os.makedirs(cache_dir, exist_ok=True)
-    path = os.path.join(cache_dir, cache_name)
-    data = None
-    if os.path.exists(path):
-        with open(path, "rb") as f:
-            data = f.read()
-        actual = hashlib.sha256(data).hexdigest()
-        if expected_sha256 and actual != expected_sha256:
-            if offline:
-                raise SystemExit(
-                    f"FEHLER: Cache {cache_name} weicht vom Pin ab ({actual}) und --offline "
-                    "verhindert den Neu-Download."
-                )
-            warn(f"Cache {cache_name} weicht vom Pin ab — lade neu.")
-            data = None
-    if data is None:
-        if offline:
-            raise SystemExit(f"FEHLER: --offline gesetzt, aber {cache_name} fehlt im Cache.")
-        log(f"Lade {url} ...")
-        # bsi.bund.de sits behind a CDN that answers 403 to the default Python-urllib agent.
-        request = urllib.request.Request(
-            url, headers={"User-Agent": "Mozilla/5.0 (compatible; GSpp-Tools ed23-gap-analyse)"}
-        )
-        last_error = None
-        for attempt in range(1, 4):
-            try:
-                with urllib.request.urlopen(request, timeout=60) as response:
-                    data = response.read()
-                break
-            except Exception as e:  # noqa: BLE001 - retry on any transient network failure
-                last_error = e
-                warn(f"Download-Versuch {attempt}/3 fehlgeschlagen: {e}")
-        if data is None:
-            raise SystemExit(f"FEHLER: Download von {url} endgültig fehlgeschlagen: {last_error}")
-        tmp = path + ".tmp"
-        with open(tmp, "wb") as f:
-            f.write(data)
-        os.replace(tmp, path)
-    actual = hashlib.sha256(data).hexdigest()
-    if expected_sha256:
-        if actual != expected_sha256:
-            raise SystemExit(
-                f"FEHLER: SHA-256 von {cache_name} weicht vom Pin ab: erwartet "
-                f"{expected_sha256}, ist {actual}. Quelle hat sich geändert — Abbruch."
-            )
-    else:
-        log(f"HINWEIS: kein SHA-256-Pin für {cache_name}; berechnet: {actual}")
-    return data, actual
-
+# --- Layer 1: acquisition (fetch_cached/load_official_xml come from utils.ed23_xml) --------
 
 def git_bytes(ref_and_path: str):
     """Returns the bytes of `<ref>:<path>` from git history, or None with a warning."""
@@ -221,123 +158,7 @@ def git_head() -> str:
         return "unbekannt"
 
 
-# --- Layer 1b: parsers / loaders -----------------------------------------------------------
-
-def parse_requirement_title(title: str):
-    """Parses 'APP.3.2.A1 Titel (B) [Rolle]' into (id, titel, level, rolle) or None.
-
-    Order-independent: the LAST '(B|S|H)' token is the level, the LAST '[...]' token the
-    role (so mid-title parentheses like '(VPNs)' survive), and exactly those spans are cut
-    out of the title — nothing requirement-looking is silently dropped.
-    """
-    m = REQ_ID_RE.match(title or "")
-    if not m:
-        return None
-    req_id, tail = m.group(1), " ".join(m.group(2).split())
-    level_matches = list(re.finditer(r"\(([BSH])\)", tail))
-    rolle_matches = list(re.finditer(r"\[([^\]]+)\]", tail))
-    level_m = level_matches[-1] if level_matches else None
-    rolle_m = rolle_matches[-1] if rolle_matches else None
-    titel = tail
-    for span in sorted((x.span() for x in (level_m, rolle_m) if x), reverse=True):
-        titel = titel[: span[0]] + " " + titel[span[1]:]
-    return (
-        req_id,
-        " ".join(titel.split()).strip(),
-        level_m.group(1) if level_m else None,
-        rolle_m.group(1) if rolle_m else None,
-    )
-
-
-def load_official_xml(xml_bytes: bytes):
-    """Parses the official DocBook Kompendium into {req_id: record}.
-
-    A section is a requirement iff its title matches the ID pattern AND an ancestor section
-    is titled '...Anforderungen...' (keeps Gefährdungslage/Kreuzreferenz prose out). Prose is
-    every non-title descendant text in document order; sentences use the shared splitter, so
-    the numbering semantics match satz_nr production.
-    """
-    root = ET.fromstring(xml_bytes)
-    parent_of = {child: parent for parent in root.iter() for child in parent}
-    requirements = {}
-    rejected_titles = []
-
-    for el in root.iter():
-        if el.tag not in (DB + "section", DB + "chapter"):
-            continue
-        title_el = el.find(DB + "title")
-        if title_el is None:
-            continue
-        title_text = " ".join("".join(title_el.itertext()).split())
-        parsed = parse_requirement_title(title_text)
-        if not parsed:
-            continue
-        req_id, titel, level, rolle = parsed
-
-        ancestor_titles = []
-        node = el
-        while node in parent_of:
-            node = parent_of[node]
-            t = node.find(DB + "title") if node.tag in (DB + "section", DB + "chapter") else None
-            if t is not None:
-                ancestor_titles.append(" ".join("".join(t.itertext()).split()))
-        if not any("Anforderungen" in t for t in ancestor_titles):
-            rejected_titles.append(title_text)
-            continue
-
-        sublevel = None
-        for t in ancestor_titles:
-            for key, value in SUBSECTION_LEVEL.items():
-                if key in t:
-                    sublevel = value
-                    break
-            if sublevel:
-                break
-
-        prose_parts = []
-        has_lists = False
-        nested_sections = 0
-        for child in el:
-            if child.tag == DB + "title":
-                continue
-            if child.tag in (DB + "section", DB + "chapter"):
-                nested_sections += 1
-                continue
-            if child.tag in (DB + "itemizedlist", DB + "orderedlist"):
-                has_lists = True
-            prose_parts.append(" ".join("".join(child.itertext()).split()))
-        prose = " ".join(p for p in prose_parts if p)
-        prose = prose.replace("\xa0", " ").replace("­", "")
-
-        entfallen = titel.strip().upper().startswith("ENTFALLEN") or prose.strip().startswith(
-            "Diese Anforderung ist entfallen"
-        )
-        saetze = split_sentences(prose)
-        normative_idx = [i for i, s in enumerate(saetze, 1) if NORMATIVE_RE.search(s)]
-        kann_idx = [
-            i for i, s in enumerate(saetze, 1)
-            if KANN_RE.search(s) and i not in set(normative_idx)
-        ]
-
-        if req_id in requirements:
-            raise SystemExit(f"FEHLER: Anforderungs-ID {req_id} kommt im XML doppelt vor.")
-        requirements[req_id] = {
-            "id": req_id,
-            "baustein": req_id.rsplit(".A", 1)[0],
-            "schicht": req_id.split(".", 1)[0],
-            "titel": titel,
-            "level": level or sublevel,
-            "sublevel": sublevel,
-            "rolle": rolle,
-            "entfallen": entfallen,
-            "saetze": saetze,
-            "normative_idx": normative_idx,
-            "kann_idx": kann_idx,
-            "has_lists": has_lists,
-            "nested_sections": nested_sections,
-        }
-    return requirements, rejected_titles
-
+# --- Layer 1b: loaders ---------------------------------------------------------------------
 
 def _iter_maps(mapping_collection: dict):
     for mapping in mapping_collection.get("mapping-collection", {}).get("mappings", []) or []:
@@ -412,6 +233,32 @@ def load_prozess(path: str):
     with open(path, "r", encoding="utf-8") as f:
         doc = json.load(f)
     return doc.get("prozessbausteine_mapping", {}) or {}
+
+
+def load_satz_abdeckung(path: str):
+    """Loads the per-sentence coverage judgment (stage_ed23_satz_abdeckung), or None.
+
+    Returns {"meta": ..., "per_req": {norm_id: {n_saetze, normative, by_satz{int: [gpp ids]}}}}.
+    """
+    if not os.path.exists(path):
+        return None
+    with open(path, "r", encoding="utf-8") as f:
+        doc = json.load(f)
+    root = doc.get("ed23_satz_abdeckung", {})
+    per_req = {}
+    for rid, rec in (root.get("anforderungen") or {}).items():
+        by_satz = {}
+        for hit in rec.get("treffer", []) or []:
+            try:
+                by_satz.setdefault(int(hit["satz_nr"]), set()).add(hit["control_id"])
+            except (KeyError, TypeError, ValueError):
+                continue
+        per_req[norm(rid)] = {
+            "n_saetze": rec.get("n_saetze"),
+            "normative": rec.get("normative_saetze", []) or [],
+            "by_satz": {k: sorted(v) for k, v in by_satz.items()},
+        }
+    return {"meta": root.get("meta", {}), "per_req": per_req}
 
 
 def load_gpp_controls(raw: bytes):
@@ -567,7 +414,7 @@ def xml_projection(req, stripped_entry, ours_slot):
 # --- Layer 3: result assembly --------------------------------------------------------------
 
 def build_result(args, official, rejected_titles, ours, ours_old, itgs, prozess,
-                 stripped, gpp_controls, source_meta):
+                 stripped, gpp_controls, source_meta, satz_urteil=None):
     ours_by_req = index_ours(ours)
     old_by_req = index_ours(ours_old) if ours_old is not None else None
     itgs_by_req = index_itgs(itgs)
@@ -631,6 +478,17 @@ def build_result(args, official, rejected_titles, ours, ours_old, itgs, prozess,
         projection = xml_projection(req, stripped_entry, ours_slot)
         if projection is not None:
             record["xml_projektion"] = projection
+        if satz_urteil is not None and not req["entfallen"]:
+            su = satz_urteil["per_req"].get(n)
+            if su is not None:
+                normative = set(req["normative_idx"])
+                covered = sorted(i for i in su["by_satz"] if i in normative)
+                record["satz_urteil"] = {
+                    "abgedeckte_normative_saetze": covered,
+                    "nicht_abgedeckte_normative_saetze": sorted(normative - set(covered)),
+                    "treffer": {str(i): su["by_satz"][i] for i in sorted(su["by_satz"])},
+                    "nummerierung_ok": su["n_saetze"] == len(req["saetze"]),
+                }
         records.append(record)
 
     active_records = [r for r in records if not r["entfallen"]]
@@ -713,6 +571,99 @@ def build_result(args, official, rejected_titles, ours, ours_old, itgs, prozess,
             continue
         quality_counter[projection["quality"]] += 1
         covered_normative_total += len(projection["covered_normative"])
+
+    # --- deterministic decomposition cross-compare: ours satz_nr vs. BSI UA indexes -------
+    # Only where BOTH mappings touch the same requirement can the two Teilanforderung
+    # numberings be compared. They index different decompositions (NTT paraphrase sentences
+    # vs. the GSMap's unpublished UA split), so index equality is a structural indication,
+    # not proven content agreement — reported as such.
+    beide = [r for r in active_records
+             if "ours" in r and "itgs" in r
+             and r["ours"]["saetze_referenziert"] and r["itgs"]["uas_mapped"]]
+    identisch, ueberlappend, disjunkt = [], [], []
+    for r in beide:
+        ours_idx = set(r["ours"]["saetze_referenziert"])
+        ua_idx = set(r["itgs"]["uas_mapped"])
+        if ours_idx == ua_idx:
+            identisch.append(r["id"])
+        elif ours_idx & ua_idx:
+            ueberlappend.append(r["id"])
+        else:
+            disjunkt.append(r["id"])
+    ua_feiner_als_normativ = sorted(
+        r["id"] for r in active_records
+        if "itgs" in r and r["itgs"]["ua_lower_bound"] > len(r["normative_saetze_xml"])
+    )
+    satzzahl_gleich = sum(
+        1 for r in active_records
+        if "ours" in r and r["ours"]["n_saetze_stripped"] == r["n_saetze_xml"]
+    )
+    zerlegungsvergleich = {
+        "anforderungen_in_beiden_mappings_mit_indizes": len(beide),
+        "indizes_identisch": len(identisch),
+        "indizes_ueberlappend": len(ueberlappend),
+        "indizes_disjunkt": len(disjunkt),
+        "disjunkt_ids": sorted(disjunkt),
+        "ua_untergrenze_uebersteigt_normative_xml_saetze": ua_feiner_als_normativ,
+        "stripped_satzzahl_gleich_xml": satzzahl_gleich,
+        "stripped_satzzahl_basis": sum(1 for r in active_records if "ours" in r),
+    }
+
+    # --- tier (d): judged per-sentence coverage (stage_ed23_satz_abdeckung, official XML) ---
+    beurteilt = None
+    satz_numbering_mismatch = []
+    if satz_urteil is not None:
+        judged = [r for r in active_records if "satz_urteil" in r]
+        satz_numbering_mismatch = sorted(
+            r["id"] for r in judged if not r["satz_urteil"]["nummerierung_ok"]
+        )
+        denom_norm = sum(len(r["normative_saetze_xml"]) for r in judged)
+        covered_norm = sum(
+            len(r["satz_urteil"]["abgedeckte_normative_saetze"]) for r in judged
+        )
+        ohne_satz = sorted(
+            r["id"] for r in judged
+            if r["normative_saetze_xml"] and not r["satz_urteil"]["abgedeckte_normative_saetze"]
+        )
+
+        def satz_slice(keyfunc):
+            out = {}
+            for r in judged:
+                slot = out.setdefault(keyfunc(r), {"normative_saetze": 0, "abgedeckt": 0})
+                slot["normative_saetze"] += len(r["normative_saetze_xml"])
+                slot["abgedeckt"] += len(r["satz_urteil"]["abgedeckte_normative_saetze"])
+            return dict(sorted(out.items(), key=lambda kv: str(kv[0])))
+
+        satz_by_baustein = satz_slice(lambda r: r["baustein"])
+        beurteilt = {
+            "anforderungen_beurteilt": len(judged),
+            "anforderungen_ohne_urteil": len(active_records) - len(judged),
+            "denominator_normative_saetze": denom_norm,
+            "abgedeckt": covered_norm,
+            "nicht_abgedeckt": denom_norm - covered_norm,
+            "by_level": satz_slice(lambda r: r["level"] or "ohne"),
+            "by_schicht": satz_slice(lambda r: r["schicht"]),
+            "top_gap_bausteine": [
+                {"baustein": b, **s} for b, s in sorted(
+                    ((b, s) for b, s in satz_by_baustein.items()
+                     if s["normative_saetze"] > s["abgedeckt"]),
+                    key=lambda kv: (kv[1]["abgedeckt"] - kv[1]["normative_saetze"], kv[0]),
+                )[:20]
+            ],
+            "anforderungen_ohne_einzigen_abgedeckten_satz": ohne_satz,
+            # Cross-checks against tier (a): mapping says covered but no sentence survives
+            # the judgment, and the judgment finds substance where no mapping points.
+            "gemappt_aber_satzlos": sorted(
+                r["id"] for r in judged
+                if r["covered_by"]["ours"] and r["normative_saetze_xml"]
+                and not r["satz_urteil"]["abgedeckte_normative_saetze"]
+            ),
+            "ungemappt_aber_satz_gefunden": sorted(
+                r["id"] for r in judged
+                if not r["covered_by"]["any"]
+                and r["satz_urteil"]["abgedeckte_normative_saetze"]
+            ),
+        }
 
     # --- forward direction ---
     ours_sources = {e["source"] for e in ours}
@@ -808,6 +759,7 @@ def build_result(args, official, rejected_titles, ours, ours_old, itgs, prozess,
         "ntt_zusatz_anforderungen_in_amtlichen_bausteinen": ntt_zusatz_in_amtlichen,
         "xml_sections_mit_untersektionen": nested_section_reqs,
         "xml_verworfene_titel": sorted(rejected_titles),
+        "satz_urteil_nummerierung_abweichend": satz_numbering_mismatch,
     }
 
     # --- soft anchors ---
@@ -872,6 +824,8 @@ def build_result(args, official, rejected_titles, ours, ours_old, itgs, prozess,
                 "abgedeckt_projiziert": covered_normative_total,
                 "qualitaet": dict(sorted(quality_counter.items())),
             },
+            "zerlegungsvergleich": zerlegungsvergleich,
+            "beurteilt": beurteilt,
         },
         "gegenrichtung": {
             "gpp_controls": forward["gpp_controls"],
@@ -969,12 +923,26 @@ def render_report(result: dict) -> str:
         if v["gewonnen"]:
             kern += f"; {de(len(v['gewonnen']))} kamen neu hinzu"
         kern += "."
+    bt = t.get("beurteilt")
+    if bt:
+        kern += (
+            f" Die satzgenaue Beurteilung jedes normativen Satzes des amtlichen Wortlauts "
+            f"gegen den GS++-Katalog (LLM-Maker-Checker) ergibt: {de(bt['abgedeckt'])} von "
+            f"{de(bt['denominator_normative_saetze'])} normativen Teilanforderungen "
+            f"({pct(bt['abgedeckt'], bt['denominator_normative_saetze'])}) sind durch "
+            f"mindestens eine GS++-Maßnahme abgedeckt; "
+            f"{de(len(bt['anforderungen_ohne_einzigen_abgedeckten_satz']))} Anforderungen "
+            "haben keinen einzigen abgedeckten normativen Satz."
+        )
+    else:
+        kern += (
+            f" Auf Teilanforderungsebene (normative Sätze des offiziellen Wortlauts: "
+            f"{de(t['xml_normativ']['denominator_normative_saetze'])}) ist die Projektion "
+            "methodisch unschärfer — Details in Abschnitt 5."
+        )
     kern += (
-        f" Auf Teilanforderungsebene (normative Sätze des offiziellen Wortlauts: "
-        f"{de(t['xml_normativ']['denominator_normative_saetze'])}) ist die Projektion "
-        f"methodisch unschärfer — Details in Abschnitt 5. In der Gegenrichtung haben "
-        f"{de(g['ohne_ed23_treffer']['ours'])} von {de(g['gpp_controls'])} GS++-Maßnahmen "
-        "keine ED23-Entsprechung."
+        f" In der Gegenrichtung haben {de(g['ohne_ed23_treffer']['ours'])} von "
+        f"{de(g['gpp_controls'])} GS++-Maßnahmen keine ED23-Entsprechung."
     )
     add(kern)
     add("")
@@ -1001,12 +969,25 @@ def render_report(result: dict) -> str:
         f"nur {'/'.join(PROZESSBAUSTEINE_LAYERS)} | LLM, vollständigkeitsgetrieben | Repo `{meta['repo_head']}` |")
     add(f"| GS++-Katalog (resolved) | (Universum) | {de(src['gpp_catalog']['controls'])} Maßnahmen | — | "
         f"Commit `{GPP_CATALOG_PIN_COMMIT[:12]}…` |")
+    if src.get("satz_abdeckung"):
+        sa = src["satz_abdeckung"]
+        add(f"| Satz-Beurteilung (`ed23_satz_abdeckung.json`) | ED23-Satz → GS++ | "
+            f"{de(sa.get('anforderungen') or 0)} Anforderungen, {de(sa.get('zuordnungen') or 0)} "
+            f"verifizierte Zuordnungen | LLM Maker-Checker ({sa.get('maker_model')} / "
+            f"{sa.get('checker_model')}), amtliches XML | Repo `{meta['repo_head']}` |")
     add("")
 
     add("## 3. Methode und Ehrlichkeitsgrenzen")
     add("")
     for note in meta["method_notes"]:
         add(f"- {note}")
+    if bt:
+        add("- Ebene (d): Jeder normative Satz des amtlichen Wortlauts wurde einzeln gegen den "
+            "vollständigen GS++-Katalog beurteilt (großzügige Kandidatensuche je Anforderung, "
+            "danach strenge Einzelprüfung jedes (Satz, Maßnahme)-Paars mit den Praktik-Nachbarn "
+            "als Negativkontext). Ein Satz ohne verifizierte Maßnahme wurde also GESEHEN und "
+            "trotzdem leer beurteilt — das ist ein inhaltliches Urteil, keine bloße Mapping-Lücke. "
+            "Es bleibt ein LLM-Urteil im Status draft.")
     add("- Eine fehlende Zuordnung ist zunächst eine **Mapping-Lücke**, keine bewiesene "
         "inhaltliche Lücke von Grundschutz++: unser Mapping ist automatisiert erzeugt "
         "(status: draft), das BSI-Mapping deckt erklärtermaßen nur einen Ausschnitt ab. "
@@ -1094,8 +1075,75 @@ def render_report(result: dict) -> str:
         f"abgedeckt. Alignment-Qualität je Anforderung: {de(q.get('aligned', 0))}× aligned, "
         f"{de(q.get('teilweise', 0))}× teilweise, {de(q.get('grob', 0))}× grob (= Anforderungs-"
         "Abdeckung pauschal auf alle Sätze übertragen). Diese Ebene ist eine transparente "
-        "Näherung — belastbar sind die Ebenen (a) und (b).")
+        "Näherung — belastbar sind die Ebenen (a) und (b)"
+        + (" sowie die beurteilte Abdeckung in 5.1." if bt else "."))
     add("")
+    if bt:
+        add("### 5.1 Beurteilte Satz-Abdeckung (amtlicher Wortlaut, je Teilanforderung)")
+        add("")
+        add(f"Jeder der {de(bt['denominator_normative_saetze'])} normativen Sätze der "
+            f"{de(bt['anforderungen_beurteilt'])} beurteilten Anforderungen wurde einzeln gegen "
+            f"den GS++-Katalog geprüft: **{de(bt['abgedeckt'])} abgedeckt "
+            f"({pct(bt['abgedeckt'], bt['denominator_normative_saetze'])}), "
+            f"{de(bt['nicht_abgedeckt'])} ohne jede GS++-Maßnahme "
+            f"({pct(bt['nicht_abgedeckt'], bt['denominator_normative_saetze'])}).** "
+            f"{de(len(bt['anforderungen_ohne_einzigen_abgedeckten_satz']))} Anforderungen haben "
+            "keinen einzigen abgedeckten normativen Satz (Anhang B)."
+            + (f" {de(bt['anforderungen_ohne_urteil'])} Anforderungen ohne Urteil."
+               if bt["anforderungen_ohne_urteil"] else ""))
+        add("")
+        add("| Level | normative Sätze | abgedeckt | ohne Abdeckung |")
+        add("|---|---|---|---|")
+        for lvl, slot in bt["by_level"].items():
+            miss = slot["normative_saetze"] - slot["abgedeckt"]
+            add(f"| {label.get(lvl, lvl)} | {de(slot['normative_saetze'])} | {de(slot['abgedeckt'])} "
+                f"({pct(slot['abgedeckt'], slot['normative_saetze'])}) | {de(miss)} |")
+        add("")
+        add("| Schicht | normative Sätze | abgedeckt | ohne Abdeckung |")
+        add("|---|---|---|---|")
+        for schicht, slot in bt["by_schicht"].items():
+            miss = slot["normative_saetze"] - slot["abgedeckt"]
+            add(f"| {schicht} | {de(slot['normative_saetze'])} | {de(slot['abgedeckt'])} "
+                f"({pct(slot['abgedeckt'], slot['normative_saetze'])}) | {de(miss)} |")
+        add("")
+        add("Top-20-Bausteine nach unabgedeckten normativen Sätzen:")
+        add("")
+        add("| Baustein | normative Sätze | ohne Abdeckung |")
+        add("|---|---|---|")
+        for row in bt["top_gap_bausteine"]:
+            miss = row["normative_saetze"] - row["abgedeckt"]
+            add(f"| {row['baustein']} | {de(row['normative_saetze'])} | {de(miss)} "
+                f"({pct(miss, row['normative_saetze'])}) |")
+        add("")
+        add(f"Quervergleich mit Ebene (a): {de(len(bt['gemappt_aber_satzlos']))} Anforderungen "
+            "sind in unserem Mapping abgedeckt, überstehen die satzgenaue Prüfung aber mit null "
+            f"Sätzen; umgekehrt findet die Satz-Beurteilung bei {de(len(bt['ungemappt_aber_satz_gefunden']))} "
+            "Anforderungen Substanz, auf die kein einziges Mapping zeigt. Beide ID-Listen stehen "
+            "im JSON unter `summary.teilanforderungen.beurteilt`.")
+        add("")
+    zv = t.get("zerlegungsvergleich")
+    if zv:
+        add(f"### 5.{'2' if bt else '1'} Deterministischer Zerlegungs-Vergleich der Teilanforderungs-Indizes")
+        add("")
+        nb = zv["anforderungen_in_beiden_mappings_mit_indizes"]
+        add(f"Bei {de(nb)} Anforderungen tragen beide Mappings Teilanforderungs-Indizes "
+            f"(unsere `statement-sentence` vs. BSI-`UA.n`). Mengenvergleich der Indizes: "
+            f"{de(zv['indizes_identisch'])} identisch ({pct(zv['indizes_identisch'], nb)}), "
+            f"{de(zv['indizes_ueberlappend'])} überlappend ({pct(zv['indizes_ueberlappend'], nb)}), "
+            f"{de(zv['indizes_disjunkt'])} disjunkt ({pct(zv['indizes_disjunkt'], nb)}). "
+            "Die beiden Nummerierungen zählen verschiedene Zerlegungen (NTT-Paraphrase-Sätze "
+            "bzw. das unveröffentlichte UA-Schema des GSMap) — Index-Gleichheit ist ein "
+            "Strukturindiz, keine bewiesene inhaltliche Übereinstimmung.")
+        add("")
+        add(f"Kardinalitäten-Abgleich gegen den amtlichen Wortlaut: Bei "
+            f"{de(len(zv['ua_untergrenze_uebersteigt_normative_xml_saetze']))} Anforderungen "
+            "übersteigt schon die UA-Untergrenze des GSMap die Zahl der normativen XML-Sätze "
+            "(das BSI zerlegt dort feiner als die Modalverb-Satzzählung, oder zählt "
+            "Kontextsätze mit). Unsere Paraphrase-Zerlegung trifft die amtliche Satzzahl bei "
+            f"{de(zv['stripped_satzzahl_gleich_xml'])} von {de(zv['stripped_satzzahl_basis'])} "
+            f"gemappten Anforderungen ({pct(zv['stripped_satzzahl_gleich_xml'], zv['stripped_satzzahl_basis'])}). "
+            "Vollständige ID-Listen im JSON unter `summary.teilanforderungen.zerlegungsvergleich`.")
+        add("")
 
     add("## 6. Gegenrichtung: GS++-Maßnahmen ohne ED23-Entsprechung")
     add("")
@@ -1133,6 +1181,12 @@ def render_report(result: dict) -> str:
     add(f"- satz_nr außerhalb des Satzbereichs: {de(len(k['satz_nr_ausser_bereich']))}; "
         f"Duplikate: {de(len(k['duplikate_ours']))} (unser Mapping) / {de(len(k['duplikate_itgs']))} (GSMap).")
     add(f"- Level-Widersprüche Titel vs. Abschnitt im XML: {de(len(k['level_mismatches']))}.")
+    if bt:
+        add(f"- Satz-Nummerierung Beurteilung vs. XML abweichend: "
+            f"{de(len(k['satz_urteil_nummerierung_abweichend']))}"
+            + (f" — {', '.join(k['satz_urteil_nummerierung_abweichend'][:10])}"
+               if k["satz_urteil_nummerierung_abweichend"] else "")
+            + ".")
     add(f"- Amtliche Anforderungen ohne Eintrag im stripped-Korpus: "
         f"{de(len(k['xml_anforderungen_ohne_stripped_eintrag']))}"
         + (f" — {', '.join(k['xml_anforderungen_ohne_stripped_eintrag'])}" if k["xml_anforderungen_ohne_stripped_eintrag"] else "")
@@ -1161,6 +1215,12 @@ def render_report(result: dict) -> str:
         "`meta.sources` im JSON); Downloads landen im gitignorierten Cache "
         "`Gpp-ai-tool/.cache/ed23_gap/`. Gleicher `--date`-Wert ⇒ byte-identische Ausgaben.")
     add("")
+    if bt:
+        add("Die Satz-Beurteilung (Abschnitt 5.1) stammt aus dem AI-Pipeline-Lauf "
+            "`python src/main.py --stage stage_ed23_satz_abdeckung` (Gpp-ai-tool, benötigt "
+            "Vertex-AI-Zugang); sie ist als LLM-Lauf nicht byte-reproduzierbar, ihr Ergebnis "
+            "liegt versioniert in `hilfsdateien/ed23_satz_abdeckung.json`.")
+        add("")
 
     add("## Anhang A: Aktive Anforderungen ohne jede Zuordnung")
     add("")
@@ -1173,6 +1233,19 @@ def render_report(result: dict) -> str:
         ids = by_b[baustein]
         add(f"- **{baustein}** ({de(len(ids))}): {', '.join(ids)}")
     add("")
+    if bt:
+        add("## Anhang B: Anforderungen ohne einen einzigen beurteilt abgedeckten normativen Satz")
+        add("")
+        add(f"{de(len(bt['anforderungen_ohne_einzigen_abgedeckten_satz']))} Anforderungen, "
+            "gruppiert nach Baustein:")
+        add("")
+        by_b2 = {}
+        for rid in bt["anforderungen_ohne_einzigen_abgedeckten_satz"]:
+            by_b2.setdefault(rid.rsplit(".A", 1)[0], []).append(rid)
+        for baustein in sorted(by_b2):
+            ids = by_b2[baustein]
+            add(f"- **{baustein}** ({de(len(ids))}): {', '.join(ids)}")
+        add("")
     return "\n".join(lines)
 
 
@@ -1194,10 +1267,9 @@ def main(argv=None) -> int:
     parser.add_argument("--skip-vergleich", action="store_true",
                         help="Vorher/Nachher-Vergleich (5521er-Version) auslassen")
     args = parser.parse_args(argv)
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
 
-    xml_bytes, xml_sha = fetch_cached(
-        BSI_XML_URL, "XML_Kompendium_2023.xml", BSI_XML_SHA256, args.cache_dir, args.offline
-    )
+    xml_bytes, xml_sha = fetch_official_xml(args.cache_dir, args.offline)
     itgs_bytes, itgs_sha = fetch_cached(
         ITGS_MAPPING_URL, f"ITGS-to-GSpp-mapping_collection@{ITGS_PIN_COMMIT[:12]}.json",
         ITGS_MAPPING_SHA256, args.cache_dir, args.offline,
@@ -1219,6 +1291,11 @@ def main(argv=None) -> int:
         old_bytes = git_bytes(f"{OLD_MAPPING_GIT_REF}:hilfsdateien/gpp_ed23_anforderungen.json")
         if old_bytes:
             ours_old = load_ours(old_bytes)
+
+    satz_urteil = load_satz_abdeckung(SATZ_ABDECKUNG_PATH)
+    if satz_urteil is None:
+        log("HINWEIS: hilfsdateien/ed23_satz_abdeckung.json fehlt — Stufe (d), die beurteilte "
+            "Satz-Abdeckung, entfällt in diesem Lauf.")
 
     # Hard structural invariants — fail loud before publishing anything.
     bausteine = {r["baustein"] for r in official.values()}
@@ -1267,10 +1344,20 @@ def main(argv=None) -> int:
             "entries": len(stripped),
             "entfallen": sum(1 for v in stripped.values() if v["entfallen"]),
         },
+        "satz_abdeckung": (
+            {
+                "path": "hilfsdateien/ed23_satz_abdeckung.json",
+                **{k: satz_urteil["meta"].get(k) for k in (
+                    "generated", "maker_model", "checker_model",
+                    "anforderungen", "zuordnungen",
+                )},
+            }
+            if satz_urteil is not None else None
+        ),
     }
 
     result = build_result(args, official, rejected_titles, ours, ours_old, itgs, prozess,
-                          stripped, gpp_controls, source_meta)
+                          stripped, gpp_controls, source_meta, satz_urteil=satz_urteil)
 
     with open(args.json_out, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
@@ -1287,6 +1374,13 @@ def main(argv=None) -> int:
         f"ours {s['ohne_zuordnung']['ours']}, ITGS {s['ohne_zuordnung']['itgs']}, "
         f"keine einzige Quelle {s['ohne_zuordnung']['keine_einzige_quelle']}."
     )
+    bt = result["ed23_gap_analyse"]["summary"]["teilanforderungen"].get("beurteilt")
+    if bt:
+        log(
+            f"Satz-Beurteilung: {bt['abgedeckt']}/{bt['denominator_normative_saetze']} normative "
+            f"Saetze abgedeckt; {len(bt['anforderungen_ohne_einzigen_abgedeckten_satz'])} "
+            "Anforderungen ohne einen einzigen abgedeckten Satz."
+        )
     drift = result["ed23_gap_analyse"]["anker"]["drift"]
     for entry in drift:
         warn(f"Anker-Drift: {entry}")

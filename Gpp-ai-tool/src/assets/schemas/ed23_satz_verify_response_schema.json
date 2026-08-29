@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "description": "Strict verification verdict for one (ED2023 sentence, G++ control) candidate pair.",
+  "properties": {
+    "covers": {
+      "type": "boolean",
+      "description": "true only if the G++ control demands an activity/duty that materially covers this sentence's demand."
+    },
+    "begruendung": {
+      "type": "string",
+      "description": "One short sentence justifying the verdict."
+    }
+  },
+  "required": [
+    "covers",
+    "begruendung"
+  ]
+}

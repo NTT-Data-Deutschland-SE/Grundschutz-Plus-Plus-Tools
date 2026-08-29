@@ -221,6 +221,51 @@ def test_crosstab_and_vergleich_math():
     assert result["forward_gaps"]["ours"] == ["GC.1.3"]
 
 
+def test_zerlegungsvergleich():
+    args, official, ours, ours_old, itgs, stripped, gpp = _toy_inputs()
+    # A2 is in both mappings: ours satz {1}, itgs UA {1} -> identisch.
+    result = mod.build_result(
+        args, official, [], ours, ours_old, itgs, {}, stripped, gpp, {}
+    )["ed23_gap_analyse"]
+    zv = result["summary"]["teilanforderungen"]["zerlegungsvergleich"]
+    assert zv["anforderungen_in_beiden_mappings_mit_indizes"] == 1
+    assert zv["indizes_identisch"] == 1
+    assert zv["indizes_disjunkt"] == 0
+    # A3: UA lower bound 3 > 1 normative XML sentence -> flagged as finer decomposition
+    assert zv["ua_untergrenze_uebersteigt_normative_xml_saetze"] == ["AAA.1.A3"]
+    # stripped copies the XML sentences in the toy inputs -> all mapped reqs match
+    assert zv["stripped_satzzahl_gleich_xml"] == zv["stripped_satzzahl_basis"] == 2
+
+
+def test_satz_urteil_integration():
+    args, official, ours, ours_old, itgs, stripped, gpp = _toy_inputs()
+    satz_urteil = {"meta": {}, "per_req": {
+        "aaa.1.a1": {"n_saetze": 2, "normative": [1], "by_satz": {1: ["GC.1.1"]}},
+        "aaa.1.a4": {"n_saetze": 1, "normative": [1], "by_satz": {}},
+    }}
+    result = mod.build_result(
+        args, official, [], ours, ours_old, itgs, {}, stripped, gpp, {},
+        satz_urteil=satz_urteil,
+    )["ed23_gap_analyse"]
+    bt = result["summary"]["teilanforderungen"]["beurteilt"]
+    assert bt["anforderungen_beurteilt"] == 2
+    assert bt["denominator_normative_saetze"] == 2
+    assert bt["abgedeckt"] == 1 and bt["nicht_abgedeckt"] == 1
+    assert bt["anforderungen_ohne_einzigen_abgedeckten_satz"] == ["AAA.1.A4"]
+    # A4 is unmapped AND sentence-empty, so it must not appear as newly-found substance
+    assert bt["ungemappt_aber_satz_gefunden"] == []
+    # A1 is mapped and keeps a covered sentence -> not a contradiction
+    assert bt["gemappt_aber_satzlos"] == []
+    rec = next(r for r in result["anforderungen"] if r["id"] == "AAA.1.A1")
+    assert rec["satz_urteil"]["abgedeckte_normative_saetze"] == [1]
+    assert rec["satz_urteil"]["nummerierung_ok"] is True
+    # Without the judgment input, the block stays absent
+    result2 = mod.build_result(
+        args, official, [], ours, ours_old, itgs, {}, stripped, gpp, {}
+    )["ed23_gap_analyse"]
+    assert result2["summary"]["teilanforderungen"]["beurteilt"] is None
+
+
 def test_json_determinism():
     args, official, ours, ours_old, itgs, stripped, gpp = _toy_inputs()
     r1 = mod.build_result(args, official, [], ours, ours_old, itgs, {}, stripped, gpp, {})
