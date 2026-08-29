@@ -93,9 +93,11 @@ DEFAULT_REPORT_OUT = os.path.join(REPO_ROOT, "hilfsdateien", "ed23_gap_report.md
 # (Handbuch Kapitel 10.3 for ITGS, Commit-Message 5bc9612 / RELEASE_NOTES_v4.0 for ours).
 # Drift is a warning by default and fatal under --strict.
 EXPECTED_ANCHORS = {
-    "ours_maps": 3046,
-    "ours_distinct_sources": 820,
-    "ours_distinct_targets": 1329,
+    # v2-Union (amtliches XML, GS++-seitig + ED23-seitige Satz-Abdeckung gemergt,
+    # Relationen klassifiziert; Stand 2026-08-29).
+    "ours_maps": 5145,
+    "ours_distinct_sources": 867,
+    "ours_distinct_targets": 1607,
     "old_maps": 5521,
     "itgs_maps": 1185,
     "itgs_distinct_teilanforderungen": 824,
@@ -104,7 +106,7 @@ EXPECTED_ANCHORS = {
         "equivalent-to": 118, "equal-to": 21,
     },
     "gpp_controls": 1000,
-    "forward_gap_ours": 180,
+    "forward_gap_ours": 133,
     # Handbuch 10.3 nennt 13 veraltete unter den 33 GS++-Ziel-IDs der Methodik-Maps;
     # über ALLE 1185 Maps gerechnet sind es 17 distinct veraltete Ziel-IDs.
     "itgs_dangling_gpp_targets": 17,
