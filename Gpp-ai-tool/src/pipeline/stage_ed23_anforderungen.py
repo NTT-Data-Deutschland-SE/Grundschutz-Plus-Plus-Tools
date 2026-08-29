@@ -66,15 +66,14 @@ logger = logging.getLogger(__name__)
 # OSCAL parameter insert directive as it appears verbatim in catalog prose.
 _PARAM_INSERT_PATTERN = re.compile(r"\{\{\s*insert:\s*param,\s*([^}\s]+)\s*\}\}")
 
-# German abbreviations that end in a period but do not end a sentence. Kept conservative:
-# only forms that actually occur in BSI/G++ prose and are unambiguous.
-_ABBREVIATIONS = (
-    "z. B.", "z.B.", "d. h.", "d.h.", "u. a.", "u.a.", "u. U.", "o. Ä.", "o.Ä.",
-    "i. d. R.", "bzw.", "ggf.", "etc.", "evtl.", "inkl.", "vgl.", "bspw.",
-    "sog.", "ca.", "max.", "min.", "Nr.", "Abs.",
+# Sentence splitting lives in utils.sentence_split (stdlib-only, shared with
+# scripts/analyze_ed23_coverage.py); the aliases preserve this module's original
+# private names for existing imports (tests) and call sites.
+from utils.sentence_split import (  # noqa: E402
+    ABBREVIATIONS as _ABBREVIATIONS,
+    SENTENCE_SPLIT as _SENTENCE_SPLIT,
+    split_sentences as _split_sentences,
 )
-# Sentence boundary: terminal punctuation, whitespace, then an uppercase/quote/paren opener.
-_SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+(?=[A-ZÄÖÜ„\"(])")
 
 
 def _resolve_param_inserts(text: str, params: Dict[str, Dict[str, Any]]) -> str:
@@ -93,25 +92,6 @@ def _resolve_param_inserts(text: str, params: Dict[str, Dict[str, Any]]) -> str:
         return ", ".join(values) if values else match.group(0)
 
     return _PARAM_INSERT_PATTERN.sub(_replace, text or "")
-
-
-def _split_sentences(text: str) -> List[str]:
-    """Splits German prose into sentences without breaking at known abbreviations.
-
-    Used to number the sentences of every ED2023 Anforderung so the model can reference the
-    exact sentence (`satz_nr`) that carries a match. The same function validates the returned
-    numbers, so numbering is always self-consistent. Abbreviation periods are masked with a
-    sentinel before splitting (multi-word forms like "z. B." would otherwise split
-    internally) and restored afterwards.
-    """
-    normalized = " ".join((text or "").split())
-    if not normalized:
-        return []
-    sentinel = "\x00"
-    for abbr in sorted(_ABBREVIATIONS, key=len, reverse=True):
-        normalized = normalized.replace(abbr, abbr.replace(".", sentinel))
-    pieces = _SENTENCE_SPLIT.split(normalized)
-    return [p.replace(sentinel, ".").strip() for p in pieces if p.strip()]
 
 
 def _statement_prose(control: Dict[str, Any]) -> str:
