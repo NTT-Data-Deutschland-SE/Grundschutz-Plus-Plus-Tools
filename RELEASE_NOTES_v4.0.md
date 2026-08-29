@@ -121,6 +121,14 @@ Turnusmäßige Pin-Prüfung über alle Quellen der Werkzeuge (Grundregel 8: gepi
 
 Außerdem seit dem letzten Tag-Stand hinzugekommen: die ED23-Lücken-Kreuzanalyse (Script, Report, Handbuch-Zahlen) und der deterministische Zerlegungsvergleich samt vorbereiteter (nicht ausgeführter) Satz-Abdeckungs-Stage.
 
+## Nachtrag 29.08.2026 — Relationstypen im G++↔ED23-Mapping, BSI-GSMap in der Anzeige
+
+- **Jede Zuordnung trägt jetzt einen differenzierten OSCAL-Relationstyp.** Die neue Stage `stage_ed23_relationen` hat alle 3.046 verifizierten (G++-Maßnahme, ED23-Anforderung)-Paare einzeln klassifiziert (3.042 explizit, 4 Default nach Fehlversuchen); Paare, Satz-Referenzen und Begründungen blieben unverändert, der Diff betrifft ausschließlich das `relationship`-Feld. Verteilung: 1.337 superset-of, 1.062 intersects-with, 551 subset-of, 94 equivalent-to, 2 equal-to (OSCAL-Leserichtung: die G++-Maßnahme relativ zur ED23-Anforderung). Der Report deutet das in Abschnitt 5: Wo G++ abdeckt, deckt es überwiegend als die allgemeinere Fassung ab — das BSI-eigene GSMap zeigt gespiegelt dasselbe Muster.
+- **BSI-GSMap als zweite Quelle in den ED23-Panels.** Viewer, SSP-Generator, SSP-Ausfüllen und Prüfung AP/AR zeigen neben unserem Mapping das amtliche ITGS-Mapping (Pin `8f0bcd1f`), jede Zeile als „wir"/„BSI" gekennzeichnet: UA-genaue Quell-IDs, elementare Gefährdungen als Kurzliste, Relation für die Anzeige auf die einheitliche Leserichtung G++→ED23 gespiegelt (Tooltip). Neue Relation-Spalte in allen vier Panels; `Baustein_2_Profile` trägt die Relation in den Matching-Blöcken, hält die BSI-Quelle aber bewusst aus der Profil-Erzeugung heraus.
+- **Developer-API-Modus für die Pipeline.** Der AiClient läuft alternativ zu Vertex/ADC mit `GEMINI_API_KEY` (aus `.env` in `Gpp-ai-tool/` oder Repo-Root, gitignored, BOM-tolerant gelesen); der Klassifikationslauf lief vollständig darüber. Checkpoints beider neuer Stages gegen transiente Windows-Datei-Locks gehärtet.
+- **Rückmeldung ans BSI:** Issue [Stand-der-Technik-Bibliothek#98](https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/issues/98) dokumentiert die Unvollständigkeit des ITGS-Mappings (510 von 1.834 aktiven Anforderungen, 17 veraltete Ziel-IDs) mit Reproduktionsweg.
+- Quellen-Pins der fünf Werkzeuge auf den klassifizierten Mapping-Stand (`1971460`) gehoben.
+
 ## Nicht im Umfang von 4.0
 
 * Die produktive Härtung des Backends (TLS auf dem öffentlichen Port, GoTrue-Admin-API statt direkter `auth.users`-Schreibzugriff bei der Konto-Anlage) — die Terraform-Umgebung ist eine Testinstanz.
