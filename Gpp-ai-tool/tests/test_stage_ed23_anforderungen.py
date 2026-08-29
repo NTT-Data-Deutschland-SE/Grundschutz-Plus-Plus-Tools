@@ -1,8 +1,8 @@
 import json
-import os
 import unittest
 
 from pipeline.stage_ed23_anforderungen import (
+    anforderung_label,
     build_ed23_corpus,
     build_gpp_match_contexts,
     _corpus_text,
@@ -12,7 +12,31 @@ from pipeline.stage_ed23_anforderungen import (
 )
 from utils.oscal_mapping import to_oscal_mapping_collection
 
-MOCK_BSI = os.path.join(os.path.dirname(__file__), "mock_bsi_2023.json")
+
+def official_fixture():
+    """Requirement records in the shape utils.ed23_xml.load_official_xml produces."""
+    def req(rid, titel, level, rolle, saetze, entfallen=False):
+        return {
+            "id": rid, "baustein": rid.rsplit(".A", 1)[0], "schicht": rid.split(".", 1)[0],
+            "titel": titel, "level": level, "sublevel": level, "rolle": rolle,
+            "entfallen": entfallen, "saetze": saetze,
+            "normative_idx": [i for i, s in enumerate(saetze, 1) if "MUSS" in s or "SOLLTE" in s],
+            "kann_idx": [], "has_lists": False, "nested_sections": 0,
+        }
+    return {
+        "ISMS.1.A1": req(
+            "ISMS.1.A1", "Übernahme der Gesamtverantwortung", "B", "Institutionsleitung",
+            ["Die Leitung MUSS die Verantwortung übernehmen.", "Sie SOLLTE sich berichten lassen."],
+        ),
+        "SYS.1.1.A1": req(
+            "SYS.1.1.A1", "Zugriffsschutz", "B", None,
+            ["Der Zugriff MUSS beschränkt werden."],
+        ),
+        "OPS.1.1.2.A2": req(
+            "OPS.1.1.2.A2", "ENTFALLEN", "B", None,
+            ["Diese Anforderung ist entfallen."], entfallen=True,
+        ),
+    }
 
 
 class TestSplitSentences(unittest.TestCase):
@@ -134,22 +158,25 @@ class TestBuildGppMatchContexts(unittest.TestCase):
 
 class TestBuildEd23Corpus(unittest.TestCase):
     def setUp(self):
-        with open(MOCK_BSI, encoding="utf-8") as f:
-            self.catalog = json.load(f)
-        self.stripped, self.lookup = build_ed23_corpus(self.catalog)
+        self.stripped, self.lookup = build_ed23_corpus(official_fixture())
 
-    def test_extracts_every_anforderung(self):
+    def test_extracts_active_anforderungen_only(self):
         ids = {a["id"] for a in self.stripped}
         self.assertIn("ISMS.1.A1", ids)
         self.assertIn("SYS.1.1.A1", ids)
+        self.assertNotIn("OPS.1.1.2.A2", ids)  # ENTFALLEN never enters the corpus
 
-    def test_entries_have_name_prose_and_sentences(self):
+    def test_entries_have_label_prose_and_official_sentences(self):
         entry = next(a for a in self.stripped if a["id"] == "ISMS.1.A1")
-        self.assertEqual(entry["name"], "BSI Test Control (ISMS)")
-        self.assertTrue(entry["prose"])  # statement prose captured
-        self.assertNotIn("\n", entry["prose"])  # newlines flattened
-        self.assertEqual(len(entry["saetze"]), 2)  # mock prose has two sentences
-        self.assertEqual(" ".join(entry["saetze"]), entry["prose"])  # lossless split
+        self.assertEqual(entry["name"], "Übernahme der Gesamtverantwortung (B) [Institutionsleitung]")
+        self.assertEqual(len(entry["saetze"]), 2)  # official sentences taken verbatim
+        self.assertEqual(" ".join(entry["saetze"]), entry["prose"])  # lossless join
+        self.assertNotIn("\n", entry["prose"])
+
+    def test_label_without_rolle(self):
+        self.assertEqual(
+            anforderung_label(official_fixture()["SYS.1.1.A1"]), "Zugriffsschutz (B)"
+        )
 
     def test_lookup_keyed_by_normalized_id_with_sentence_count(self):
         # normalize_id lowercases + strips, so a messy id still resolves.
@@ -160,7 +187,7 @@ class TestBuildEd23Corpus(unittest.TestCase):
     def test_corpus_text_numbers_sentences_one_line_per_anforderung(self):
         text = _corpus_text(self.stripped)
         self.assertEqual(len(text.splitlines()), len(self.stripped))
-        self.assertIn("SYS.1.1.A1 | BSI Test Control (SYS) | (S1)", text)
+        self.assertIn("SYS.1.1.A1 | Zugriffsschutz (B) | (S1)", text)
         isms_line = next(l for l in text.splitlines() if l.startswith("ISMS.1.A1"))
         self.assertIn("(S1)", isms_line)
         self.assertIn("(S2)", isms_line)
@@ -168,9 +195,7 @@ class TestBuildEd23Corpus(unittest.TestCase):
 
 class TestFilterMatches(unittest.TestCase):
     def setUp(self):
-        with open(MOCK_BSI, encoding="utf-8") as f:
-            catalog = json.load(f)
-        _, self.lookup = build_ed23_corpus(catalog)
+        _, self.lookup = build_ed23_corpus(official_fixture())
 
     def test_drops_hallucinated_ids_and_restores_canonical(self):
         raw = [
@@ -180,7 +205,7 @@ class TestFilterMatches(unittest.TestCase):
         result = _filter_matches(raw, self.lookup, "GC.1.1")
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]["id"], "SYS.1.1.A1")  # canonical casing restored
-        self.assertEqual(result[0]["name"], "BSI Test Control (SYS)")  # canonical name, not model's
+        self.assertEqual(result[0]["name"], "Zugriffsschutz (B)")  # canonical label, not model's
         self.assertEqual(result[0]["begruendung"], "(Satz 1) passt")
         self.assertEqual(result[0]["satz_nr"], 1)
 

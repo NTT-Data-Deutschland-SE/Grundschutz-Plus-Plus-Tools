@@ -37,7 +37,8 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from constants import GPP_KOMPENDIUM_JSON_PATH, BSI_2023_JSON_PATH, OSCAL_VERSION
+from constants import GPP_KOMPENDIUM_JSON_PATH, OSCAL_VERSION, GPP_ENHANCEMENT_PROPS_NS
+from utils.ed23_xml import BSI_XML_URL
 
 # Internal (pre-OSCAL) top-level key of the bespoke lookup this module replaces.
 MAP_KEY = "gpp_ed23_anforderungen_map"
@@ -55,7 +56,7 @@ def to_oscal_mapping_collection(
     per_control_map: Dict[str, List[Dict[str, str]]],
     *,
     source_href: str = GPP_KOMPENDIUM_JSON_PATH,
-    target_href: str = BSI_2023_JSON_PATH,
+    target_href: str = BSI_XML_URL,
     relationship: str = "intersects-with",
     last_modified: Optional[str] = None,
     version: Optional[str] = None,
@@ -82,7 +83,10 @@ def to_oscal_mapping_collection(
 
     maps: List[Dict[str, Any]] = []
     for control_id in sorted(per_control_map):
-        matches = sorted(per_control_map[control_id], key=lambda m: m.get("id", ""))
+        matches = sorted(
+            per_control_map[control_id],
+            key=lambda m: (m.get("id", ""), m.get("satz_nr") or 0),
+        )
         for match in matches:
             target_id = match.get("id")
             if not target_id:
@@ -98,12 +102,23 @@ def to_oscal_mapping_collection(
             if props:
                 target["props"] = props
 
+            # The uuid includes the satz_nr: since the merge of the ED23-seitige
+            # Satz-Abdeckung a (control, Anforderung) pair may legitimately carry several
+            # map entries, one per covered Teilanforderung.
             entry: Dict[str, Any] = {
-                "uuid": _uuid("map", control_id, target_id),
+                "uuid": _uuid("map", control_id, target_id, str(satz_nr or 0)),
                 "relationship": match.get("relationship") or relationship,
                 "sources": [{"type": "control", "id-ref": control_id}],
                 "targets": [target],
             }
+            richtung = (match.get("richtung") or "").strip()
+            if richtung:
+                # Provenance of the pair: which matching direction found it
+                # (gpp-seitig, ed23-seitig, beide). Custom prop, documented namespace.
+                entry["props"] = [{
+                    "name": "matching-direction", "value": richtung,
+                    "ns": GPP_ENHANCEMENT_PROPS_NS,
+                }]
             begruendung = (match.get("begruendung") or "").strip()
             if begruendung:
                 entry["remarks"] = begruendung

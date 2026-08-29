@@ -8,12 +8,13 @@ GS++-oscal-app to show a "Zeige BSI ED23 Anforderungen" panel per control — re
 runtime, web-search-grounded AI call in GSpp-Viewer that frequently hallucinated IDs. The
 internal per-control match map is serialized via `utils.oscal_mapping`.
 
-Grounding: the full ED2023 OSCAL catalog (BSI_2023_JSON) is stripped to a compact
-`id | name | numbered sentences` corpus of every Anforderung and supplied as the model's
-context. Because that corpus is identical for every control query, it is put into an explicit
-Vertex AI context cache once and reused per call (implicit caching does not engage for this
-model/region). Every returned ID is post-filtered against the real corpus so hallucinated /
-old-edition IDs cannot reach the output.
+Grounding: the OFFICIAL BSI XML Kompendium 2023 (sha256-pinned download, parsed by
+utils.ed23_xml — deliberately no derived OSCAL edition) is stripped to a compact
+`id | name | numbered sentences` corpus of every active Anforderung in the amtliche
+Wortlaut and supplied as the model's context. Because that corpus is identical for every
+control query, it is put into an explicit context cache once and reused per call. Every
+returned ID is post-filtered against the real corpus so hallucinated / old-edition IDs
+cannot reach the output; every satz_nr refers to the official sentence numbering.
 
 Precision measures (issue #28 — mappings were too broad and unspecific):
 
@@ -49,10 +50,10 @@ from clients.ai_client import AiClient
 from utils.data_loader import load_json_file, save_json_file
 from utils.oscal_utils import normalize_id
 from utils.oscal_mapping import to_oscal_mapping_collection
+from utils.ed23_xml import fetch_official_xml, load_official_xml
 from constants import (
     GPP_KOMPENDIUM_JSON_PATH,
     GPP_CATALOG_PIN_SHA256,
-    BSI_2023_JSON_PATH,
     GPP_ED23_ANFORDERUNGEN_JSON_PATH,
     ED23_ANFORDERUNGEN_STRIPPED_JSON_PATH,
     ED23_ANFORDERUNGEN_RESPONSE_SCHEMA_PATH,
@@ -94,76 +95,39 @@ def _resolve_param_inserts(text: str, params: Dict[str, Dict[str, Any]]) -> str:
     return _PARAM_INSERT_PATTERN.sub(_replace, text or "")
 
 
-def _statement_prose(control: Dict[str, Any]) -> str:
-    """Returns the representative statement prose of a BSI ED2023 Anforderung.
-
-    ED2023 controls carry maturity levels (m1 Partial … m5 Comprehensive) each with its own
-    nested `statement` part. The canonical requirement text is Maturity Level 3 "Defined"
-    (`class: maturity-level-defined`), so we prefer the statement under that level. We fall
-    back to the first `statement` part found, then to the first available prose.
-    """
-    def statement_in(parts):
-        for part in parts or []:
-            if part.get("name") == "statement" and part.get("prose"):
-                return part["prose"]
-            nested = statement_in(part.get("parts"))
-            if nested:
-                return nested
-        return None
-
-    def first_prose(parts):
-        for part in parts or []:
-            if part.get("prose"):
-                return part["prose"]
-            nested = first_prose(part.get("parts"))
-            if nested:
-                return nested
-        return ""
-
-    parts = control.get("parts", []) or []
-
-    # Prefer the "Defined" maturity level's statement.
-    for part in parts:
-        if part.get("class") == "maturity-level-defined":
-            defined = statement_in(part.get("parts")) or (
-                part.get("prose") if part.get("name") == "statement" else None
-            )
-            if defined:
-                return defined
-
-    return statement_in(parts) or first_prose(parts)
+def anforderung_label(req: Dict[str, Any]) -> str:
+    """Rebuilds the display label 'Titel (B) [Rolle]' from an official-XML requirement record."""
+    label = req.get("titel", "") or ""
+    if req.get("level"):
+        label = f"{label} ({req['level']})"
+    if req.get("rolle"):
+        label = f"{label} [{req['rolle']}]"
+    return label
 
 
-def build_ed23_corpus(bsi_catalog: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], Dict[str, Dict[str, Any]]]:
-    """Strips the ED2023 catalog to every Anforderung as `{id, name, prose, saetze}`.
+def build_ed23_corpus(official: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], Dict[str, Dict[str, Any]]]:
+    """Builds the grounding corpus from the OFFICIAL XML Kompendium requirement records.
 
-    `saetze` is the prose split into numbered sentences — the numbering the model references
-    via `satz_nr`. Returns the stripped list and a lookup keyed by normalized id →
-    `{id, name, n_saetze}` so the AI's returned IDs and sentence numbers can be validated and
-    the canonical id/name restored. Nested sub-controls are included.
+    Input is the `{req_id: record}` map from utils.ed23_xml.load_official_xml — the amtliche
+    Wortlaut, deliberately NOT any derived OSCAL edition. Only active (non-ENTFALLEN)
+    Anforderungen are included; `saetze` is the official prose split by the shared splitter,
+    so every `satz_nr` the pipeline emits refers to the official sentence numbering. Returns
+    the stripped list plus a lookup keyed by normalized id → `{id, name, n_saetze}` for
+    validating the AI's returned IDs and sentence numbers.
     """
     stripped: List[Dict[str, Any]] = []
     lookup: Dict[str, Dict[str, Any]] = {}
-
-    def walk_controls(controls):
-        for control in controls or []:
-            cid = control.get("id")
-            if cid:
-                name = control.get("title", "") or ""
-                prose = (_statement_prose(control) or "").replace("\n", " ").strip()
-                saetze = _split_sentences(prose)
-                stripped.append({"id": cid, "name": name, "prose": prose, "saetze": saetze})
-                lookup[normalize_id(cid)] = {"id": cid, "name": name, "n_saetze": len(saetze)}
-            if control.get("controls"):
-                walk_controls(control["controls"])
-
-    def walk_groups(groups):
-        for group in groups or []:
-            walk_controls(group.get("controls", []))
-            if group.get("groups"):
-                walk_groups(group["groups"])
-
-    walk_groups(bsi_catalog.get("catalog", {}).get("groups", []))
+    for req in sorted(official.values(), key=lambda r: r["id"]):
+        if req.get("entfallen"):
+            continue
+        name = anforderung_label(req)
+        saetze = list(req.get("saetze") or [])
+        stripped.append({
+            "id": req["id"], "name": name, "prose": " ".join(saetze), "saetze": saetze,
+        })
+        lookup[normalize_id(req["id"])] = {
+            "id": req["id"], "name": name, "n_saetze": len(saetze),
+        }
     return stripped, lookup
 
 
@@ -460,12 +424,14 @@ async def run_stage_ed23_anforderungen() -> None:
         )
         return
 
-    # Load source catalogs (the loaders transparently download from GitHub).
+    # Load sources: the pinned G++ catalog plus the OFFICIAL ED23 XML Kompendium (sha256-
+    # pinned download via utils.ed23_xml) — the amtliche Wortlaut is the only ED23 basis.
     gpp_catalog = load_json_file(GPP_KOMPENDIUM_JSON_PATH, expected_sha256=GPP_CATALOG_PIN_SHA256)
-    bsi_catalog = load_json_file(BSI_2023_JSON_PATH)
-    if not gpp_catalog or not bsi_catalog:
-        logger.error("Failed to load G++ Kompendium or BSI ED2023 catalog. Aborting stage.")
+    if not gpp_catalog:
+        logger.error("Failed to load G++ Kompendium. Aborting stage.")
         return
+    xml_bytes, _xml_sha = fetch_official_xml()
+    official, _rejected = load_official_xml(xml_bytes)
 
     prompt_config = load_json_file(PROMPT_CONFIG_PATH)
     schema = load_json_file(ED23_ANFORDERUNGEN_RESPONSE_SCHEMA_PATH)
@@ -478,8 +444,8 @@ async def run_stage_ed23_anforderungen() -> None:
     gpp_controls = build_gpp_match_contexts(gpp_catalog)
     logger.info(f"Extracted {len(gpp_controls)} G++ controls with Praktik context.")
 
-    # Stripped ED2023 corpus used as the cached grounding context.
-    stripped, id_lookup = build_ed23_corpus(bsi_catalog)
+    # Stripped ED2023 corpus (official wording) used as the cached grounding context.
+    stripped, id_lookup = build_ed23_corpus(official)
     saetze_by_id = {a["id"]: a["saetze"] for a in stripped}
     corpus_text = _corpus_text(stripped)
     logger.info(f"Built ED2023 corpus with {len(stripped)} Anforderungen ({len(corpus_text)} chars).")

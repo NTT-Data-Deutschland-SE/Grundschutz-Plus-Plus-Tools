@@ -105,6 +105,11 @@ def load_mapping_matches(doc: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]
     for mapping in doc.get("mapping-collection", {}).get("mappings", []) or []:
         for entry in mapping.get("maps", []) or []:
             sources = [s.get("id-ref") for s in entry.get("sources", []) if s.get("id-ref")]
+            richtung = next(
+                (p.get("value") for p in entry.get("props", []) or []
+                 if p.get("name") == "matching-direction"),
+                None,
+            )
             for target in entry.get("targets", []) or []:
                 target_id = target.get("id-ref")
                 if not target_id:
@@ -119,18 +124,24 @@ def load_mapping_matches(doc: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]
                         except (TypeError, ValueError):
                             satz_nr = None
                 for source in sources:
-                    per_control.setdefault(source, []).append({
+                    match: Dict[str, Any] = {
                         "id": target_id,
                         "name": name,
                         "begruendung": (entry.get("remarks") or "").strip(),
                         "satz_nr": satz_nr,
                         "relationship": entry.get("relationship"),
-                    })
+                    }
+                    if richtung:
+                        match["richtung"] = richtung
+                    per_control.setdefault(source, []).append(match)
     return per_control
 
 
-def _pair_key(control_id: str, target_id: str) -> str:
-    return f"{control_id}|{target_id}"
+def _pair_key(control_id: str, match: Dict[str, Any]) -> str:
+    # Includes the satz_nr: after the merge with the ED23-seitige Satz-Abdeckung one
+    # (control, Anforderung) pair may carry several entries, one per Teilanforderung,
+    # each classified on its own carrying sentence.
+    return f"{control_id}|{match['id']}|{match.get('satz_nr') or 0}"
 
 
 def _numbered_saetze(saetze: List[str], carrying: Optional[int]) -> str:
@@ -175,9 +186,9 @@ async def _classify_pair(
                 f"Relation classification failed for '{control_id}' -> '{match['id']}': {e}; "
                 f"keeping {DEFAULT_RELATIONSHIP}."
             )
-            return _pair_key(control_id, match["id"]), None
+            return _pair_key(control_id, match), None
     relationship = verdict.get("relationship") if isinstance(verdict, dict) else None
-    return _pair_key(control_id, match["id"]), relationship
+    return _pair_key(control_id, match), relationship
 
 
 async def run_stage_ed23_relationen() -> None:
@@ -222,7 +233,7 @@ async def run_stage_ed23_relationen() -> None:
 
     classified: Dict[str, str] = _load_checkpoint(CHECKPOINT_PATH)
     pending = [
-        (cid, m) for cid, m in all_pairs if _pair_key(cid, m["id"]) not in classified
+        (cid, m) for cid, m in all_pairs if _pair_key(cid, m) not in classified
     ]
     checkpoint_lock = asyncio.Lock()
     semaphore = asyncio.Semaphore(app_config.max_concurrent_ai_requests)
@@ -260,7 +271,7 @@ async def run_stage_ed23_relationen() -> None:
     # explicitly, so the output never contains a null relationship.
     histogram: Dict[str, int] = {}
     for cid, match in all_pairs:
-        relationship = classified.get(_pair_key(cid, match["id"])) or DEFAULT_RELATIONSHIP
+        relationship = classified.get(_pair_key(cid, match)) or DEFAULT_RELATIONSHIP
         match["relationship"] = relationship
         histogram[relationship] = histogram.get(relationship, 0) + 1
 

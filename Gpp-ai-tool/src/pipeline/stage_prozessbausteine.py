@@ -39,13 +39,13 @@ from config import app_config
 from clients.ai_client import AiClient
 from utils.data_loader import load_json_file, save_json_file
 from utils.oscal_utils import extract_all_gpp_controls, normalize_id
-# Reused from the sibling ED2023 stage: the ED2023 statement-prose extraction (maturity-level
-# aware) and the crash-safe checkpoint writer. Duplicating either would risk them drifting apart.
-from pipeline.stage_ed23_anforderungen import _statement_prose, _atomic_save_json
+from utils.ed23_xml import fetch_official_xml, load_official_xml
+# Reused from the sibling ED2023 stage: display-label builder and the crash-safe
+# checkpoint writer. Duplicating either would risk them drifting apart.
+from pipeline.stage_ed23_anforderungen import anforderung_label, _atomic_save_json
 from constants import (
     GPP_KOMPENDIUM_JSON_PATH,
     GPP_CATALOG_PIN_SHA256,
-    BSI_2023_JSON_PATH,
     PROZZESSBAUSTEINE_CONTROLS_JSON_PATH,
     PROZESSBAUSTEINE_RESPONSE_SCHEMA_PATH,
     PROZESSBAUSTEINE_LAYERS,
@@ -62,37 +62,22 @@ logger = logging.getLogger(__name__)
 CHECKPOINT_PATH = PROZZESSBAUSTEINE_CONTROLS_JSON_PATH + ".partial"
 
 
-def collect_prozess_anforderungen(bsi_catalog: Dict[str, Any]) -> List[Dict[str, str]]:
-    """Returns every Anforderung of the prozessorientierte ED2023 layers as `{id, name, prose}`.
+def collect_prozess_anforderungen(official: Dict[str, Any]) -> List[Dict[str, str]]:
+    """Returns every active Anforderung of the prozessorientierte layers as `{id, name, prose}`.
 
-    Only the top-level groups listed in `PROZESSBAUSTEINE_LAYERS` are descended into; nested
-    sub-groups and sub-controls below them are included in full.
+    Input is the `{req_id: record}` map from utils.ed23_xml.load_official_xml — the amtliche
+    Wortlaut of the Kompendium, no derived edition. Filtered to the Schichten listed in
+    `PROZESSBAUSTEINE_LAYERS`; ENTFALLEN requirements are skipped.
     """
     collected: List[Dict[str, str]] = []
-
-    def walk_controls(controls):
-        for control in controls or []:
-            cid = control.get("id")
-            if cid:
-                prose = (_statement_prose(control) or "").replace("\n", " ").strip()
-                collected.append({
-                    "id": cid,
-                    "name": control.get("title", "") or "",
-                    "prose": prose,
-                })
-            if control.get("controls"):
-                walk_controls(control["controls"])
-
-    def walk_groups(groups):
-        for group in groups or []:
-            walk_controls(group.get("controls", []))
-            if group.get("groups"):
-                walk_groups(group["groups"])
-
-    for group in bsi_catalog.get("catalog", {}).get("groups", []) or []:
-        if group.get("id") in PROZESSBAUSTEINE_LAYERS:
-            walk_groups([group])
-
+    for req in sorted(official.values(), key=lambda r: r["id"]):
+        if req.get("entfallen") or req.get("schicht") not in PROZESSBAUSTEINE_LAYERS:
+            continue
+        collected.append({
+            "id": req["id"],
+            "name": anforderung_label(req),
+            "prose": " ".join(req.get("saetze") or []),
+        })
     return collected
 
 
@@ -239,10 +224,12 @@ async def run_stage_prozessbausteine() -> None:
     logger.info("Starting stage_prozessbausteine...")
 
     gpp_catalog = load_json_file(GPP_KOMPENDIUM_JSON_PATH, expected_sha256=GPP_CATALOG_PIN_SHA256)
-    bsi_catalog = load_json_file(BSI_2023_JSON_PATH)
-    if not gpp_catalog or not bsi_catalog:
-        logger.error("Failed to load G++ Kompendium or BSI ED2023 catalog. Aborting stage.")
+    if not gpp_catalog:
+        logger.error("Failed to load G++ Kompendium. Aborting stage.")
         return
+    # OFFICIAL ED23 XML Kompendium (sha256-pinned) — the amtliche Wortlaut is the only basis.
+    xml_bytes, _xml_sha = fetch_official_xml()
+    official, _rejected = load_official_xml(xml_bytes)
 
     prompt_config = load_json_file(PROMPT_CONFIG_PATH)
     schema = load_json_file(PROZESSBAUSTEINE_RESPONSE_SCHEMA_PATH)
@@ -250,7 +237,7 @@ async def run_stage_prozessbausteine() -> None:
     prompt_template = prompt_config["prozessbausteine_prompt"]
     prompt_template_force = prompt_config["prozessbausteine_prompt_force"]
 
-    anforderungen = collect_prozess_anforderungen(bsi_catalog)
+    anforderungen = collect_prozess_anforderungen(official)
     if not anforderungen:
         logger.error(
             f"No Anforderungen found in ED2023 layers {PROZESSBAUSTEINE_LAYERS}. Aborting stage."
