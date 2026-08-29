@@ -1006,9 +1006,9 @@
             }
             const quelleTitle = q => q === 'BSI'
                 ? 'Amtliches BSI-GSMap-Mapping (ITGS→GS++), für die Anzeige invertiert; subset/superset auf die Leserichtung GS++→ED23 gespiegelt'
-                : 'Eigenes Mapping (Gpp-ai-tool, Maker-Checker, Status draft)';
+                : 'Mapping der Werkzeugsammlung (Gpp-ai-tool, Maker-Checker, Status draft)';
             const rows = list.map(a => `<tr>
-                <td style="white-space:nowrap; vertical-align:top; padding:6px 10px; border-bottom:1px solid var(--border-1); font-family:var(--font-mono); font-size:0.68rem; font-weight:700; color:${a.quelle === 'BSI' ? 'var(--warn, #d97706)' : 'var(--accent)'};" title="${escapeHtml(quelleTitle(a.quelle))}">${escapeHtml(a.quelle || 'wir')}</td>
+                <td style="white-space:nowrap; vertical-align:top; padding:6px 10px; border-bottom:1px solid var(--border-1); font-family:var(--font-mono); font-size:0.68rem; font-weight:700; color:${a.quelle === 'BSI' ? 'var(--warn, #d97706)' : 'var(--accent)'};" title="${escapeHtml(quelleTitle(a.quelle))}">${escapeHtml(a.quelle || 'Tool')}</td>
                 <td style="white-space:nowrap; font-weight:600; vertical-align:top; padding:6px 10px; border-bottom:1px solid var(--border-1); font-family:var(--font-mono); font-size:0.75rem; color:var(--text-primary);">${escapeHtml(a.id)}</td>
                 <td style="vertical-align:top; padding:6px 10px; border-bottom:1px solid var(--border-1); color:var(--text-secondary);">${escapeHtml(a.name)}</td>
                 <td style="white-space:nowrap; vertical-align:top; padding:6px 10px; border-bottom:1px solid var(--border-1); font-family:var(--font-mono); font-size:0.7rem; color:var(--text-secondary);" title="OSCAL-Relation: GS++-Maßnahme relativ zur ED23-Anforderung">${escapeHtml(a.relationship || '')}</td>
@@ -1025,7 +1025,7 @@
             const responseArea = card.querySelector('.ai-response-area');
             const contentArea = card.querySelector('.ai-response-content');
             responseArea.classList.add('active');
-            const eintraege = (ED23_MAP[controlId] || []).map(a => ({ ...a, quelle: 'wir' }))
+            const eintraege = (ED23_MAP[controlId] || []).map(a => ({ ...a, quelle: 'Tool' }))
                 .concat((BSI_ITGS_MAP[controlId] || []).map(a => ({ ...a, quelle: 'BSI' })));
             contentArea.innerHTML =
                 '<div class="ed23-head">▣ BSI IT-Grundschutz Edition 2023 – passende Anforderungen</div>'

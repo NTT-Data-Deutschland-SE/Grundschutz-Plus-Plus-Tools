@@ -2823,15 +2823,15 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         if (!list || !list.length) return '<p class="text-xs text-slate-500 italic">Keine passenden BSI ED23-Anforderungen hinterlegt.</p>';
         const quelleTitle = q => q === 'BSI'
             ? 'Amtliches BSI-GSMap-Mapping (ITGS→GS++), für die Anzeige invertiert; subset/superset auf die Leserichtung GS++→ED23 gespiegelt'
-            : 'Eigenes Mapping (Gpp-ai-tool, Maker-Checker, Status draft)';
-        const rows = list.map(a => `<tr class="border-b border-slate-700/50 align-top"><td class="py-1 pr-2 font-mono font-bold whitespace-nowrap ${a.quelle === 'BSI' ? 'text-amber-300' : 'text-blue-300'}" title="${ed23Esc(quelleTitle(a.quelle))}">${ed23Esc(a.quelle || 'wir')}</td><td class="py-1 pr-2 font-mono font-bold text-blue-300 whitespace-nowrap">${ed23Esc(a.id)}</td><td class="py-1 pr-2 text-slate-200">${ed23Esc(a.name)}</td><td class="py-1 pr-2 font-mono text-slate-300 whitespace-nowrap" title="OSCAL-Relation: GS++-Maßnahme relativ zur ED23-Anforderung">${ed23Esc(a.relationship || '')}</td><td class="py-1 text-slate-400">${ed23Esc(a.begruendung || '')}</td></tr>`).join('');
+            : 'Mapping der Werkzeugsammlung (Gpp-ai-tool, Maker-Checker, Status draft)';
+        const rows = list.map(a => `<tr class="border-b border-slate-700/50 align-top"><td class="py-1 pr-2 font-mono font-bold whitespace-nowrap ${a.quelle === 'BSI' ? 'text-amber-300' : 'text-blue-300'}" title="${ed23Esc(quelleTitle(a.quelle))}">${ed23Esc(a.quelle || 'Tool')}</td><td class="py-1 pr-2 font-mono font-bold text-blue-300 whitespace-nowrap">${ed23Esc(a.id)}</td><td class="py-1 pr-2 text-slate-200">${ed23Esc(a.name)}</td><td class="py-1 pr-2 font-mono text-slate-300 whitespace-nowrap" title="OSCAL-Relation: GS++-Maßnahme relativ zur ED23-Anforderung">${ed23Esc(a.relationship || '')}</td><td class="py-1 text-slate-400">${ed23Esc(a.begruendung || '')}</td></tr>`).join('');
         return `<div class="text-[10px] font-bold text-blue-400 uppercase mb-2">⬡ BSI IT-Grundschutz Edition 2023 – passende Anforderungen</div><table class="w-full text-xs border-collapse"><thead><tr class="text-left text-slate-500"><th class="py-1 pr-2">Quelle</th><th class="py-1 pr-2">ID</th><th class="py-1 pr-2">Name der Anforderung</th><th class="py-1 pr-2">Relation</th><th class="py-1">Begründung</th></tr></thead><tbody>${rows}</tbody></table>`;
     }
     window.showED23 = (cid, rk) => {
         const box = document.getElementById('ed23-' + rk);
         if (!box) return;
         if (!box.classList.contains('hidden')) { box.classList.add('hidden'); return; }
-        const eintraege = (ED23_MAP[cid] || []).map(a => ({ ...a, quelle: 'wir' }))
+        const eintraege = (ED23_MAP[cid] || []).map(a => ({ ...a, quelle: 'Tool' }))
             .concat((BSI_ITGS_MAP[cid] || []).map(a => ({ ...a, quelle: 'BSI' })));
         box.innerHTML = renderED23Table(eintraege);
         box.classList.remove('hidden');
