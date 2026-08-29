@@ -575,7 +575,7 @@ gppCollapsibleLog({consoleEl:document.querySelector('.logbox'),
 /* Quelle für die Pin-Übersicht in config.html anmelden (Grundregel 8). */
 gppRegisterSources(GPP_TOOL_ID,[{id:'ed23-anforderungen',label:'G++/ED23 Anforderungen (Hilfsdatei)',
     repo:'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',path:'hilfsdateien/gpp_ed23_anforderungen.json',
-    default:'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/441ce53f73084d186e68b925f4ce5b3834d52fc2/hilfsdateien/gpp_ed23_anforderungen.json'}]);
+    default:'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/b5ccf607208aaa734b7e8a3922f50349aebc2fe3/hilfsdateien/gpp_ed23_anforderungen.json'}]);
 // ============================================================
 // LOG-KONSOLE (fünf Level, ms-Timestamps, Autoscroll, Clear)
 // ============================================================
@@ -2144,7 +2144,7 @@ function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace
 
 // --- BSI ED2023 Anforderungen (vorberechnet von Gpp-ai-tool, ohne Laufzeit-KI) ---
 let ED23_MAP={};
-const ED23_MAP_URL="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/441ce53f73084d186e68b925f4ce5b3834d52fc2/hilfsdateien/gpp_ed23_anforderungen.json";
+const ED23_MAP_URL="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/b5ccf607208aaa734b7e8a3922f50349aebc2fe3/hilfsdateien/gpp_ed23_anforderungen.json";
 function buildEd23MapFromOscal(doc){if(doc&&doc.gpp_ed23_anforderungen_map)return doc.gpp_ed23_anforderungen_map;const out={},mc=doc&&doc["mapping-collection"];if(!mc)return out;(mc.mappings||[]).forEach(mp=>(mp.maps||[]).forEach(m=>{const src=(m.sources||[])[0];if(!src)return;const cid=src["id-ref"];(m.targets||[]).forEach(t=>{const label=(t.props||[]).find(p=>p.name==="label"||p.name==="title");(out[cid]=out[cid]||[]).push({id:t["id-ref"],name:(label&&label.value)||"",begruendung:m.remarks||"",relationship:m.relationship||""})})}));return out}
 // BSI-GSMap (ED23-UA -> GS++) als zweite, gekennzeichnete Quelle; für die Anzeige je GS++-Control
 // invertiert, subset-of/superset-of auf die Leserichtung GS++ -> ED23 gespiegelt.
