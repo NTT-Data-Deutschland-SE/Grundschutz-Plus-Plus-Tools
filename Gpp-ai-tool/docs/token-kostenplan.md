@@ -61,3 +61,40 @@ Die Kette „alles amtlich" ist halb durch:
   noch Paraphrase-Satznummern, `ed23_anforderungen_stripped.json` ist bereits die
   amtliche Projektion. Bis zum v2-Lauf keine Analyse-Reports regenerieren; die
   Werkzeug-Anzeige ist nicht betroffen (sie liest satz_nr nicht).
+
+## 4. Runbook: v2-Zyklus auf einer Unix-Maschine
+
+Die Läufe laufen bewusst auf Unix (keine Windows-Defender-Locks; die
+os.replace-Retries bleiben als Absicherung). Voraussetzungen: aktuelles Repo
+(Sparmaßnahmen-Commits müssen gepusht/gezogen sein), `uv` installiert, Datei
+`.env` im Repo-Root oder in `Gpp-ai-tool/` mit `GEMINI_API_KEY=<AI-Studio-Key>`
+(alternativ `GCP_PROJECT_ID` + ADC für Vertex).
+
+```bash
+cd Grundschutz-Plus-Plus-Tools/Gpp-ai-tool/src
+export MAX_CONCURRENT_AI_REQUESTS=20 PYTHONUNBUFFERED=1
+
+# 1. v2-Mapping (Batching + Verify-Skip aktiv; ~30-45 min, grob 4-7 Euro)
+OVERWRITE_TEMP_FILES=true uv run --with google-genai --with jsonschema \
+  python -m pipeline.stage_ed23_anforderungen
+
+# 2. Merge mit der Satz-Abdeckung (deterministisch, Sekunden, 0 Euro)
+cd ../..
+uv run Gpp-ai-tool/scripts/merge_ed23_mappings.py
+
+# 3. Relationstypen ueber die Union (~20-30 min, grob 2-3 Euro)
+cd Gpp-ai-tool/src
+uv run --with google-genai --with jsonschema python -m pipeline.stage_ed23_relationen
+
+# 4. Analyse + Report (deterministisch, 0 Euro)
+cd ../..
+uv run Gpp-ai-tool/scripts/analyze_ed23_coverage.py
+```
+
+Hinweise: Jede AI-Stage loggt am Ende eine `Token-Bilanz`-Zeile — kontrollieren.
+Abbrüche sind dank Kandidaten-Checkpoints (`*.partial` neben den Outputs)
+verlustarm; einfach denselben Befehl erneut starten. Der Analyzer wird nach dem
+v2-Zyklus Anker-Drift warnen (`EXPECTED_ANCHORS` tragen noch die
+3.046er-Werte) — das ist erwartet; nach Prüfung der neuen Zahlen die Anker im
+Script aktualisieren. Danach: committen, pushen, Quellen-Pins der fünf
+Werkzeuge auf den neuen Commit heben, Report/Handbuch-Zahlen nachziehen.
