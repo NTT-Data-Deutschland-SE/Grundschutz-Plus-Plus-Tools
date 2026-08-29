@@ -35,7 +35,6 @@ Exit codes: 0 = OK (soft anchor drift is warned), 1 = hard invariant violated or
 """
 
 import argparse
-import difflib
 import json
 import logging
 import os
@@ -113,15 +112,6 @@ EXPECTED_ANCHORS = {
 }
 
 UA_RE = re.compile(r"^(?P<req>.+?)-UA\.(?P<idx>\d+)$")
-# Modal verbs are stripped before similarity scoring: the stripped corpus is the NTT
-# maturity-level-3 paraphrase which systematically rewrites "MUSS ... übernehmen" as
-# "übernimmt", so keeping them would depress every score.
-MODAL_STOPWORDS = frozenset(
-    "muss müssen darf dürfen sollte sollten kann können".split()
-)
-ALIGN_THRESHOLD = 0.5   # minimum similarity for a satz-to-satz assignment
-GROB_MEAN_SCORE = 0.4   # below this mean best score the whole requirement falls back to "grob"
-GROB_LEN_FACTOR = 2.0   # sentence-count mismatch beyond this factor also falls back
 
 
 def log(msg: str) -> None:
@@ -334,86 +324,6 @@ def ua_definite_gaps(uas):
     return sorted(set(range(1, max(uas) + 1)) - set(uas))
 
 
-def align_sentences(stripped_saetze, xml_saetze):
-    """Greedy 1:1 alignment stripped index -> best xml index. Returns {i: (j, score)}.
-
-    Both similarity views are taken (character ratio and token Jaccard, modal verbs
-    stripped) and the better one wins; xml sentences are consumed once.
-    """
-    def norm_tokens(s):
-        return [t for t in re.findall(r"\w+", s.casefold()) if t not in MODAL_STOPWORDS]
-
-    def similarity(a_tokens, b_tokens):
-        if not a_tokens or not b_tokens:
-            return 0.0
-        ratio = difflib.SequenceMatcher(None, " ".join(a_tokens), " ".join(b_tokens)).ratio()
-        sa, sb = set(a_tokens), set(b_tokens)
-        jaccard = len(sa & sb) / len(sa | sb)
-        return max(ratio, jaccard)
-
-    stripped_tok = {i: norm_tokens(s) for i, s in enumerate(stripped_saetze, 1)}
-    xml_tok = {j: norm_tokens(s) for j, s in enumerate(xml_saetze, 1)}
-    assignment = {}
-    taken = set()
-    for i in sorted(stripped_tok):
-        best_j, best_score = None, 0.0
-        for j in sorted(xml_tok):
-            if j in taken:
-                continue
-            score = similarity(stripped_tok[i], xml_tok[j])
-            if score > best_score:
-                best_j, best_score = j, score
-        if best_j is not None:
-            assignment[i] = (best_j, round(best_score, 3))
-            if best_score >= ALIGN_THRESHOLD:
-                taken.add(best_j)
-    return assignment
-
-
-def xml_projection(req, stripped_entry, ours_slot):
-    """Projects our satz coverage onto the official XML sentences of one requirement.
-
-    Returns {covered_normative, quality, mean_score} or None when the requirement has no
-    coverage from our mapping at all. Quality buckets:
-      aligned   — every covering satz found an XML partner >= threshold
-      teilweise — some did
-      grob      — alignment not trustworthy (paraphrase drift / count mismatch / no satz
-                  refs): requirement-level coverage is propagated to ALL normative sentences.
-    """
-    if ours_slot is None:
-        return None
-    covering = sorted(ours_slot["saetze"])
-    normative = set(req["normative_idx"])
-    stripped_saetze = stripped_entry["saetze"] if stripped_entry else []
-    if not covering or not stripped_saetze or not req["saetze"]:
-        return {
-            "covered_normative": sorted(normative), "quality": "grob", "mean_score": None,
-        }
-    ns, nx = len(stripped_saetze), len(req["saetze"])
-    assignment = align_sentences(stripped_saetze, req["saetze"])
-    scores = [assignment[i][1] for i in covering if i in assignment]
-    mean_score = round(sum(scores) / len(scores), 3) if scores else 0.0
-    len_mismatch = max(ns, nx) / max(1, min(ns, nx)) > GROB_LEN_FACTOR
-    if mean_score < GROB_MEAN_SCORE or len_mismatch:
-        return {
-            "covered_normative": sorted(normative), "quality": "grob", "mean_score": mean_score,
-        }
-    covered = set()
-    hits = 0
-    for i in covering:
-        pair = assignment.get(i)
-        if pair and pair[1] >= ALIGN_THRESHOLD:
-            hits += 1
-            if pair[0] in normative:
-                covered.add(pair[0])
-    quality = "aligned" if hits == len(covering) else ("teilweise" if hits else "grob")
-    if quality == "grob":
-        covered = normative
-    return {
-        "covered_normative": sorted(covered), "quality": quality, "mean_score": mean_score,
-    }
-
-
 # --- Layer 3: result assembly --------------------------------------------------------------
 
 def build_result(args, official, rejected_titles, ours, ours_old, itgs, prozess,
@@ -465,6 +375,11 @@ def build_result(args, official, rejected_titles, ours, ours_old, itgs, prozess,
                 "saetze_nicht_referenziert": sorted(
                     set(range(1, n_stripped + 1)) - set(referenced)
                 ),
+                # Since the XML rebuild satz_nr refers to the official sentence numbering,
+                # so mapping coverage of the amtliche Teilanforderungen is a direct count.
+                "normative_saetze_abgedeckt": sorted(
+                    set(referenced) & set(req["normative_idx"])
+                ),
             }
         if itgs_slot:
             uas = sorted(itgs_slot["uas"])
@@ -478,9 +393,6 @@ def build_result(args, official, rejected_titles, ours, ours_old, itgs, prozess,
             }
         if prozess_hit:
             record["prozessbausteine"] = {"gpp_control": prozess_hit}
-        projection = xml_projection(req, stripped_entry, ours_slot)
-        if projection is not None:
-            record["xml_projektion"] = projection
         if satz_urteil is not None and not req["entfallen"]:
             su = satz_urteil["per_req"].get(n)
             if su is not None:
@@ -563,23 +475,19 @@ def build_result(args, official, rejected_titles, ours, ours_old, itgs, prozess,
     ua_lb_total = sum(r["itgs"]["ua_lower_bound"] for r in active_records if "itgs" in r)
     ua_gaps_total = sum(len(r["itgs"]["definite_ua_gaps"]) for r in active_records if "itgs" in r)
 
-    # --- tier (c) totals ---
+    # --- official-sentence coverage from the mapping (direct count, official numbering) ---
     normative_total = sum(len(r["normative_saetze_xml"]) for r in active_records)
     kann_total = sum(len(r["kann_saetze_xml"]) for r in active_records)
-    covered_normative_total = 0
-    quality_counter = Counter()
-    for r in active_records:
-        projection = r.get("xml_projektion")
-        if projection is None:
-            continue
-        quality_counter[projection["quality"]] += 1
-        covered_normative_total += len(projection["covered_normative"])
+    covered_normative_total = sum(
+        len(r["ours"].get("normative_saetze_abgedeckt", []))
+        for r in active_records if "ours" in r
+    )
 
     # --- deterministic decomposition cross-compare: ours satz_nr vs. BSI UA indexes -------
     # Only where BOTH mappings touch the same requirement can the two Teilanforderung
-    # numberings be compared. They index different decompositions (NTT paraphrase sentences
-    # vs. the GSMap's unpublished UA split), so index equality is a structural indication,
-    # not proven content agreement — reported as such.
+    # numberings be compared. Ours indexes the official sentence numbering; the GSMap's UA
+    # split is unpublished, so index equality remains a structural indication, not proven
+    # content agreement — reported as such.
     beide = [r for r in active_records
              if "ours" in r and "itgs" in r
              and r["ours"]["saetze_referenziert"] and r["itgs"]["uas_mapped"]]
@@ -597,10 +505,6 @@ def build_result(args, official, rejected_titles, ours, ours_old, itgs, prozess,
         r["id"] for r in active_records
         if "itgs" in r and r["itgs"]["ua_lower_bound"] > len(r["normative_saetze_xml"])
     )
-    satzzahl_gleich = sum(
-        1 for r in active_records
-        if "ours" in r and r["ours"]["n_saetze_stripped"] == r["n_saetze_xml"]
-    )
     zerlegungsvergleich = {
         "anforderungen_in_beiden_mappings_mit_indizes": len(beide),
         "indizes_identisch": len(identisch),
@@ -608,8 +512,6 @@ def build_result(args, official, rejected_titles, ours, ours_old, itgs, prozess,
         "indizes_disjunkt": len(disjunkt),
         "disjunkt_ids": sorted(disjunkt),
         "ua_untergrenze_uebersteigt_normative_xml_saetze": ua_feiner_als_normativ,
-        "stripped_satzzahl_gleich_xml": satzzahl_gleich,
-        "stripped_satzzahl_basis": sum(1 for r in active_records if "ours" in r),
     }
 
     # Relationship-type histograms of both collections. Direction note: ours describes the
@@ -835,8 +737,7 @@ def build_result(args, official, rejected_titles, ours, ours_old, itgs, prozess,
             "xml_normativ": {
                 "denominator_normative_saetze": normative_total,
                 "kann_saetze": kann_total,
-                "abgedeckt_projiziert": covered_normative_total,
-                "qualitaet": dict(sorted(quality_counter.items())),
+                "abgedeckt_direkt": covered_normative_total,
             },
             "zerlegungsvergleich": zerlegungsvergleich,
             "relationen": relationen,
@@ -860,15 +761,12 @@ def build_result(args, official, rejected_titles, ours, ours_old, itgs, prozess,
                 "method_notes": [
                     "Ebene (a): Nenner sind die aktiven Anforderungen des offiziellen BSI-XML-"
                     "Kompendiums 2023; ENTFALLEN-Anforderungen werden separat gezählt.",
-                    "Ebene (b) ours: Teilanforderung = Satz-Index (statement-sentence) im "
-                    "stripped-Korpus (NTT-Maturity-Level-3-Paraphrase, nicht BSI-Wortlaut).",
+                    "Ebene (b) ours: Teilanforderung = Satz-Index (statement-sentence) in der "
+                    "AMTLICHEN Satz-Nummerierung des XML-Wortlauts (seit dem XML-Umbau der "
+                    "Mapping-Erstellung; keine Paraphrase mehr beteiligt).",
                     "Ebene (b) ITGS: Das UA-Universum des BSI-GSMap-Mappings ist unveröffentlicht; "
                     "max. beobachteter UA-Index je Anforderung dient als Untergrenze, ungemappte "
                     "Indizes darunter sind beweisbare Lücken.",
-                    "Ebene (c): Projektion der Satz-Abdeckung auf die normativen XML-Sätze via "
-                    f"Ähnlichkeits-Alignment (Schwelle {ALIGN_THRESHOLD}, Fallback 'grob' unter "
-                    f"{GROB_MEAN_SCORE} bzw. bei Satzzahl-Faktor > {GROB_LEN_FACTOR}); "
-                    "Headline-Zahlen hängen nie am Alignment.",
                     "Normativ = Satz mit MUSS/MÜSSEN/DARF/DÜRFEN/SOLLTE/SOLLTEN in Großschreibung; "
                     "KANN/KÖNNEN wird separat gezählt.",
                 ],
@@ -923,21 +821,19 @@ def render_report(result: dict) -> str:
         f"Anforderungen in {de(meta['sources']['official_xml']['bausteine'])} Bausteinen "
         f"(zuzüglich {de(a['entfallen'])} entfallene). "
         f"{de(ohne_ours)} davon ({pct(ohne_ours, denom)}) haben im GS++→ED23-Mapping "
-        f"({de(EXPECTED_ANCHORS['ours_maps'])} Zuordnungen nach der strengen Prüfung) keine "
-        f"Maßnahme, die auf sie zeigt; nach dem BSI-eigenen GSMap-Mapping sind es "
-        f"{de(ohne_itgs)} ({pct(ohne_itgs, denom)}). "
+        f"({de(meta['sources']['ours']['maps'])} verifizierte Zuordnungen, amtliche "
+        f"Satz-Nummerierung) keine Maßnahme, die auf sie zeigt; nach dem BSI-eigenen "
+        f"GSMap-Mapping sind es {de(ohne_itgs)} ({pct(ohne_itgs, denom)}). "
         f"Über alle drei Quellen zusammen (unser Mapping, BSI-GSMap, Prozessbaustein-Mapping) "
         f"bleiben {de(neither)} Anforderungen ({pct(neither, denom)}) ohne jede Zuordnung."
     )
     if v:
         kern += (
-            f" Die strenge Prüfung (5.521 → 3.046 Zuordnungen) hat auf Anforderungsebene "
-            f"{de(len(v['verloren']))} Anforderungen ihre letzte Zuordnung gekostet "
-            f"(vorher {de(v['abgedeckt_alt'])}, nachher {de(v['abgedeckt_neu'])} abgedeckt)"
+            f" Gegenüber dem ungeprüften Erststand ({de(v['alt_maps'])} Zuordnungen) deckt der "
+            f"aktuelle Stand {de(v['abgedeckt_neu'])} statt {de(v['abgedeckt_alt'])} "
+            f"Anforderungen ab ({de(len(v['verloren']))} verloren, {de(len(v['gewonnen']))} "
+            "hinzugekommen)."
         )
-        if v["gewonnen"]:
-            kern += f"; {de(len(v['gewonnen']))} kamen neu hinzu"
-        kern += "."
     bt = t.get("beurteilt")
     if bt:
         kern += (
@@ -951,9 +847,10 @@ def render_report(result: dict) -> str:
         )
     else:
         kern += (
-            f" Auf Teilanforderungsebene (normative Sätze des offiziellen Wortlauts: "
-            f"{de(t['xml_normativ']['denominator_normative_saetze'])}) ist die Projektion "
-            "methodisch unschärfer — Details in Abschnitt 5."
+            f" Auf Teilanforderungsebene referenziert das Mapping "
+            f"{de(t['xml_normativ']['abgedeckt_direkt'])} der "
+            f"{de(t['xml_normativ']['denominator_normative_saetze'])} normativen Sätze des "
+            "amtlichen Wortlauts direkt — Details in Abschnitt 5."
         )
     kern += (
         f" In der Gegenrichtung haben {de(g['ohne_ed23_treffer']['ours'])} von "
@@ -1055,24 +952,24 @@ def render_report(result: dict) -> str:
             f"({pct(row['ohne_jede_zuordnung'], row['aktiv'])}) |")
     add("")
     if v:
-        add("### 4.1 Auswirkung der strengen Prüfung (5.521 → 3.046)")
+        add(f"### 4.1 Vergleich mit dem Vor-Review-Stand ({de(v['alt_maps'])} → {de(v['neu_maps'])} Zuordnungen)")
         add("")
-        add(f"Vor der Maker-Checker-Verifikation deckte das Mapping {de(v['abgedeckt_alt'])} der "
-            f"{de(denom)} aktiven Anforderungen ab, danach {de(v['abgedeckt_neu'])}. "
-            f"{de(len(v['verloren']))} Anforderungen verloren ihre letzte Zuordnung, "
-            f"{de(len(v['gewonnen']))} kamen neu hinzu. Genau diese Differenz ist der Preis der "
-            "Präzision — die vollständigen ID-Listen stehen in `ed23_gap_analyse.json` unter "
+        add(f"Der ungeprüfte Erststand (Commit `{OLD_MAPPING_GIT_REF}`, {de(v['alt_maps'])} "
+            f"Zuordnungen) deckte {de(v['abgedeckt_alt'])} der {de(denom)} aktiven Anforderungen "
+            f"ab, der aktuelle Stand {de(v['abgedeckt_neu'])}. {de(len(v['verloren']))} "
+            f"Anforderungen verloren gegenüber damals ihre letzte Zuordnung, {de(len(v['gewonnen']))} "
+            "kamen hinzu — die vollständigen ID-Listen stehen in `ed23_gap_analyse.json` unter "
             "`summary.vergleich_5521_vs_3046`.")
         add("")
 
     add("## 5. Ergebnisse auf Teilanforderungsebene")
     add("")
     to = t["ours"]
-    add(f"**Unsere Zerlegung** (Satz-Indizes des stripped-Korpus, nur aktive offizielle "
-        f"Anforderungen): {de(to['satz_universum_aktive_anforderungen'])} Sätze, davon "
-        f"{de(to['referenziert'])} von mindestens einer Zuordnung referenziert und "
-        f"{de(to['nicht_referenziert'])} ({pct(to['nicht_referenziert'], to['satz_universum_aktive_anforderungen'])}) "
-        "ohne Referenz.")
+    add(f"**Unser Mapping (amtliche Satz-Nummerierung):** "
+        f"{de(to['satz_universum_aktive_anforderungen'])} Sätze in den aktiven offiziellen "
+        f"Anforderungen, davon {de(to['referenziert'])} von mindestens einer Zuordnung "
+        f"referenziert und {de(to['nicht_referenziert'])} "
+        f"({pct(to['nicht_referenziert'], to['satz_universum_aktive_anforderungen'])}) ohne Referenz.")
     add("")
     ti = t["itgs"]
     add(f"**BSI GSMap (UA-Ebene):** {de(ti['ua_gemappt'])} Unteranforderungen gemappt. Das "
@@ -1082,16 +979,12 @@ def render_report(result: dict) -> str:
         "(Index kleiner als ein gemappter Nachbar).")
     add("")
     tx = t["xml_normativ"]
-    q = tx["qualitaet"]
-    add(f"**Projektion auf den offiziellen Wortlaut:** Das XML enthält "
+    add(f"**Normative Teilanforderungen des amtlichen Wortlauts:** Das XML enthält "
         f"{de(tx['denominator_normative_saetze'])} normative Sätze (MUSS/SOLLTE/DARF, "
-        f"zzgl. {de(tx['kann_saetze'])} KANN-Sätze). Projiziert über das Satz-Alignment sind "
-        f"{de(tx['abgedeckt_projiziert'])} davon ({pct(tx['abgedeckt_projiziert'], tx['denominator_normative_saetze'])}) "
-        f"abgedeckt. Alignment-Qualität je Anforderung: {de(q.get('aligned', 0))}× aligned, "
-        f"{de(q.get('teilweise', 0))}× teilweise, {de(q.get('grob', 0))}× grob (= Anforderungs-"
-        "Abdeckung pauschal auf alle Sätze übertragen). Diese Ebene ist eine transparente "
-        "Näherung — belastbar sind die Ebenen (a) und (b)"
-        + (" sowie die beurteilte Abdeckung in 5.1." if bt else "."))
+        f"zzgl. {de(tx['kann_saetze'])} KANN-Sätze). Unser Mapping referenziert davon "
+        f"{de(tx['abgedeckt_direkt'])} direkt ({pct(tx['abgedeckt_direkt'], tx['denominator_normative_saetze'])}) — "
+        "seit dem XML-Umbau eine exakte Zählung in derselben Nummerierung, kein Alignment "
+        "mehr nötig.")
     add("")
     if bt:
         add("### 5.1 Beurteilte Satz-Abdeckung (amtlicher Wortlaut, je Teilanforderung)")
@@ -1142,21 +1035,15 @@ def render_report(result: dict) -> str:
         add("")
         nb = zv["anforderungen_in_beiden_mappings_mit_indizes"]
         add(f"Bei {de(nb)} Anforderungen tragen beide Mappings Teilanforderungs-Indizes "
-            f"(unsere `statement-sentence` vs. BSI-`UA.n`). Mengenvergleich der Indizes: "
+            f"(unsere `statement-sentence` in amtlicher Satz-Nummerierung vs. BSI-`UA.n`). "
+            f"Mengenvergleich der Indizes: "
             f"{de(zv['indizes_identisch'])} identisch ({pct(zv['indizes_identisch'], nb)}), "
             f"{de(zv['indizes_ueberlappend'])} überlappend ({pct(zv['indizes_ueberlappend'], nb)}), "
             f"{de(zv['indizes_disjunkt'])} disjunkt ({pct(zv['indizes_disjunkt'], nb)}). "
-            "Die beiden Nummerierungen zählen verschiedene Zerlegungen (NTT-Paraphrase-Sätze "
-            "bzw. das unveröffentlichte UA-Schema des GSMap) — Index-Gleichheit ist ein "
-            "Strukturindiz, keine bewiesene inhaltliche Übereinstimmung.")
-        add("")
-        add(f"Kardinalitäten-Abgleich gegen den amtlichen Wortlaut: Bei "
+            "Das UA-Schema des GSMap ist unveröffentlicht — Index-Gleichheit bleibt ein "
+            "Strukturindiz, keine bewiesene inhaltliche Übereinstimmung. Bei "
             f"{de(len(zv['ua_untergrenze_uebersteigt_normative_xml_saetze']))} Anforderungen "
-            "übersteigt schon die UA-Untergrenze des GSMap die Zahl der normativen XML-Sätze "
-            "(das BSI zerlegt dort feiner als die Modalverb-Satzzählung, oder zählt "
-            "Kontextsätze mit). Unsere Paraphrase-Zerlegung trifft die amtliche Satzzahl bei "
-            f"{de(zv['stripped_satzzahl_gleich_xml'])} von {de(zv['stripped_satzzahl_basis'])} "
-            f"gemappten Anforderungen ({pct(zv['stripped_satzzahl_gleich_xml'], zv['stripped_satzzahl_basis'])}). "
+            "übersteigt die UA-Untergrenze die Zahl der normativen amtlichen Sätze. "
             "Vollständige ID-Listen im JSON unter `summary.teilanforderungen.zerlegungsvergleich`.")
         add("")
     rel = t.get("relationen")

@@ -63,6 +63,10 @@ logger = logging.getLogger(__name__)
 
 CHECKPOINT_PATH = ED23_SATZ_ABDECKUNG_JSON_PATH + ".partial"
 CHECKPOINT_KEY = "ed23_satz_abdeckung_map"
+# Maker results are checkpointed separately from finished requirements: the FIFO semaphore
+# runs the whole maker phase before the first verify completes, so without this a crash in
+# the (long) verify phase would lose every candidate list still waiting for its verdicts.
+CANDIDATES_KEY = "ed23_satz_kandidaten"
 
 _LEVEL_LABEL = {"B": "Basis (B)", "S": "Standard (S)", "H": "erhöhter Schutzbedarf (H)"}
 
@@ -92,19 +96,23 @@ def _atomic_save_json(data: Dict[str, Any], path: str) -> None:
         raise
 
 
-def _load_checkpoint(path: str) -> Dict[str, List[Dict[str, Any]]]:
-    """Loads the per-Anforderung results from a prior run. Returns {} if absent/unreadable."""
+def _load_checkpoint(path: str) -> Tuple[Dict[str, List[Dict[str, Any]]], Dict[str, List[Dict[str, Any]]]]:
+    """Loads finished results and pending maker candidates from a prior run."""
     if not os.path.exists(path):
-        return {}
+        return {}, {}
     try:
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
         done = data.get(CHECKPOINT_KEY, {})
-        logger.info(f"Resuming from checkpoint '{path}': {len(done)} Anforderungen already done.")
-        return done
+        kandidaten = data.get(CANDIDATES_KEY, {})
+        logger.info(
+            f"Resuming from checkpoint '{path}': {len(done)} Anforderungen done, "
+            f"{len(kandidaten)} with maker candidates awaiting verification."
+        )
+        return done, kandidaten
     except Exception as e:
         logger.warning(f"Could not read checkpoint '{path}' ({e}); starting fresh.")
-        return {}
+        return {}, {}
 
 
 def _numbered_saetze(req: Dict[str, Any]) -> str:
@@ -241,43 +249,6 @@ async def _verify_candidate(
     }
 
 
-async def judge_requirement(
-    ai_client: AiClient,
-    req: Dict[str, Any],
-    prompt_template: str,
-    schema: Dict[str, Any],
-    verify_prompt_template: str,
-    verify_schema: Dict[str, Any],
-    gpp_lookup: Dict[str, str],
-    gpp_contexts: Dict[str, Dict[str, str]],
-    cached_content,
-    inline_prefix: str,
-    semaphore: asyncio.Semaphore,
-) -> Tuple[str, List[Dict[str, Any]]]:
-    """Full maker-checker flow for one Anforderung: collect candidates, verify each pair."""
-    if not req["normative_idx"]:
-        # Nothing normative to judge (pure context prose) — record an explicit empty result.
-        return req["id"], []
-    candidates = await _collect_candidates(
-        ai_client, req, prompt_template, schema, gpp_lookup, cached_content,
-        inline_prefix, semaphore,
-    )
-    verified = await asyncio.gather(*(
-        _verify_candidate(
-            ai_client, req, candidate, gpp_contexts,
-            verify_prompt_template, verify_schema, semaphore,
-        )
-        for candidate in candidates
-    ))
-    hits = sorted(
-        (h for h in verified if h), key=lambda h: (h["satz_nr"], h["control_id"])
-    )
-    logger.debug(
-        f"Anforderung '{req['id']}': {len(hits)} of {len(candidates)} candidate(s) verified."
-    )
-    return req["id"], hits
-
-
 async def run_stage_ed23_satz_abdeckung() -> None:
     """Main entry point for the official-ED23 per-sentence coverage stage."""
     logger.info("Starting stage_ed23_satz_abdeckung...")
@@ -335,7 +306,7 @@ async def run_stage_ed23_satz_abdeckung() -> None:
         active = active[:3]
         logger.info("TEST mode: limiting to the first 3 Anforderungen.")
 
-    final_map: Dict[str, List[Dict[str, Any]]] = _load_checkpoint(CHECKPOINT_PATH)
+    final_map, kandidaten_map = _load_checkpoint(CHECKPOINT_PATH)
     pending = [r for r in active if r["id"] not in final_map]
     checkpoint_lock = asyncio.Lock()
     semaphore = asyncio.Semaphore(app_config.max_concurrent_ai_requests)
@@ -344,14 +315,54 @@ async def run_stage_ed23_satz_abdeckung() -> None:
         f"({len(final_map)} restored from checkpoint)..."
     )
 
+    # Throttled full-file checkpointing (see stage_ed23_relationen): a write per step
+    # invites transient Windows locks; a crash costs at most the last few steps. Always
+    # called while holding checkpoint_lock.
+    since_save = 0
+
+    def _save_checkpoint(force: bool = False) -> None:
+        nonlocal since_save
+        since_save += 1
+        if force or since_save >= 15:
+            _atomic_save_json(
+                {CHECKPOINT_KEY: final_map, CANDIDATES_KEY: kandidaten_map}, CHECKPOINT_PATH
+            )
+            since_save = 0
+
     async def _judge_and_checkpoint(req: Dict[str, Any]) -> None:
-        req_id, hits = await judge_requirement(
-            ai_client, req, prompt_template, schema, verify_prompt_template, verify_schema,
-            gpp_lookup, gpp_contexts, cached_content, inline_prefix, semaphore,
+        req_id = req["id"]
+        if not req["normative_idx"]:
+            # Nothing normative to judge (pure context prose) — record an explicit empty result.
+            async with checkpoint_lock:
+                final_map[req_id] = []
+                _save_checkpoint()
+            return
+        candidates = kandidaten_map.get(req_id)
+        if candidates is None:
+            candidates = await _collect_candidates(
+                ai_client, req, prompt_template, schema, gpp_lookup, cached_content,
+                inline_prefix, semaphore,
+            )
+            async with checkpoint_lock:
+                kandidaten_map[req_id] = candidates
+                _save_checkpoint()
+        verified = await asyncio.gather(*(
+            _verify_candidate(
+                ai_client, req, candidate, gpp_contexts,
+                verify_prompt_template, verify_schema, semaphore,
+            )
+            for candidate in candidates
+        ))
+        hits = sorted(
+            (h for h in verified if h), key=lambda h: (h["satz_nr"], h["control_id"])
+        )
+        logger.debug(
+            f"Anforderung '{req_id}': {len(hits)} of {len(candidates)} candidate(s) verified."
         )
         async with checkpoint_lock:
             final_map[req_id] = hits
-            _atomic_save_json({CHECKPOINT_KEY: final_map}, CHECKPOINT_PATH)
+            kandidaten_map.pop(req_id, None)
+            _save_checkpoint()
 
     if pending:
         try:

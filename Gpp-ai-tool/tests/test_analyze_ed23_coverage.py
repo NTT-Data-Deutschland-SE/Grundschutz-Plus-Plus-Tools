@@ -126,31 +126,18 @@ def test_ua_definite_gaps():
     assert mod.ua_definite_gaps([1, 2, 3]) == []
 
 
-def test_alignment_and_projection_buckets():
-    identical = ["Die Leitung übernimmt die Gesamtverantwortung.",
-                 "Ressourcen werden bereitgestellt."]
-    assignment = mod.align_sentences(identical, identical)
-    assert assignment[1][0] == 1 and assignment[1][1] >= 0.9
-    # Modal-verb paraphrase still crosses the threshold after stopword stripping
-    stripped = ["Die Institutionsleitung übernimmt die Gesamtverantwortung für Informationssicherheit."]
-    xml = ["Die Leitung der Institution MUSS die Gesamtverantwortung für Informationssicherheit übernehmen."]
-    a = mod.align_sentences(stripped, xml)
-    assert a[1][1] >= mod.ALIGN_THRESHOLD
-
-    req = {"normative_idx": [1, 2], "saetze": identical}
-    ours_slot = {"saetze": {1}, "gpp": {"GC.1.1"}}
-    proj = mod.xml_projection(req, {"saetze": identical}, ours_slot)
-    assert proj["quality"] == "aligned"
-    assert proj["covered_normative"] == [1]
-    # Unrelated prose falls back to "grob" and propagates requirement-level coverage
-    proj_grob = mod.xml_projection(
-        req, {"saetze": ["Völlig anderes Thema ohne jede Übereinstimmung im Wortlaut."]},
-        {"saetze": {1}, "gpp": {"GC.1.1"}},
-    )
-    assert proj_grob["quality"] == "grob"
-    assert proj_grob["covered_normative"] == [1, 2]
-    # No coverage at all -> no projection
-    assert mod.xml_projection(req, {"saetze": identical}, None) is None
+def test_direct_official_sentence_coverage():
+    args, official, ours, ours_old, itgs, stripped, gpp = _toy_inputs()
+    result = mod.build_result(
+        args, official, [], ours, ours_old, itgs, {}, stripped, gpp, {}
+    )["ed23_gap_analyse"]
+    # A1: satz 1 referenced, normative [1] -> covered directly in official numbering
+    rec = next(r for r in result["anforderungen"] if r["id"] == "AAA.1.A1")
+    assert rec["ours"]["normative_saetze_abgedeckt"] == [1]
+    tx = result["summary"]["teilanforderungen"]["xml_normativ"]
+    # A1 (satz 1) + A2 (satz 1) covered; A3/A4 unmapped
+    assert tx["abgedeckt_direkt"] == 2
+    assert tx["denominator_normative_saetze"] == 4
 
 
 def test_classify_target():
@@ -233,8 +220,6 @@ def test_zerlegungsvergleich():
     assert zv["indizes_disjunkt"] == 0
     # A3: UA lower bound 3 > 1 normative XML sentence -> flagged as finer decomposition
     assert zv["ua_untergrenze_uebersteigt_normative_xml_saetze"] == ["AAA.1.A3"]
-    # stripped copies the XML sentences in the toy inputs -> all mapped reqs match
-    assert zv["stripped_satzzahl_gleich_xml"] == zv["stripped_satzzahl_basis"] == 2
 
 
 def test_satz_urteil_integration():
