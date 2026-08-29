@@ -111,6 +111,16 @@ Beim Neuaufbau der Testumgebung nach dem Release fiel auf, dass das Admin-Konto 
 
 Dazu die Betriebsanleitung (`infra/terraform/README.md`) überarbeitet: keine Zugangsdaten und keine feste IP mehr im Text; stattdessen, wie `ANON_KEY` und `SERVICE_ROLE_KEY` von der VM zu holen sind (sie entstehen dort, nicht in Terraform), und ein Abschnitt „Zugriffsweg wählen" — ohne `allow_public_api` oder `domain` läuft die Datenbank nur durch den IAP-Tunnel, was die Werkzeuge im Browser nicht erreichen. Beide Schalter stehen jetzt kommentiert in `terraform.tfvars.example`.
 
+## Nachtrag 29.08.2026 — Quellen-Pins auf den aktuellen Stand
+
+Turnusmäßige Pin-Prüfung über alle Quellen der Werkzeuge (Grundregel 8: gepinnt ist der Normalfall, Aktualisieren ist eine bewusste Entscheidung):
+
+- **Stand-der-Technik-Bibliothek neu gepinnt (`36a0fac4`, Rolling-Publication vom 27.08.).** Gegenüber dem bisherigen Pin `47de2824` enthält der Stand echte Korrekturen: GC.4.2 „externen"→„internen", KONF.7.14 neu formuliert (Signaturprüfung für nachladbaren Code im Kernelmodus), überarbeitete Guidance zu BER.3.24, KONF.4.1.1 und KONF.6.1.2, dazu Tippfehler- und Tag-Korrekturen. Der Control-Bestand ist unverändert (1000 IDs). Der Wechsel erfolgte koordiniert an allen Stellen zugleich: Katalog-Pin, SHA-256-Inhaltspin und Resource-UUID in den sechs Werkzeugen und der Pipeline, dazu alle 229 Repo-Profile (Zielobjektkategorien + ED23-Baustein-profile) auf das neue Pin-Ziel migriert. Auch Kernel-, Methodik- und Risikomanagement-Katalog (Viewer-Schnellauswahl, BSI-Komponenten im Generator) zeigen auf diesen Stand.
+- **Selbst-Pins vereinheitlicht.** Die Repo-eigenen Quellen (Hilfsdateien, C3A-/C5-/Beispiel-Kataloge, Methodik-Profile) pinnten noch drei verschiedene Commits; sie zeigen jetzt einheitlich auf den Stand mit den migrierten Profilen.
+- **Unverändert gelassen:** Der ED23-Katalog-Pin (`62f08039`, NTTDATA-DACH) ist weiterhin der neueste Stand; die Zielobjektkategorien-CSV ist am neuen Pin byteidentisch; `hilfsdateien/gpp_ed23_anforderungen.json` und die Gap-Analyse behalten ihre Provenienz-Referenzen auf den Erzeugungsstand. Bekannte, bewusst akzeptierte Drift: die Maturity-Statements zu KONF.7.14 entstanden gegen den alten Wortlaut.
+
+Außerdem seit dem letzten Tag-Stand hinzugekommen: die ED23-Lücken-Kreuzanalyse (Script, Report, Handbuch-Zahlen) und der deterministische Zerlegungsvergleich samt vorbereiteter (nicht ausgeführter) Satz-Abdeckungs-Stage.
+
 ## Nicht im Umfang von 4.0
 
 * Die produktive Härtung des Backends (TLS auf dem öffentlichen Port, GoTrue-Admin-API statt direkter `auth.users`-Schreibzugriff bei der Konto-Anlage) — die Terraform-Umgebung ist eine Testinstanz.
