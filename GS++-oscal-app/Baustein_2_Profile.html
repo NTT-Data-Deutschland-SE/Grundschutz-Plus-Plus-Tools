@@ -846,7 +846,7 @@ function buildEd23MapFromOscal(doc) {
     const cid = src["id-ref"];
     (m.targets || []).forEach(t => {
       const label = (t.props || []).find(p => p.name === "label" || p.name === "title");
-      (out[cid] = out[cid] || []).push({ id: t["id-ref"], name: (label && label.value) || "", begruendung: m.remarks || "" });
+      (out[cid] = out[cid] || []).push({ id: t["id-ref"], name: (label && label.value) || "", begruendung: m.remarks || "", relationship: m.relationship || "" });
     });
   }));
   return out;
@@ -2632,7 +2632,7 @@ async function assembleProfile() {
       abgedeckt.add(a.id);
       vorabZahl.text++;
       const voll = (anf.sentences || []).map(s => s.text).join(" ");
-      bloecke.push(`[${a.id} · vorberechnetes G++-Matching${anf.name ? " — " + anf.name : ""}] ${voll}`);
+      bloecke.push(`[${a.id} · vorberechnetes G++-Matching${a.relationship ? " · " + a.relationship : ""}${anf.name ? " — " + anf.name : ""}] ${voll}`);
     }
     if (!bloecke.length) continue;   // Control ohne Ed2023-Bezug: im Profil, aber ohne alter
     alters.push({

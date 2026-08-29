@@ -39,6 +39,7 @@ import json
 import logging
 import os
 import tempfile
+import time
 from typing import Any, Dict, List, Optional, Tuple
 
 from config import app_config
@@ -67,13 +68,24 @@ _LEVEL_LABEL = {"B": "Basis (B)", "S": "Standard (S)", "H": "erhöhter Schutzbed
 
 
 def _atomic_save_json(data: Dict[str, Any], path: str) -> None:
-    """Writes JSON via a temp file + os.replace so a crash mid-write never corrupts `path`."""
+    """Writes JSON via a temp file + os.replace so a crash mid-write never corrupts `path`.
+
+    os.replace is retried with backoff: on Windows a virus scanner or indexer can hold a
+    transient lock on the freshly written target, making the rename fail with WinError 5.
+    """
     os.makedirs(os.path.dirname(path), exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=os.path.dirname(path), suffix=".tmp")
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
-        os.replace(tmp, path)
+        for attempt in range(5):
+            try:
+                os.replace(tmp, path)
+                break
+            except PermissionError:
+                if attempt == 4:
+                    raise
+                time.sleep(0.2 * (attempt + 1))
     except Exception:
         if os.path.exists(tmp):
             os.remove(tmp)

@@ -167,7 +167,7 @@ def _iter_maps(mapping_collection: dict):
 
 
 def load_ours(raw: bytes):
-    """Loads our GS++->ED23 mapping into flat entries {source, target, satz, label}."""
+    """Loads our GS++->ED23 mapping into flat entries {source, target, satz, label, relationship}."""
     doc = json.loads(raw)
     entries = []
     for entry in _iter_maps(doc):
@@ -187,7 +187,10 @@ def load_ours(raw: bytes):
                 elif prop.get("name") == "label":
                     label = prop.get("value")
             for source in sources:
-                entries.append({"source": source, "target": tid, "satz": satz, "label": label})
+                entries.append({
+                    "source": source, "target": tid, "satz": satz, "label": label,
+                    "relationship": entry.get("relationship"),
+                })
     return entries
 
 
@@ -609,6 +612,17 @@ def build_result(args, official, rejected_titles, ours, ours_old, itgs, prozess,
         "stripped_satzzahl_basis": sum(1 for r in active_records if "ours" in r),
     }
 
+    # Relationship-type histograms of both collections. Direction note: ours describes the
+    # G++ control relative to the ED23 target, the GSMap the ED23-UA relative to the G++
+    # target — subset-of/superset-of must be mirrored before comparing.
+    relationen = {
+        "ours": dict(sorted(Counter(
+            e.get("relationship") or "(ohne)" for e in ours
+        ).items())),
+        "itgs": dict(sorted(Counter(e.get("relationship") for e in itgs).items())),
+        "ours_klassifiziert": len({e.get("relationship") for e in ours} - {None}) > 1,
+    }
+
     # --- tier (d): judged per-sentence coverage (stage_ed23_satz_abdeckung, official XML) ---
     beurteilt = None
     satz_numbering_mismatch = []
@@ -825,6 +839,7 @@ def build_result(args, official, rejected_titles, ours, ours_old, itgs, prozess,
                 "qualitaet": dict(sorted(quality_counter.items())),
             },
             "zerlegungsvergleich": zerlegungsvergleich,
+            "relationen": relationen,
             "beurteilt": beurteilt,
         },
         "gegenrichtung": {
@@ -1143,6 +1158,40 @@ def render_report(result: dict) -> str:
             f"{de(zv['stripped_satzzahl_gleich_xml'])} von {de(zv['stripped_satzzahl_basis'])} "
             f"gemappten Anforderungen ({pct(zv['stripped_satzzahl_gleich_xml'], zv['stripped_satzzahl_basis'])}). "
             "Vollständige ID-Listen im JSON unter `summary.teilanforderungen.zerlegungsvergleich`.")
+        add("")
+    rel = t.get("relationen")
+    if rel:
+        itgs_hist = ", ".join(f"{k} {de(v)}" for k, v in rel["itgs"].items())
+        if rel["ours_klassifiziert"]:
+            ours_hist = ", ".join(f"{k} {de(v)}" for k, v in rel["ours"].items())
+            add(f"**Relationstypen:** Unser Mapping: {ours_hist}. BSI GSMap: {itgs_hist}. "
+                "Achtung Leserichtung: Unser Mapping beschreibt die GS++-Maßnahme relativ zur "
+                "ED23-Anforderung, das GSMap die ED23-Unteranforderung relativ zur GS++-Maßnahme "
+                "— subset-of und superset-of sind beim Vergleich zu spiegeln.")
+            add("")
+            total_rel = sum(rel["ours"].values())
+            sup = rel["ours"].get("superset-of", 0)
+            eq = rel["ours"].get("equal-to", 0)
+            add(f"**Deutung (Befund, LLM-klassifiziert, Status draft):** {de(sup)} der "
+                f"{de(total_rel)} Zuordnungen ({pct(sup, total_rel)}) sind superset-of: Wo "
+                "Grundschutz++ eine ED23-Anforderung überhaupt abdeckt, deckt es sie "
+                "überwiegend als die allgemeinere Fassung ab — das WAS der Anforderung "
+                "überlebt, die technologiespezifische Ausprägung (das WIE) hat im Katalog "
+                f"keinen eigenen Träger mehr. Wörtliche Übernahmen sind mit {de(eq)}× "
+                "equal-to die absolute Ausnahme. Zusammen mit Abschnitt 4 (die Anforderungen "
+                "ohne jede Zuordnung konzentrieren sich in den produktspezifischen SYS-, APP-, "
+                "INF- und NET-Bausteinen, während die Prozess-Schichten vollständig abgedeckt "
+                "sind) ergibt sich: Der Übergang auf Grundschutz++ generalisiert das "
+                "Kompendiumswissen; die produktspezifischen Festlegungen der Edition 2023 "
+                "sind im veröffentlichten GS++-Bestand ohne Nachfolger. Konzeptionell ist "
+                "dieses Wissen in die Stand-der-Technik-Bibliothek verlagert; dort liegen "
+                "derzeit WLAN, Mindeststandard-TLS, Lieferkettensicherheit und "
+                "Risikomanagement — produktspezifische Inhalte im Umfang der 111 "
+                "ED23-Bausteine existieren dort nicht.")
+        else:
+            add(f"**Relationstypen:** Das BSI GSMap differenziert ({itgs_hist}); unser Mapping "
+                "trägt derzeit durchgehend `intersects-with` — die Relationsklassifikation "
+                "(`stage_ed23_relationen`) ist noch nicht gelaufen.")
         add("")
 
     add("## 6. Gegenrichtung: GS++-Maßnahmen ohne ED23-Entsprechung")

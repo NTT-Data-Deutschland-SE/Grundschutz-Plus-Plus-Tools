@@ -39,11 +39,12 @@ The tool leverages Google Vertex AI (Gemini) to perform semantic mapping and enr
 
 ## Configuration
 
-The tool is configured via environment variables. Create a `.env` file or export them in your shell:
+The tool is configured via environment variables. Create a `.env` file (in `Gpp-ai-tool/` or the repository root, both gitignored; UTF-8 or UTF-16 with BOM both work) or export them in your shell:
 
 | Variable | Description | Required |
 | :--- | :--- | :--- |
-| `GCP_PROJECT_ID` | Your Google Cloud Project ID (for Vertex AI / Gemini) | Yes |
+| `GCP_PROJECT_ID` | Your Google Cloud Project ID (for Vertex AI via ADC) | One of these two |
+| `GEMINI_API_KEY` | Gemini Developer API key (AI Studio) — the client then talks to the Developer API instead of Vertex, no gcloud/ADC needed | One of these two |
 | `REGION` | GCP Region (default: `global`) | No |
 | `AI_ENDPOINT_ID` | Optional Vertex AI endpoint/model override (model id otherwise comes from `constants.GROUND_TRUTH_MODEL`) | No |
 | `GROUND_TRUTH_MODEL` / `GROUND_TRUTH_MODEL_PRO` | Override the default Gemini model ids (defaults: `gemini-3.7-flash` / `gemini-3.1-pro-preview`) | No |
@@ -95,6 +96,8 @@ You can run specific stages using the `--stage` argument. The full pipeline runs
 | 5 | `stage_base_process_enhanced` | **Yes** | Enriches the process profiles (`Zielobjektkategorien/profile/process/`) the same way — maturity sub-statements plus classifications as `alter` blocks — writing `*_enhanced.json` next to each base process profile. |
 | 6 | `stage_ed23_anforderungen` | **Yes** | For every G++ control, finds the **precisely** matching BSI ED2023 Anforderungen via a **maker-checker** design: a generous candidate pass (`ED23_MAKER_MODEL`, grounded on a cached, stripped ED2023 corpus with numbered sentences) followed by a strict per-candidate verification pass on the default model (self-contained prompt, no corpus). The prompts carry the control's full context — param-resolved statement, guidance, and the sibling controls of the same Praktik as explicit negative context — and every verified match names the **Teilanforderung** it rests on — the numbered ED23 sentence (`(Teilanforderung n)` in the Begründung, `statement-sentence` prop in OSCAL); IDs and sentence numbers are validated against the real catalog. ("Teilanforderung" is not a BSI-standard term; it appears only in one paragraph of the BSI Auditierungsschema.) Writes the OSCAL mapping collection `hilfsdateien/gpp_ed23_anforderungen.json`, which the GS++-oscal-app use for the "Zeige BSI ED23 Anforderungen" panel. |
 | 7 | `stage_prozessbausteine` | **Yes** | The inverse direction, 1:1: maps **every** Anforderung of the process-oriented ED2023 layers (ISMS, ORP, CON, OPS, DER) to its single best G++ control (Gemini Pro with thinking, grounded on the cached full G++ catalog). Runs in rounds until every Anforderung is mapped — unmatched ones are re-queried with a stricter prompt — and only publishes on full coverage. Writes `hilfsdateien/prozessbausteine_mapping.json`. |
+| — | `stage_ed23_relationen` | **Yes** | Classification pass over the existing `gpp_ed23_anforderungen.json`: assigns every verified (G++ control, ED23 Anforderung) pair a differentiated OSCAL `relationship` (equal-to / equivalent-to / subset-of / superset-of / intersects-with; OSCAL semantics: source = the G++ control relative to the target) instead of the constant `intersects-with` — the token an evidence migration needs. One strict, self-contained call per pair; the mapping's pairs, satz refs and remarks stay untouched. Rewrites the file in place. Not part of the full pipeline; run explicitly. |
+| — | `stage_ed23_satz_abdeckung` | **Yes** | Per-sentence coverage judgment of the **official** ED23 Kompendium (BSI XML, pinned — not the NTT OSCAL edition): for every normative sentence of every active Anforderung, a maker-checker pass judges which G++ controls demand the same activity. Turns the reverse gap analysis (`scripts/analyze_ed23_coverage.py`, tier d) into an explicit content judgment. Writes `hilfsdateien/ed23_satz_abdeckung.json` (no Kompendium prose is serialized). Not part of the full pipeline; run explicitly. |
 
 #### Data flow
 

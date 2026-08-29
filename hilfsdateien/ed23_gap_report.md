@@ -1,6 +1,6 @@
 # ED23-Lücken-Kreuzanalyse: Welche Anforderungen der Edition 2023 deckt Grundschutz++ nicht ab?
 
-*Generiert am 2026-08-29 von `Gpp-ai-tool/scripts/analyze_ed23_coverage.py` (Repo-Stand 8fd1e10). Deterministisch reproduzierbar, siehe Abschnitt 8.*
+*Generiert am 2026-08-29 von `Gpp-ai-tool/scripts/analyze_ed23_coverage.py` (Repo-Stand e1718bb). Deterministisch reproduzierbar, siehe Abschnitt 8.*
 
 ## 1. Kernaussage
 
@@ -13,9 +13,9 @@ Gap-Analyse in der Gegenrichtung: nicht „wohin zeigt jede GS++-Maßnahme?“, 
 | Quelle | Richtung | Umfang | Methode | Pin |
 |---|---|---|---|---|
 | Offizielles BSI-XML-Kompendium 2023 | (Nenner) | 1.834 aktive + 290 entfallene Anforderungen | amtlicher Wortlaut | sha256 `dd41a7467464…` |
-| Unser Mapping (`gpp_ed23_anforderungen.json`) | GS++ → ED23 | 3.046 Maps, 820 Maßnahmen, 1.329 Ziele | LLM Maker-Checker, status draft | Repo `8fd1e10` |
+| Unser Mapping (`gpp_ed23_anforderungen.json`) | GS++ → ED23 | 3.046 Maps, 820 Maßnahmen, 1.329 Ziele | LLM Maker-Checker, status draft | Repo `e1718bb` |
 | BSI GSMap (`ITGS-to-GS++-mapping_collection.json`) | ED23-UA → GS++ | 1.185 Maps, 824 Teilanforderungen | menschlich (GSMap-Tool) | Commit `8f0bcd1fbb4f…` |
-| Prozessbaustein-Mapping | ED23 → GS++ (1:1) | 687 Einträge, nur ISMS/ORP/CON/OPS/DER | LLM, vollständigkeitsgetrieben | Repo `8fd1e10` |
+| Prozessbaustein-Mapping | ED23 → GS++ (1:1) | 687 Einträge, nur ISMS/ORP/CON/OPS/DER | LLM, vollständigkeitsgetrieben | Repo `e1718bb` |
 | GS++-Katalog (resolved) | (Universum) | 1.000 Maßnahmen | — | Commit `36a0fac473c6…` |
 
 ## 3. Methode und Ehrlichkeitsgrenzen
@@ -108,6 +108,10 @@ Vor der Maker-Checker-Verifikation deckte das Mapping 1.306 der 1.834 aktiven An
 Bei 397 Anforderungen tragen beide Mappings Teilanforderungs-Indizes (unsere `statement-sentence` vs. BSI-`UA.n`). Mengenvergleich der Indizes: 111 identisch (28,0 %), 171 überlappend (43,1 %), 115 disjunkt (29,0 %). Die beiden Nummerierungen zählen verschiedene Zerlegungen (NTT-Paraphrase-Sätze bzw. das unveröffentlichte UA-Schema des GSMap) — Index-Gleichheit ist ein Strukturindiz, keine bewiesene inhaltliche Übereinstimmung.
 
 Kardinalitäten-Abgleich gegen den amtlichen Wortlaut: Bei 2 Anforderungen übersteigt schon die UA-Untergrenze des GSMap die Zahl der normativen XML-Sätze (das BSI zerlegt dort feiner als die Modalverb-Satzzählung, oder zählt Kontextsätze mit). Unsere Paraphrase-Zerlegung trifft die amtliche Satzzahl bei 416 von 1.205 gemappten Anforderungen (34,5 %). Vollständige ID-Listen im JSON unter `summary.teilanforderungen.zerlegungsvergleich`.
+
+**Relationstypen:** Unser Mapping: equal-to 2, equivalent-to 94, intersects-with 1.062, subset-of 551, superset-of 1.337. BSI GSMap: equal-to 21, equivalent-to 118, intersects-with 395, subset-of 464, superset-of 187. Achtung Leserichtung: Unser Mapping beschreibt die GS++-Maßnahme relativ zur ED23-Anforderung, das GSMap die ED23-Unteranforderung relativ zur GS++-Maßnahme — subset-of und superset-of sind beim Vergleich zu spiegeln.
+
+**Deutung (Befund, LLM-klassifiziert, Status draft):** 1.337 der 3.046 Zuordnungen (43,9 %) sind superset-of: Wo Grundschutz++ eine ED23-Anforderung überhaupt abdeckt, deckt es sie überwiegend als die allgemeinere Fassung ab — das WAS der Anforderung überlebt, die technologiespezifische Ausprägung (das WIE) hat im Katalog keinen eigenen Träger mehr. Wörtliche Übernahmen sind mit 2× equal-to die absolute Ausnahme. Zusammen mit Abschnitt 4 (die Anforderungen ohne jede Zuordnung konzentrieren sich in den produktspezifischen SYS-, APP-, INF- und NET-Bausteinen, während die Prozess-Schichten vollständig abgedeckt sind) ergibt sich: Der Übergang auf Grundschutz++ generalisiert das Kompendiumswissen; die produktspezifischen Festlegungen der Edition 2023 sind im veröffentlichten GS++-Bestand ohne Nachfolger. Konzeptionell ist dieses Wissen in die Stand-der-Technik-Bibliothek verlagert; dort liegen derzeit WLAN, Mindeststandard-TLS, Lieferkettensicherheit und Risikomanagement — produktspezifische Inhalte im Umfang der 111 ED23-Bausteine existieren dort nicht.
 
 ## 6. Gegenrichtung: GS++-Maßnahmen ohne ED23-Entsprechung
 

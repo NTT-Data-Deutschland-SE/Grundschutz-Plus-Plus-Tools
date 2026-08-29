@@ -21,7 +21,10 @@ Modelling choices (see the mapping metaschema for the authoritative vocabulary):
   paragraph of the BSI Auditierungsschema.
 * ``relationship`` defaults to ``intersects-with`` — the LLM identifies related /
   overlapping requirements, not proven equality (allowed tokens: equivalent-to,
-  equal-to, subset-of, superset-of, intersects-with, no-relationship).
+  equal-to, subset-of, superset-of, intersects-with, no-relationship). A match may
+  carry its own ``relationship`` (set by stage_ed23_relationen's classification pass,
+  OSCAL semantics: the token describes the SOURCE — the G++ control — relative to the
+  target Anforderung); it then overrides the default for that map entry.
 * ``provenance`` records that this is an automated, semantic, draft mapping
   (method=automation, matching-rationale=semantic, status=draft).
 
@@ -97,7 +100,7 @@ def to_oscal_mapping_collection(
 
             entry: Dict[str, Any] = {
                 "uuid": _uuid("map", control_id, target_id),
-                "relationship": relationship,
+                "relationship": match.get("relationship") or relationship,
                 "sources": [{"type": "control", "id-ref": control_id}],
                 "targets": [target],
             }

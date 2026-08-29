@@ -1588,7 +1588,33 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 const cid = src["id-ref"];
                 (m.targets || []).forEach(t => {
                     const label = (t.props || []).find(p => p.name === "label" || p.name === "title");
-                    (out[cid] = out[cid] || []).push({ id: t["id-ref"], name: (label && label.value) || "", begruendung: m.remarks || "" });
+                    (out[cid] = out[cid] || []).push({ id: t["id-ref"], name: (label && label.value) || "", begruendung: m.remarks || "", relationship: m.relationship || "" });
+                });
+            }));
+            return out;
+        }
+        // BSI-GSMap (ED23-UA -> GS++) als zweite, gekennzeichnete Quelle; für die Anzeige je
+        // GS++-Control invertiert, subset-of/superset-of auf die Leserichtung GS++ -> ED23 gespiegelt.
+        let BSI_ITGS_MAP = {};
+        const BSI_ITGS_MAP_URL = "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/8f0bcd1fbb4f47a7bec911fc20118ce6e8ef4dad/control_layer/Mappings/IT-GS2023-zu-GSpp/ITGS-to-GS%2B%2B-mapping_collection.json";
+        function buildBsiItgsMapFromOscal(doc) {
+            const mirror = { "subset-of": "superset-of", "superset-of": "subset-of" };
+            const out = {}, mc = doc && doc["mapping-collection"];
+            if (!mc) return out;
+            (mc.mappings || []).forEach(mp => (mp.maps || []).forEach(m => {
+                const gef = (m.props || []).filter(p => p.name === "elementare_gefaehrdung").map(p => p.value || "");
+                const kurz = gef.map(v => (v.split(":")[0] || "").trim()).filter(Boolean).join(", ");
+                (m.targets || []).forEach(t => {
+                    const cid = t["id-ref"];
+                    if (!cid) return;
+                    (m.sources || []).forEach(s => {
+                        if (!s["id-ref"]) return;
+                        (out[cid] = out[cid] || []).push({
+                            id: s["id-ref"], name: "",
+                            begruendung: kurz ? "Elementare Gefährdungen: " + kurz : "",
+                            relationship: mirror[m.relationship] || m.relationship || ""
+                        });
+                    });
                 });
             }));
             return out;
@@ -1600,19 +1626,29 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 const d = await r.json();
                 ED23_MAP = buildEd23MapFromOscal(d);
             } catch (e) { console.warn("BSI ED23-Anforderungen nicht geladen:", e); ED23_MAP = {}; }
+            try {
+                const r = await fetch(BSI_ITGS_MAP_URL);
+                if (!r.ok) throw new Error("HTTP " + r.status);
+                BSI_ITGS_MAP = buildBsiItgsMapFromOscal(await r.json());
+            } catch (e) { console.warn("BSI-GSMap (ITGS→GS++) nicht geladen:", e); BSI_ITGS_MAP = {}; }
         }
         const ed23Esc = s => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         function renderED23Table(list) {
             if (!list || !list.length) return '<p class="text-xs text-slate-500 italic">Keine passenden BSI ED23-Anforderungen hinterlegt.</p>';
-            const rows = list.map(a => `<tr class="border-b border-slate-700/50 align-top"><td class="py-1 pr-2 font-mono font-bold text-blue-300 whitespace-nowrap">${ed23Esc(a.id)}</td><td class="py-1 pr-2 text-slate-200">${ed23Esc(a.name)}</td><td class="py-1 text-slate-400">${ed23Esc(a.begruendung || '')}</td></tr>`).join('');
-            return `<div class="text-[10px] font-bold text-blue-400 uppercase mb-2">◇ BSI IT-Grundschutz Edition 2023 – passende Anforderungen</div><table class="w-full text-xs border-collapse"><thead><tr class="text-left text-slate-500"><th class="py-1 pr-2">ID</th><th class="py-1 pr-2">Name der Anforderung</th><th class="py-1">Begründung</th></tr></thead><tbody>${rows}</tbody></table>`;
+            const quelleTitle = q => q === 'BSI'
+                ? 'Amtliches BSI-GSMap-Mapping (ITGS→GS++), für die Anzeige invertiert; subset/superset auf die Leserichtung GS++→ED23 gespiegelt'
+                : 'Eigenes Mapping (Gpp-ai-tool, Maker-Checker, Status draft)';
+            const rows = list.map(a => `<tr class="border-b border-slate-700/50 align-top"><td class="py-1 pr-2 font-mono font-bold whitespace-nowrap ${a.quelle === 'BSI' ? 'text-amber-300' : 'text-blue-300'}" title="${ed23Esc(quelleTitle(a.quelle))}">${ed23Esc(a.quelle || 'wir')}</td><td class="py-1 pr-2 font-mono font-bold text-blue-300 whitespace-nowrap">${ed23Esc(a.id)}</td><td class="py-1 pr-2 text-slate-200">${ed23Esc(a.name)}</td><td class="py-1 pr-2 font-mono text-slate-300 whitespace-nowrap" title="OSCAL-Relation: GS++-Maßnahme relativ zur ED23-Anforderung">${ed23Esc(a.relationship || '')}</td><td class="py-1 text-slate-400">${ed23Esc(a.begruendung || '')}</td></tr>`).join('');
+            return `<div class="text-[10px] font-bold text-blue-400 uppercase mb-2">◇ BSI IT-Grundschutz Edition 2023 – passende Anforderungen</div><table class="w-full text-xs border-collapse"><thead><tr class="text-left text-slate-500"><th class="py-1 pr-2">Quelle</th><th class="py-1 pr-2">ID</th><th class="py-1 pr-2">Name der Anforderung</th><th class="py-1 pr-2">Relation</th><th class="py-1">Begründung</th></tr></thead><tbody>${rows}</tbody></table>`;
         }
         window.showED23 = (cid, rk) => {
             cid = decodeURIComponent(cid);   // kodiert aus dem inline-Handler (gppAttrArg)
             const box = document.getElementById('ed23-' + rk);
             if (!box) return;
             if (!box.classList.contains('hidden')) { box.classList.add('hidden'); return; }
-            box.innerHTML = renderED23Table(ED23_MAP[cid]);
+            const eintraege = (ED23_MAP[cid] || []).map(a => ({ ...a, quelle: 'wir' }))
+                .concat((BSI_ITGS_MAP[cid] || []).map(a => ({ ...a, quelle: 'BSI' })));
+            box.innerHTML = renderED23Table(eintraege);
             box.classList.remove('hidden');
         };
 

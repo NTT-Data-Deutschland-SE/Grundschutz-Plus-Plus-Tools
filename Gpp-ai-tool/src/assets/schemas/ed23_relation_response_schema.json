@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "description": "OSCAL mapping relationship classification for one verified (G++ control, ED2023 Anforderung) pair.",
+  "properties": {
+    "relationship": {
+      "type": "string",
+      "enum": [
+        "equal-to",
+        "equivalent-to",
+        "subset-of",
+        "superset-of",
+        "intersects-with"
+      ],
+      "description": "OSCAL mapping relationship token describing the SOURCE (the G++ control) relative to the TARGET (the ED2023 Anforderung / its carrying Teilanforderung)."
+    },
+    "begruendung": {
+      "type": "string",
+      "description": "One short sentence justifying the chosen relationship."
+    }
+  },
+  "required": [
+    "relationship",
+    "begruendung"
+  ]
+}

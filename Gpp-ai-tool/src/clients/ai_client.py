@@ -92,15 +92,21 @@ class AiClient:
         current_date = datetime.date.today().strftime("%Y-%m-%d")
         self.system_message = f"{base_system_message}\n\nImportant: Today's date is {current_date}."
 
-        # Initialize the Unified Client with ADC (vertexai=True)
-        # We do not need to cache model objects anymore; the client handles the connection.
-        logger.info(f"Initializing Google GenAI Client for project '{config.gcp_project_id}' in region '{config.region}'.")
-        self.client = genai.Client(
-            vertexai=True,
-            project=config.gcp_project_id,
-            location=config.region,
-            http_options={'api_version': 'v1'}
-        )
+        # Two auth modes for the same SDK surface: Vertex AI via ADC (the default), or the
+        # Gemini Developer API via GEMINI_API_KEY (e.g. from the gitignored Gpp-ai-tool/.env)
+        # for machines without gcloud/ADC. Same models, same caching API. The key itself is
+        # never logged.
+        if getattr(config, "gemini_api_key", None):
+            logger.info("Initializing Google GenAI Client in Developer-API mode (GEMINI_API_KEY set).")
+            self.client = genai.Client(api_key=config.gemini_api_key)
+        else:
+            logger.info(f"Initializing Google GenAI Client for project '{config.gcp_project_id}' in region '{config.region}'.")
+            self.client = genai.Client(
+                vertexai=True,
+                project=config.gcp_project_id,
+                location=config.region,
+                http_options={'api_version': 'v1'}
+            )
         
         logger.debug(f"System Message Context includes today's date: {current_date}")
 
