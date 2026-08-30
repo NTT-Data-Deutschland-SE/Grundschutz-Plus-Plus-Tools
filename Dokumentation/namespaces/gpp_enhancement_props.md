@@ -21,6 +21,14 @@ convention the BSI catalogs use for `modal_verbs.csv`, `security_level.csv`, etc
 |------------------|--------------------------------------------------------------|----------------|
 | `control_class`  | Functional class of the control (NIST-style)                 | `Technical`, `Operational`, `Management` |
 | `phase`          | ISMS lifecycle phase the control primarily applies to        | `Initiation`, `Risk Assessment`, `Risk Treatment`, `Implementation`, `Operation`, `Audit`, `Improvement` |
+| `matching-direction` | Provenance of a map entry in `hilfsdateien/gpp_ed23_anforderungen.json`: which candidate-search direction found the pair | `gpp-seitig`, `ed23-seitig`, `beide`, `qs-nachfass` |
+
+**Note on `matching-direction` (Issue #37, QS-Stichprobe 2026-08-30):** the value is a
+*confidence* signal about the candidate search, **not** a quality seal for the pair's content.
+`beide` means both search directions independently proposed the pair — it does not imply the
+relationship type or the remark were verified against the exact wording (the QS found a
+fabricated remark detail on a `beide` pair, see `hilfsdateien/ed23_mapping_qs/bericht.md`,
+Befund B). Consumers weighing evidence should treat `beide` as higher recall confidence only.
 
 **Removed (2026-08):** the former `effective_on_c` / `effective_on_i` / `effective_on_a` props
 (AI-estimated Schutzziel impact per maturity statement) were dropped. The authoritative source

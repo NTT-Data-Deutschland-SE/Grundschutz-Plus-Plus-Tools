@@ -1,6 +1,6 @@
 # ED23-Lücken-Kreuzanalyse: Welche Anforderungen der Edition 2023 deckt Grundschutz++ nicht ab?
 
-*Generiert am 2026-08-29 von `Gpp-ai-tool/scripts/analyze_ed23_coverage.py` (Repo-Stand 2bd65be). Deterministisch reproduzierbar, siehe Abschnitt 8.*
+*Generiert am 2026-08-30 von `Gpp-ai-tool/scripts/analyze_ed23_coverage.py` (Repo-Stand d8a698d). Deterministisch reproduzierbar, siehe Abschnitt 8.*
 
 **Bewertung der Autoren, aus den Messwerten dieses Reports abgeleitet:**
 
@@ -10,7 +10,7 @@ Das technologiespezifische WIE der 111 Bausteine hat im veröffentlichten GS++-B
 
 ## 1. Kernaussage
 
-Das offizielle IT-Grundschutz-Kompendium Edition 2023 enthält 1.834 aktive Anforderungen in 111 Bausteinen (zuzüglich 290 entfallene). 227 davon (12,4 %) haben im GS++→ED23-Mapping (5.145 verifizierte Zuordnungen, amtliche Satz-Nummerierung) keine Maßnahme, die auf sie zeigt; nach dem BSI-eigenen GSMap-Mapping sind es 1.324 (72,2 %). Über alle drei Quellen zusammen (unser Mapping, BSI-GSMap, Prozessbaustein-Mapping) bleiben 139 Anforderungen (7,6 %) ohne jede Zuordnung. Gegenüber dem ungeprüften Erststand (5.521 Zuordnungen) deckt der aktuelle Stand 1.607 statt 1.306 Anforderungen ab (94 verloren, 395 hinzugekommen). Die satzgenaue Beurteilung jedes normativen Satzes des amtlichen Wortlauts gegen den GS++-Katalog (LLM-Maker-Checker) ergibt: 3.615 von 6.611 normativen Teilanforderungen (54,7 %) sind durch mindestens eine GS++-Maßnahme abgedeckt; 273 Anforderungen haben keinen einzigen abgedeckten normativen Satz. In der Gegenrichtung haben 133 von 1.000 GS++-Maßnahmen keine ED23-Entsprechung.
+Das offizielle IT-Grundschutz-Kompendium Edition 2023 enthält 1.834 aktive Anforderungen in 111 Bausteinen (zuzüglich 290 entfallene). 231 davon (12,6 %) haben im GS++→ED23-Mapping (5.086 verifizierte Zuordnungen, amtliche Satz-Nummerierung) keine Maßnahme, die auf sie zeigt; nach dem BSI-eigenen GSMap-Mapping sind es 1.324 (72,2 %). Über alle drei Quellen zusammen (unser Mapping, BSI-GSMap, Prozessbaustein-Mapping) bleiben 141 Anforderungen (7,7 %) ohne jede Zuordnung. Gegenüber dem ungeprüften Erststand (5.521 Zuordnungen) deckt der aktuelle Stand 1.603 statt 1.306 Anforderungen ab (97 verloren, 394 hinzugekommen). Die satzgenaue Beurteilung jedes normativen Satzes des amtlichen Wortlauts gegen den GS++-Katalog (LLM-Maker-Checker) ergibt: 3.573 von 6.611 normativen Teilanforderungen (54,0 %) sind durch mindestens eine GS++-Maßnahme abgedeckt; 276 Anforderungen haben keinen einzigen abgedeckten normativen Satz. In der Gegenrichtung haben 135 von 1.000 GS++-Maßnahmen keine ED23-Entsprechung.
 
 ## 2. Fragestellung und Quellen
 
@@ -19,11 +19,11 @@ Gap-Analyse in der Gegenrichtung: nicht „wohin zeigt jede GS++-Maßnahme?“, 
 | Quelle | Richtung | Umfang | Methode | Pin |
 |---|---|---|---|---|
 | Offizielles BSI-XML-Kompendium 2023 | (Nenner) | 1.834 aktive + 290 entfallene Anforderungen | amtlicher Wortlaut | sha256 `dd41a7467464…` |
-| Unser Mapping (`gpp_ed23_anforderungen.json`) | GS++ → ED23 | 5.145 Maps, 867 Maßnahmen, 1.607 Ziele | LLM Maker-Checker, status draft | Repo `2bd65be` |
+| Unser Mapping (`gpp_ed23_anforderungen.json`) | GS++ → ED23 | 5.086 Maps, 865 Maßnahmen, 1.603 Ziele | LLM Maker-Checker, status draft | Repo `d8a698d` |
 | BSI GSMap (`ITGS-to-GS++-mapping_collection.json`) | ED23-UA → GS++ | 1.185 Maps, 824 Teilanforderungen | menschlich (GSMap-Tool) | Commit `8f0bcd1fbb4f…` |
-| Prozessbaustein-Mapping | ED23 → GS++ (1:1) | 687 Einträge, nur ISMS/ORP/CON/OPS/DER | LLM, vollständigkeitsgetrieben | Repo `2bd65be` |
+| Prozessbaustein-Mapping | ED23 → GS++ (1:1) | 687 Einträge, nur ISMS/ORP/CON/OPS/DER | LLM, vollständigkeitsgetrieben | Repo `d8a698d` |
 | GS++-Katalog (resolved) | (Universum) | 1.000 Maßnahmen | — | Commit `36a0fac473c6…` |
-| Satz-Beurteilung (`ed23_satz_abdeckung.json`) | ED23-Satz → GS++ | 1.834 Anforderungen, 4.600 verifizierte Zuordnungen | LLM Maker-Checker (gemini-3-flash-preview / gemini-3.7-flash), amtliches XML | Repo `2bd65be` |
+| Satz-Beurteilung (`ed23_satz_abdeckung.json`) | ED23-Satz → GS++ | 1.834 Anforderungen, 4.600 verifizierte Zuordnungen | LLM Maker-Checker (gemini-3-flash-preview / gemini-3.7-flash), amtliches XML | Repo `d8a698d` |
 
 ## 3. Methode und Ehrlichkeitsgrenzen
 
@@ -38,24 +38,24 @@ Gap-Analyse in der Gegenrichtung: nicht „wohin zeigt jede GS++-Maßnahme?“, 
 
 | | abgedeckt | ohne Zuordnung | Anteil ohne |
 |---|---|---|---|
-| Unser Mapping (3.046er) | 1.607 | 227 | 12,4 % |
+| Unser Mapping (3.046er) | 1.603 | 231 | 12,6 % |
 | BSI GSMap | 510 | 1.324 | 72,2 % |
 | Prozessbaustein-Mapping | 558 | 1.276 | 69,6 % |
-| **mindestens eine Quelle** | **1.695** | **139** | **7,6 %** |
+| **mindestens eine Quelle** | **1.693** | **141** | **7,7 %** |
 
 Kreuztabelle unser Mapping × BSI GSMap (aktive Anforderungen):
 
 | | GSMap: ja | GSMap: nein |
 |---|---|---|
-| **Unser Mapping: ja** | 475 | 1.132 |
-| **Unser Mapping: nein** | 35 | 192 |
+| **Unser Mapping: ja** | 474 | 1.129 |
+| **Unser Mapping: nein** | 36 | 195 |
 
 Nach Verbindlichkeit (Titel-Suffix im offiziellen XML):
 
 | Level | aktiv | ohne jede Zuordnung | ohne unser Mapping | ohne GSMap |
 |---|---|---|---|---|
-| Basis (B) | 563 | 22 (3,9 %) | 43 | 392 |
-| erhöht (H) | 404 | 54 (13,4 %) | 74 | 289 |
+| Basis (B) | 563 | 23 (4,1 %) | 46 | 392 |
+| erhöht (H) | 404 | 55 (13,6 %) | 75 | 289 |
 | Standard (S) | 867 | 63 (7,3 %) | 110 | 643 |
 
 Nach Schicht:
@@ -64,14 +64,14 @@ Nach Schicht:
 |---|---|---|---|---|
 | APP | 301 | 38 (12,6 %) | 48 | 205 |
 | CON | 114 | 0 (0,0 %) | 11 | 87 |
-| DER | 128 | 0 (0,0 %) | 16 | 75 |
+| DER | 128 | 0 (0,0 %) | 17 | 75 |
 | IND | 69 | 10 (14,5 %) | 11 | 43 |
 | INF | 219 | 33 (15,1 %) | 33 | 192 |
 | ISMS | 16 | 0 (0,0 %) | 2 | 4 |
-| NET | 227 | 15 (6,6 %) | 25 | 117 |
+| NET | 227 | 16 (7,0 %) | 26 | 117 |
 | OPS | 246 | 0 (0,0 %) | 32 | 175 |
 | ORP | 54 | 0 (0,0 %) | 2 | 41 |
-| SYS | 460 | 43 (9,3 %) | 47 | 385 |
+| SYS | 460 | 44 (9,6 %) | 49 | 385 |
 
 Top-20-Bausteine nach Anforderungen ohne jede Zuordnung:
 
@@ -87,6 +87,7 @@ Top-20-Bausteine nach Anforderungen ohne jede Zuordnung:
 | SYS.2.6 | 16 | 4 (25,0 %) |
 | APP.2.2 | 17 | 4 (23,5 %) |
 | SYS.1.5 | 26 | 4 (15,4 %) |
+| NET.1.2 | 31 | 4 (12,9 %) |
 | NET.1.1 | 36 | 4 (11,1 %) |
 | APP.2.3 | 9 | 3 (33,3 %) |
 | APP.5.2 | 10 | 3 (30,0 %) |
@@ -96,92 +97,95 @@ Top-20-Bausteine nach Anforderungen ohne jede Zuordnung:
 | SYS.2.2.3 | 21 | 3 (14,3 %) |
 | SYS.1.9 | 22 | 3 (13,6 %) |
 | INF.5 | 25 | 3 (12,0 %) |
-| INF.1 | 31 | 3 (9,7 %) |
 
-### 4.1 Vergleich mit dem Vor-Review-Stand (5.521 → 5.145 Zuordnungen)
+### 4.1 Vergleich mit dem Vor-Review-Stand (5.521 → 5.086 Zuordnungen)
 
-Der ungeprüfte Erststand (Commit `d188329`, 5.521 Zuordnungen) deckte 1.306 der 1.834 aktiven Anforderungen ab, der aktuelle Stand 1.607. 94 Anforderungen verloren gegenüber damals ihre letzte Zuordnung, 395 kamen hinzu — die vollständigen ID-Listen stehen in `ed23_gap_analyse.json` unter `summary.vergleich_5521_vs_3046`.
+Der ungeprüfte Erststand (Commit `d188329`, 5.521 Zuordnungen) deckte 1.306 der 1.834 aktiven Anforderungen ab, der aktuelle Stand 1.603. 97 Anforderungen verloren gegenüber damals ihre letzte Zuordnung, 394 kamen hinzu — die vollständigen ID-Listen stehen in `ed23_gap_analyse.json` unter `summary.vergleich_5521_vs_3046`.
 
 ## 5. Ergebnisse auf Teilanforderungsebene
 
-**Unser Mapping (amtliche Satz-Nummerierung):** 6.643 Sätze in den aktiven offiziellen Anforderungen, davon 3.813 von mindestens einer Zuordnung referenziert und 2.830 (42,6 %) ohne Referenz.
+**Unser Mapping (amtliche Satz-Nummerierung):** 6.641 Sätze in den aktiven offiziellen Anforderungen, davon 3.770 von mindestens einer Zuordnung referenziert und 2.871 (43,2 %) ohne Referenz.
 
 **BSI GSMap (UA-Ebene):** 824 Unteranforderungen gemappt. Das UA-Universum ist unveröffentlicht; aus den maximal beobachteten Indizes ergibt sich eine Untergrenze von 1.430 UAs in den berührten Anforderungen — darunter 606 beweisbar ungemappte (Index kleiner als ein gemappter Nachbar).
 
-**Normative Teilanforderungen des amtlichen Wortlauts:** Das XML enthält 6.611 normative Sätze (MUSS/SOLLTE/DARF, zzgl. 0 KANN-Sätze). Unser Mapping referenziert davon 3.810 direkt (57,6 %) — seit dem XML-Umbau eine exakte Zählung in derselben Nummerierung, kein Alignment mehr nötig.
+**Normative Teilanforderungen des amtlichen Wortlauts:** Das XML enthält 6.611 normative Sätze (MUSS/SOLLTE/DARF, zzgl. 0 KANN-Sätze). Unser Mapping referenziert davon 3.768 direkt (57,0 %) — seit dem XML-Umbau eine exakte Zählung in derselben Nummerierung, kein Alignment mehr nötig.
 
 ### 5.1 Beurteilte Satz-Abdeckung (amtlicher Wortlaut, je Teilanforderung)
 
-Jeder der 6.611 normativen Sätze der 1.834 beurteilten Anforderungen wurde einzeln gegen den GS++-Katalog geprüft: **3.615 abgedeckt (54,7 %), 2.996 ohne jede GS++-Maßnahme (45,3 %).** 273 Anforderungen haben keinen einzigen abgedeckten normativen Satz (Anhang B).
+Jeder der 6.611 normativen Sätze der 1.834 beurteilten Anforderungen wurde einzeln gegen den GS++-Katalog geprüft: **3.573 abgedeckt (54,0 %), 3.038 ohne jede GS++-Maßnahme (46,0 %).** 276 Anforderungen haben keinen einzigen abgedeckten normativen Satz (Anhang B).
 
 | Level | normative Sätze | abgedeckt | ohne Abdeckung |
 |---|---|---|---|
-| Basis (B) | 2.400 | 1.359 (56,6 %) | 1.041 |
-| erhöht (H) | 1.081 | 585 (54,1 %) | 496 |
-| Standard (S) | 3.130 | 1.671 (53,4 %) | 1.459 |
+| Basis (B) | 2.400 | 1.346 (56,1 %) | 1.054 |
+| erhöht (H) | 1.081 | 582 (53,8 %) | 499 |
+| Standard (S) | 3.130 | 1.645 (52,6 %) | 1.485 |
 
 | Schicht | normative Sätze | abgedeckt | ohne Abdeckung |
 |---|---|---|---|
-| APP | 1.074 | 588 (54,7 %) | 486 |
-| CON | 458 | 233 (50,9 %) | 225 |
-| DER | 538 | 272 (50,6 %) | 266 |
+| APP | 1.074 | 579 (53,9 %) | 495 |
+| CON | 458 | 232 (50,7 %) | 226 |
+| DER | 538 | 270 (50,2 %) | 268 |
 | IND | 217 | 118 (54,4 %) | 99 |
-| INF | 869 | 440 (50,6 %) | 429 |
-| ISMS | 84 | 53 (63,1 %) | 31 |
-| NET | 777 | 444 (57,1 %) | 333 |
-| OPS | 916 | 488 (53,3 %) | 428 |
-| ORP | 218 | 144 (66,1 %) | 74 |
-| SYS | 1.460 | 835 (57,2 %) | 625 |
+| INF | 869 | 432 (49,7 %) | 437 |
+| ISMS | 84 | 52 (61,9 %) | 32 |
+| NET | 777 | 437 (56,2 %) | 340 |
+| OPS | 916 | 483 (52,7 %) | 433 |
+| ORP | 218 | 143 (65,6 %) | 75 |
+| SYS | 1.460 | 827 (56,6 %) | 633 |
 
 Top-20-Bausteine nach unabgedeckten normativen Sätzen:
 
 | Baustein | normative Sätze | ohne Abdeckung |
 |---|---|---|
-| INF.14 | 135 | 74 (54,8 %) |
-| INF.13 | 134 | 67 (50,0 %) |
-| INF.2 | 126 | 65 (51,6 %) |
-| SYS.1.7 | 133 | 65 (48,9 %) |
+| INF.14 | 135 | 75 (55,6 %) |
+| INF.13 | 134 | 70 (52,2 %) |
+| INF.2 | 126 | 66 (52,4 %) |
+| SYS.1.7 | 133 | 66 (49,6 %) |
 | OPS.1.1.1 | 123 | 62 (50,4 %) |
 | NET.1.1 | 124 | 60 (48,4 %) |
-| CON.11.1 | 86 | 55 (64,0 %) |
+| CON.11.1 | 86 | 56 (65,1 %) |
+| NET.3.4 | 109 | 55 (50,5 %) |
 | DER.3.1 | 100 | 54 (54,0 %) |
-| NET.3.4 | 109 | 54 (49,5 %) |
+| INF.12 | 81 | 52 (64,2 %) |
+| APP.4.2 | 124 | 51 (41,1 %) |
 | DER.2.1 | 121 | 51 (42,1 %) |
-| INF.12 | 81 | 51 (63,0 %) |
-| APP.4.2 | 124 | 50 (40,3 %) |
+| NET.1.2 | 83 | 47 (56,6 %) |
 | DER.3.2 | 82 | 46 (56,1 %) |
-| NET.1.2 | 83 | 45 (54,2 %) |
 | SYS.1.1 | 91 | 44 (48,4 %) |
 | SYS.2.1 | 122 | 44 (36,1 %) |
+| INF.11 | 69 | 43 (62,3 %) |
+| SYS.1.8 | 90 | 43 (47,8 %) |
 | INF.1 | 99 | 42 (42,4 %) |
 | SYS.1.6 | 75 | 42 (56,0 %) |
-| SYS.1.8 | 90 | 42 (46,7 %) |
-| INF.11 | 69 | 41 (59,4 %) |
 
-Quervergleich mit Ebene (a): 46 Anforderungen sind in unserem Mapping abgedeckt, überstehen die satzgenaue Prüfung aber mit null Sätzen; umgekehrt findet die Satz-Beurteilung bei 0 Anforderungen Substanz, auf die kein einziges Mapping zeigt. Beide ID-Listen stehen im JSON unter `summary.teilanforderungen.beurteilt`.
+Quervergleich mit Ebene (a): 45 Anforderungen sind in unserem Mapping abgedeckt, überstehen die satzgenaue Prüfung aber mit null Sätzen; umgekehrt findet die Satz-Beurteilung bei 0 Anforderungen Substanz, auf die kein einziges Mapping zeigt. Beide ID-Listen stehen im JSON unter `summary.teilanforderungen.beurteilt`.
 
 ### 5.2 Deterministischer Zerlegungs-Vergleich der Teilanforderungs-Indizes
 
-Bei 475 Anforderungen tragen beide Mappings Teilanforderungs-Indizes (unsere `statement-sentence` in amtlicher Satz-Nummerierung vs. BSI-`UA.n`). Mengenvergleich der Indizes: 109 identisch (22,9 %), 310 überlappend (65,3 %), 56 disjunkt (11,8 %). Das UA-Schema des GSMap ist unveröffentlicht — Index-Gleichheit bleibt ein Strukturindiz, keine bewiesene inhaltliche Übereinstimmung. Bei 2 Anforderungen übersteigt die UA-Untergrenze die Zahl der normativen amtlichen Sätze. Vollständige ID-Listen im JSON unter `summary.teilanforderungen.zerlegungsvergleich`.
+Bei 474 Anforderungen tragen beide Mappings Teilanforderungs-Indizes (unsere `statement-sentence` in amtlicher Satz-Nummerierung vs. BSI-`UA.n`). Mengenvergleich der Indizes: 110 identisch (23,2 %), 306 überlappend (64,6 %), 58 disjunkt (12,2 %). Das UA-Schema des GSMap ist unveröffentlicht — Index-Gleichheit bleibt ein Strukturindiz, keine bewiesene inhaltliche Übereinstimmung. Bei 2 Anforderungen übersteigt die UA-Untergrenze die Zahl der normativen amtlichen Sätze. Vollständige ID-Listen im JSON unter `summary.teilanforderungen.zerlegungsvergleich`.
 
-**Relationstypen:** Unser Mapping: equal-to 15, equivalent-to 125, intersects-with 1.093, subset-of 809, superset-of 3.103. BSI GSMap: equal-to 21, equivalent-to 118, intersects-with 395, subset-of 464, superset-of 187. Achtung Leserichtung: Unser Mapping beschreibt die GS++-Maßnahme relativ zur ED23-Anforderung, das GSMap die ED23-Unteranforderung relativ zur GS++-Maßnahme — subset-of und superset-of sind beim Vergleich zu spiegeln.
+**Relationstypen:** Unser Mapping: equal-to 14, equivalent-to 162, intersects-with 2.077, subset-of 542, superset-of 2.291. BSI GSMap: equal-to 21, equivalent-to 118, intersects-with 395, subset-of 464, superset-of 187. Achtung Leserichtung: Unser Mapping beschreibt die GS++-Maßnahme relativ zur ED23-Anforderung, das GSMap die ED23-Unteranforderung relativ zur GS++-Maßnahme — subset-of und superset-of sind beim Vergleich zu spiegeln.
 
-**Deutung (Befund, LLM-klassifiziert, Status draft):** 3.103 der 5.145 Zuordnungen (60,3 %) sind superset-of: Wo Grundschutz++ eine ED23-Anforderung überhaupt abdeckt, deckt es sie überwiegend als die allgemeinere Fassung ab — das WAS der Anforderung überlebt, die technologiespezifische Ausprägung (das WIE) hat im Katalog keinen eigenen Träger mehr. Wörtliche Übernahmen sind mit 15× equal-to die absolute Ausnahme. Zusammen mit Abschnitt 4 (die Anforderungen ohne jede Zuordnung konzentrieren sich in den produktspezifischen SYS-, APP-, INF- und NET-Bausteinen, während die Prozess-Schichten vollständig abgedeckt sind) ergibt sich: Der Übergang auf Grundschutz++ generalisiert das Kompendiumswissen; die produktspezifischen Festlegungen der Edition 2023 sind im veröffentlichten GS++-Bestand ohne Nachfolger. Konzeptionell ist dieses Wissen in die Stand-der-Technik-Bibliothek verlagert; dort liegen derzeit WLAN, Mindeststandard-TLS, Lieferkettensicherheit und Risikomanagement — produktspezifische Inhalte im Umfang der 111 ED23-Bausteine existieren dort nicht.
+**Deutung (Befund, LLM-klassifiziert, Status draft):** 2.291 der 5.086 Zuordnungen (45,0 %) sind superset-of: Wo Grundschutz++ eine ED23-Anforderung überhaupt abdeckt, deckt es sie am häufigsten als die allgemeinere Fassung ab — das WAS der Anforderung überlebt, die technologiespezifische Ausprägung (das WIE) hat im Katalog keinen eigenen Träger mehr. Wörtliche Übernahmen sind mit 14× equal-to die absolute Ausnahme. Zusammen mit Abschnitt 4 (die Anforderungen ohne jede Zuordnung konzentrieren sich in den produktspezifischen SYS-, APP-, INF- und NET-Bausteinen, während die Prozess-Schichten vollständig abgedeckt sind) ergibt sich: Der Übergang auf Grundschutz++ generalisiert das Kompendiumswissen; die produktspezifischen Festlegungen der Edition 2023 sind im veröffentlichten GS++-Bestand ohne Nachfolger. Konzeptionell ist dieses Wissen in die Stand-der-Technik-Bibliothek verlagert; dort liegen derzeit WLAN, Mindeststandard-TLS, Lieferkettensicherheit und Risikomanagement — produktspezifische Inhalte im Umfang der 111 ED23-Bausteine existieren dort nicht.
+
+**Qualitätsstand der Relationstypen:** Klassifiziert je Maßnahme als Familie (alle Paare eines GS++-Controls in einem Urteil, volle amtliche Satzlisten, explizite Subsumtionsregel) — Umbau nach der QS-Stichprobe vom 30.08.2026 (943 geprüfte Paare, Belege unter `hilfsdateien/ed23_mapping_qs/`, Issue #37). 76 von der QS beanstandete Zuordnungen wurden zuvor entfernt (Audit: `hilfsdateien/ed23_mapping_qs/dropped_pairs.json`). Die Typen bleiben LLM-Urteile im Status draft; Leserichtung wie oben.
 
 ## 6. Gegenrichtung: GS++-Maßnahmen ohne ED23-Entsprechung
 
 | Quelle | GS++-Maßnahmen ohne Treffer (von 1.000) |
 |---|---|
-| Unser Mapping | 133 |
+| Unser Mapping | 135 |
 | BSI GSMap | 678 |
 | Prozessbaustein-Mapping | 684 |
-| **in keiner der drei Quellen** | **100** |
+| **in keiner der drei Quellen** | **102** |
 
-Verteilung der 133 Maßnahmen ohne Treffer in unserem Mapping nach Praktik-Gruppe: ARCH 5, ASST 5, BER 18, BES 16, DET 17, DEV 3, DLS 2, GC 6, GEB 10, KONF 11, NOT 6, PERF 2, PERS 1, REA 2, RISK 3, SENS 13, STM 8, TEST 2, UMS 1, VRB 2. Vollständige Listen in `ed23_gap_analyse.json` unter `forward_gaps`.
+Verteilung der 135 Maßnahmen ohne Treffer in unserem Mapping nach Praktik-Gruppe: ARCH 5, ASST 5, BER 18, BES 16, DET 17, DEV 4, DLS 2, GC 6, GEB 10, KONF 11, NOT 6, PERF 2, PERS 1, REA 2, RISK 3, SENS 13, STM 9, TEST 2, UMS 1, VRB 2. Vollständige Listen in `ed23_gap_analyse.json` unter `forward_gaps`.
+
+**Strukturelle Korpus-Lücke RISK:** Dass die Praktik RISK (Risikomanagement) im Mapping praktisch ohne Gegenstück bleibt, ist keine Schwäche der Kandidatensuche, sondern eine Eigenschaft der Korpora: Das ED23-Kompendium enthält kaum Methodik-Anforderungen, die Risikomethodik liegt im BSI-Standard 200-3 und damit außerhalb des Mapping-Ziels. Für die Migration heißt das: RISK-Nachweise sind aus der 200-3-Welt zu überführen, nicht aus dem Kompendium — dünne Einzeltreffer würden diese Lücke nur kaschieren (Befund der QS-Stichprobe, Issue #37).
 
 ## 7. Kreuzbefunde zwischen den Quellen
 
-- Ziel-Klassen unseres Mappings: {"official": 1607}. NTT-eigene (nicht-amtliche) Ziele: 0, Ziele auf ENTFALLENE Anforderungen: 0, dangling: 0.
+- Ziel-Klassen unseres Mappings: {"official": 1603}. NTT-eigene (nicht-amtliche) Ziele: 0, Ziele auf ENTFALLENE Anforderungen: 0, dangling: 0.
 - Quell-Klassen des BSI GSMap: {"official": 510}; ENTFALLEN-gemappt: 0, dangling: 0.
 - Veraltete GS++-Ziel-IDs im BSI GSMap (existieren im gepinnten GS++-Katalog nicht): 17 — DET.3.1.13, GC.6.1.1, GC.6.1.2, GC.6.1.3, GC.8.1.1, GC.8.1.1.1, GC.8.1.2, GC.9.1.3, KONF.11.9, KONF.2.5.1.1, PERF.5.1.4, PERF.5.1.9, PERF.5.2, TEST.4.1.1.1, UMS.3.2, UMS.4.2, VRB.1.2.
 - Prozessbaustein-Mapping: 53 dangling Quellen, 0 außerhalb der Prozess-Schichten, 0 dangling GS++-Ziele.
@@ -196,7 +200,7 @@ Verteilung der 133 Maßnahmen ohne Treffer in unserem Mapping nach Praktik-Grupp
 ## 8. Reproduktion
 
 ```bash
-uv run Gpp-ai-tool/scripts/analyze_ed23_coverage.py --date 2026-08-29
+uv run Gpp-ai-tool/scripts/analyze_ed23_coverage.py --date 2026-08-30
 ```
 
 Alle Fremdquellen sind commit- bzw. sha256-gepinnt (siehe Konstanten im Script und `meta.sources` im JSON); Downloads landen im gitignorierten Cache `Gpp-ai-tool/.cache/ed23_gap/`. Gleicher `--date`-Wert ⇒ byte-identische Ausgaben.
@@ -205,7 +209,7 @@ Die Satz-Beurteilung (Abschnitt 5.1) stammt aus dem AI-Pipeline-Lauf `python src
 
 ## Anhang A: Aktive Anforderungen ohne jede Zuordnung
 
-139 Anforderungen, gruppiert nach Baustein:
+141 Anforderungen, gruppiert nach Baustein:
 
 - **APP.1.1** (2): APP.1.1.A14, APP.1.1.A6
 - **APP.2.1** (2): APP.2.1.A21, APP.2.1.A8
@@ -238,7 +242,7 @@ Die Satz-Beurteilung (Abschnitt 5.1) stammt aus dem AI-Pipeline-Lauf `python src
 - **INF.7** (2): INF.7.A1, INF.7.A3
 - **INF.9** (1): INF.9.A7
 - **NET.1.1** (4): NET.1.1.A26, NET.1.1.A27, NET.1.1.A36, NET.1.1.A9
-- **NET.1.2** (3): NET.1.2.A16, NET.1.2.A2, NET.1.2.A31
+- **NET.1.2** (4): NET.1.2.A16, NET.1.2.A2, NET.1.2.A31, NET.1.2.A38
 - **NET.2.1** (1): NET.2.1.A15
 - **NET.3.1** (1): NET.3.1.A27
 - **NET.3.2** (2): NET.3.2.A26, NET.3.2.A30
@@ -259,7 +263,7 @@ Die Satz-Beurteilung (Abschnitt 5.1) stammt aus dem AI-Pipeline-Lauf `python src
 - **SYS.2.4** (1): SYS.2.4.A6
 - **SYS.2.5** (1): SYS.2.5.A11
 - **SYS.2.6** (4): SYS.2.6.A13, SYS.2.6.A3, SYS.2.6.A5, SYS.2.6.A7
-- **SYS.3.2.1** (2): SYS.3.2.1.A27, SYS.3.2.1.A31
+- **SYS.3.2.1** (3): SYS.3.2.1.A27, SYS.3.2.1.A31, SYS.3.2.1.A5
 - **SYS.3.2.3** (3): SYS.3.2.3.A18, SYS.3.2.3.A2, SYS.3.2.3.A26
 - **SYS.3.3** (1): SYS.3.3.A9
 - **SYS.4.3** (2): SYS.4.3.A17, SYS.4.3.A5
@@ -267,7 +271,7 @@ Die Satz-Beurteilung (Abschnitt 5.1) stammt aus dem AI-Pipeline-Lauf `python src
 
 ## Anhang B: Anforderungen ohne einen einzigen beurteilt abgedeckten normativen Satz
 
-273 Anforderungen, gruppiert nach Baustein:
+276 Anforderungen, gruppiert nach Baustein:
 
 - **APP.1.1** (2): APP.1.1.A14, APP.1.1.A6
 - **APP.1.2** (1): APP.1.2.A12
@@ -293,6 +297,7 @@ Die Satz-Beurteilung (Abschnitt 5.1) stammt aus dem AI-Pipeline-Lauf `python src
 - **CON.7** (2): CON.7.A18, CON.7.A3
 - **CON.8** (2): CON.8.A18, CON.8.A21
 - **CON.9** (2): CON.9.A6, CON.9.A7
+- **DER.1** (1): DER.1.A2
 - **DER.2.2** (5): DER.2.2.A1, DER.2.2.A14, DER.2.2.A5, DER.2.2.A7, DER.2.2.A8
 - **DER.2.3** (1): DER.2.3.A6
 - **DER.3.1** (3): DER.3.1.A12, DER.3.1.A18, DER.3.1.A21
@@ -316,7 +321,7 @@ Die Satz-Beurteilung (Abschnitt 5.1) stammt aus dem AI-Pipeline-Lauf `python src
 - **INF.9** (2): INF.9.A12, INF.9.A7
 - **ISMS.1** (2): ISMS.1.A16, ISMS.1.A17
 - **NET.1.1** (8): NET.1.1.A24, NET.1.1.A25, NET.1.1.A26, NET.1.1.A27, NET.1.1.A29, NET.1.1.A32, NET.1.1.A36, NET.1.1.A9
-- **NET.1.2** (7): NET.1.2.A13, NET.1.2.A15, NET.1.2.A16, NET.1.2.A2, NET.1.2.A28, NET.1.2.A29, NET.1.2.A31
+- **NET.1.2** (8): NET.1.2.A13, NET.1.2.A15, NET.1.2.A16, NET.1.2.A2, NET.1.2.A28, NET.1.2.A29, NET.1.2.A31, NET.1.2.A38
 - **NET.2.1** (2): NET.2.1.A15, NET.2.1.A17
 - **NET.3.1** (1): NET.3.1.A27
 - **NET.3.2** (3): NET.3.2.A25, NET.3.2.A26, NET.3.2.A30
@@ -344,7 +349,7 @@ Die Satz-Beurteilung (Abschnitt 5.1) stammt aus dem AI-Pipeline-Lauf `python src
 - **SYS.1.2.2** (1): SYS.1.2.2.A14
 - **SYS.1.2.3** (1): SYS.1.2.3.A8
 - **SYS.1.3** (1): SYS.1.3.A6
-- **SYS.1.5** (5): SYS.1.5.A13, SYS.1.5.A23, SYS.1.5.A24, SYS.1.5.A25, SYS.1.5.A26
+- **SYS.1.5** (6): SYS.1.5.A13, SYS.1.5.A23, SYS.1.5.A24, SYS.1.5.A25, SYS.1.5.A26, SYS.1.5.A4
 - **SYS.1.6** (8): SYS.1.6.A1, SYS.1.6.A10, SYS.1.6.A11, SYS.1.6.A12, SYS.1.6.A15, SYS.1.6.A23, SYS.1.6.A25, SYS.1.6.A7
 - **SYS.1.7** (3): SYS.1.7.A27, SYS.1.7.A34, SYS.1.7.A36
 - **SYS.1.8** (2): SYS.1.8.A10, SYS.1.8.A21

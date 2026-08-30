@@ -93,11 +93,15 @@ DEFAULT_REPORT_OUT = os.path.join(REPO_ROOT, "hilfsdateien", "ed23_gap_report.md
 # (Handbuch Kapitel 10.3 for ITGS, Commit-Message 5bc9612 / RELEASE_NOTES_v4.0 for ours).
 # Drift is a warning by default and fatal under --strict.
 EXPECTED_ANCHORS = {
-    # v2-Union (amtliches XML, GS++-seitig + ED23-seitige Satz-Abdeckung gemergt,
-    # Relationen klassifiziert; Stand 2026-08-29).
-    "ours_maps": 5145,
-    "ours_distinct_sources": 867,
-    "ours_distinct_targets": 1607,
+    # v2-Union nach Issue #37 (QS-Stichprobe 30.08.2026): 76 Streichungen,
+    # Tokenizer-Fix, Relationen control-gruppiert re-klassifiziert, 17 Paare aus
+    # dem gerichteten Luecken-Nachfass (qs-nachfass). 5145 - 76 + 17 = 5086;
+    # STM.3.1 und DEV.5.2 verloren ihr einziges Paar (Sources 867 -> 865,
+    # forward_gap 133 -> 135); vier Anforderungen verloren ihr einziges Ziel
+    # (Targets 1607 -> 1603).
+    "ours_maps": 5086,
+    "ours_distinct_sources": 865,
+    "ours_distinct_targets": 1603,
     "old_maps": 5521,
     "itgs_maps": 1185,
     "itgs_distinct_teilanforderungen": 824,
@@ -106,7 +110,7 @@ EXPECTED_ANCHORS = {
         "equivalent-to": 118, "equal-to": 21,
     },
     "gpp_controls": 1000,
-    "forward_gap_ours": 133,
+    "forward_gap_ours": 135,
     # Handbuch 10.3 nennt 13 veraltete unter den 33 GS++-Ziel-IDs der Methodik-Maps;
     # über ALLE 1185 Maps gerechnet sind es 17 distinct veraltete Ziel-IDs.
     "itgs_dangling_gpp_targets": 17,
@@ -1094,7 +1098,7 @@ def render_report(result: dict) -> str:
             add(f"**Deutung (Befund, LLM-klassifiziert, Status draft):** {de(sup)} der "
                 f"{de(total_rel)} Zuordnungen ({pct(sup, total_rel)}) sind superset-of: Wo "
                 "Grundschutz++ eine ED23-Anforderung überhaupt abdeckt, deckt es sie "
-                "überwiegend als die allgemeinere Fassung ab — das WAS der Anforderung "
+                "am häufigsten als die allgemeinere Fassung ab — das WAS der Anforderung "
                 "überlebt, die technologiespezifische Ausprägung (das WIE) hat im Katalog "
                 f"keinen eigenen Träger mehr. Wörtliche Übernahmen sind mit {de(eq)}× "
                 "equal-to die absolute Ausnahme. Zusammen mit Abschnitt 4 (die Anforderungen "
@@ -1107,6 +1111,15 @@ def render_report(result: dict) -> str:
                 "derzeit WLAN, Mindeststandard-TLS, Lieferkettensicherheit und "
                 "Risikomanagement — produktspezifische Inhalte im Umfang der 111 "
                 "ED23-Bausteine existieren dort nicht.")
+            add("")
+            add("**Qualitätsstand der Relationstypen:** Klassifiziert je Maßnahme als "
+                "Familie (alle Paare eines GS++-Controls in einem Urteil, volle amtliche "
+                "Satzlisten, explizite Subsumtionsregel) — Umbau nach der QS-Stichprobe "
+                "vom 30.08.2026 (943 geprüfte Paare, Belege unter "
+                "`hilfsdateien/ed23_mapping_qs/`, Issue #37). 76 von der QS beanstandete "
+                "Zuordnungen wurden zuvor entfernt (Audit: "
+                "`hilfsdateien/ed23_mapping_qs/dropped_pairs.json`). Die Typen bleiben "
+                "LLM-Urteile im Status draft; Leserichtung wie oben.")
         else:
             add(f"**Relationstypen:** Das BSI GSMap differenziert ({itgs_hist}); unser Mapping "
                 "trägt derzeit durchgehend `intersects-with` — die Relationsklassifikation "
@@ -1131,6 +1144,14 @@ def render_report(result: dict) -> str:
     add(f"Verteilung der {de(go['ours'])} Maßnahmen ohne Treffer in unserem Mapping nach "
         f"Praktik-Gruppe: {', '.join(parts)}. Vollständige Listen in `ed23_gap_analyse.json` "
         "unter `forward_gaps`.")
+    add("")
+    add("**Strukturelle Korpus-Lücke RISK:** Dass die Praktik RISK (Risikomanagement) im "
+        "Mapping praktisch ohne Gegenstück bleibt, ist keine Schwäche der Kandidatensuche, "
+        "sondern eine Eigenschaft der Korpora: Das ED23-Kompendium enthält kaum "
+        "Methodik-Anforderungen, die Risikomethodik liegt im BSI-Standard 200-3 und damit "
+        "außerhalb des Mapping-Ziels. Für die Migration heißt das: RISK-Nachweise sind aus "
+        "der 200-3-Welt zu überführen, nicht aus dem Kompendium — dünne Einzeltreffer würden "
+        "diese Lücke nur kaschieren (Befund der QS-Stichprobe, Issue #37).")
     add("")
 
     add("## 7. Kreuzbefunde zwischen den Quellen")

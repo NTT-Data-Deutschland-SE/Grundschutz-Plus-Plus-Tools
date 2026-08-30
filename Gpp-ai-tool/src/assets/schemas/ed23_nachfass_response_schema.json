@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "description": "Gerichteter Luecken-Nachfass (Issue #37): Urteil zu EINEM Verdachtskandidaten (G++-Control -> ED23-Anforderung bzw. -Baustein). treffer ist leer, wenn keine belastbare Zuordnung besteht.",
+  "properties": {
+    "treffer": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "anf_id": {
+            "type": "string",
+            "description": "ID der ED23-Anforderung aus dem Prompt-Material."
+          },
+          "satz_nr": {
+            "type": "integer",
+            "description": "Nummer des tragenden Satzes (1-basiert) in der amtlichen Satzliste."
+          },
+          "relationship": {
+            "type": "string",
+            "enum": [
+              "equal-to",
+              "equivalent-to",
+              "subset-of",
+              "superset-of",
+              "intersects-with"
+            ]
+          },
+          "begruendung": {
+            "type": "string",
+            "description": "1-2 Saetze, beide Seiten ehrlich, ohne Teilanforderungs-Praefix."
+          }
+        },
+        "required": ["anf_id", "satz_nr", "relationship", "begruendung"]
+      }
+    }
+  },
+  "required": ["treffer"]
+}

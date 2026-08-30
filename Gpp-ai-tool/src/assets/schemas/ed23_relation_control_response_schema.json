@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "description": "Familien-Klassifikation aller Zuordnungen einer G++-Maßnahme (Issue #37: Urteilseinheit = Control): genau ein Eintrag je nummerierter Zuordnung [P1..Pn].",
+  "properties": {
+    "pairs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "nr": {
+            "type": "integer",
+            "description": "Nummer der Zuordnung aus dem Prompt ([P3] -> 3)."
+          },
+          "relationship": {
+            "type": "string",
+            "enum": [
+              "equal-to",
+              "equivalent-to",
+              "subset-of",
+              "superset-of",
+              "intersects-with"
+            ],
+            "description": "OSCAL-Relationstyp: die QUELLE (G++-Maßnahme) relativ zum tragenden Satz der ED23-Anforderung."
+          },
+          "begruendung_neu": {
+            "type": "string",
+            "description": "NUR wenn die bisherige Begründung den Typ nicht trägt oder übertreibt: Ersatz-Begründung (1-2 Sätze, ohne Teilanforderungs-Präfix)."
+          }
+        },
+        "required": ["nr", "relationship"]
+      }
+    }
+  },
+  "required": ["pairs"]
+}
