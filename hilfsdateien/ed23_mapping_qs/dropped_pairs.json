@@ -1,0 +1,761 @@
+{
+  "beschreibung": "Issue #37 Phase A/B: von der QS-Stichprobe (hilfsdateien/ed23_mapping_qs/) beanstandete Paare, entfernt aus gpp_ed23_anforderungen.json, plus beim Tokenizer-Fix kollabierte Fragment-Duplikate. Vollstaendige Eintraege zur Wiederherstellung.",
+  "dropped": [
+    {
+      "control_id": "ARCH.5.1",
+      "id": "INF.14.A19",
+      "name": "Nutzung dedizierter Adressbereiche für GA-Netze (S) [Planende]",
+      "begruendung": "(Teilanforderung 4) ARCH.5.1 fordert die allgemeine Einschränkung und Absicherung von Netzwerkverbindungen zwischen Systemen und benennt dazu unter anderem Application Layer Gateways (ALG) als geeigneten Kontrollmechanismus.",
+      "satz_nr": 4,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "ARCH.5.1",
+      "id": "SYS.1.5.A4",
+      "name": "Sichere Konfiguration eines Netzes für virtuelle Infrastrukturen (B)",
+      "begruendung": "(Teilanforderung 3) ARCH.5.1 fordert die generelle Einschränkung von Verbindungen zwischen IT-Systemen in der Netzarchitektur und deckt damit die richtlinienkonforme Konfiguration von Verbindungen zwischen virtuellen und physischen Systemen sowie Firewalls ab.",
+      "satz_nr": 3,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "ARCH.8.1",
+      "id": "SYS.1.5.A9",
+      "name": "Netzplanung für virtuelle Infrastrukturen (S) [Planende]",
+      "begruendung": "(Teilanforderung 6) Die Installation redundanter Netzkomponenten zur Vermeidung von Single Points of Failure deckt die Erfüllung der Verfügbarkeitsanforderungen an das Netz direkt ab.",
+      "satz_nr": 6,
+      "relationship": "intersects-with",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "ASST.4.2",
+      "id": "SYS.1.8.A24",
+      "name": "Sicherstellung der Integrität der SAN-Fabric (H)",
+      "begruendung": "(Teilanforderung 1) Die G++-Maßnahme ASST.4.2 fordert die Sicherstellung der Integrität bei der Datenübertragung über Netze, was den Einsatz von Protokollen mit Sicherheitsmerkmalen in der SAN-Fabric als technischem Spezialfall abstrahierend abdeckt.",
+      "satz_nr": 1,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "ASST.5.2",
+      "id": "INF.13.A17",
+      "name": "Regelung von Wartungs- und Reparaturarbeiten im TGM (S)",
+      "begruendung": "(Teilanforderung 1) Die G++-Maßnahme ASST.5.2 fordert explizit die regelmäßige Durchführung von Wartungen für Assets und die zugehörige Infrastruktur (inklusive Klimatechnik und Stromversorgung).",
+      "satz_nr": 1,
+      "relationship": "superset-of",
+      "richtung": "beide",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "ASST.5.2",
+      "id": "INF.13.A18",
+      "name": "Proaktive Instandhaltung im TGM (S) [Planende]",
+      "begruendung": "(Teilanforderung 4) Die Maßnahme ASST.5.2 fordert explizit die regelmäßige oder prädiktive Durchführung von Wartungen und deckt damit die Nutzung von Predictive Maintenance zur bedarfsgerechten Anpassung von Wartungsstrategien inhaltlich ab.",
+      "satz_nr": 4,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "ASST.5.2",
+      "id": "OPS.1.1.1.A26",
+      "name": "Proaktive Instandhaltung im IT-Betrieb (H)",
+      "begruendung": "(Teilanforderung 3) ASST.5.2 fordert explizit die regelmäßige oder prädiktive Ausführung von Wartungen und deckt damit die Nutzung von Predictive Maintenance ab.",
+      "satz_nr": 3,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "BER.4.1",
+      "id": "APP.4.2.A16",
+      "name": "Umsetzung von Sicherheitsanforderungen für das Betriebssystem Windows (S)",
+      "begruendung": "(Teilanforderung 6) Die allgemeine Begrenzung von Berechtigungen nach dem Least-Privilege-Prinzip gemäß BER.4.1 deckt die gezielte Absicherung und Einschränkung der spezifischen Berechtigungen für SAP-spezifische Systemkonten und Gruppen ab.",
+      "satz_nr": 6,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "BER.4.1",
+      "id": "CON.11.1.A8",
+      "name": "Verwaltung und Nachweis von elektronischen VS nach § 21 VSA (B)",
+      "begruendung": "(Teilanforderung 2) Die G++-Maßnahme BER.4.1 fordert die allgemeine Beschränkung von Berechtigungen nach dem Least-Privilege- bzw. Need-to-know-Prinzip und deckt damit die Einhaltung dieses Grundsatzes beim Zugriff auf Daten und Registraturen ab.",
+      "satz_nr": 2,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "BES.4.2",
+      "id": "APP.6.A1",
+      "name": "Planung des Software-Einsatzes (B) [Fachverantwortliche]",
+      "begruendung": "(Teilanforderung 2) Die Maßnahme BES.4.2 verlangt die Dokumentation von Beschaffungskriterien basierend auf Sicherheitsanforderungen und deckt damit die frühzeitige Berücksichtigung von Sicherheitsaspekten bei der Softwareauswahl ab.",
+      "satz_nr": 2,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "BES.4.2",
+      "id": "CON.8.A17",
+      "name": "Auswahl vertrauenswürdiger Entwicklungswerkzeuge (H)",
+      "begruendung": "(Teilanforderung 2) BES.4.2 fordert die Dokumentation von Beschaffungs- und Sicherheitskriterien für IT-Einkäufe, was das Stellen von Sicherheitsanforderungen an herstellende Unternehmen von Werkzeugen als allgemeine Beschaffungstätigkeit abdeckt.",
+      "satz_nr": 2,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "BES.5.13.1",
+      "id": "OPS.3.2.A6",
+      "name": "Regelungen für eine geplante und ungeplante Beendigung eines Outsourcing-Verhältnisses (B)",
+      "begruendung": "(Teilanforderung 2) Satz 2 fordert die Festlegung der Rückgabe aller Daten und Informationen bei Beendigung des Outsourcings, was die allgemeinere Pflicht zur geregelten Bereitstellung der Dienstleisterdaten darstellt.",
+      "satz_nr": 2,
+      "relationship": "subset-of",
+      "richtung": "gpp-seitig"
+    },
+    {
+      "control_id": "BES.7.1.1",
+      "id": "OPS.3.2.A13",
+      "name": "Anbindung an die Netze der Outsourcing-Partner (S)",
+      "begruendung": "(Teilanforderung 4) Die G++-Maßnahme fordert das Testen der Netzanbindung und Schnittstellen im Rahmen des Outsourcings und deckt damit die geforderte Testung der Verbindung inhaltlich ab.",
+      "satz_nr": 4,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "DET.6.1.2",
+      "id": "NET.1.2.A26",
+      "name": "Alarming und Logging (S)",
+      "begruendung": "(Teilanforderung 5) DET.6.1.2 fordert eine automatisierte Alarmierung bei sicherheitskritischen Ereignissen, was die sofortige Übermittlung von Alarmmeldungen beim Auftreten der Ereignisse inhaltlich abdeckt.",
+      "satz_nr": 5,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "DET.6.1.2",
+      "id": "OPS.1.1.7.A15",
+      "name": "Statusüberwachung, Protokollierung und Alarmierung bei relevanten Ereignissen im Systemmanagement-Lösung und den zu verwaltenden Systemen (S)",
+      "begruendung": "(Teilanforderung 8) Die G++-Maßnahme DET.6.1.2 fordert eine automatisierte Alarmierung der zuständigen Rollen bei kritischen Ereignissen und deckt damit die unverzügliche Übermittlung von Alarmmeldungen inhaltlich ab.",
+      "satz_nr": 8,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "DET.6.1.2",
+      "id": "OPS.1.2.2.A8",
+      "name": "Protokollierung der Archivzugriffe (B) [IT-Betrieb]",
+      "begruendung": "(Teilanforderung 6) DET.6.1.2 deckt die gezielte Weiterleitung und Anzeige von Ereignissen an zuständige Personen oder Rollen durch automatisierte Alarmierungsmechanismen inhaltlich ab.",
+      "satz_nr": 6,
+      "relationship": "intersects-with",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "DET.6.1.2",
+      "id": "SYS.1.7.A16",
+      "name": "Überwachung von z/OS-Systemen (S)",
+      "begruendung": "(Teilanforderung 4) DET.6.1.2 fordert die automatisierte Alarmierung zuständiger Rollen bei sicherheitskritischen Ereignissen, was das zeitnahe Erkennen und Einleiten einer Reaktion auf wichtige Meldungen materiell abdeckt.",
+      "satz_nr": 4,
+      "relationship": "intersects-with",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "DEV.1.1",
+      "id": "INF.14.A7",
+      "name": "Festlegung einer Sicherheitsrichtlinie für die GA (S)",
+      "begruendung": "(Teilanforderung 4) DEV.1.1 fordert als allgemeinere Fassung das Verankern von Verfahren und Regelungen für die Entwicklung, was die Spezifikation von Entwicklungsvorgaben inhaltlich abdeckt.",
+      "satz_nr": 4,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "DEV.5.2",
+      "id": "SYS.3.2.1.A5",
+      "name": "Updates von Betriebssystem und Apps (B)",
+      "begruendung": "(Teilanforderung 1) Satz 1 fordert das Vorliegen von Herstellerangaben zum Bereitstellungszeitraum von Sicherheitsaktualisierungen bei der Geräteauswahl und bildet damit das beschaffungsseitige Pendant zur Informationspflicht aus DEV.5.2.",
+      "satz_nr": 1,
+      "relationship": "intersects-with",
+      "richtung": "gpp-seitig"
+    },
+    {
+      "control_id": "DLS.1.1",
+      "id": "OPS.3.2.A6",
+      "name": "Regelungen für eine geplante und ungeplante Beendigung eines Outsourcing-Verhältnisses (B)",
+      "begruendung": "(Teilanforderung 1) DLS.1.1 fordert explizit die Verankerung eines Verfahrens zur geordneten Beendigung von Dienstleistungsverträgen und deckt damit die Forderung nach Regelungen für die Beendigung von Outsourcing-Verhältnissen direkt ab.",
+      "satz_nr": 1,
+      "relationship": "intersects-with",
+      "richtung": "beide",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "DLS.2.2",
+      "id": "OPS.3.2.A10",
+      "name": "Etablierung eines sicheren Kommunikationskanals und Festlegung der Kommunikationspartner (S)",
+      "begruendung": "(Teilanforderung 1) Die geforderte Transportverschluesselung bei der Uebertragung zum Dienstleister setzt die Einrichtung eines sicheren Kommunikationskanals technisch direkt um.",
+      "satz_nr": 1,
+      "relationship": "subset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "GC.11.1",
+      "id": "INF.12.A10",
+      "name": "Dokumentation und Kennzeichnung der Verkabelung (S) [IT-Betrieb, Haustechnik]",
+      "begruendung": "(Teilanforderung 8) GC.11.1 fordert die übergeordnete Verankerung eines Verfahrens zur Dokumentenlenkung im ISMS, was den Einsatz bzw. die Prüfung eines Dokumentenmanagements für Dokumentationen allgemein abdeckt.",
+      "satz_nr": 8,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "GC.3.1.1",
+      "id": "APP.3.2.A7",
+      "name": "Rechtliche Rahmenbedingungen für Webangebote (B) [Fachverantwortliche, Zentrale Verwaltung, Compliance-Beauftragte]",
+      "begruendung": "(Teilanforderung 1) GC.3.1.1 fordert die allgemeine Analyse aller gesetzlichen Verpflichtungen bei der Informationsverarbeitung und deckt damit die Beachtung relevanter rechtlicher Rahmenbedingungen für Webangebote auf einer übergeordneten Ebene ab.",
+      "satz_nr": 1,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "GC.3.1.1",
+      "id": "APP.6.A2",
+      "name": "Erstellung eines Anforderungskatalogs für Software (B) [Fachverantwortliche]",
+      "begruendung": "(Teilanforderung 5) GC.3.1.1 deckt die Forderung als allgemeinere Maßnahme ab, da sie die systematische Analyse aller gesetzlichen Verpflichtungen bezüglich der Informationsverarbeitung in der Institution verlangt.",
+      "satz_nr": 5,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "GC.3.1.1",
+      "id": "DER.1.A2",
+      "name": "Einhaltung rechtlicher Bedingungen bei der Auswertung von Protokollierungsdaten (B)",
+      "begruendung": "(Teilanforderung 3) GC.3.1.1 fordert die allgemeine Analyse und Erfassung gesetzlicher Verpflichtungen bei der Informationsverarbeitung (wie TKG und TDDDG), was die Beachtung dieser rechtlichen Bestimmungen aus Satz 3 grundlegend abdeckt.",
+      "satz_nr": 3,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "GC.3.1.1",
+      "id": "NET.3.2.A21",
+      "name": "Temporäre Entschlüsselung des Datenverkehrs (S)",
+      "begruendung": "(Teilanforderung 2) Die G++-Maßnahme GC.3.1.1 deckt als allgemeine Anforderung zur Analyse gesetzlicher Verpflichtungen bei der Informationsverarbeitung die Beachtung rechtlicher Rahmenbedingungen bei der Entschlüsselung inhaltlich ab.",
+      "satz_nr": 2,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "GC.3.1.1",
+      "id": "OPS.1.1.5.A8",
+      "name": "Archivierung von Protokollierungsdaten (S)",
+      "begruendung": "(Teilanforderung 2) Die G++-Maßnahme GC.3.1.1 fordert die Analyse gesetzlicher Verpflichtungen bei der Informationsverarbeitung und deckt damit die allgemeinere Pflicht zur Berücksichtigung gesetzlicher Regelungen bei der Archivierung von Daten ab.",
+      "satz_nr": 2,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "GC.3.1.1",
+      "id": "OPS.2.2.A2",
+      "name": "Erstellung einer Sicherheitsrichtlinie für die Cloud-Nutzung (B) [Fachverantwortliche]",
+      "begruendung": "(Teilanforderung 4) GC.3.1.1 fordert die allgemeine Analyse aller gesetzlichen Verpflichtungen der Informationsverarbeitung, was die Berücksichtigung länderspezifischer gesetzlicher Bestimmungen bei internationalen Anbietern umfasst.",
+      "satz_nr": 4,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "GEB.10.2.7",
+      "id": "INF.2.A8",
+      "name": "Einsatz einer Brandmeldeanlage (B) [Planende]",
+      "begruendung": "(Teilanforderung 4) GEB.10.2.7 fordert die regelmaessige Ueberpruefung der Brandschutzmassnahmen, was laut Erlaeuterung explizit die Funktionspruefung und Wartung von Brandmeldeanlagen umfasst.",
+      "satz_nr": 4,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "KONF.10.2",
+      "id": "APP.4.2.A31",
+      "name": "Konfiguration von SAP Single-Sign-On (S)",
+      "begruendung": "(Teilanforderung 3) KONF.10.2 fordert die sichere Konfiguration kryptographischer Verfahren bei der Authentifizierung und beim Identitätsmanagement und deckt damit die sichere Konfiguration des SSO ab.",
+      "satz_nr": 3,
+      "relationship": "intersects-with",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "KONF.10.2",
+      "id": "APP.5.4.A16",
+      "name": "Einsatz eines SBC an weiteren Netzübergängen (H)",
+      "begruendung": "(Teilanforderung 3) KONF.10.2 verlangt allgemein die anforderungs- und standardkonforme Aktivierung kryptographischer Verfahren in Anwendungen, was die Durchsetzung von Verschlüsselungsmechanismen durch den SBC abdeckt.",
+      "satz_nr": 3,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "KONF.2.4",
+      "id": "APP.3.1.A12",
+      "name": "Sichere Konfiguration (S)",
+      "begruendung": "(Teilanforderung 2) Satz 2 fordert explizit das Deaktivieren des Zugriffs auf nicht benötigte Ressourcen und Funktionen im Kontext von Webanwendungen, was direkt der Deaktivierung nicht benötigter Systemfunktionen aus KONF.2.4 entspricht.",
+      "satz_nr": 2,
+      "relationship": "superset-of",
+      "richtung": "gpp-seitig"
+    },
+    {
+      "control_id": "KONF.2.4",
+      "id": "SYS.2.2.3.A19",
+      "name": "Sicherheit beim Fernzugriff über RDP (S) [Benutzende]",
+      "begruendung": "(Teilanforderung 4) KONF.2.4 deckt die bedarfsgerechte Deaktivierung bzw. Einschränkung nicht benötigter System- und Komfortfunktionen wie RDP-Umleitungen als allgemeingültige Anforderung ab.",
+      "satz_nr": 4,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "KONF.2.4",
+      "id": "SYS.3.2.3.A13",
+      "name": "Verwendung der Konfigurationsoption „Einschränkungen unter iOS“ (S)",
+      "begruendung": "(Teilanforderung 2) KONF.2.4 fordert die Deaktivierung nicht benötigter Systemfunktionen und deckt damit die Prüfung und bedarfsgerechte Einschränkung spezifischer Funktionen wie Sperrbildschirm oder Telemetriedienste als allgemeine Anforderung ab.",
+      "satz_nr": 2,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "NOT.3.1",
+      "id": "NET.1.2.A38",
+      "name": "Festlegung von Notbetriebsformen für die Netzmanagement-Infrastruktur (H)",
+      "begruendung": "(Teilanforderung 1) NOT.3.1 fordert die Dokumentation eines Wiederanlaufplans zur Überführung zeitkritischer Systeme auf ein Notbetriebsniveau bzw. zur Wiederherstellung, was die Festlegung entsprechender Ersatzlösungen für Systemkomponenten und deren Konfigurationen allgemein abdeckt.",
+      "satz_nr": 1,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "NOT.3.1",
+      "id": "OPS.1.2.5.A21",
+      "name": "Erstellung eines Notfallplans für den Ausfall der Fernwartung (S)",
+      "begruendung": "(Teilanforderung 4) Die geforderte Festlegung zur zeitnahen Wiederherstellung des Normalbetriebs wird durch die Pflicht zur Dokumentation eines Wiederanlaufplans in NOT.3.1 abgedeckt.",
+      "satz_nr": 4,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "NOT.4.2",
+      "id": "SYS.3.3.A11",
+      "name": "Ausfallvorsorge bei Mobiltelefonen (S) [Benutzende]",
+      "begruendung": "(Teilanforderung 1) NOT.4.2 fordert allgemein die regelmäßige Datensicherung von IT-Systemen, was die regelmäßige Sicherung der Daten von Mobiltelefonen als IT-Systeme umfasst.",
+      "satz_nr": 1,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "PERF.3.1.4",
+      "id": "APP.3.1.A22",
+      "name": "Penetrationstest und Revision (S)",
+      "begruendung": "(Teilanforderung 2) Die G++-Maßnahme fordert die Durchführung von Audits in angemessenem Umfang und deckt damit die Durchführung von Revisionen inhaltlich ab.",
+      "satz_nr": 2,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "PERF.3.1.4",
+      "id": "APP.3.2.A16",
+      "name": "Penetrationstest und Revision (S)",
+      "begruendung": "(Teilanforderung 2) Die Maßnahme fordert explizit die Durchführung von Audits (Revisionen) in angemessenem Umfang und deckt damit die geforderte regelmäßige Durchführung von Revisionen inhaltlich ab.",
+      "satz_nr": 2,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "PERF.3.1.4",
+      "id": "APP.4.2.A27",
+      "name": "Audit des SAP-ERP-Systems (S) [Fachabteilung]",
+      "begruendung": "(Teilanforderung 1) Die Durchführung von Audits für SAP-ERP-Systeme stellt eine konkrete Ausprägung der allgemeinen Forderung nach der Durchführung von Audits in angemessenem technischem Umfang dar.",
+      "satz_nr": 1,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "PERF.3.1.4",
+      "id": "APP.4.3.A20",
+      "name": "Regelmäßige Audits (S)",
+      "begruendung": "(Teilanforderung 1) Die G++-Maßnahme PERF.3.1.4 verlangt die Durchführung von Audits in angemessenem Umfang (einschließlich IT-Systemen und Prüfmethoden) und deckt damit die allgemeine Durchführung von Konfigurations- und Sicherheitsüberprüfungen an Systemkomponenten auf übergeordneter Ebene ab.",
+      "satz_nr": 1,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "PERF.3.1.4",
+      "id": "DER.4.A14",
+      "name": "Regelmäßige Überprüfung und Verbesserung der Notfallmaßnahmen (H) [Institutionsleitung]",
+      "begruendung": "(Teilanforderung 9) Die G++-Maßnahme fordert die Definition und Ausführung eines angemessenen Prüfungsumfangs, was die lückenlose Einbindung aller relevanten Bereiche bei der Überprüfungsplanung abdeckt.",
+      "satz_nr": 9,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "PERF.3.1.4",
+      "id": "IND.1.A12",
+      "name": "Etablieren eines Schwachstellen-Managements (S)",
+      "begruendung": "(Teilanforderung 5) Die Maßnahme fordert die Ausführung von Audits in angemessenem Umfang, was laut Erläuterung ausdrücklich sowohl den organisatorischen als auch den technischen Geltungsbereich umfasst.",
+      "satz_nr": 5,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "PERF.3.1.4",
+      "id": "NET.2.1.A14",
+      "name": "Regelmäßige Audits der WLAN-Komponenten (S)",
+      "begruendung": "(Teilanforderung 1) PERF.3.1.4 fordert die Durchführung von Audits in angemessenem Umfang, was die regelmäßige Überprüfung der Umsetzung von Sicherheitsmaßnahmen auf den relevanten Infrastrukturkomponenten als allgemeinere Fassung abdeckt.",
+      "satz_nr": 1,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "PERF.3.1.4",
+      "id": "NET.3.1.A23",
+      "name": "Revision und Penetrationstests (S)",
+      "begruendung": "(Teilanforderung 2) Die Durchführung von Audits in angemessenem Umfang deckt die regelmäßige Durchführung von Revisionen inhaltlich ab.",
+      "satz_nr": 2,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "PERF.3.1.4",
+      "id": "SYS.1.5.A19",
+      "name": "Regelmäßige Audits der Virtualisierungsinfrastruktur (S)",
+      "begruendung": "(Teilanforderung 1) Die G++-Maßnahme fordert die Durchführung von Audits in angemessenem Umfang und deckt damit als allgemeinere Formulierung die regelmäßige Prüfung des Ist-Zustands von Infrastrukturen gegen Planungszustände ab.",
+      "satz_nr": 1,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "PERF.3.1.4",
+      "id": "SYS.1.8.A18",
+      "name": "Sicherheitsaudits und Berichtswesen bei Speichersystemen (S)",
+      "begruendung": "(Teilanforderung 1) PERF.3.1.4 verlangt die Durchführung von Audits in angemessenem Umfang (inklusive des technischen Geltungsbereichs wie IT-Systeme) und deckt damit die regelmäßige Auditierung der Speichersysteme auf allgemeiner Ebene ab.",
+      "satz_nr": 1,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "PERF.4.1",
+      "id": "ISMS.1.A6",
+      "name": "Aufbau einer geeigneten Organisationsstruktur für Informationssicherheit (B) [Institutionsleitung]",
+      "begruendung": "(Teilanforderung 8) Die regelmäßige Überprüfung der Eignung und Angemessenheit des ISMS im Rahmen der Managementbewertung umfasst als allgemeinere Anforderung auch die regelmäßige Prüfung und Anpassung der zugehörigen Sicherheitsorganisationsstruktur.",
+      "satz_nr": 8,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "PERS.1.1.2",
+      "id": "ISMS.1.A1",
+      "name": "Übernahme der Gesamtverantwortung für Informationssicherheit durch die Leitung (B) [Institutionsleitung]",
+      "begruendung": "(Teilanforderung 5) Satz 5 fordert das Festlegen von Zuständigkeiten für die Informationssicherheit, was sich direkt mit der Zuweisung von Aufgaben und Verantwortlichkeiten an zuständige Personen oder Rollen deckt.",
+      "satz_nr": 5,
+      "relationship": "intersects-with",
+      "richtung": "gpp-seitig"
+    },
+    {
+      "control_id": "PERS.2.2",
+      "id": "APP.7.A5",
+      "name": "Geeignete Steuerung der Anwendungsentwicklung (S)",
+      "begruendung": "(Teilanforderung 4) Die G++-Maßnahme PERS.2.2 fordert als allgemeine Regelung die Verankerung von Rollen mit erforderlichen Kompetenzen und Qualifikationen für alle Tätigkeiten, was die Berücksichtigung ausreichend qualifizierten Personals bei der Entwicklung inhaltlich abdeckt.",
+      "satz_nr": 4,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "PERS.4.2",
+      "id": "INF.11.A7",
+      "name": "Sachgerechter Umgang mit Fahrzeugen und schützenswerten Informationen (S) [Fachverantwortliche, Benutzende]",
+      "begruendung": "(Teilanforderung 7) Die G++-Maßnahme PERS.4.2 verlangt rollenspezifische Schulungen für Nutzende, was die tätigkeitsbezogene Einweisung der Mitarbeitenden in die Funktionsweise der Fahrzeuge und IT-Komponenten als allgemeinere Anforderung abdeckt.",
+      "satz_nr": 7,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "PERS.4.2",
+      "id": "ORP.2.A15",
+      "name": "Qualifikation des Personals (B) [Vorgesetzte]",
+      "begruendung": "(Teilanforderung 3) Die G++-Maßnahme PERS.4.2 fordert regelmäßige, auf die jeweilige Rolle bzw. Tätigkeit zugeschnittene Schulungen und deckt damit die kontinuierliche tätigkeitsbezogene Weiterbildungsmöglichkeit für Mitarbeitende direkt ab.",
+      "satz_nr": 3,
+      "relationship": "subset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "REA.2.1",
+      "id": "OPS.1.2.2.A8",
+      "name": "Protokollierung der Archivzugriffe (B) [IT-Betrieb]",
+      "begruendung": "(Teilanforderung 7) Die Triage und Priorisierung von Meldungen nach REA.2.1 umfasst die sofortige Ersteinschätzung und Prüfung kritischer Ereignisse nach deren Erkennung.",
+      "satz_nr": 7,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "REA.2.6.1",
+      "id": "INF.11.A6",
+      "name": "Festlegung von Handlungsanweisungen (S) [Fachverantwortliche, Benutzende]",
+      "begruendung": "(Teilanforderung 7) REA.2.6.1 deckt die Forderung nach der Dokumentation des Vorgehens bzw. der durchgeführten Tätigkeiten in Vorfall- und Ausnahmesituationen allgemeingültig ab.",
+      "satz_nr": 7,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "SENS.7.1",
+      "id": "APP.5.3.A7",
+      "name": "Schulung zu Sicherheitsmechanismen von E-Mail-Clients für Benutzende (S)",
+      "begruendung": "(Teilanforderung 2) SENS.7.1 fordert die Durchführung zielobjektspezifischer Sensibilisierungsmaßnahmen, was die Forderung nach einer über die allgemeine Sensibilisierung hinausgehenden, spezifischen Aufklärung inhaltlich abdeckt.",
+      "satz_nr": 2,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "SENS.7.1",
+      "id": "SYS.4.4.A9",
+      "name": "Regelung des Einsatzes von IoT-Geräten (S)",
+      "begruendung": "(Teilanforderung 2) SENS.7.1 deckt die zielobjektspezifische Information und Sensibilisierung der Zuständigen über den sicheren Umgang mit spezifischen Systemen wie IoT-Geräten inhaltlich ab.",
+      "satz_nr": 2,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "STM.1.2",
+      "id": "INF.14.A2",
+      "name": "Festlegung eines Inbetriebnahme- und Schnittstellenmanagements für die GA (B)",
+      "begruendung": "(Teilanforderung 3) STM.1.2 fordert allgemein die Festlegung organisatorischer Schnittstellen des Verbunds zu externen Prozessen und Organisationen, was die Definition klarer Schnittstellen zwischen den betreibenden Organisationen der GA und TGA abdeckt.",
+      "satz_nr": 3,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "STM.3.1",
+      "id": "ISMS.1.A11",
+      "name": "Aufrechterhaltung der Informationssicherheit (S)",
+      "begruendung": "(Teilanforderung 5) Satz 5 fordert explizit anlassbezogene sowie regelmäßige Überprüfungen des Sicherheitsniveaus, was sich inhaltlich mit der Überprüfung des Sicherheitsniveaus bei Kontextabweichungen überschneidet.",
+      "satz_nr": 5,
+      "relationship": "subset-of",
+      "richtung": "gpp-seitig"
+    },
+    {
+      "control_id": "TEST.3.1",
+      "id": "APP.2.3.A10",
+      "name": "Sichere Aktualisierung von OpenLDAP (S)",
+      "begruendung": "(Teilanforderung 4) TEST.3.1 fordert allgemeine Sicherheitstests und das Prüfen von Schnittstellen vor Änderungen, was die Kompatibilitätsprüfung eigener Skripte nach Updates abdeckt.",
+      "satz_nr": 4,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "TEST.3.1",
+      "id": "INF.14.A3",
+      "name": "Sichere Anbindung von TGA-Anlagen und GA-Systemen (B)",
+      "begruendung": "(Teilanforderung 8) TEST.3.1 fordert das Testen von Sicherheitsanforderungen inklusive Schnittstellen und Modulfunktionen, was das Testen und Nachjustieren von Ablauf- und Funktionsketten allgemein abdeckt.",
+      "satz_nr": 8,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "TEST.3.1",
+      "id": "OPS.1.2.2.A16",
+      "name": "Regelmäßige Erneuerung technischer Archivsystem-Komponenten (S) [IT-Betrieb]",
+      "begruendung": "(Teilanforderung 2) G++ TEST.3.1 fordert allgemein das Testen vor wesentlichen Änderungen, was das Testen neuer Hard- und Software vor der Installation im laufenden System als allgemeineres Prinzip abdeckt.",
+      "satz_nr": 2,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "UMS.5.1",
+      "id": "CON.11.1.A1",
+      "name": "Einhaltung der Grundsätze zur VS-Verarbeitung mit IT nach § 3, 4 und 6 und Nr. 1 Anlage V zur VSA (B)",
+      "begruendung": "(Teilanforderung 9) UMS.5.1 deckt als allgemeine Anforderung zur Autorisierung von Ausnahmegenehmigungen bei Verpflichtungen die spezifische Genehmigungspflicht für Abweichungen von den BSI TL im Einvernehmen mit der zuständigen Stelle inhaltlich ab.",
+      "satz_nr": 9,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "UMS.5.2",
+      "id": "NET.3.4.A20",
+      "name": "Einsatz von MACsec (H)",
+      "begruendung": "(Teilanforderung 4) Das Erfassen von Geräten, bei denen MACsec nicht eingerichtet werden kann oder soll, ist ein spezifischer Anwendungsfall der allgemeinen Dokumentation von Ausnahmegenehmigungen gemäß UMS.5.2.",
+      "satz_nr": 4,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "VRB.4.1",
+      "id": "APP.3.1.A22",
+      "name": "Penetrationstest und Revision (S)",
+      "begruendung": "(Teilanforderung 4) Das Festlegen von Korrekturmaßnahmen zur Beseitigung von Fehlerursachen deckt das Nachgehen von festgestellten Abweichungen auf allgemeiner Ebene direkt ab.",
+      "satz_nr": 4,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "VRB.4.1",
+      "id": "APP.3.2.A16",
+      "name": "Penetrationstest und Revision (S)",
+      "begruendung": "(Teilanforderung 4) Das Festlegen von Korrekturmaßnahmen zur Beseitigung von Fehlerursachen deckt das Nachgehen von festgestellten Abweichungen inhaltlich ab.",
+      "satz_nr": 4,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "VRB.4.1",
+      "id": "DER.1.A13",
+      "name": "Regelmäßige Audits der Detektionssysteme (S)",
+      "begruendung": "(Teilanforderung 4) Das Nachgehen von Abweichungen wird durch das Festlegen von Korrekturmaßnahmen zur Behebung von Fehlerursachen in VRB.4.1 materiell abgedeckt.",
+      "satz_nr": 4,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "VRB.4.1",
+      "id": "INF.13.A12",
+      "name": "Sichere Konfiguration der TGM-Systeme (S)",
+      "begruendung": "(Teilanforderung 12) G++ VRB.4.1 fordert das Festlegen angemessener Korrekturmaßnahmen zur Beseitigung von Fehlern bzw. Nicht-Konformitäten und deckt damit die Behebung festgestellter Abweichungen von Vorgaben allgemein ab.",
+      "satz_nr": 12,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "VRB.4.1",
+      "id": "INF.13.A6",
+      "name": "Erstellung eines TGM-Konzepts (S) [Planende]",
+      "begruendung": "(Teilanforderung 6) G++-Maßnahme VRB.4.1 fordert die Festlegung von Korrekturmaßnahmen zur Behebung von Fehlern und Nichtkonformitäten, was die generelle Entsprechung zur Behebung festgestellter Abweichungen darstellt.",
+      "satz_nr": 6,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "VRB.4.1",
+      "id": "INF.14.A3",
+      "name": "Sichere Anbindung von TGA-Anlagen und GA-Systemen (B)",
+      "begruendung": "(Teilanforderung 11) Die G++-Maßnahme VRB.4.1 fordert die Beseitigung der Ursachen von Fehlern durch angemessene Korrekturmaßnahmen und deckt damit die Ursachenermittlung und -behebung bei Abweichungen allgemein ab.",
+      "satz_nr": 11,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "VRB.4.1",
+      "id": "NET.2.1.A10",
+      "name": "Erstellung einer Sicherheitsrichtlinie für den Betrieb von WLANs (S)",
+      "begruendung": "(Teilanforderung 5) VRB.4.1 fordert die Festlegung angemessener Korrekturmaßnahmen bei Fehlern bzw. Nicht-Konformitäten und deckt damit die geforderte angemessene Reaktion bei Nicht-Umsetzung von Richtlinienvorgaben ab.",
+      "satz_nr": 5,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "VRB.4.1",
+      "id": "NET.2.2.A1",
+      "name": "Erstellung einer Nutzungsrichtlinie für WLAN (B) [IT-Betrieb]",
+      "begruendung": "(Teilanforderung 8) VRB.4.1 fordert das Festlegen angemessener Korrekturmaßnahmen bei festgestellten Abweichungen bzw. Fehlern und deckt damit die allgemeinere Fassung der geforderten Reaktion bei mangelhafter Richtlinienumsetzung ab.",
+      "satz_nr": 8,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "VRB.4.1",
+      "id": "NET.3.1.A23",
+      "name": "Revision und Penetrationstests (S)",
+      "begruendung": "(Teilanforderung 5) Die Forderung nach angemessenen Korrekturmaßnahmen zur Beseitigung von Fehlerursachen deckt das Nachgehen und Beheben von festgestellten Abweichungen inhaltlich als übergeordnete Managementtätigkeit ab.",
+      "satz_nr": 5,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "VRB.4.1",
+      "id": "OPS.1.1.3.A9",
+      "name": "Test- und Abnahmeverfahren für neue Hardware (S)",
+      "begruendung": "(Teilanforderung 6) VRB.4.1 fordert allgemeingültig die Festlegung angemessener Korrekturmaßnahmen zur Behebung von Fehlern und deren Ursachen, was das geforderte Verfahren zur Fehlerbehebung im laufenden Betrieb inhaltlich abdeckt.",
+      "satz_nr": 6,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "VRB.4.1",
+      "id": "OPS.1.2.2.A13",
+      "name": "Regelmäßige Revision der Archivierungsprozesse (S)",
+      "begruendung": "(Teilanforderung 4) VRB.4.1 verlangt die Festlegung von Korrekturmaßnahmen zur Beseitigung von Fehlerursachen, was das Nachgehen und Behandeln identifizierter Abweichungen auf allgemeiner Ebene abdeckt.",
+      "satz_nr": 4,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "VRB.4.1",
+      "id": "SYS.1.5.A19",
+      "name": "Regelmäßige Audits der Virtualisierungsinfrastruktur (S)",
+      "begruendung": "(Teilanforderung 4) VRB.4.1 fordert die Festlegung von Korrekturmaßnahmen zur Beseitigung von Fehlern bzw. Nicht-Konformitäten und deckt damit die Behebung festgestellter Abweichungen ab.",
+      "satz_nr": 4,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    },
+    {
+      "control_id": "VRB.4.1",
+      "id": "SYS.3.2.2.A20",
+      "name": "Regelmäßige Überprüfung des MDM (B)",
+      "begruendung": "(Teilanforderung 3) G++-Maßnahme VRB.4.1 verlangt allgemein die Festlegung von Korrekturmaßnahmen zur Beseitigung von Fehlern und deckt damit die Korrektur festgestellter Abweichungen ab.",
+      "satz_nr": 3,
+      "relationship": "superset-of",
+      "richtung": "ed23-seitig",
+      "satz_abdeckung_treffer_entfernt": true
+    }
+  ],
+  "fragment_dedupes": []
+}

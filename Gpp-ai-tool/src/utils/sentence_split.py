@@ -17,6 +17,11 @@ ABBREVIATIONS = (
     "z. B.", "z.B.", "d. h.", "d.h.", "u. a.", "u.a.", "u. U.", "o. Ä.", "o.Ä.",
     "i. d. R.", "bzw.", "ggf.", "etc.", "evtl.", "inkl.", "vgl.", "bspw.",
     "sog.", "ca.", "max.", "min.", "Nr.", "Abs.",
+    # Issue #37 (Mapping-QS): "(engl. Predictive Maintenance)" wurde mitten im Satz
+    # getrennt und erzeugte Fragment-Doppelpaare (OPS.1.1.1.A26, INF.13.A18). Der
+    # Korpus-Scan fand keine weiteren fehlenden Abkuerzungen (alle anderen
+    # Kandidaten sind legitime satzfinale Verben).
+    "engl.",
 )
 # Sentence boundary: terminal punctuation, whitespace, then an uppercase/quote/paren opener.
 SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+(?=[A-ZÄÖÜ„\"(])")
