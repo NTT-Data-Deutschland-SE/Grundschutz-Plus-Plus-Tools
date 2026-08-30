@@ -1,0 +1,90 @@
+PAIR|DEV.1.1|APP.1.1.A10|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DEV.1.1|APP.1.1.A10|S4|inhalt=grenzwertig|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DEV.1.1|APP.4.2.A26|S2|inhalt=grenzwertig|relation=ok|satz=ok+1|begr=ok|flags=bulk-noise
+PAIR|DEV.1.1|APP.4.3.A19|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DEV.1.1|APP.4.6.A5|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DEV.1.1|APP.7.A1|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DEV.1.1|APP.7.A2|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DEV.1.1|APP.7.A5|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DEV.1.1|CON.8.A11|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DEV.1.1|CON.8.A16|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DEV.1.1|CON.8.A2|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DEV.1.1|CON.8.A2|S4|inhalt=grenzwertig|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DEV.1.1|INF.14.A7|S4|inhalt=grenzwertig|relation=ok|satz=ok|begr=ok|flags=bulk-noise
+CTRL|DEV.1.1|hilfreich=ja|drop=1/13|drop-ids=INF.14.A7:S4|luecken=-
+KOMMENTAR: Die Kernkandidaten (CON.8.A2/A11/A16, APP.7.A1/A2/A5, APP.4.6.A5) sitzen und machen die Liste für einen migrierenden ISB brauchbar. Alle 13 Paare tragen aber dieselbe Template-Begründung ("fordert allgemein die Verankerung von Verfahren und Regelungen ..., was X abdeckt"); bei den Randfällen INF.14.A7:S4 (GA-Sicherheitsrichtlinie aus der Gebäudeautomation), CON.8.A2:S4 (Einhaltung ist nicht dasselbe wie Verankerung) und den Endbenutzer-Makros aus APP.1.1.A10 ersetzt die Floskel die eigentlich nötige Scope-Prüfung. APP.4.2.A26:S1 (Custom-Code-Managementprozess) wäre der stärkere Träger als das zitierte S2.
+
+PAIR|DEV.4.4|CON.8.A6|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DEV.4.4|APP.6.A4|S7|inhalt=grenzwertig|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DEV.4.4|CON.8.A20|S3|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|DEV.4.4|hilfreich=ja|drop=0/3|drop-ids=-|luecken=-
+KOMMENTAR: CON.8.A6:S2 und CON.8.A20:S3 sind exakt die richtigen Wiederverwendungs-Anker, die Relationswahl ist nachvollziehbar. APP.6.A4:S7 ist betriebsseitige Installations-Integritätsprüfung statt entwicklungsseitiger Release-Prüfung — als intersects-with ehrlich etikettiert, für die Migration aber nur bedingt verwertbar, da anderer Akteur und andere Lebenszyklusphase. CON.8.A6:S1 (vertrauenswürdige Quellen) bleibt ungenutzt, obwohl die Guidance den Bezug über verifizierte Repositories ausdrücklich nennt — trüge allerdings nur über die Guidance.
+
+PAIR|DEV.5.2|SYS.3.2.1.A5|S1|inhalt=nein|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|DEV.5.2|hilfreich=nein|drop=1/1|drop-ids=SYS.3.2.1.A5:S1|luecken=-
+KOMMENTAR: Rollen-Inversion: DEV.5.2 verpflichtet die entwickelnde Seite, Auftraggeber über den Update-Zeitraum zu informieren; SYS.3.2.1.A5:S1 verpflichtet den Käufer mobiler Geräte, auf solche Herstellerangaben zu achten — eine bestehende A5-Umsetzung zahlt in DEV.5.2 nichts ein. Die Begründung benennt das "beschaffungsseitige Pendant" immerhin ehrlich, gemappt wurde es trotzdem. Eine ehrliche Leermenge wäre hier hilfreicher; herstellerseitige Substanz läge allenfalls im Umfeld von CON.8.A8 (Bereitstellung von Patches und Updates).
+
+PAIR|DEV.1.2|CON.8.A11|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|DEV.1.2|hilfreich=ja|drop=0/1|drop-ids=-|luecken=-
+KOMMENTAR: Sauberes Paar: Das Fragment "aktuell gehalten" aus CON.8.A11:S1 trägt die Überprüfungspflicht, und intersects-with ist korrekt, weil derselbe Satz auch die Erstellung (DEV.1.1) enthält. Die Begründung greift genau das richtige Satzfragment. Mehr gibt die ED23-Substanz zu diesem Meta-Control kaum her.
+
+PAIR|DEV.4.11|APP.4.3.A19|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DEV.4.11|APP.4.6.A22|S1|inhalt=ja|relation=falsch->intersects-with|satz=ok|begr=geschoent|flags=-
+PAIR|DEV.4.11|CON.8.A7|S1|inhalt=ja|relation=ok|satz=ok+7|begr=geschoent|flags=-
+PAIR|DEV.4.11|OPS.1.1.6.A12|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DEV.4.11|OPS.1.1.6.A2|S1|inhalt=ja|relation=ok|satz=ok|begr=geschoent|flags=-
+CTRL|DEV.4.11|hilfreich=ja|drop=0/5|drop-ids=-|luecken=-
+KOMMENTAR: Inhaltlich sind alle fünf Ziele echte Treffer; CON.8.A7 und OPS.1.1.6.A2/A12 sind die zentralen Wiederverwendungs-Anker. Fehlermuster: Die Begründungen schreiben Guidance-Beispiele dem normativen Statement zu ("fordert das Testen ... mittels Unit-, Integrations- und Regressionstests", "inklusive ... SAST"), obwohl das Statement nur Testen im Einklang mit den Verfahren fordert. Bei CON.8.A7 widerspricht die Abdeckungs-Behauptung ("deckt ... inhaltlich ab") der eigenen subset-of-Relation; APP.4.6.A22 als superset-of ist überzogen, da "Änderungen testen" kein Werkzeug-Mandat zur Codeanalyse subsumiert. CON.8.A7:S7 (statische Code-Analyse) gehörte zusätzlich zitiert.
+
+SUMMARY|DEV|pairs=23|ja=17|grenzwertig=5|nein=1|relation-falsch=1|satz-falsch=0|begr-problem=3
+TOP-PROBLEME:
+- Rollen-Inversion als Treffer: DEV.5.2→SYS.3.2.1.A5:S1 mappt die Käuferpflicht ("MUSS die Institution darauf achten, dass die herstellende Institution angibt") auf die herstellerseitige Informationspflicht — einziges Paar des Controls, für die Migration wertlos.
+- Guidance wird als Norm ausgegeben: OPS.1.1.6.A2:S1 ("fordert das Testen von Quellcodeänderungen mittels Unit-, Integrations- und Regressionstests") und APP.4.6.A22:S1 ("inklusive automatisierter statischer Codeanalysen wie SAST") behaupten Methodenforderungen, die nur in der nicht-normativen Guidance stehen.
+- Relation und Begründung widersprechen sich: CON.8.A7:S1 ist als subset-of etikettiert, die Begründung behauptet aber "deckt damit ... inhaltlich ab"; APP.4.6.A22:S1 trägt superset-of, wo intersects-with korrekt wäre.
+- DEV.1.1 lebt von einer über alle 13 Paare kopierten Template-Begründung ("fordert allgemein die Verankerung von Verfahren und Regelungen"), die auch thematisch entfernte Ziele wie INF.14.A7:S4 (Gebäudeautomation) und CON.8.A2:S4 ("MUSS eingehalten werden" ≠ Verankerung) gleichlautend trägt.
+- Zusätzliche Satz-Treffer werden verschenkt: CON.8.A7:S7 (statische Code-Analyse) und APP.4.2.A26:S1 (Custom-Code-Managementprozess) wären die eigentlichen bzw. ergänzenden Träger gewesen.
+
+PAIR|DLS.1.1|IND.1.A11|S9|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DLS.1.1|ISMS.1.A5|S4|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DLS.1.1|OPS.2.2.A14|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DLS.1.1|OPS.2.2.A14|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DLS.1.1|OPS.2.2.A9|S5|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DLS.1.1|OPS.2.3.A19|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DLS.1.1|SYS.1.8.A9|S5|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=ok|flags=-
+PAIR|DLS.1.1|OPS.1.1.1.A18|S1|inhalt=ja|relation=ok|satz=ok+4|begr=ok|flags=-
+PAIR|DLS.1.1|OPS.2.3.A14|S5|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DLS.1.1|OPS.2.3.A7|S1|inhalt=ja|relation=falsch->superset-of|satz=ok|begr=ok|flags=-
+PAIR|DLS.1.1|OPS.3.2.A6|S1|inhalt=grenzwertig|relation=ok|satz=ok|begr=geschoent|flags=doppelt
+CTRL|DLS.1.1|hilfreich=ja|drop=1/11|drop-ids=OPS.3.2.A6:S1|luecken=Kontrolle/Überwachung der Einhaltung von Sicherheitsvereinbarungen durch Dienstleister (laut Guidance Kernbestandteil des Verfahrens, kein Paar deckt Monitoring/Audit ab)
+KOMMENTAR: Die Beendigungs-Schiene ist stark besetzt (OPS.2.3.A7/A19/A14, OPS.2.2.A14/A9, ISMS.1.A5), die Steuerungs-Hälfte hängt an einem einzigen Paar (OPS.1.1.1.A18:S1, dessen S4 als Verankerungs-Satz zusätzlich zu zitieren wäre). Relationstypen wackeln: Der Kerntreffer OPS.2.3.A7:S1 bekommt intersects-with, obwohl die Begründung selbst "deckt ... die Kernforderung ... direkt ab" sagt, während das dünne SYS.1.8.A9:S5 (bloßes Vertragsende-Datum in SLAs) ein superset-of erhält. OPS.3.2.A6:S1 ist die anbieterseitige, nahezu wortgleiche Dublette von OPS.2.3.A7:S1 und für kundenseitige Dienstleistersteuerung irreführend; die Begründung unterschlägt den Rollenwechsel.
+
+PAIR|DLS.2.3|OPS.2.3.A23|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DLS.2.3|OPS.3.2.A20|S1|inhalt=grenzwertig|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DLS.2.3|OPS.2.2.A17|S2|inhalt=ja|relation=ok|satz=ok|begr=geschoent|flags=-
+CTRL|DLS.2.3|hilfreich=teilweise|drop=0/3|drop-ids=-|luecken=-
+KOMMENTAR: Kein Paar trifft den eigentlichen Kern des Controls — Verschlüsselung, die der Anbieter nicht entschlüsseln kann: OPS.2.3.A23:S2 erlaubt auch anbieterseitige Speichermedien-Verschlüsselung, OPS.3.2.A20:S1 setzt sogar eine mit dem Anbieter abgestimmte Methode voraus (zudem anbieterseitiger Baustein), nur OPS.2.2.A17:S2 (eigene Mechanismen plus Schlüsselmanagement) kommt dem Provider-blind-Szenario nahe. Die subset-of-Etiketten sind dafür ehrlich konservativ gewählt. Die A17-Begründung überzeichnet: Satz 2 fordert Schlüsselmanagement, wenn eigene Verschlüsselung genutzt wird — er "deckt" die Verschlüsselung selbst nicht "ab".
+
+PAIR|DLS.4.1.1|OPS.2.2.A15|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|DLS.4.1.1|hilfreich=ja|drop=0/1|drop-ids=-|luecken=-
+KOMMENTAR: Präziser Einzeltreffer: Portabilitätstests (OPS.2.2.A15:S2) sind der plausibelste ED23-Anker für das Testen der Verarbeitungs-Unabhängigkeit; intersects-with ist wegen unterschiedlicher Auslöser (regelmäßig vs. vor Außerbetriebnahme) korrekt. Die Verbindung stützt sich erkennbar auf die Guidance-Beispiele (Export-/Weiterverarbeitungstests), trägt aber auch über das Statement allein. Dass für die klassischen Outsourcing-Bausteine keine Entsprechung erscheint, liegt eher an der ED23-Substanz als am Mapping.
+
+PAIR|DLS.2.2|CON.9.A8|S1|inhalt=ja|relation=ok|satz=ok+2|begr=ok|flags=-
+PAIR|DLS.2.2|OPS.2.3.A23|S1|inhalt=ja|relation=falsch->superset-of|satz=ok|begr=ok|flags=-
+PAIR|DLS.2.2|OPS.3.2.A10|S1|inhalt=grenzwertig|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DLS.2.2|OPS.3.2.A20|S1|inhalt=grenzwertig|relation=ok|satz=ok|begr=geschoent|flags=-
+CTRL|DLS.2.2|hilfreich=ja|drop=1/4|drop-ids=OPS.3.2.A10:S1|luecken=-
+KOMMENTAR: OPS.2.3.A23:S1 und CON.9.A8 sind die richtigen Anker; bei A23 ist die Relation aber verdreht — DLS.2.2 (alle Daten an Anbieter) ist die breitere Forderung gegenüber "sensible Daten" an Outsourcing-Anbietende, also superset-of statt subset-of, was die eigene Begründung ("deckt ... die Forderung von Satz 1 inhaltlich direkt ab") sogar nahelegt. Die beiden OPS.3.2-Paare sind anbieterseitige Spiegel; A10:S1 ("sicherer Kommunikationskanal" mit organisatorischem Schwerpunkt auf Kommunikationspartnern) ist der dünnste und verzichtbar. Bei CON.9.A8 wäre Satz 2 (Einsatz ausreichend sicherer Verfahren) zusätzlich zu zitieren, da er dem Methoden-Parameter des Controls entspricht.
+
+PAIR|DLS.3.2|OPS.2.2.A1|S8|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|DLS.3.2|OPS.2.3.A2|S4|inhalt=ja|relation=falsch->equivalent-to|satz=ok|begr=ok|flags=-
+PAIR|DLS.3.2|OPS.2.3.A18|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|DLS.3.2|hilfreich=ja|drop=0/3|drop-ids=-|luecken=-
+KOMMENTAR: Inhaltlich das sauberste Control der Stichprobe: OPS.2.3.A2:S4 ist der Volltreffer, OPS.2.2.A1:S8 und OPS.2.3.A18:S1 ergänzen plausibel und mit ehrlichen Relationen. Einziger Fehler: A2:S4 als subset-of, obwohl Trigger (Gefährdungslage/Prozessänderungen), Turnus und Gegenstand nahezu deckungsgleich sind — die Begründung sagt selbst "deckt ... inhaltlich direkt ab", also equivalent-to. Die KANN-Verbindlichkeit des GS++-Controls gegenüber dem MUSS in A2:S4 bleibt unkommentiert, verwischt aber nichts.
+
+SUMMARY|DLS|pairs=22|ja=17|grenzwertig=5|nein=0|relation-falsch=4|satz-falsch=0|begr-problem=3
+TOP-PROBLEME:
+- Anbieterseitige Spiegel-Anforderungen aus OPS.3.2 (A6:S1, A10:S1, A20:S1) werden kommentarlos auf kundenseitige DLS-Controls gemappt; A6:S1 ("Es MÜSSEN Regelungen getroffen werden, wie verfahren wird...") dupliziert OPS.2.3.A7:S1 nahezu wortgleich von der falschen Rollenseite.
+- Relationstypen bei Kerntreffern systematisch zu schwach: OPS.2.3.A7:S1 (intersects-with statt superset-of), OPS.2.3.A23:S1 (subset-of statt superset-of) und OPS.2.3.A2:S4 (subset-of statt equivalent-to) — jeweils behauptet die eigene Begründung "deckt ... direkt ab" und widerspricht damit dem Etikett.
+- Die Floskel "deckt ... inhaltlich ab" erscheint unabhängig vom gewählten Relationstyp und übertüncht Teilaspekte, z. B. bei OPS.3.2.A20:S1 unter DLS.2.2 (Speicher-Hälfte des Satzes ignoriert) und OPS.2.2.A17:S2 (Satz fordert Schlüsselmanagement, nicht die Verschlüsselung selbst).
+- SYS.1.8.A9:S5 ("Es SOLLTE genau geregelt werden, wann der Vertrag ... endet") wird per superset-of zum Beendigungs-Verfahren hochgezogen — ein Laufzeit-Detail in SLAs, kein Verfahren zur geordneten Beendigung.
+- DLS.1.1 lässt die von der eigenen Guidance geforderte "Kontrolle der Einhaltung von Vereinbarungen zur Sicherheit" ungedeckt, und DLS.2.3 trifft sein Unterscheidungsmerkmal ("für diesen nicht entschlüsselbar") in keinem der drei Paare.

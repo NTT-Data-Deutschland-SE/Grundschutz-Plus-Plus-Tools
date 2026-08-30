@@ -1,0 +1,65 @@
+PAIR|BER.3.21|APP.2.2.A16|S6|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|BER.3.21|SYS.1.2.2.A6|S3|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|BER.3.21|SYS.1.2.3.A5|S3|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|BER.3.21|hilfreich=ja|drop=0/3|drop-ids=-|luecken=Thema Secret-/Token-Management außerhalb Windows (z. B. APP.4.4 Kubernetes-Secrets)
+KOMMENTAR: Alle drei Paare treffen denselben sachlich korrekten Kern: (Group) Managed Service Accounts als Windows-Ausprägung der automatischen Verwaltung von Dienste-Konten-Zugangsdaten; superset-of sauber, Begründungen ehrlich. Auffällig: reine Windows-Lastigkeit, technologieübergreifende Umsetzungen (Vault, Kubernetes) fehlen.
+PAIR|BER.7.6|CON.1.A4|S7|inhalt=ja|relation=ok|satz=ok|begr=geschoent|flags=-
+CTRL|BER.7.6|hilfreich=ja|drop=0/1|drop-ids=-|luecken=CON.1.A1 (Auswahl geeigneter kryptografischer Verfahren, "etablierte Algorithmen")
+KOMMENTAR: Das eine Paar ist der richtige Anker im Schlüsselmanagement, subset-of stimmt. Begründung behauptet aber "deckt damit den sicheren Schlüsselaustausch direkt ab" — kehrt die Teilmengenrichtung um. CON.1.A1 fehlt als naheliegendes zweites Ziel.
+PAIR|BER.7.12|SYS.2.1.A18|S3|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|BER.7.12|CON.1.A4|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|BER.7.12|CON.1.A4|S8|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|BER.7.12|hilfreich=ja|drop=0/3|drop-ids=-|luecken=Thema Zertifikats-/Schlüsselprüfung in Client-Bausteinen (z. B. APP.1.2 Webbrowser)
+KOMMENTAR: Sauberes kleines Mapping: Fingerprint-Prüfung neuer CA-Zertifikate als konkrete Ausprägung, CON.1.A4 S2/S8 als konzeptionelle Verankerung; subset-of vertretbar, S2-Begründung benennt den "Teilaspekt" explizit.
+PAIR|BER.2.4|APP.2.1.A12|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|BER.2.4|hilfreich=teilweise|drop=0/1|drop-ids=-|luecken=OPS.1.1.5.A3 (Ereignisliste: Einrichten/Ändern von Benutzenden, Gruppen und Berechtigungen); Protokollierung in IAM-nahen Bausteinen (ORP.4, APP.2.2)
+KOMMENTAR: Das einzige Paar ist korrekt, intersects-with genau richtig. Mit nur einem Treffer bleibt die Liste dünn: die zentrale ED23-Protokollierungsanforderung für Konten-/Berechtigungsänderungen fehlt.
+SUMMARY|BER-teilB|pairs=8|ja=8|grenzwertig=0|nein=0|relation-falsch=0|satz-falsch=0|begr-problem=1
+TOP-PROBLEME:
+- BER.7.6/CON.1.A4:S7: Begründung kehrt die subset-of-Richtung um ("deckt damit den sicheren Schlüsselaustausch direkt ab").
+- Lücken statt Fehlpaare sind das Hauptproblem der 1-Paar-Controls: BER.2.4 ohne OPS.1.1.5.A3, BER.7.6 ohne CON.1.A1.
+- BER.3.21 dreimal dasselbe (g)MSA-Muster — korrekt, aber rein Windows-lastig, kein technologieneutrales Secret-Management (APP.4.4).
+PAIR|REA.2.1|OPS.1.2.2.A8|S7|inhalt=grenzwertig|relation=ok|satz=ok|begr=ok|flags=nur-guidance
+PAIR|REA.2.1|IND.1.A10|S6|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|REA.2.1|DER.1.A15|S8|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=nur-guidance
+PAIR|REA.2.1|DER.2.1.A10|S1|inhalt=grenzwertig|relation=ok|satz=ok|begr=ok|flags=nur-guidance
+PAIR|REA.2.1|DER.2.1.A11|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|REA.2.1|DER.2.1.A19|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|REA.2.1|hilfreich=ja|drop=1/6|drop-ids=OPS.1.2.2.A8:S7|luecken=-
+KOMMENTAR: Kern stimmt: DER.2.1.A11 (Einstufungsverfahren) und DER.2.1.A19 (Prioritäten) sind die richtigen Migrationsanker, intersects-with passt. Muster: Statement fordert nur Prioritätszuweisung, drei Paare tragen erst über den Erstreaktions-Teil der Guidance. Archiv-Spezialfall OPS.1.2.2.A8:S7 zu dünn.
+PAIR|REA.2.6|CON.7.A6|S3|inhalt=ja|relation=ok|satz=ok|begr=geschoent|flags=-
+PAIR|REA.2.6|DER.1.A5|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|REA.2.6|DER.2.1.A5|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|REA.2.6|DER.2.1.A5|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|REA.2.6|DER.2.1.A5|S4|inhalt=ja|relation=falsch->superset-of|satz=ok|begr=ok|flags=-
+PAIR|REA.2.6|DER.2.3.A2|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|REA.2.6|DER.2.3.A2|S3|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|REA.2.6|DER.2.3.A2|S8|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|REA.2.6|DER.2.3.A5|S1|inhalt=ja|relation=ok|satz=ok+2|begr=ok|flags=-
+PAIR|REA.2.6|DER.2.3.A9|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|REA.2.6|DER.2.3.A9|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|REA.2.6|OPS.1.1.4.A9|S5|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|REA.2.6|SYS.4.4.A16|S2|inhalt=ja|relation=ok|satz=ok+3|begr=ok|flags=-
+PAIR|REA.2.6|DER.2.1.A7|S1|inhalt=ja|relation=ok|satz=ok|begr=geschoent|flags=-
+PAIR|REA.2.6|IND.1.A10|S5|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|REA.2.6|hilfreich=ja|drop=0/15|drop-ids=-|luecken=DER.2.1.A6 (Wiederherstellung der Betriebsumgebung nach Sicherheitsvorfällen)
+KOMMENTAR: Inhaltlich das stärkste Control der Praktik: DER.2.1.A5 und die DER.2.3-Bereinigungskette decken Ursachenanalyse und Behandlung präzise ab. Schwächen: DER.2.1.A5:S4 intersects-with trotz "umfasst"-Begründung (superset-of); CON.7.A6:S3 ("vollumfänglich") und DER.2.1.A7:S1 schönen die Abdeckung; fehlende Zusatzträger DER.2.3.A5 S2, SYS.4.4.A16 S3; DER.2.1.A6 fehlt ganz.
+PAIR|REA.2.6.2.1|DER.2.1.A4|S3|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|REA.2.6.2.1|hilfreich=ja|drop=0/1|drop-ids=-|luecken=-
+KOMMENTAR: Punktgenauer Einzeltreffer: Meldepflichten für Behörden exakt der Regelungsgegenstand, subset-of plausibel.
+PAIR|REA.2.2|DER.1.A17|S1|inhalt=ja|relation=ok|satz=ok|begr=geschoent|flags=-
+PAIR|REA.2.2|DER.1.A17|S3|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|REA.2.2|hilfreich=ja|drop=0/2|drop-ids=-|luecken=OPS.1.1.4.A9:S1 (Virenschutz soll automatisch blockieren und melden)
+KOMMENTAR: DER.1.A17 exakt richtiges Ziel für automatische Erstreaktion, beide Relationen vertretbar. Begründung zu S1 verwischt die Verbindlichkeit: REA.2.2 "fordert" nichts — KANN-Statement auf sec_level erhöht.
+PAIR|REA.2.6.1|INF.11.A6|S7|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=geschoent|flags=-
+PAIR|REA.2.6.1|DER.2.1.A16|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|REA.2.6.1|DER.2.1.A16|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|REA.2.6.1|hilfreich=ja|drop=1/3|drop-ids=INF.11.A6:S7|luecken=-
+KOMMENTAR: DER.2.1.A16 S1/S2 Volltreffer, subset-of korrekt. INF.11.A6:S7 Fahrzeug-Nischenfall: superset-of falsch ("Situationen" umfassen auch Unfälle/Ausfälle), "allgemeingültig abgedeckt" geschönt.
+SUMMARY|REA|pairs=27|ja=24|grenzwertig=3|nein=0|relation-falsch=2|satz-falsch=2|begr-problem=4
+TOP-PROBLEME:
+- Begründungen schönen Richtung und Verbindlichkeit (4 Fälle): REA.2.2/DER.1.A17:S1 macht aus KANN ein "fordert"; CON.7.A6:S3 "vollumfänglich"; DER.2.1.A7:S1 "deckt ab" trotz subset-of; INF.11.A6:S7 "allgemeingültig".
+- REA.2.1 trägt teils nur über die Guidance: DER.1.A15:S8, DER.2.1.A10:S1, OPS.1.2.2.A8:S7 hängen am Erstreaktions-Teil.
+- Nischen-Paare mit geringem Migrationswert: OPS.1.2.2.A8:S7 (Archivzugriffs-Protokolle), INF.11.A6:S7 (Fahrzeug-Checklisten, zudem falsche Relation).
+- Relationsfehler bei klarer Subsumtion: DER.2.1.A5:S4 intersects-with trotz "umfasst".
+- Fehlende Träger/Ziele trotz Guidance-Nennung: DER.2.3.A5 S2, SYS.4.4.A16 S3, DER.2.1.A6 (Wiederherstellung), OPS.1.1.4.A9:S1.

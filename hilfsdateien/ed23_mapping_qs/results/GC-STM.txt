@@ -1,0 +1,90 @@
+PAIR|GC.11.1|ISMS.1.A13|S3|inhalt=ja|relation=falsch->superset-of|satz=ok|begr=ok|flags=-
+PAIR|GC.11.1|ISMS.1.A13|S4|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GC.11.1|ISMS.1.A13|S5|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GC.11.1|ISMS.1.A13|S6|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GC.11.1|DER.3.1.A27|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GC.11.1|DER.4.A12|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GC.11.1|DER.4.A12|S3|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=nur-guidance
+PAIR|GC.11.1|INF.12.A10|S8|inhalt=nein|relation=falsch->intersects-with|satz=ok|begr=geschoent|flags=bulk-noise
+PAIR|GC.11.1|ISMS.1.A12|S5|inhalt=ja|relation=ok|satz=ok|begr=geschoent|flags=-
+PAIR|GC.11.1|ISMS.1.A12|S7|inhalt=ja|relation=ok|satz=ok|begr=geschoent|flags=-
+CTRL|GC.11.1|hilfreich=ja|drop=1/10|drop-ids=INF.12.A10:S8|luecken=-
+KOMMENTAR: Der Kern sitzt: ISMS.1.A13 ist vollständig und richtig als Hauptgegenstück erfasst, die Lebenszyklus-Argumentation trägt auch für Audit-, Notfall- und Berichtsdokumente. Fehlermuster sind die Ausweitung der ISMS-Dokumentenlenkung auf betriebliche Fachdokumentation (INF.12.A10, Verkabelungsdoku der Haustechnik — einziges klares Fehlpaar) und Begründungen, die Eigenschaften hinzudichten: "revisionssicher" (ISMS.1.A12 S5/S7) steht weder im Statement noch in der Guidance.
+
+PAIR|GC.9.1.1.1|IND.1.A1|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GC.9.1.1.1|ISMS.1.A4|S1|inhalt=ja|relation=falsch->equivalent-to|satz=ok|begr=ok|flags=-
+PAIR|GC.9.1.1.1|ISMS.1.A4|S2|inhalt=grenzwertig|relation=ok|satz=ok|begr=ok|flags=nur-guidance
+CTRL|GC.9.1.1.1|hilfreich=ja|drop=0/3|drop-ids=-|luecken=-
+KOMMENTAR: Die Kernzuordnung ISMS.1.A4 ist gefunden und für den ISB direkt verwertbar. subset-of bei S1 unterschätzt das Control — die Begründung sagt selbst "entspricht", und GC.9.1.1.1 fordert zusätzlich die unmittelbare Unterstellung unter die Leitung. Das Aufgaben-Paar (S2) trägt nur über die Guidance-Aufgabenliste, das Statement regelt allein die Zuweisung.
+
+PAIR|GC.9.1.1.1.2|ISMS.1.A4|S4|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|GC.9.1.1.1.2|hilfreich=ja|drop=0/1|drop-ids=-|luecken=-
+KOMMENTAR: Punktgenaue 1:1-Zuordnung: das direkte Berichtsrecht an die Institutionsleitung (ISMS.1.A4 S4) ist exakt das Vorspracherecht. Nichts zu beanstanden.
+
+PAIR|GC.3.1.1|APP.3.2.A7|S1|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=geschoent|flags=bulk-noise
+PAIR|GC.3.1.1|APP.3.2.A7|S2|inhalt=grenzwertig|relation=ok|satz=ok|begr=geschoent|flags=-
+PAIR|GC.3.1.1|APP.6.A2|S5|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=geschoent|flags=bulk-noise
+PAIR|GC.3.1.1|DER.1.A2|S3|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=geschoent|flags=bulk-noise
+PAIR|GC.3.1.1|NET.3.2.A21|S2|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=geschoent|flags=bulk-noise
+PAIR|GC.3.1.1|OPS.1.1.5.A8|S2|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=geschoent|flags=bulk-noise
+PAIR|GC.3.1.1|OPS.2.2.A2|S4|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=geschoent|flags=bulk-noise
+PAIR|GC.3.1.1|ORP.5.A1|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GC.3.1.1|ORP.5.A4|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GC.3.1.1|APP.4.2.A6|S13|inhalt=grenzwertig|relation=ok|satz=ok|begr=geschoent|flags=-
+CTRL|GC.3.1.1|hilfreich=teilweise|drop=6/10|drop-ids=APP.3.2.A7:S1,APP.6.A2:S5,DER.1.A2:S3,NET.3.2.A21:S2,OPS.1.1.5.A8:S2,OPS.2.2.A2:S4|luecken=-
+KOMMENTAR: Die beiden echten Gegenstücke (ORP.5.A1 und ORP.5.A4, subset-of wegen "vertraglich/sonstig") sind sauber und ehrlich gemappt. Daneben systematische Masse statt Klasse: jeder verstreute "rechtliche Rahmenbedingungen beachten"-Satz aus Fachbausteinen (Web, TLS-Proxy, Protokoll-Archivierung, SAP) wird per Template-Begründung als superset-of eingesammelt — Analysieren deckt aber kein Einhalten/Sicherstellen ab, richtig wäre durchgehend intersects-with. Ein migrierender ISB verliert hier Prüfzeit an Zwei-Wort-Rechtskaveate ohne Wiederverwendungswert.
+
+PAIR|GC.1.2|DER.2.1.A7|S3|inhalt=ja|relation=falsch->intersects-with|satz=ok|begr=ok|flags=-
+PAIR|GC.1.2|DER.3.2.A2|S3|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GC.1.2|DER.2.1.A2|S7|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GC.1.2|ISMS.1.A12|S6|inhalt=grenzwertig|relation=ok|satz=ok|begr=ok|flags=nur-guidance
+CTRL|GC.1.2|hilfreich=ja|drop=0/4|drop-ids=-|luecken=ISMS.1.A3 (Verabschiedung/Inkraftsetzung der Sicherheitsleitlinie durch die Institutionsleitung)
+KOMMENTAR: Substanziell alles echte Leitungs-Freigaben von ISMS-Verfahren und -Richtlinien, gut wiederverwendbar. Inkonsequente Relationstypen bei strukturgleichen Sätzen: DER.2.1.A7 S3 bekommt superset-of, DER.2.1.A2 S7 intersects-with, obwohl beide "Verabschiedung plus Zusatzaspekt" (zugänglich machen bzw. IT-Betrieb-Abstimmung) enthalten. Auffällig fehlt die prominenteste Leitungsfreigabe des ED23, die Leitlinien-Inkraftsetzung; das ISMS.1.A12-Paar trägt nur über die Guidance ("Freigabe sollte dokumentiert werden").
+
+PAIR|STM.2.1.2|APP.6.A9|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|STM.2.1.2|IND.1.A4|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|STM.2.1.2|IND.2.7.A1|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|STM.2.1.2|INF.13.A8|S1|inhalt=ja|relation=falsch->intersects-with|satz=ok|begr=ok|flags=-
+PAIR|STM.2.1.2|SYS.4.3.A1|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|STM.2.1.2|OPS.1.1.1.A6|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|STM.2.1.2|ORP.1.A8|S3|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|STM.2.1.2|hilfreich=ja|drop=0/7|drop-ids=-|luecken=Netzplan/Erfassung der Netz- und Kommunikationskomponenten (NET.1.1), obwohl Guidance diese Asset-Kategorie explizit nennt
+KOMMENTAR: Stärkste Liste der Praktik: Inventar- und Bestandsverzeichnis-Anforderungen quer durch die Schichten sind für die Asset-Erfassung echt wiederverwendbar, und die Begründungen unterscheiden meist sauber zwischen fachspezifischer Ausprägung (superset-of) und Überschneidung (intersects-with bei ITAM/Betriebsmitteln). Die befürchtete Methodik-auf-Technik-Fehlzuordnung greift hier nicht, weil die ED23-Sätze selbst Erfassungspflichten sind. Nur bei INF.13.A8 überdeckt superset-of die dortige Pflege-Komponente ("erstellt und gepflegt") — beim strukturgleichen OPS.1.1.1.A6 hat das Mapping selbst intersects-with gewählt.
+
+PAIR|STM.3.1|ISMS.1.A11|S5|inhalt=nein|relation=falsch->intersects-with|satz=falsch->1|begr=geschoent|flags=-
+CTRL|STM.3.1|hilfreich=nein|drop=1/1|drop-ids=ISMS.1.A11:S5|luecken=-
+KOMMENTAR: Reiner Wortgleichheits-Fehlgriff: "Überprüfungen des Sicherheitsniveaus" in ISMS.1.A11 S5 meint das erreichte Sicherheitsniveau der Institution (Revisionen, Audits), STM.3.1 dagegen die Überprüfung der Einstufung normal-SdT/erhöht einzelner Anforderungen im Anforderungspaket. Wenn überhaupt, trüge S1 (Angemessenheitsprüfung der Sicherheitskonzepte bei Kontextänderung). GS++-Methodik-Spezifikum ohne echtes Kompendiums-Gegenstück — eine leere Liste wäre ehrlicher als dieses Paar.
+
+PAIR|STM.4.1|APP.2.2.A5|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|STM.4.1|OPS.3.2.A12|S1|inhalt=ja|relation=falsch->intersects-with|satz=ok|begr=ok|flags=-
+PAIR|STM.4.1|DER.4.A7|S2|inhalt=ja|relation=ok|satz=ok|begr=geschoent|flags=-
+PAIR|STM.4.1|ORP.5.A5|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=nur-guidance
+CTRL|STM.4.1|hilfreich=ja|drop=0/4|drop-ids=-|luecken=-
+KOMMENTAR: Die Trigger-Logik der Guidance (hoher Schutzbedarf, Ausnahmen/Nicht-Umsetzung) wird überwiegend sauber auf ED23-Risikobetrachtungs-Sätze gelegt; ORP.5.A5 (Risikoabschätzung bei Ausnahmen) ist ein starker, präzise begründeter Fund. Schwächen: OPS.3.2.A12 fordert auch regelmäßige Betrachtung, die die anlassbezogene GS++-Risikobetrachtung nicht subsumiert; bei DER.4.A7 widerspricht die "deckt ab"-Begründung dem eigenen subset-of-Label.
+
+PAIR|STM.1.2|IND.1.A4|S7|inhalt=ja|relation=falsch->intersects-with|satz=ok+6|begr=ok|flags=-
+PAIR|STM.1.2|INF.14.A2|S3|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=geschoent|flags=-
+PAIR|STM.1.2|OPS.2.2.A4|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|STM.1.2|OPS.2.3.A1|S2|inhalt=grenzwertig|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|STM.1.2|hilfreich=ja|drop=1/4|drop-ids=INF.14.A2:S3|luecken=Netzplan-Dokumentation der Außenverbindungen (NET.1.1)
+KOMMENTAR: Cloud- und Outsourcing-Schnittstellen (OPS.2.2.A4, OPS.2.3.A1) sind plausible Wiederverwendung für die Verbund-Abgrenzung. Bei IND.1.A4 zitiert das Mapping den Detailsatz S7 statt des eigentlichen Treffers S6 (Netzplan mit Außenschnittstellen), und S7 umfasst auch interne Zonenübergänge, die STM.1.2 (nur extern) nicht abdeckt. INF.14.A2 S3 regelt Betreiber-Koordination zwischen GA- und TGA-Organisationen — die Externität zum Informationsverbund ist nur unterstellt.
+
+PAIR|STM.2.1|ISMS.1.A10|S1|inhalt=ja|relation=falsch->subset-of|satz=ok|begr=ok|flags=-
+PAIR|STM.2.1|ISMS.1.A7|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|STM.2.1|hilfreich=ja|drop=0/2|drop-ids=-|luecken=-
+KOMMENTAR: Richtige Ankerpunkte für die Paket-Modellierung — ein migrierender ISB findet hier genau die wiederverwendbare Modellierungsarbeit seines Sicherheitskonzepts. equivalent-to bei ISMS.1.A10 überzeichnet aber: das Sicherheitskonzept umfasst mehr als das Anforderungspaket (Maßnahmenableitung, Risikobewertung, Umsetzungskontrolle), GS++-seitig ist das ein Teilaspekt.
+
+SUMMARY|GC|pairs=28|ja=17|grenzwertig=10|nein=1|relation-falsch=10|satz-falsch=0|begr-problem=11
+TOP-PROBLEME:
+- GC.3.1.1 sammelt 6 von 10 Zielen per Template-superset-of ein: verstreute Rechtskaveate wie NET.3.2.A21:S2 ("Hierbei SOLLTEN die rechtlichen Rahmenbedingungen beachtet werden") oder OPS.1.1.5.A8:S2 werden mit der Copy-Paste-Formel "Analyse ... deckt Beachtung ab" vereinnahmt — Analysieren subsumiert kein Einhalten, korrekt wäre intersects-with.
+- Methodik-Control auf Betriebsdokumentation gemappt: GC.11.1→INF.12.A10:S8 (Dokumentenmanagement für Verkabelungs-Dokumentation) — ISMS-Dokumentenlenkung regelt keine Fachdoku der Haustechnik; einziges klares inhalt=nein der Praktik.
+- Begründungen dichten dem GS++-Control Eigenschaften an: GC.11.1→ISMS.1.A12:S5/S7 behaupten, GS++ fordere "revisionssichere" Archivierung — Statement und Guidance kennen nur Nachvollziehbarkeit und "ggf. auch Archivierung".
+- Relationstypen wackeln gerade bei Kernpaaren: ISMS.1.A4:S1 als subset-of, obwohl die eigene Begründung "entspricht" sagt; ISMS.1.A13:S3 als equivalent-to, obwohl GC.11.1 (kompletter Lebenszyklus) breiter ist als "Erstellung und Archivierung"; GC.1.2 vergibt für strukturgleiche Verabschiedungs-Sätze mal superset-of, mal intersects-with.
+- Lücke mit Ansage: GC.1.2 (Freigabe durch die Leitung) findet DER-Richtlinien und das Revisionshandbuch, aber nicht die Inkraftsetzung der Sicherheitsleitlinie (ISMS.1.A3), die naheliegendste Leitungsfreigabe des ED23.
+
+SUMMARY|STM|pairs=18|ja=15|grenzwertig=2|nein=1|relation-falsch=6|satz-falsch=1|begr-problem=3
+TOP-PROBLEME:
+- STM.3.1→ISMS.1.A11:S5 ist ein reiner Homonym-Treffer: "Sicherheitsniveau" meint dort das erreichte Niveau der Institution (Revisionen), im Control die normal-SdT/erhöht-Einstufung von Anforderungen — einziges Paar des Controls und irreführend; allenfalls S1 (Angemessenheitsprüfung der Sicherheitskonzepte) trüge.
+- superset-of überdeckt Zusatzpflichten der ED23-Sätze: INF.13.A8:S1 ("erstellt und gepflegt") und OPS.3.2.A12:S1 ("regelmäßig und anlassbezogen") enthalten Pflege- bzw. Regelmäßigkeitspflichten, die "festlegen" bzw. anlassbezogene Risikobetrachtung nicht subsumieren — beim strukturgleichen OPS.1.1.1.A6:S1 wählte das Mapping selbst intersects-with.
+- Satzwahl daneben: STM.1.2→IND.1.A4 zitiert den Detailsatz S7 statt des eigentlichen Treffers S6 (Netzplan mit Außenschnittstellen); INF.14.A2:S3 (Betreiber-Schnittstellen GA/TGA) unterstellt eine Externität, die der Satz nicht hergibt.
+- STM.2.1→ISMS.1.A10:S1 als equivalent-to überzeichnet die Deckung: das Sicherheitskonzept umfasst Maßnahmen, Risikobewertung und Umsetzungskontrolle, das Anforderungspaket ist davon ein Teilaspekt (subset-of).

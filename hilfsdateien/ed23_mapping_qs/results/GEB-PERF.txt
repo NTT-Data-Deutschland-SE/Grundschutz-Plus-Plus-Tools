@@ -1,0 +1,87 @@
+PAIR|GEB.10.2.7|INF.1.A17|S2|inhalt=ja|relation=ok|satz=ok+1|begr=ok|flags=-
+PAIR|GEB.10.2.7|INF.1.A18|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GEB.10.2.7|INF.1.A3|S3|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GEB.10.2.7|INF.1.A4|S5|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GEB.10.2.7|INF.1.A5|S2|inhalt=ja|relation=falsch->intersects-with|satz=ok|begr=geschoent|flags=-
+PAIR|GEB.10.2.7|INF.2.A10|S3|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GEB.10.2.7|INF.2.A8|S4|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=falsch|flags=-
+PAIR|GEB.10.2.7|INF.2.A9|S5|inhalt=ja|relation=falsch->intersects-with|satz=ok|begr=geschoent|flags=-
+PAIR|GEB.10.2.7|INF.5.A17|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GEB.10.2.7|INF.6.A1|S2|inhalt=ja|relation=falsch->intersects-with|satz=ok|begr=geschoent|flags=-
+PAIR|GEB.10.2.7|INF.1.A19|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GEB.10.2.7|INF.1.A34|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|GEB.10.2.7|hilfreich=ja|drop=1/12|drop-ids=INF.2.A8:S4|luecken=INF.2.A17 Brandfrüherkennung (Prüf-/Wartungssätze) — Verdacht
+KOMMENTAR: Thematisch sauber eingesammelte Prüf-Sätze aus den INF-Bausteinen, für einen migrierenden ISB direkt verwertbar. Typisches Fehlermuster: Sätze mit "geprüft UND gewartet" werden komplett per superset-of vereinnahmt, obwohl das Control nur die Überprüfung fordert. Bei INF.2.A8:S4 (reine Wartung) behauptet die Begründung fälschlich, die Guidance nenne "explizit" auch die Wartung.
+PAIR|GEB.5.3|INF.2.A1|S4|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GEB.5.3|INF.2.A1|S6|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GEB.5.3|INF.1.A23|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GEB.5.3|INF.2.A6|S3|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|GEB.5.3|hilfreich=ja|drop=0/4|drop-ids=-|luecken=-
+KOMMENTAR: Alle vier Paare treffen den Regelungsgegenstand physische Trennung/Zonen, die Relationen sind überwiegend vorsichtig als intersects-with gesetzt. Dass ein KANN-Control der Stufe "erhöht" auf Basis-MUSS-Anforderungen zeigt, wird nicht verschleiert. Für ein exotisches Control eine brauchbare, kompakte Liste.
+PAIR|GEB.9.1.1|INF.1.A2|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|GEB.9.1.1|hilfreich=ja|drop=0/1|drop-ids=-|luecken=-
+KOMMENTAR: Das einzige realistische ED23-Gegenstück (regelmäßige Prüfung der Stromkreis-Auslegung) ist gefunden und ehrlich als intersects-with eingestuft. Prädiktive Lastanalyse hat im ED23 keine echte Entsprechung — die knappe Liste ist korrekt.
+PAIR|GEB.9.3|INF.2.A4|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GEB.9.3|INF.2.A4|S3|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=nur-guidance
+PAIR|GEB.9.3|INF.2.A4|S4|inhalt=ja|relation=falsch->intersects-with|satz=ok|begr=ok|flags=nur-guidance
+CTRL|GEB.9.3|hilfreich=ja|drop=0/3|drop-ids=-|luecken=-
+KOMMENTAR: Inhaltlich alle drei Paare richtig auf INF.2.A4 fokussiert. Die Selektivitäts-/Parzellierungsaspekte (S3, S4) stehen aber nur in der nicht-normativen Guidance; das KANN-Statement fordert bloß die Installation, daher ist superset-of bei S4 überzogen.
+PAIR|GEB.10.1.3|INF.2.A16|S5|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GEB.10.1.3|INF.5.A19|S3|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|GEB.10.1.3|INF.5.A24|S1|inhalt=ja|relation=falsch->equivalent-to|satz=ok|begr=ok|flags=-
+PAIR|GEB.10.1.3|INF.5.A24|S3|inhalt=ja|relation=ok|satz=ok|begr=geschoent|flags=-
+CTRL|GEB.10.1.3|hilfreich=ja|drop=0/4|drop-ids=-|luecken=-
+KOMMENTAR: Solide Liste über INF.2.A16 und INF.5, die Redundanz-Substanz wird jeweils korrekt getroffen. Bei INF.5.A24:S1 ist subset-of unterverkauft (Betriebsredundanz entspricht "redundant ohne SPOF"), und die Begründung zu S3 behauptet fälschlich, Wartungsredundanz sei mit abgedeckt.
+SUMMARY|GEB|pairs=24|ja=23|grenzwertig=1|nein=0|relation-falsch=6|satz-falsch=0|begr-problem=5
+TOP-PROBLEME:
+- Prüfen-vs.-Warten-Vereinnahmung bei GEB.10.2.7: Sätze wie "MÜSSEN regelmäßig geprüft und gewartet werden" (INF.1.A5:S2, INF.2.A9:S5, INF.6.A1:S2) werden als superset-of deklariert, obwohl das Control nur "überprüfen" fordert — die Wartungshälfte wird stillschweigend mitbehauptet.
+- Erfundener Guidance-Inhalt bei INF.2.A8:S4: Die Begründung behauptet "laut Erlaeuterung explizit die Funktionspruefung und Wartung" — die Guidance nennt nur die Überprüfung, keine Wartung.
+- Guidance-getragene Normativität bei GEB.9.3: Selektivität/Parzellierung (INF.2.A4:S3/S4) steht nur in der Guidance ("die Schalter so konzipieren, dass..."), das KANN-Statement fordert bloß die Installation; S4 als superset-of ist damit überzogen.
+- Relations-Feinjustierung bei GEB.10.1.3: INF.5.A24:S1 ("betriebsredundant") ist als subset-of falsch einsortiert (equivalent-to), während die Begründung zu S3 "inklusive Wartungsredundanz" behauptet, was ein Kein-SPOF-Control nicht hergibt.
+PAIR|PERF.3.1.4|APP.3.1.A22|S2|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=ok|flags=bulk-noise
+PAIR|PERF.3.1.4|APP.3.2.A16|S2|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=ok|flags=bulk-noise
+PAIR|PERF.3.1.4|APP.4.2.A27|S1|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=ok|flags=bulk-noise
+PAIR|PERF.3.1.4|APP.4.3.A20|S1|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=ok|flags=bulk-noise
+PAIR|PERF.3.1.4|DER.3.1.A15|S2|inhalt=ja|relation=ok|satz=ok+1|begr=ok|flags=-
+PAIR|PERF.3.1.4|DER.3.1.A3|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|PERF.3.1.4|DER.3.1.A3|S3|inhalt=ja|relation=falsch->intersects-with|satz=ok|begr=ok|flags=-
+PAIR|PERF.3.1.4|DER.3.2.A14|S5|inhalt=ja|relation=ok|satz=ok+3|begr=ok|flags=-
+PAIR|PERF.3.1.4|DER.3.2.A15|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=nur-guidance
+PAIR|PERF.3.1.4|DER.3.2.A15|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|PERF.3.1.4|DER.3.2.A17|S3|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|PERF.3.1.4|DER.4.A14|S9|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=geschoent|flags=-
+PAIR|PERF.3.1.4|IND.1.A12|S5|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=ok|flags=-
+PAIR|PERF.3.1.4|NET.2.1.A14|S1|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=ok|flags=bulk-noise
+PAIR|PERF.3.1.4|NET.3.1.A23|S2|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=ok|flags=bulk-noise
+PAIR|PERF.3.1.4|SYS.1.5.A19|S1|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=ok|flags=bulk-noise
+PAIR|PERF.3.1.4|SYS.1.8.A18|S1|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok+4|begr=ok|flags=bulk-noise
+PAIR|PERF.3.1.4|DER.3.1.A17|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|PERF.3.1.4|DER.3.1.A2|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|PERF.3.1.4|DER.3.1.A4|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|PERF.3.1.4|DER.3.2.A7|S1|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|PERF.3.1.4|hilfreich=teilweise|drop=10/21|drop-ids=APP.3.1.A22:S2,APP.3.2.A16:S2,APP.4.2.A27:S1,APP.4.3.A20:S1,DER.4.A14:S9,IND.1.A12:S5,NET.2.1.A14:S1,NET.3.1.A23:S2,SYS.1.5.A19:S1,SYS.1.8.A18:S1|luecken=ISMS.1.A11:S4 (Regelung, welche Bereiche/Maßnahmen wann von wem geprüft werden); Prüfplan-/Auditprogramm-Anforderungen aus DER.3.1/DER.3.2
+KOMMENTAR: Die DER.3.1/DER.3.2-Paare treffen die ISMS-Audit-Ebene des Controls gut, inklusive des Kernpaars DER.3.1.A2:S1 (Prüfgegenstand vorab festlegen). Knapp die Hälfte der Liste sind jedoch baustein-spezifische System-Revisionen (APP/NET/SYS/IND) plus BCM-Prüfplanung (DER.4.A14), die mit identischer Copy-Paste-Begründung per superset-of vereinnahmt werden — Übergeneralisierung "Control fordert Audits, also deckt es jedes Einzelsystem-Audit ab" statt ISMS-Ebene. Zudem inkonsistente Relationstypen für nahezu gleiche Sätze (DER.3.2.A17:S3 superset-of vs. DER.3.1.A17:S2 intersects-with).
+PAIR|PERF.4.1|ISMS.1.A12|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|PERF.4.1|ISMS.1.A2|S5|inhalt=ja|relation=falsch->intersects-with|satz=ok|begr=geschoent|flags=-
+PAIR|PERF.4.1|ISMS.1.A6|S8|inhalt=grenzwertig|relation=falsch->intersects-with|satz=ok|begr=geschoent|flags=-
+PAIR|PERF.4.1|ISMS.1.A11|S7|inhalt=ja|relation=ok|satz=ok+1|begr=ok|flags=-
+CTRL|PERF.4.1|hilfreich=ja|drop=1/4|drop-ids=ISMS.1.A6:S8|luecken=-
+KOMMENTAR: Das Kernpaar ISMS.1.A12:S2 (Managementbericht) sitzt als equivalent-to. Fehlermuster: Das Control fordert nur die DOKUMENTATION der Prüfergebnisse, wird aber bei ISMS.1.A2:S5 und ISMS.1.A6:S8 in die Durchführung der Überprüfung umgedeutet und als superset-of ausgegeben. Der eigentliche Eignungs-/Wirksamkeitsprüfungs-Satz ISMS.1.A11:S1 fehlt als zusätzlicher Träger neben S7.
+PAIR|PERF.4.1.7|DER.3.1.A5|S6|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|PERF.4.1.7|hilfreich=ja|drop=0/1|drop-ids=-|luecken=-
+KOMMENTAR: Einzelpaar präzise: Die im Leitungs-Bericht festgehaltene Mängelbeseitigung überschneidet sich mit dem Umsetzungsplan-Status, ehrlich als intersects-with benannt. Fundrichtung gpp-seitig, Relation und Begründung stimmig.
+PAIR|PERF.3.2.1|DER.3.1.A6|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|PERF.3.2.1|hilfreich=ja|drop=0/1|drop-ids=-|luecken=-
+KOMMENTAR: Nahezu wortgleiche Entsprechung sauber gefunden; subset-of ist wegen der im GS++-Statement fehlenden Dokumentationspflicht vertretbar, auch wenn die Begründung mit "deckt ... ab" Superset-Sprache verwendet. Nichts zu beanstanden.
+PAIR|PERF.4.1.9|ISMS.1.A12|S3|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|PERF.4.1.9|ISMS.1.A12|S4|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+PAIR|PERF.4.1.9|ISMS.1.A15|S2|inhalt=ja|relation=ok|satz=ok|begr=ok|flags=-
+CTRL|PERF.4.1.9|hilfreich=ja|drop=0/3|drop-ids=-|luecken=-
+KOMMENTAR: Vorbildliches Mapping: satzgenaue equal-to-Treffer auf ISMS.1.A12:S3/S4 plus sinnvolle subset-of-Ergänzung zur Ressourcen-Bezifferung aus ISMS.1.A15. So sollte die ganze Praktik aussehen.
+SUMMARY|PERF|pairs=30|ja=19|grenzwertig=11|nein=0|relation-falsch=13|satz-falsch=0|begr-problem=3
+TOP-PROBLEME:
+- Ebenen-Fehler durch Übergeneralisierung bei PERF.3.1.4: 8 baustein-spezifische System-Audit-Anforderungen (APP.3.1.A22:S2, APP.3.2.A16:S2, APP.4.2.A27:S1, APP.4.3.A20:S1, NET.2.1.A14:S1, NET.3.1.A23:S2, SYS.1.5.A19:S1, SYS.1.8.A18:S1) hängen per superset-of am ISMS-Control, stets mit der Formel "fordert die Durchführung von Audits in angemessenem Umfang und deckt damit ... ab" — das Control regelt den Umfang des ISMS-Auditprogramms, nicht die operative Revision jedes Systems.
+- Dokumentieren ≠ Prüfen bei PERF.4.1: Das reine Berichts-Control wird bei ISMS.1.A2:S5 und ISMS.1.A6:S8 zur "regelmäßigen Überprüfung" umgedeutet ("deckt die geforderte regelmäßige Überprüfung inhaltlich ab") und fälschlich als superset-of geführt.
+- Domänenfremdes Paar DER.4.A14:S9: Die Überprüfungsplanung von NOTFALLmaßnahmen (BCM) wird an den Audit-Umfang gemappt; die Begründung verschweigt den Notfallmanagement-Kontext vollständig.
+- Inkonsistente Relationen bei fast identischen Sätzen: DER.3.2.A17:S3 superset-of vs. DER.3.1.A17:S2 intersects-with sowie DER.3.1.A3:S3 superset-of vs. DER.3.2.A7:S1 intersects-with — gleiche Substanz, zwei Urteile.
+- Naheliegende Träger fehlen: ISMS.1.A11:S4 (wer prüft was wann) fehlt bei PERF.3.1.4 ganz; bei SYS.1.8.A18 wäre S4 ("wie oft und in welcher Tiefe Audits durchgeführt werden") der eigentliche Umfang-Satz statt des zitierten S1; bei PERF.4.1 fehlt ISMS.1.A11:S1 als Zusatzträger.
