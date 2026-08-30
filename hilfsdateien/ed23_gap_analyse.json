@@ -1,9 +1,9 @@
 {
   "ed23_gap_analyse": {
     "meta": {
-      "generated": "2026-08-29",
+      "generated": "2026-08-30",
       "script": "Gpp-ai-tool/scripts/analyze_ed23_coverage.py",
-      "repo_head": "2bd65be",
+      "repo_head": "d8a698d",
       "sources": {
         "official_xml": {
           "url": "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Grundschutz/IT-GS-Kompendium/XML_Kompendium_2023.xml?__blob=publicationFile&v=4",
@@ -14,9 +14,9 @@
         },
         "ours": {
           "path": "hilfsdateien/gpp_ed23_anforderungen.json",
-          "maps": 5145,
-          "distinct_sources": 867,
-          "distinct_targets": 1607
+          "maps": 5086,
+          "distinct_sources": 865,
+          "distinct_targets": 1603
         },
         "ours_5521": {
           "git_ref": "d188329",
@@ -44,7 +44,7 @@
         },
         "satz_abdeckung": {
           "path": "hilfsdateien/ed23_satz_abdeckung.json",
-          "generated": "2026-08-29",
+          "generated": "2026-08-30",
           "maker_model": "gemini-3-flash-preview",
           "checker_model": "gemini-3.7-flash",
           "anforderungen": 1834,
@@ -63,33 +63,33 @@
         "denominator_aktiv": 1834,
         "entfallen": 290,
         "abgedeckt": {
-          "ours": 1607,
+          "ours": 1603,
           "itgs": 510,
           "prozessbausteine": 558,
-          "mindestens_eine_quelle": 1695
+          "mindestens_eine_quelle": 1693
         },
         "ohne_zuordnung": {
-          "ours": 227,
+          "ours": 231,
           "itgs": 1324,
-          "keine_einzige_quelle": 139
+          "keine_einzige_quelle": 141
         },
         "crosstab_ours_itgs": {
-          "both": 475,
-          "only_ours": 1132,
-          "neither": 192,
-          "only_itgs": 35
+          "both": 474,
+          "only_ours": 1129,
+          "neither": 195,
+          "only_itgs": 36
         },
         "by_level": {
           "B": {
             "aktiv": 563,
-            "ohne_jede_zuordnung": 22,
-            "ohne_ours": 43,
+            "ohne_jede_zuordnung": 23,
+            "ohne_ours": 46,
             "ohne_itgs": 392
           },
           "H": {
             "aktiv": 404,
-            "ohne_jede_zuordnung": 54,
-            "ohne_ours": 74,
+            "ohne_jede_zuordnung": 55,
+            "ohne_ours": 75,
             "ohne_itgs": 289
           },
           "S": {
@@ -115,7 +115,7 @@
           "DER": {
             "aktiv": 128,
             "ohne_jede_zuordnung": 0,
-            "ohne_ours": 16,
+            "ohne_ours": 17,
             "ohne_itgs": 75
           },
           "IND": {
@@ -138,8 +138,8 @@
           },
           "NET": {
             "aktiv": 227,
-            "ohne_jede_zuordnung": 15,
-            "ohne_ours": 25,
+            "ohne_jede_zuordnung": 16,
+            "ohne_ours": 26,
             "ohne_itgs": 117
           },
           "OPS": {
@@ -156,8 +156,8 @@
           },
           "SYS": {
             "aktiv": 460,
-            "ohne_jede_zuordnung": 43,
-            "ohne_ours": 47,
+            "ohne_jede_zuordnung": 44,
+            "ohne_ours": 49,
             "ohne_itgs": 385
           }
         },
@@ -229,8 +229,15 @@
             "baustein": "SYS.1.5",
             "aktiv": 26,
             "ohne_jede_zuordnung": 4,
-            "ohne_ours": 4,
+            "ohne_ours": 5,
             "ohne_itgs": 19
+          },
+          {
+            "baustein": "NET.1.2",
+            "aktiv": 31,
+            "ohne_jede_zuordnung": 4,
+            "ohne_ours": 8,
+            "ohne_itgs": 15
           },
           {
             "baustein": "NET.1.1",
@@ -294,13 +301,6 @@
             "ohne_jede_zuordnung": 3,
             "ohne_ours": 3,
             "ohne_itgs": 25
-          },
-          {
-            "baustein": "INF.1",
-            "aktiv": 31,
-            "ohne_jede_zuordnung": 3,
-            "ohne_ours": 3,
-            "ohne_itgs": 30
           }
         ],
         "ohne_jede_zuordnung_ids": [
@@ -392,6 +392,7 @@
           "NET.1.2.A16",
           "NET.1.2.A2",
           "NET.1.2.A31",
+          "NET.1.2.A38",
           "NET.2.1.A15",
           "NET.3.1.A27",
           "NET.3.2.A26",
@@ -436,6 +437,7 @@
           "SYS.2.6.A7",
           "SYS.3.2.1.A27",
           "SYS.3.2.1.A31",
+          "SYS.3.2.1.A5",
           "SYS.3.2.3.A18",
           "SYS.3.2.3.A2",
           "SYS.3.2.3.A26",
@@ -447,9 +449,9 @@
       },
       "vergleich_5521_vs_3046": {
         "alt_maps": 5521,
-        "neu_maps": 5145,
+        "neu_maps": 5086,
         "abgedeckt_alt": 1306,
-        "abgedeckt_neu": 1607,
+        "abgedeckt_neu": 1603,
         "verloren": [
           "APP.1.1.A6",
           "APP.1.2.A12",
@@ -480,6 +482,7 @@
           "CON.11.1.A9",
           "CON.8.A18",
           "CON.9.A6",
+          "DER.1.A2",
           "DER.2.2.A1",
           "DER.2.2.A14",
           "DER.2.2.A5",
@@ -510,6 +513,7 @@
           "NET.1.1.A25",
           "NET.1.1.A32",
           "NET.1.2.A29",
+          "NET.1.2.A38",
           "NET.2.1.A15",
           "NET.2.1.A17",
           "NET.3.1.A27",
@@ -542,6 +546,7 @@
           "SYS.2.1.A37",
           "SYS.2.1.A9",
           "SYS.3.2.1.A27",
+          "SYS.3.2.1.A5",
           "SYS.3.2.2.A1",
           "SYS.3.2.3.A2",
           "SYS.4.3.A17"
@@ -821,7 +826,6 @@
           "SYS.1.5.A14",
           "SYS.1.5.A19",
           "SYS.1.5.A22",
-          "SYS.1.5.A4",
           "SYS.1.5.A7",
           "SYS.1.6.A13",
           "SYS.1.6.A14",
@@ -946,9 +950,9 @@
       },
       "teilanforderungen": {
         "ours": {
-          "satz_universum_aktive_anforderungen": 6643,
-          "referenziert": 3813,
-          "nicht_referenziert": 2830
+          "satz_universum_aktive_anforderungen": 6641,
+          "referenziert": 3770,
+          "nicht_referenziert": 2871
         },
         "itgs": {
           "ua_gemappt": 824,
@@ -958,16 +962,17 @@
         "xml_normativ": {
           "denominator_normative_saetze": 6611,
           "kann_saetze": 0,
-          "abgedeckt_direkt": 3810
+          "abgedeckt_direkt": 3768
         },
         "zerlegungsvergleich": {
-          "anforderungen_in_beiden_mappings_mit_indizes": 475,
-          "indizes_identisch": 109,
-          "indizes_ueberlappend": 310,
-          "indizes_disjunkt": 56,
+          "anforderungen_in_beiden_mappings_mit_indizes": 474,
+          "indizes_identisch": 110,
+          "indizes_ueberlappend": 306,
+          "indizes_disjunkt": 58,
           "disjunkt_ids": [
             "APP.1.1.A10",
             "APP.1.4.A14",
+            "APP.3.2.A7",
             "APP.3.6.A1",
             "APP.4.2.A28",
             "APP.4.3.A22",
@@ -998,6 +1003,7 @@
             "NET.1.2.A14",
             "NET.1.2.A21",
             "NET.2.1.A1",
+            "NET.2.1.A10",
             "NET.2.2.A3",
             "NET.2.2.A4",
             "NET.3.1.A18",
@@ -1013,13 +1019,13 @@
             "OPS.1.2.2.A16",
             "ORP.2.A13",
             "SYS.1.1.A25",
-            "SYS.1.5.A4",
             "SYS.1.7.A6",
             "SYS.2.1.A11",
             "SYS.2.1.A23",
             "SYS.2.1.A8",
             "SYS.2.5.A18",
             "SYS.3.1.A1",
+            "SYS.3.2.2.A20",
             "SYS.4.4.A1",
             "SYS.4.4.A5"
           ],
@@ -1030,11 +1036,11 @@
         },
         "relationen": {
           "ours": {
-            "equal-to": 15,
-            "equivalent-to": 125,
-            "intersects-with": 1093,
-            "subset-of": 809,
-            "superset-of": 3103
+            "equal-to": 14,
+            "equivalent-to": 162,
+            "intersects-with": 2077,
+            "subset-of": 542,
+            "superset-of": 2291
           },
           "itgs": {
             "equal-to": 21,
@@ -1049,34 +1055,34 @@
           "anforderungen_beurteilt": 1834,
           "anforderungen_ohne_urteil": 0,
           "denominator_normative_saetze": 6611,
-          "abgedeckt": 3615,
-          "nicht_abgedeckt": 2996,
+          "abgedeckt": 3573,
+          "nicht_abgedeckt": 3038,
           "by_level": {
             "B": {
               "normative_saetze": 2400,
-              "abgedeckt": 1359
+              "abgedeckt": 1346
             },
             "H": {
               "normative_saetze": 1081,
-              "abgedeckt": 585
+              "abgedeckt": 582
             },
             "S": {
               "normative_saetze": 3130,
-              "abgedeckt": 1671
+              "abgedeckt": 1645
             }
           },
           "by_schicht": {
             "APP": {
               "normative_saetze": 1074,
-              "abgedeckt": 588
+              "abgedeckt": 579
             },
             "CON": {
               "normative_saetze": 458,
-              "abgedeckt": 233
+              "abgedeckt": 232
             },
             "DER": {
               "normative_saetze": 538,
-              "abgedeckt": 272
+              "abgedeckt": 270
             },
             "IND": {
               "normative_saetze": 217,
@@ -1084,49 +1090,49 @@
             },
             "INF": {
               "normative_saetze": 869,
-              "abgedeckt": 440
+              "abgedeckt": 432
             },
             "ISMS": {
               "normative_saetze": 84,
-              "abgedeckt": 53
+              "abgedeckt": 52
             },
             "NET": {
               "normative_saetze": 777,
-              "abgedeckt": 444
+              "abgedeckt": 437
             },
             "OPS": {
               "normative_saetze": 916,
-              "abgedeckt": 488
+              "abgedeckt": 483
             },
             "ORP": {
               "normative_saetze": 218,
-              "abgedeckt": 144
+              "abgedeckt": 143
             },
             "SYS": {
               "normative_saetze": 1460,
-              "abgedeckt": 835
+              "abgedeckt": 827
             }
           },
           "top_gap_bausteine": [
             {
               "baustein": "INF.14",
               "normative_saetze": 135,
-              "abgedeckt": 61
+              "abgedeckt": 60
             },
             {
               "baustein": "INF.13",
               "normative_saetze": 134,
-              "abgedeckt": 67
+              "abgedeckt": 64
             },
             {
               "baustein": "INF.2",
               "normative_saetze": 126,
-              "abgedeckt": 61
+              "abgedeckt": 60
             },
             {
               "baustein": "SYS.1.7",
               "normative_saetze": 133,
-              "abgedeckt": 68
+              "abgedeckt": 67
             },
             {
               "baustein": "OPS.1.1.1",
@@ -1141,7 +1147,12 @@
             {
               "baustein": "CON.11.1",
               "normative_saetze": 86,
-              "abgedeckt": 31
+              "abgedeckt": 30
+            },
+            {
+              "baustein": "NET.3.4",
+              "normative_saetze": 109,
+              "abgedeckt": 54
             },
             {
               "baustein": "DER.3.1",
@@ -1149,9 +1160,14 @@
               "abgedeckt": 46
             },
             {
-              "baustein": "NET.3.4",
-              "normative_saetze": 109,
-              "abgedeckt": 55
+              "baustein": "INF.12",
+              "normative_saetze": 81,
+              "abgedeckt": 29
+            },
+            {
+              "baustein": "APP.4.2",
+              "normative_saetze": 124,
+              "abgedeckt": 73
             },
             {
               "baustein": "DER.2.1",
@@ -1159,24 +1175,14 @@
               "abgedeckt": 70
             },
             {
-              "baustein": "INF.12",
-              "normative_saetze": 81,
-              "abgedeckt": 30
-            },
-            {
-              "baustein": "APP.4.2",
-              "normative_saetze": 124,
-              "abgedeckt": 74
+              "baustein": "NET.1.2",
+              "normative_saetze": 83,
+              "abgedeckt": 36
             },
             {
               "baustein": "DER.3.2",
               "normative_saetze": 82,
               "abgedeckt": 36
-            },
-            {
-              "baustein": "NET.1.2",
-              "normative_saetze": 83,
-              "abgedeckt": 38
             },
             {
               "baustein": "SYS.1.1",
@@ -1189,6 +1195,16 @@
               "abgedeckt": 78
             },
             {
+              "baustein": "INF.11",
+              "normative_saetze": 69,
+              "abgedeckt": 26
+            },
+            {
+              "baustein": "SYS.1.8",
+              "normative_saetze": 90,
+              "abgedeckt": 47
+            },
+            {
               "baustein": "INF.1",
               "normative_saetze": 99,
               "abgedeckt": 57
@@ -1197,16 +1213,6 @@
               "baustein": "SYS.1.6",
               "normative_saetze": 75,
               "abgedeckt": 33
-            },
-            {
-              "baustein": "SYS.1.8",
-              "normative_saetze": 90,
-              "abgedeckt": 48
-            },
-            {
-              "baustein": "INF.11",
-              "normative_saetze": 69,
-              "abgedeckt": 28
             }
           ],
           "anforderungen_ohne_einzigen_abgedeckten_satz": [
@@ -1279,6 +1285,7 @@
             "CON.8.A21",
             "CON.9.A6",
             "CON.9.A7",
+            "DER.1.A2",
             "DER.2.2.A1",
             "DER.2.2.A14",
             "DER.2.2.A5",
@@ -1364,6 +1371,7 @@
             "NET.1.2.A28",
             "NET.1.2.A29",
             "NET.1.2.A31",
+            "NET.1.2.A38",
             "NET.2.1.A15",
             "NET.2.1.A17",
             "NET.3.1.A27",
@@ -1435,6 +1443,7 @@
             "SYS.1.5.A24",
             "SYS.1.5.A25",
             "SYS.1.5.A26",
+            "SYS.1.5.A4",
             "SYS.1.6.A1",
             "SYS.1.6.A10",
             "SYS.1.6.A11",
@@ -1527,7 +1536,6 @@
             "SYS.2.3.A9",
             "SYS.2.5.A10",
             "SYS.3.1.A10",
-            "SYS.3.2.1.A5",
             "SYS.3.2.2.A14",
             "SYS.3.2.2.A17",
             "SYS.4.3.A15"
@@ -1538,10 +1546,10 @@
       "gegenrichtung": {
         "gpp_controls": 1000,
         "ohne_ed23_treffer": {
-          "ours": 133,
+          "ours": 135,
           "itgs": 678,
           "prozessbausteine": 684,
-          "alle_drei": 100
+          "alle_drei": 102
         }
       }
     },
@@ -6441,33 +6449,31 @@
         "ours": {
           "gpp_controls": [
             "TEST.2.2",
-            "TEST.2.2.3",
-            "TEST.3.1"
+            "TEST.2.2.3"
           ],
           "n_saetze_stripped": 5,
           "saetze_referenziert": [
             1,
-            2,
-            4
+            2
           ],
           "saetze_nicht_referenziert": [
             3,
+            4,
             5
           ],
           "normative_saetze_abgedeckt": [
             1,
-            2,
-            4
+            2
           ]
         },
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
             1,
-            2,
-            4
+            2
           ],
           "nicht_abgedeckte_normative_saetze": [
             3,
+            4,
             5
           ],
           "treffer": {
@@ -6477,9 +6483,6 @@
             ],
             "2": [
               "TEST.2.2"
-            ],
-            "4": [
-              "TEST.3.1"
             ]
           },
           "nummerierung_ok": true
@@ -7167,7 +7170,6 @@
             "KONF.11.7",
             "KONF.14.1",
             "KONF.14.1.1",
-            "KONF.2.4",
             "KONF.6.9"
           ],
           "n_saetze_stripped": 4,
@@ -7623,25 +7625,23 @@
           "gpp_controls": [
             "DET.5.3",
             "DET.5.4",
-            "PERF.3.1.4",
             "PERF.3.2",
             "PERF.3.2.2",
             "TEST.3.1.1",
-            "VRB.2.1",
-            "VRB.4.1"
+            "VRB.2.1"
           ],
           "n_saetze_stripped": 5,
           "saetze_referenziert": [
             1,
-            2,
             3,
             4,
             5
           ],
-          "saetze_nicht_referenziert": [],
+          "saetze_nicht_referenziert": [
+            2
+          ],
           "normative_saetze_abgedeckt": [
             1,
-            2,
             3,
             4,
             5
@@ -7650,26 +7650,23 @@
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
             1,
-            2,
             3,
             4,
             5
           ],
-          "nicht_abgedeckte_normative_saetze": [],
+          "nicht_abgedeckte_normative_saetze": [
+            2
+          ],
           "treffer": {
             "1": [
               "DET.5.3",
               "DET.5.4"
             ],
-            "2": [
-              "PERF.3.1.4"
-            ],
             "3": [
               "PERF.3.2"
             ],
             "4": [
-              "VRB.2.1",
-              "VRB.4.1"
+              "VRB.2.1"
             ],
             "5": [
               "PERF.3.2.2"
@@ -8273,6 +8270,7 @@
         },
         "ours": {
           "gpp_controls": [
+            "KONF.10.2",
             "KONF.14.1",
             "KONF.14.1.1"
           ],
@@ -8619,24 +8617,22 @@
           "gpp_controls": [
             "DET.5.3",
             "DET.5.4",
-            "PERF.3.1.4",
             "PERF.3.2",
             "PERF.3.2.2",
-            "VRB.2.1",
-            "VRB.4.1"
+            "VRB.2.1"
           ],
           "n_saetze_stripped": 5,
           "saetze_referenziert": [
             1,
-            2,
             3,
             4,
             5
           ],
-          "saetze_nicht_referenziert": [],
+          "saetze_nicht_referenziert": [
+            2
+          ],
           "normative_saetze_abgedeckt": [
             1,
-            2,
             3,
             4,
             5
@@ -8645,26 +8641,23 @@
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
             1,
-            2,
             3,
             4,
             5
           ],
-          "nicht_abgedeckte_normative_saetze": [],
+          "nicht_abgedeckte_normative_saetze": [
+            2
+          ],
           "treffer": {
             "1": [
               "DET.5.3",
               "DET.5.4"
             ],
-            "2": [
-              "PERF.3.1.4"
-            ],
             "3": [
               "PERF.3.2"
             ],
             "4": [
-              "VRB.2.1",
-              "VRB.4.1"
+              "VRB.2.1"
             ],
             "5": [
               "PERF.3.2.2"
@@ -9223,12 +9216,12 @@
           ],
           "n_saetze_stripped": 2,
           "saetze_referenziert": [
-            1,
             2
           ],
-          "saetze_nicht_referenziert": [],
+          "saetze_nicht_referenziert": [
+            1
+          ],
           "normative_saetze_abgedeckt": [
-            1,
             2
           ]
         },
@@ -9248,14 +9241,12 @@
         },
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
-            1,
             2
           ],
-          "nicht_abgedeckte_normative_saetze": [],
+          "nicht_abgedeckte_normative_saetze": [
+            1
+          ],
           "treffer": {
-            "1": [
-              "GC.3.1.1"
-            ],
             "2": [
               "GC.3.1.1"
             ]
@@ -12761,7 +12752,6 @@
               "BER.4.1"
             ],
             "6": [
-              "BER.4.1",
               "KONF.6.1"
             ]
           },
@@ -13414,7 +13404,6 @@
         "ours": {
           "gpp_controls": [
             "PERF.2.1",
-            "PERF.3.1.4",
             "PERF.3.2"
           ],
           "n_saetze_stripped": 3,
@@ -13440,8 +13429,7 @@
           ],
           "treffer": {
             "1": [
-              "PERF.2.1",
-              "PERF.3.1.4"
+              "PERF.2.1"
             ],
             "3": [
               "PERF.3.2"
@@ -13756,36 +13744,31 @@
         },
         "ours": {
           "gpp_controls": [
-            "BER.3.7",
-            "KONF.10.2"
+            "BER.3.7"
           ],
           "n_saetze_stripped": 3,
           "saetze_referenziert": [
-            1,
-            3
+            1
           ],
           "saetze_nicht_referenziert": [
-            2
+            2,
+            3
           ],
           "normative_saetze_abgedeckt": [
-            1,
-            3
+            1
           ]
         },
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
-            1,
-            3
+            1
           ],
           "nicht_abgedeckte_normative_saetze": [
-            2
+            2,
+            3
           ],
           "treffer": {
             "1": [
               "BER.3.7"
-            ],
-            "3": [
-              "KONF.10.2"
             ]
           },
           "nummerierung_ok": true
@@ -15002,7 +14985,6 @@
             "DET.6.1",
             "KONF.10.5",
             "KONF.2.5",
-            "PERF.3.1.4",
             "PERF.3.2",
             "UMS.1.1",
             "VRB.2.1"
@@ -15066,7 +15048,6 @@
           "treffer": {
             "1": [
               "KONF.10.5",
-              "PERF.3.1.4",
               "UMS.1.1"
             ],
             "2": [
@@ -15298,6 +15279,7 @@
         },
         "ours": {
           "gpp_controls": [
+            "KONF.10.2",
             "KONF.11.8"
           ],
           "n_saetze_stripped": 2,
@@ -19435,40 +19417,35 @@
         "ours": {
           "gpp_controls": [
             "SENS.3.1",
-            "SENS.7.1",
             "SENS.7.7",
             "SENS.7.8"
           ],
           "n_saetze_stripped": 5,
           "saetze_referenziert": [
-            2,
             3,
             4
           ],
           "saetze_nicht_referenziert": [
             1,
+            2,
             5
           ],
           "normative_saetze_abgedeckt": [
-            2,
             3,
             4
           ]
         },
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
-            2,
             3,
             4
           ],
           "nicht_abgedeckte_normative_saetze": [
             1,
+            2,
             5
           ],
           "treffer": {
-            "2": [
-              "SENS.7.1"
-            ],
             "3": [
               "SENS.7.7"
             ],
@@ -20138,7 +20115,6 @@
         },
         "ours": {
           "gpp_controls": [
-            "KONF.10.2",
             "KONF.14.1"
           ],
           "n_saetze_stripped": 3,
@@ -20163,7 +20139,6 @@
           ],
           "treffer": {
             "3": [
-              "KONF.10.2",
               "KONF.14.1"
             ]
           },
@@ -20865,22 +20840,20 @@
             "BES.2.1.4.1",
             "BES.2.4",
             "BES.3.2.2",
-            "BES.4.2",
             "DEV.1.1.2",
             "PERS.2.4"
           ],
           "n_saetze_stripped": 4,
           "saetze_referenziert": [
             1,
-            2,
             3
           ],
           "saetze_nicht_referenziert": [
+            2,
             4
           ],
           "normative_saetze_abgedeckt": [
             1,
-            2,
             3
           ]
         },
@@ -20904,10 +20877,10 @@
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
             1,
-            2,
             3
           ],
           "nicht_abgedeckte_normative_saetze": [
+            2,
             4
           ],
           "treffer": {
@@ -20916,9 +20889,6 @@
               "BES.2.1.3",
               "BES.2.1.4",
               "BES.2.4"
-            ],
-            "2": [
-              "BES.4.2"
             ],
             "3": [
               "ASST.1.1.2",
@@ -21294,36 +21264,34 @@
           "gpp_controls": [
             "BES.2.1",
             "BES.2.5",
-            "BES.4.2",
-            "GC.3.1.1"
+            "BES.4.2"
           ],
           "n_saetze_stripped": 6,
           "saetze_referenziert": [
             1,
             3,
-            4,
-            5
+            4
           ],
           "saetze_nicht_referenziert": [
             2,
+            5,
             6
           ],
           "normative_saetze_abgedeckt": [
             1,
             3,
-            4,
-            5
+            4
           ]
         },
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
             1,
             3,
-            4,
-            5
+            4
           ],
           "nicht_abgedeckte_normative_saetze": [
             2,
+            5,
             6
           ],
           "treffer": {
@@ -21335,9 +21303,6 @@
             ],
             "4": [
               "BES.2.5"
-            ],
-            "5": [
-              "GC.3.1.1"
             ]
           },
           "nummerierung_ok": true
@@ -22315,42 +22280,37 @@
         },
         "ours": {
           "gpp_controls": [
-            "DEV.1.1",
-            "PERS.2.2"
+            "DEV.1.1"
           ],
           "n_saetze_stripped": 6,
           "saetze_referenziert": [
-            1,
-            4
+            1
           ],
           "saetze_nicht_referenziert": [
             2,
             3,
+            4,
             5,
             6
           ],
           "normative_saetze_abgedeckt": [
-            1,
-            4
+            1
           ]
         },
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
-            1,
-            4
+            1
           ],
           "nicht_abgedeckte_normative_saetze": [
             2,
             3,
+            4,
             5,
             6
           ],
           "treffer": {
             "1": [
               "DEV.1.1"
-            ],
-            "4": [
-              "PERS.2.2"
             ]
           },
           "nummerierung_ok": true
@@ -22630,6 +22590,7 @@
             "BER.5.4",
             "BER.7.1",
             "BER.7.2",
+            "BER.7.6",
             "BER.7.8",
             "KONF.10.2",
             "KONF.2.2"
@@ -24941,14 +24902,12 @@
           "gpp_controls": [
             "ASST.3.1.1",
             "ASST.3.11",
-            "BER.4.1",
-            "UMS.5.1"
+            "BER.4.1"
           ],
           "n_saetze_stripped": 9,
           "saetze_referenziert": [
             1,
-            3,
-            9
+            3
           ],
           "saetze_nicht_referenziert": [
             2,
@@ -24956,12 +24915,12 @@
             5,
             6,
             7,
-            8
+            8,
+            9
           ],
           "normative_saetze_abgedeckt": [
             1,
-            3,
-            9
+            3
           ]
         },
         "prozessbausteine": {
@@ -24970,8 +24929,7 @@
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
             1,
-            3,
-            9
+            3
           ],
           "nicht_abgedeckte_normative_saetze": [
             2,
@@ -24979,7 +24937,8 @@
             5,
             6,
             7,
-            8
+            8,
+            9
           ],
           "treffer": {
             "1": [
@@ -24988,9 +24947,6 @@
             "3": [
               "ASST.3.1.1",
               "BER.4.1"
-            ],
-            "9": [
-              "UMS.5.1"
             ]
           },
           "nummerierung_ok": true
@@ -26075,8 +26031,7 @@
         },
         "ours": {
           "gpp_controls": [
-            "ASST.3.1.1",
-            "BER.4.1"
+            "ASST.3.1.1"
           ],
           "n_saetze_stripped": 2,
           "saetze_referenziert": [
@@ -26101,8 +26056,7 @@
           ],
           "treffer": {
             "2": [
-              "ASST.3.1.1",
-              "BER.4.1"
+              "ASST.3.1.1"
             ]
           },
           "nummerierung_ok": true
@@ -29476,7 +29430,6 @@
         "ours": {
           "gpp_controls": [
             "BES.3.2",
-            "BES.4.2",
             "BES.5.4"
           ],
           "n_saetze_stripped": 2,
@@ -29503,7 +29456,6 @@
           "treffer": {
             "2": [
               "BES.3.2",
-              "BES.4.2",
               "BES.5.4"
             ]
           },
@@ -31449,8 +31401,7 @@
           "gpp_controls": [
             "DET.1.2",
             "PERF.3.2",
-            "VRB.2.1",
-            "VRB.4.1"
+            "VRB.2.1"
           ],
           "n_saetze_stripped": 4,
           "saetze_referenziert": [
@@ -31503,8 +31454,7 @@
               "PERF.3.2"
             ],
             "4": [
-              "VRB.2.1",
-              "VRB.4.1"
+              "VRB.2.1"
             ]
           },
           "nummerierung_ok": true
@@ -31970,44 +31920,23 @@
         "kann_saetze_xml": [],
         "has_lists": false,
         "covered_by": {
-          "ours": true,
+          "ours": false,
           "itgs": false,
           "prozessbausteine": true,
           "any": true,
           "ours_5521": true
         },
-        "ours": {
-          "gpp_controls": [
-            "GC.3.1.1"
-          ],
-          "n_saetze_stripped": 3,
-          "saetze_referenziert": [
-            3
-          ],
-          "saetze_nicht_referenziert": [
-            1,
-            2
-          ],
-          "normative_saetze_abgedeckt": [
-            3
-          ]
-        },
         "prozessbausteine": {
           "gpp_control": "GC.3.1.1"
         },
         "satz_urteil": {
-          "abgedeckte_normative_saetze": [
-            3
-          ],
+          "abgedeckte_normative_saetze": [],
           "nicht_abgedeckte_normative_saetze": [
             1,
-            2
+            2,
+            3
           ],
-          "treffer": {
-            "3": [
-              "GC.3.1.1"
-            ]
-          },
+          "treffer": {},
           "nummerierung_ok": true
         }
       },
@@ -34141,6 +34070,7 @@
             "BER.6.5",
             "REA.2.4",
             "REA.2.5",
+            "REA.2.6",
             "TEST.3.1.11"
           ],
           "n_saetze_stripped": 10,
@@ -37499,17 +37429,18 @@
             "PERF.4.1.8",
             "PERF.4.2",
             "VRB.1.1",
+            "VRB.4.1",
             "VRB.4.2"
           ],
           "n_saetze_stripped": 6,
           "saetze_referenziert": [
             1,
+            2,
             4,
             5,
             6
           ],
           "saetze_nicht_referenziert": [
-            2,
             3
           ],
           "normative_saetze_abgedeckt": [
@@ -39395,6 +39326,7 @@
             "NOT.1.2",
             "NOT.2.1.1",
             "NOT.2.1.4",
+            "NOT.3.1",
             "NOT.3.3",
             "NOT.3.4"
           ],
@@ -39753,7 +39685,6 @@
             "PERF.1.2",
             "PERF.3.1",
             "PERF.3.1.1",
-            "PERF.3.1.4",
             "UMS.6.1",
             "VRB.2.1",
             "VRB.4.1"
@@ -39764,7 +39695,6 @@
             4,
             6,
             8,
-            9,
             11
           ],
           "saetze_nicht_referenziert": [
@@ -39772,6 +39702,7 @@
             3,
             5,
             7,
+            9,
             10
           ],
           "normative_saetze_abgedeckt": [
@@ -39779,7 +39710,6 @@
             4,
             6,
             8,
-            9,
             11
           ]
         },
@@ -39814,7 +39744,6 @@
             4,
             6,
             8,
-            9,
             11
           ],
           "nicht_abgedeckte_normative_saetze": [
@@ -39822,6 +39751,7 @@
             3,
             5,
             7,
+            9,
             10
           ],
           "treffer": {
@@ -39838,9 +39768,6 @@
             ],
             "8": [
               "PERF.3.1"
-            ],
-            "9": [
-              "PERF.3.1.4"
             ],
             "11": [
               "PERF.3.1.1"
@@ -40807,8 +40734,7 @@
           "gpp_controls": [
             "DET.5.1",
             "DET.5.4",
-            "DET.5.8.1",
-            "PERF.3.1.4"
+            "DET.5.8.1"
           ],
           "n_saetze_stripped": 5,
           "saetze_referenziert": [
@@ -40869,8 +40795,7 @@
               "DET.5.8.1"
             ],
             "5": [
-              "DET.5.4",
-              "PERF.3.1.4"
+              "DET.5.4"
             ]
           },
           "nummerierung_ok": true
@@ -48410,27 +48335,25 @@
             "ASST.6.1",
             "NOT.1.1",
             "NOT.1.1.2",
-            "REA.1.1",
-            "REA.2.6.1"
+            "REA.1.1"
           ],
           "n_saetze_stripped": 7,
           "saetze_referenziert": [
             1,
             3,
             4,
-            5,
-            7
+            5
           ],
           "saetze_nicht_referenziert": [
             2,
-            6
+            6,
+            7
           ],
           "normative_saetze_abgedeckt": [
             1,
             3,
             4,
-            5,
-            7
+            5
           ]
         },
         "satz_urteil": {
@@ -48438,12 +48361,12 @@
             1,
             3,
             4,
-            5,
-            7
+            5
           ],
           "nicht_abgedeckte_normative_saetze": [
             2,
-            6
+            6,
+            7
           ],
           "treffer": {
             "1": [
@@ -48458,9 +48381,6 @@
             "5": [
               "ASST.1.1.2",
               "NOT.1.1.2"
-            ],
-            "7": [
-              "REA.2.6.1"
             ]
           },
           "nummerierung_ok": true
@@ -48497,32 +48417,29 @@
         "ours": {
           "gpp_controls": [
             "ASST.3.10",
-            "PERS.4.2",
             "SENS.9.2"
           ],
           "n_saetze_stripped": 8,
           "saetze_referenziert": [
             3,
-            6,
-            7
+            6
           ],
           "saetze_nicht_referenziert": [
             1,
             2,
             4,
             5,
+            7,
             8
           ],
           "normative_saetze_abgedeckt": [
             3,
-            6,
-            7
+            6
           ]
         },
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
-            3,
-            7
+            3
           ],
           "nicht_abgedeckte_normative_saetze": [
             1,
@@ -48530,14 +48447,12 @@
             4,
             5,
             6,
+            7,
             8
           ],
           "treffer": {
             "3": [
               "ASST.3.10"
-            ],
-            "7": [
-              "PERS.4.2"
             ]
           },
           "nummerierung_ok": true
@@ -48706,7 +48621,6 @@
         "ours": {
           "gpp_controls": [
             "ASST.3.4",
-            "GC.11.1",
             "GEB.1.5",
             "TEST.2.2.2"
           ],
@@ -48714,22 +48628,21 @@
           "saetze_referenziert": [
             1,
             4,
-            5,
-            8
+            5
           ],
           "saetze_nicht_referenziert": [
             2,
             3,
             6,
             7,
+            8,
             9,
             10
           ],
           "normative_saetze_abgedeckt": [
             1,
             4,
-            5,
-            8
+            5
           ]
         },
         "itgs": {
@@ -48759,8 +48672,7 @@
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
             4,
-            5,
-            8
+            5
           ],
           "nicht_abgedeckte_normative_saetze": [
             1,
@@ -48768,6 +48680,7 @@
             3,
             6,
             7,
+            8,
             9,
             10
           ],
@@ -48777,9 +48690,6 @@
             ],
             "5": [
               "TEST.2.2.2"
-            ],
-            "8": [
-              "GC.11.1"
             ]
           },
           "nummerierung_ok": true
@@ -49903,8 +49813,7 @@
             "KONF.2.8",
             "TEST.3.1",
             "TEST.4.3",
-            "TEST.5.1",
-            "VRB.4.1"
+            "TEST.5.1"
           ],
           "n_saetze_stripped": 12,
           "saetze_referenziert": [
@@ -49913,15 +49822,15 @@
             4,
             8,
             9,
-            10,
-            12
+            10
           ],
           "saetze_nicht_referenziert": [
             3,
             5,
             6,
             7,
-            11
+            11,
+            12
           ],
           "normative_saetze_abgedeckt": [
             1,
@@ -49929,8 +49838,7 @@
             4,
             8,
             9,
-            10,
-            12
+            10
           ]
         },
         "itgs": {
@@ -49964,15 +49872,15 @@
             4,
             8,
             9,
-            10,
-            12
+            10
           ],
           "nicht_abgedeckte_normative_saetze": [
             3,
             5,
             6,
             7,
-            11
+            11,
+            12
           ],
           "treffer": {
             "1": [
@@ -49996,9 +49904,6 @@
             "10": [
               "KONF.10.5",
               "KONF.2.5"
-            ],
-            "12": [
-              "VRB.4.1"
             ]
           },
           "nummerierung_ok": true
@@ -50271,7 +50176,6 @@
         "ours": {
           "gpp_controls": [
             "ASST.5.1",
-            "ASST.5.2",
             "ASST.5.3",
             "ASST.5.6",
             "ASST.5.7",
@@ -50280,7 +50184,6 @@
           ],
           "n_saetze_stripped": 8,
           "saetze_referenziert": [
-            1,
             2,
             5,
             6,
@@ -50288,11 +50191,11 @@
             8
           ],
           "saetze_nicht_referenziert": [
+            1,
             3,
             4
           ],
           "normative_saetze_abgedeckt": [
-            1,
             2,
             5,
             6,
@@ -50320,21 +50223,18 @@
         },
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
-            1,
             2,
             6,
             7,
             8
           ],
           "nicht_abgedeckte_normative_saetze": [
+            1,
             3,
             4,
             5
           ],
           "treffer": {
-            "1": [
-              "ASST.5.2"
-            ],
             "2": [
               "ASST.5.1"
             ],
@@ -50359,7 +50259,7 @@
         "level": "S",
         "rolle": "Planende",
         "entfallen": false,
-        "n_saetze_xml": 4,
+        "n_saetze_xml": 3,
         "normative_saetze_xml": [
           1,
           2,
@@ -50379,12 +50279,11 @@
             "ASST.5.1",
             "ASST.5.2"
           ],
-          "n_saetze_stripped": 4,
+          "n_saetze_stripped": 3,
           "saetze_referenziert": [
             1,
             2,
-            3,
-            4
+            3
           ],
           "saetze_nicht_referenziert": [],
           "normative_saetze_abgedeckt": [
@@ -50408,9 +50307,6 @@
               "ASST.5.1"
             ],
             "3": [
-              "ASST.5.2"
-            ],
-            "4": [
               "ASST.5.2"
             ]
           },
@@ -51624,26 +51520,24 @@
             "GEB.1.2",
             "KONF.2.5",
             "PERF.3.2",
-            "UMS.1.1",
-            "VRB.4.1"
+            "UMS.1.1"
           ],
           "n_saetze_stripped": 6,
           "saetze_referenziert": [
             2,
             3,
             4,
-            5,
-            6
+            5
           ],
           "saetze_nicht_referenziert": [
-            1
+            1,
+            6
           ],
           "normative_saetze_abgedeckt": [
             2,
             3,
             4,
-            5,
-            6
+            5
           ]
         },
         "itgs": {
@@ -51669,12 +51563,12 @@
           "abgedeckte_normative_saetze": [
             3,
             4,
-            5,
-            6
+            5
           ],
           "nicht_abgedeckte_normative_saetze": [
             1,
-            2
+            2,
+            6
           ],
           "treffer": {
             "3": [
@@ -51685,9 +51579,6 @@
             ],
             "5": [
               "PERF.3.2"
-            ],
-            "6": [
-              "VRB.4.1"
             ]
           },
           "nummerierung_ok": true
@@ -52606,8 +52497,7 @@
         "ours": {
           "gpp_controls": [
             "ARCH.2.1",
-            "ARCH.2.2",
-            "ARCH.5.1"
+            "ARCH.2.2"
           ],
           "n_saetze_stripped": 4,
           "saetze_referenziert": [
@@ -52641,8 +52531,7 @@
               "ARCH.2.1"
             ],
             "4": [
-              "ARCH.2.2",
-              "ARCH.5.1"
+              "ARCH.2.2"
             ]
           },
           "nummerierung_ok": true
@@ -52678,7 +52567,6 @@
           "gpp_controls": [
             "GEB.1.2",
             "PERS.2.1",
-            "STM.1.2",
             "TEST.1.1",
             "TEST.1.1.1",
             "TEST.1.2",
@@ -52719,8 +52607,7 @@
               "TEST.1.1"
             ],
             "3": [
-              "PERS.2.1",
-              "STM.1.2"
+              "PERS.2.1"
             ],
             "4": [
               "TEST.1.1.1"
@@ -53315,13 +53202,10 @@
           "gpp_controls": [
             "ARCH.1.1.1",
             "KONF.1.2",
-            "TEST.3.1",
-            "VRB.2.1",
-            "VRB.4.1"
+            "VRB.2.1"
           ],
           "n_saetze_stripped": 11,
           "saetze_referenziert": [
-            8,
             9,
             10,
             11
@@ -53333,10 +53217,10 @@
             4,
             5,
             6,
-            7
+            7,
+            8
           ],
           "normative_saetze_abgedeckt": [
-            8,
             9,
             10,
             11
@@ -53344,7 +53228,6 @@
         },
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
-            8,
             9,
             10,
             11
@@ -53356,12 +53239,10 @@
             4,
             5,
             6,
-            7
+            7,
+            8
           ],
           "treffer": {
-            "8": [
-              "TEST.3.1"
-            ],
             "9": [
               "ARCH.1.1.1"
             ],
@@ -53369,8 +53250,7 @@
               "KONF.1.2"
             ],
             "11": [
-              "VRB.2.1",
-              "VRB.4.1"
+              "VRB.2.1"
             ]
           },
           "nummerierung_ok": true
@@ -53643,7 +53523,6 @@
         },
         "ours": {
           "gpp_controls": [
-            "DEV.1.1",
             "GEB.1.1.3",
             "TEST.1.1"
           ],
@@ -53675,7 +53554,6 @@
               "GEB.1.1.3"
             ],
             "4": [
-              "DEV.1.1",
               "TEST.1.1"
             ]
           },
@@ -55508,23 +55386,21 @@
         "ours": {
           "gpp_controls": [
             "GEB.10.2.5",
-            "GEB.10.2.7",
             "SENS.8.10"
           ],
           "n_saetze_stripped": 5,
           "saetze_referenziert": [
             1,
             2,
-            4,
             5
           ],
           "saetze_nicht_referenziert": [
-            3
+            3,
+            4
           ],
           "normative_saetze_abgedeckt": [
             1,
             2,
-            4,
             5
           ]
         },
@@ -55532,11 +55408,11 @@
           "abgedeckte_normative_saetze": [
             1,
             2,
-            4,
             5
           ],
           "nicht_abgedeckte_normative_saetze": [
-            3
+            3,
+            4
           ],
           "treffer": {
             "1": [
@@ -55544,9 +55420,6 @@
             ],
             "2": [
               "GEB.10.2.5"
-            ],
-            "4": [
-              "GEB.10.2.7"
             ],
             "5": [
               "SENS.8.10"
@@ -58701,11 +58574,13 @@
             "PERS.4.2",
             "SENS.1.1.3",
             "SENS.7.1",
-            "SENS.8.3"
+            "SENS.8.3",
+            "SENS.9.6"
           ],
           "n_saetze_stripped": 11,
           "saetze_referenziert": [
             1,
+            5,
             6,
             7,
             8,
@@ -58716,11 +58591,11 @@
             2,
             3,
             4,
-            5,
             9
           ],
           "normative_saetze_abgedeckt": [
             1,
+            5,
             6,
             7,
             8,
@@ -59213,7 +59088,6 @@
             "GC.9.1.1",
             "GC.9.1.1.1.1",
             "PERF.4.2",
-            "PERS.1.1.2",
             "SENS.11.2"
           ],
           "n_saetze_stripped": 8,
@@ -59329,6 +59203,7 @@
             "STM.2.1.7",
             "UMS.1.1",
             "UMS.2.1",
+            "UMS.2.2",
             "UMS.6.1"
           ],
           "n_saetze_stripped": 6,
@@ -59442,7 +59317,6 @@
             "PERF.3.2",
             "PERF.4.1",
             "PERS.2.3.3",
-            "STM.3.1",
             "UMS.1.1",
             "VRB.1.1",
             "VRB.4.1"
@@ -59452,19 +59326,18 @@
             1,
             2,
             4,
-            5,
             6,
             7,
             8
           ],
           "saetze_nicht_referenziert": [
-            3
+            3,
+            5
           ],
           "normative_saetze_abgedeckt": [
             1,
             2,
             4,
-            5,
             6,
             7,
             8
@@ -60331,10 +60204,10 @@
             "GC.9.1.1",
             "GC.9.1.1.2",
             "GC.9.1.1.4",
-            "PERF.4.1",
             "PERS.2.1",
             "PERS.2.2",
-            "PERS.2.4"
+            "PERS.2.4",
+            "PERS.6.1.2"
           ],
           "n_saetze_stripped": 8,
           "saetze_referenziert": [
@@ -60344,10 +60217,11 @@
             4,
             5,
             6,
-            7,
+            7
+          ],
+          "saetze_nicht_referenziert": [
             8
           ],
-          "saetze_nicht_referenziert": [],
           "normative_saetze_abgedeckt": [
             1,
             2,
@@ -60355,8 +60229,7 @@
             4,
             5,
             6,
-            7,
-            8
+            7
           ]
         },
         "itgs": {
@@ -60399,10 +60272,11 @@
             4,
             5,
             6,
-            7,
+            7
+          ],
+          "nicht_abgedeckte_normative_saetze": [
             8
           ],
-          "nicht_abgedeckte_normative_saetze": [],
           "treffer": {
             "1": [
               "GC.9.1"
@@ -60427,9 +60301,6 @@
             ],
             "7": [
               "GC.10.1"
-            ],
-            "8": [
-              "PERF.4.1"
             ]
           },
           "nummerierung_ok": true
@@ -64387,17 +64258,16 @@
           "n_saetze_stripped": 5,
           "saetze_referenziert": [
             2,
-            3,
-            5
+            3
           ],
           "saetze_nicht_referenziert": [
             1,
-            4
+            4,
+            5
           ],
           "normative_saetze_abgedeckt": [
             2,
-            3,
-            5
+            3
           ]
         },
         "itgs": {
@@ -64425,12 +64295,12 @@
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
             2,
-            3,
-            5
+            3
           ],
           "nicht_abgedeckte_normative_saetze": [
             1,
-            4
+            4,
+            5
           ],
           "treffer": {
             "2": [
@@ -64441,9 +64311,6 @@
               "DET.3.1.4",
               "DET.4.12",
               "DET.4.15"
-            ],
-            "5": [
-              "DET.6.1.2"
             ]
           },
           "nummerierung_ok": true
@@ -65060,35 +64927,18 @@
         "kann_saetze_xml": [],
         "has_lists": false,
         "covered_by": {
-          "ours": true,
+          "ours": false,
           "itgs": false,
           "prozessbausteine": false,
-          "any": true,
+          "any": false,
           "ours_5521": true
         },
-        "ours": {
-          "gpp_controls": [
-            "NOT.3.1"
-          ],
-          "n_saetze_stripped": 1,
-          "saetze_referenziert": [
-            1
-          ],
-          "saetze_nicht_referenziert": [],
-          "normative_saetze_abgedeckt": [
-            1
-          ]
-        },
         "satz_urteil": {
-          "abgedeckte_normative_saetze": [
+          "abgedeckte_normative_saetze": [],
+          "nicht_abgedeckte_normative_saetze": [
             1
           ],
-          "nicht_abgedeckte_normative_saetze": [],
-          "treffer": {
-            "1": [
-              "NOT.3.1"
-            ]
-          },
+          "treffer": {},
           "nummerierung_ok": true
         }
       },
@@ -65472,24 +65322,22 @@
         "ours": {
           "gpp_controls": [
             "ARCH.1.1.3",
-            "UMS.1.1",
-            "VRB.4.1"
+            "UMS.1.1"
           ],
           "n_saetze_stripped": 6,
           "saetze_referenziert": [
             2,
-            4,
-            5
+            4
           ],
           "saetze_nicht_referenziert": [
             1,
             3,
+            5,
             6
           ],
           "normative_saetze_abgedeckt": [
             2,
-            4,
-            5
+            4
           ]
         },
         "itgs": {
@@ -65514,12 +65362,12 @@
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
             2,
-            4,
-            5
+            4
           ],
           "nicht_abgedeckte_normative_saetze": [
             1,
             3,
+            5,
             6
           ],
           "treffer": {
@@ -65528,9 +65376,6 @@
             ],
             "4": [
               "UMS.1.1"
-            ],
-            "5": [
-              "VRB.4.1"
             ]
           },
           "nummerierung_ok": true
@@ -65771,7 +65616,6 @@
           "gpp_controls": [
             "DET.4.9",
             "KONF.2.5",
-            "PERF.3.1.4",
             "PERF.3.2",
             "UMS.1.1",
             "VRB.2.1"
@@ -65818,7 +65662,6 @@
           "nicht_abgedeckte_normative_saetze": [],
           "treffer": {
             "1": [
-              "PERF.3.1.4",
               "UMS.1.1"
             ],
             "2": [
@@ -66574,28 +66417,26 @@
           "gpp_controls": [
             "ASST.3.1",
             "SENS.2.4.1",
-            "UMS.1.1",
-            "VRB.4.1"
+            "UMS.1.1"
           ],
           "n_saetze_stripped": 9,
           "saetze_referenziert": [
             3,
             5,
-            7,
-            8
+            7
           ],
           "saetze_nicht_referenziert": [
             1,
             2,
             4,
             6,
+            8,
             9
           ],
           "normative_saetze_abgedeckt": [
             3,
             5,
-            7,
-            8
+            7
           ]
         },
         "itgs": {
@@ -66624,14 +66465,14 @@
           "abgedeckte_normative_saetze": [
             3,
             5,
-            7,
-            8
+            7
           ],
           "nicht_abgedeckte_normative_saetze": [
             1,
             2,
             4,
             6,
+            8,
             9
           ],
           "treffer": {
@@ -66643,9 +66484,6 @@
             ],
             "7": [
               "UMS.1.1"
-            ],
-            "8": [
-              "VRB.4.1"
             ]
           },
           "nummerierung_ok": true
@@ -68014,23 +67852,21 @@
           "gpp_controls": [
             "DET.5.3",
             "KONF.2.5",
-            "PERF.3.1.4",
             "PERF.3.2",
-            "VRB.2.1",
-            "VRB.4.1"
+            "VRB.2.1"
           ],
           "n_saetze_stripped": 5,
           "saetze_referenziert": [
             1,
-            2,
             3,
             4,
             5
           ],
-          "saetze_nicht_referenziert": [],
+          "saetze_nicht_referenziert": [
+            2
+          ],
           "normative_saetze_abgedeckt": [
             1,
-            2,
             3,
             4,
             5
@@ -68039,18 +67875,16 @@
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
             1,
-            2,
             3,
             4,
             5
           ],
-          "nicht_abgedeckte_normative_saetze": [],
+          "nicht_abgedeckte_normative_saetze": [
+            2
+          ],
           "treffer": {
             "1": [
               "DET.5.3"
-            ],
-            "2": [
-              "PERF.3.1.4"
             ],
             "3": [
               "KONF.2.5"
@@ -68059,8 +67893,7 @@
               "PERF.3.2"
             ],
             "5": [
-              "VRB.2.1",
-              "VRB.4.1"
+              "VRB.2.1"
             ]
           },
           "nummerierung_ok": true
@@ -69671,16 +69504,15 @@
         "ours": {
           "gpp_controls": [
             "ARCH.5.1.8",
-            "GC.3.1.1",
             "KONF.2.4.1"
           ],
           "n_saetze_stripped": 7,
           "saetze_referenziert": [
             1,
-            2,
             7
           ],
           "saetze_nicht_referenziert": [
+            2,
             3,
             4,
             5,
@@ -69688,7 +69520,6 @@
           ],
           "normative_saetze_abgedeckt": [
             1,
-            2,
             7
           ]
         },
@@ -69709,10 +69540,10 @@
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
             1,
-            2,
             7
           ],
           "nicht_abgedeckte_normative_saetze": [
+            2,
             3,
             4,
             5,
@@ -69721,9 +69552,6 @@
           "treffer": {
             "1": [
               "ARCH.5.1.8"
-            ],
-            "2": [
-              "GC.3.1.1"
             ],
             "7": [
               "KONF.2.4.1"
@@ -72541,33 +72369,31 @@
         },
         "ours": {
           "gpp_controls": [
-            "ASST.4.2",
-            "UMS.5.2"
+            "ASST.4.2"
           ],
           "n_saetze_stripped": 5,
           "saetze_referenziert": [
             1,
-            2,
-            4
+            2
           ],
           "saetze_nicht_referenziert": [
             3,
+            4,
             5
           ],
           "normative_saetze_abgedeckt": [
             1,
-            2,
-            4
+            2
           ]
         },
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
             1,
-            2,
-            4
+            2
           ],
           "nicht_abgedeckte_normative_saetze": [
             3,
+            4,
             5
           ],
           "treffer": {
@@ -72576,9 +72402,6 @@
             ],
             "2": [
               "ASST.4.2"
-            ],
-            "4": [
-              "UMS.5.2"
             ]
           },
           "nummerierung_ok": true
@@ -78002,7 +77825,7 @@
         "level": "H",
         "rolle": null,
         "entfallen": false,
-        "n_saetze_xml": 3,
+        "n_saetze_xml": 2,
         "normative_saetze_xml": [
           1,
           2
@@ -78020,11 +77843,10 @@
           "gpp_controls": [
             "ASST.5.2"
           ],
-          "n_saetze_stripped": 3,
+          "n_saetze_stripped": 2,
           "saetze_referenziert": [
             1,
-            2,
-            3
+            2
           ],
           "saetze_nicht_referenziert": [],
           "normative_saetze_abgedeckt": [
@@ -78046,9 +77868,6 @@
               "ASST.5.2"
             ],
             "2": [
-              "ASST.5.2"
-            ],
-            "3": [
               "ASST.5.2"
             ]
           },
@@ -80944,6 +80763,7 @@
         },
         "ours": {
           "gpp_controls": [
+            "ASST.5.2",
             "DET.5.10",
             "DET.5.10.2",
             "DET.5.10.3",
@@ -81083,6 +80903,7 @@
         },
         "ours": {
           "gpp_controls": [
+            "PERS.1.1.2",
             "TEST.1.1.2"
           ],
           "n_saetze_stripped": 2,
@@ -81501,8 +81322,7 @@
             "BES.7.1",
             "TEST.3.1.5",
             "TEST.4.1",
-            "TEST.4.1.3",
-            "VRB.4.1"
+            "TEST.4.1.3"
           ],
           "n_saetze_stripped": 6,
           "saetze_referenziert": [
@@ -81510,17 +81330,17 @@
             2,
             3,
             4,
-            5,
+            5
+          ],
+          "saetze_nicht_referenziert": [
             6
           ],
-          "saetze_nicht_referenziert": [],
           "normative_saetze_abgedeckt": [
             1,
             2,
             3,
             4,
-            5,
-            6
+            5
           ]
         },
         "itgs": {
@@ -81555,10 +81375,11 @@
             2,
             3,
             4,
-            5,
+            5
+          ],
+          "nicht_abgedeckte_normative_saetze": [
             6
           ],
-          "nicht_abgedeckte_normative_saetze": [],
           "treffer": {
             "1": [
               "BES.2.1.4"
@@ -81574,9 +81395,6 @@
             ],
             "5": [
               "TEST.4.1.3"
-            ],
-            "6": [
-              "VRB.4.1"
             ]
           },
           "nummerierung_ok": true
@@ -82358,6 +82176,7 @@
             "KONF.7.5",
             "REA.1.1",
             "REA.1.1.1",
+            "REA.2.2",
             "REA.2.6"
           ],
           "n_saetze_stripped": 5,
@@ -82825,6 +82644,7 @@
         },
         "ours": {
           "gpp_controls": [
+            "BER.2.4",
             "DET.3.1",
             "DET.4.1"
           ],
@@ -83168,7 +82988,6 @@
         "ours": {
           "gpp_controls": [
             "ASST.7.2",
-            "GC.3.1.1",
             "NOT.4.5"
           ],
           "n_saetze_stripped": 2,
@@ -83197,8 +83016,7 @@
               "NOT.4.5"
             ],
             "2": [
-              "ASST.7.2",
-              "GC.3.1.1"
+              "ASST.7.2"
             ]
           },
           "nummerierung_ok": true
@@ -84778,20 +84596,19 @@
             1,
             2,
             3,
-            6,
-            8
+            6
           ],
           "saetze_nicht_referenziert": [
             4,
             5,
-            7
+            7,
+            8
           ],
           "normative_saetze_abgedeckt": [
             1,
             2,
             3,
-            6,
-            8
+            6
           ]
         },
         "itgs": {
@@ -84826,13 +84643,13 @@
             1,
             2,
             3,
-            6,
-            8
+            6
           ],
           "nicht_abgedeckte_normative_saetze": [
             4,
             5,
-            7
+            7,
+            8
           ],
           "treffer": {
             "1": [
@@ -84848,9 +84665,6 @@
             ],
             "6": [
               "DET.3.1.1"
-            ],
-            "8": [
-              "DET.6.1.2"
             ]
           },
           "nummerierung_ok": true
@@ -84882,7 +84696,8 @@
           "gpp_controls": [
             "NOT.1.1",
             "NOT.3.1",
-            "NOT.4.15"
+            "NOT.4.15",
+            "NOT.4.2"
           ],
           "n_saetze_stripped": 2,
           "saetze_referenziert": [
@@ -86335,8 +86150,7 @@
         "ours": {
           "gpp_controls": [
             "PERF.3.2",
-            "VRB.2.1",
-            "VRB.4.1"
+            "VRB.2.1"
           ],
           "n_saetze_stripped": 4,
           "saetze_referenziert": [
@@ -86369,8 +86183,7 @@
               "PERF.3.2"
             ],
             "4": [
-              "VRB.2.1",
-              "VRB.4.1"
+              "VRB.2.1"
             ]
           },
           "nummerierung_ok": true
@@ -86474,8 +86287,7 @@
         },
         "ours": {
           "gpp_controls": [
-            "BES.7.1",
-            "TEST.3.1"
+            "BES.7.1"
           ],
           "n_saetze_stripped": 6,
           "saetze_referenziert": [
@@ -86527,8 +86339,7 @@
           ],
           "treffer": {
             "2": [
-              "BES.7.1",
-              "TEST.3.1"
+              "BES.7.1"
             ]
           },
           "nummerierung_ok": true
@@ -87175,7 +86986,6 @@
             "DET.3.1.7",
             "DET.6.1",
             "DET.6.1.2",
-            "REA.2.1",
             "REA.2.6.5"
           ],
           "n_saetze_stripped": 7,
@@ -87184,18 +86994,17 @@
             2,
             3,
             4,
-            6,
             7
           ],
           "saetze_nicht_referenziert": [
-            5
+            5,
+            6
           ],
           "normative_saetze_abgedeckt": [
             1,
             2,
             3,
             4,
-            6,
             7
           ]
         },
@@ -87225,11 +87034,11 @@
             2,
             3,
             4,
-            6,
             7
           ],
           "nicht_abgedeckte_normative_saetze": [
-            5
+            5,
+            6
           ],
           "treffer": {
             "1": [
@@ -87246,12 +87055,8 @@
             "4": [
               "DET.6.1"
             ],
-            "6": [
-              "DET.6.1.2"
-            ],
             "7": [
               "DET.6.1.2",
-              "REA.2.1",
               "REA.2.6.5"
             ]
           },
@@ -88430,7 +88235,6 @@
         "ours": {
           "gpp_controls": [
             "NOT.1.1",
-            "NOT.3.1",
             "NOT.4.15"
           ],
           "n_saetze_stripped": 4,
@@ -88484,7 +88288,6 @@
               "NOT.1.1"
             ],
             "4": [
-              "NOT.3.1",
               "NOT.4.15"
             ]
           },
@@ -90566,8 +90369,7 @@
         "ours": {
           "gpp_controls": [
             "BES.2.2",
-            "BES.5.3",
-            "GC.3.1.1"
+            "BES.5.3"
           ],
           "n_saetze_stripped": 4,
           "saetze_referenziert": [
@@ -90597,8 +90399,7 @@
           "treffer": {
             "4": [
               "BES.2.2",
-              "BES.5.3",
-              "GC.3.1.1"
+              "BES.5.3"
             ]
           },
           "nummerierung_ok": true
@@ -92923,8 +92724,7 @@
           "gpp_controls": [
             "BES.5.10.1",
             "BES.5.5.2",
-            "BES.7.4.7",
-            "DLS.2.2"
+            "BES.7.4.7"
           ],
           "n_saetze_stripped": 5,
           "saetze_referenziert": [
@@ -92947,18 +92747,15 @@
         },
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
-            1,
             3,
             5
           ],
           "nicht_abgedeckte_normative_saetze": [
+            1,
             2,
             4
           ],
           "treffer": {
-            "1": [
-              "DLS.2.2"
-            ],
             "3": [
               "BES.7.4.7"
             ],
@@ -93122,7 +92919,6 @@
             "BES.5.10",
             "BES.5.10.2",
             "BES.5.4",
-            "BES.7.1.1",
             "BES.7.1.2",
             "BES.7.2",
             "DET.5.3",
@@ -93135,15 +92931,15 @@
             1,
             2,
             3,
-            4,
             5
           ],
-          "saetze_nicht_referenziert": [],
+          "saetze_nicht_referenziert": [
+            4
+          ],
           "normative_saetze_abgedeckt": [
             1,
             2,
             3,
-            4,
             5
           ]
         },
@@ -93155,10 +92951,11 @@
             1,
             2,
             3,
-            4,
             5
           ],
-          "nicht_abgedeckte_normative_saetze": [],
+          "nicht_abgedeckte_normative_saetze": [
+            4
+          ],
           "treffer": {
             "1": [
               "BES.5.4",
@@ -93171,9 +92968,6 @@
               "BES.7.1.2",
               "DLS.3.1",
               "DLS.3.1.1"
-            ],
-            "4": [
-              "BES.7.1.1"
             ],
             "5": [
               "BES.5.10",
@@ -94040,13 +93834,11 @@
         },
         "ours": {
           "gpp_controls": [
-            "BES.5.13.1",
             "BES.6.1",
             "BES.6.2",
             "BES.6.2.1",
             "BES.6.6",
             "BES.8.2",
-            "DLS.1.1",
             "DLS.4.1",
             "DLS.4.1.2"
           ],
@@ -94082,8 +93874,7 @@
           ],
           "treffer": {
             "1": [
-              "BES.8.2",
-              "DLS.1.1"
+              "BES.8.2"
             ],
             "2": [
               "BES.6.6"
@@ -95457,16 +95248,16 @@
           "saetze_referenziert": [
             1,
             2,
-            3,
             4,
             5,
             6
           ],
-          "saetze_nicht_referenziert": [],
+          "saetze_nicht_referenziert": [
+            3
+          ],
           "normative_saetze_abgedeckt": [
             1,
             2,
-            3,
             4,
             5,
             6
@@ -95479,21 +95270,19 @@
           "abgedeckte_normative_saetze": [
             1,
             2,
-            3,
             4,
             5,
             6
           ],
-          "nicht_abgedeckte_normative_saetze": [],
+          "nicht_abgedeckte_normative_saetze": [
+            3
+          ],
           "treffer": {
             "1": [
               "PERS.4.2"
             ],
             "2": [
               "PERS.4.1"
-            ],
-            "3": [
-              "PERS.4.2"
             ],
             "4": [
               "GC.9.1.1.4",
@@ -99006,6 +98795,7 @@
             "BER.3.4",
             "DET.3.1.1",
             "DET.3.1.4",
+            "DET.3.1.6",
             "DET.3.1.8"
           ],
           "n_saetze_stripped": 1,
@@ -100000,6 +99790,7 @@
             "DET.4.2",
             "DET.6.1.2",
             "KONF.7.3",
+            "KONF.7.4",
             "PERF.5.1"
           ],
           "n_saetze_stripped": 4,
@@ -103432,46 +103223,41 @@
         "ours": {
           "gpp_controls": [
             "KONF.2.5",
-            "PERF.3.1.4",
-            "PERF.3.2",
-            "VRB.4.1"
+            "PERF.3.2"
           ],
           "n_saetze_stripped": 4,
           "saetze_referenziert": [
             1,
             2,
-            3,
+            3
+          ],
+          "saetze_nicht_referenziert": [
             4
           ],
-          "saetze_nicht_referenziert": [],
           "normative_saetze_abgedeckt": [
             1,
             2,
-            3,
-            4
+            3
           ]
         },
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
             1,
             2,
-            3,
+            3
+          ],
+          "nicht_abgedeckte_normative_saetze": [
             4
           ],
-          "nicht_abgedeckte_normative_saetze": [],
           "treffer": {
             "1": [
-              "KONF.2.5",
-              "PERF.3.1.4"
+              "KONF.2.5"
             ],
             "2": [
               "KONF.2.5"
             ],
             "3": [
               "PERF.3.2"
-            ],
-            "4": [
-              "VRB.4.1"
             ]
           },
           "nummerierung_ok": true
@@ -104036,27 +103822,11 @@
         "kann_saetze_xml": [],
         "has_lists": false,
         "covered_by": {
-          "ours": true,
+          "ours": false,
           "itgs": true,
           "prozessbausteine": false,
           "any": true,
           "ours_5521": false
-        },
-        "ours": {
-          "gpp_controls": [
-            "ARCH.5.1"
-          ],
-          "n_saetze_stripped": 3,
-          "saetze_referenziert": [
-            3
-          ],
-          "saetze_nicht_referenziert": [
-            1,
-            2
-          ],
-          "normative_saetze_abgedeckt": [
-            3
-          ]
         },
         "itgs": {
           "gpp_targets": [
@@ -104076,18 +103846,13 @@
           "req_level_maps": 0
         },
         "satz_urteil": {
-          "abgedeckte_normative_saetze": [
-            3
-          ],
+          "abgedeckte_normative_saetze": [],
           "nicht_abgedeckte_normative_saetze": [
             1,
-            2
+            2,
+            3
           ],
-          "treffer": {
-            "3": [
-              "ARCH.5.1"
-            ]
-          },
+          "treffer": {},
           "nummerierung_ok": true
         }
       },
@@ -104394,26 +104159,24 @@
             "ARCH.2.1",
             "ARCH.2.2",
             "ARCH.2.2.7",
-            "ARCH.2.5",
-            "ARCH.8.1"
+            "ARCH.2.5"
           ],
           "n_saetze_stripped": 6,
           "saetze_referenziert": [
             1,
             3,
             4,
-            5,
-            6
+            5
           ],
           "saetze_nicht_referenziert": [
-            2
+            2,
+            6
           ],
           "normative_saetze_abgedeckt": [
             1,
             3,
             4,
-            5,
-            6
+            5
           ]
         },
         "itgs": {
@@ -104449,11 +104212,11 @@
             1,
             3,
             4,
-            5,
-            6
+            5
           ],
           "nicht_abgedeckte_normative_saetze": [
-            2
+            2,
+            6
           ],
           "treffer": {
             "1": [
@@ -104467,9 +104230,6 @@
             ],
             "5": [
               "ARCH.2.2.7"
-            ],
-            "6": [
-              "ARCH.8.1"
             ]
           },
           "nummerierung_ok": true
@@ -106211,22 +105971,20 @@
         },
         "ours": {
           "gpp_controls": [
-            "DET.4.15",
-            "DET.6.1.2"
+            "DET.4.15"
           ],
           "n_saetze_stripped": 5,
           "saetze_referenziert": [
-            2,
-            4
+            2
           ],
           "saetze_nicht_referenziert": [
             1,
             3,
+            4,
             5
           ],
           "normative_saetze_abgedeckt": [
-            2,
-            4
+            2
           ]
         },
         "itgs": {
@@ -106247,20 +106005,17 @@
         },
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
-            2,
-            4
+            2
           ],
           "nicht_abgedeckte_normative_saetze": [
             1,
             3,
+            4,
             5
           ],
           "treffer": {
             "2": [
               "DET.4.15"
-            ],
-            "4": [
-              "DET.6.1.2"
             ]
           },
           "nummerierung_ok": true
@@ -108704,37 +108459,32 @@
           "gpp_controls": [
             "PERF.3.1",
             "PERF.3.1.2",
-            "PERF.3.1.4",
             "VRB.2.1"
           ],
           "n_saetze_stripped": 4,
           "saetze_referenziert": [
-            1,
             2,
             4
           ],
           "saetze_nicht_referenziert": [
+            1,
             3
           ],
           "normative_saetze_abgedeckt": [
-            1,
             2,
             4
           ]
         },
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
-            1,
             2,
             4
           ],
           "nicht_abgedeckte_normative_saetze": [
+            1,
             3
           ],
           "treffer": {
-            "1": [
-              "PERF.3.1.4"
-            ],
             "2": [
               "PERF.3.1"
             ],
@@ -109156,7 +108906,6 @@
         },
         "ours": {
           "gpp_controls": [
-            "ASST.4.2",
             "KONF.2.2"
           ],
           "n_saetze_stripped": 2,
@@ -109178,7 +108927,6 @@
           "nicht_abgedeckte_normative_saetze": [],
           "treffer": {
             "1": [
-              "ASST.4.2",
               "KONF.2.2"
             ],
             "2": [
@@ -114145,7 +113893,6 @@
               "ARCH.2.2.12"
             ],
             "4": [
-              "KONF.2.4",
               "KONF.4.4"
             ],
             "5": [
@@ -121032,27 +120779,11 @@
         "kann_saetze_xml": [],
         "has_lists": false,
         "covered_by": {
-          "ours": true,
+          "ours": false,
           "itgs": false,
           "prozessbausteine": false,
-          "any": true,
+          "any": false,
           "ours_5521": true
-        },
-        "ours": {
-          "gpp_controls": [
-            "DEV.5.2"
-          ],
-          "n_saetze_stripped": 3,
-          "saetze_referenziert": [
-            1
-          ],
-          "saetze_nicht_referenziert": [
-            2,
-            3
-          ],
-          "normative_saetze_abgedeckt": [
-            1
-          ]
         },
         "satz_urteil": {
           "abgedeckte_normative_saetze": [],
@@ -121808,21 +121539,20 @@
             "BER.4.4",
             "KONF.10.5",
             "KONF.2.5",
-            "TEST.3.1",
-            "VRB.4.1"
+            "TEST.3.1"
           ],
           "n_saetze_stripped": 4,
           "saetze_referenziert": [
             1,
             2,
-            3,
             4
           ],
-          "saetze_nicht_referenziert": [],
+          "saetze_nicht_referenziert": [
+            3
+          ],
           "normative_saetze_abgedeckt": [
             1,
             2,
-            3,
             4
           ]
         },
@@ -121847,10 +121577,11 @@
           "abgedeckte_normative_saetze": [
             1,
             2,
-            3,
             4
           ],
-          "nicht_abgedeckte_normative_saetze": [],
+          "nicht_abgedeckte_normative_saetze": [
+            3
+          ],
           "treffer": {
             "1": [
               "KONF.10.5",
@@ -121858,9 +121589,6 @@
             ],
             "2": [
               "TEST.3.1"
-            ],
-            "3": [
-              "VRB.4.1"
             ],
             "4": [
               "BER.4.4"
@@ -122568,26 +122296,24 @@
           ],
           "n_saetze_stripped": 2,
           "saetze_referenziert": [
-            1,
+            1
+          ],
+          "saetze_nicht_referenziert": [
             2
           ],
-          "saetze_nicht_referenziert": [],
           "normative_saetze_abgedeckt": [
-            1,
-            2
+            1
           ]
         },
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
-            1,
+            1
+          ],
+          "nicht_abgedeckte_normative_saetze": [
             2
           ],
-          "nicht_abgedeckte_normative_saetze": [],
           "treffer": {
             "1": [
-              "KONF.2.4"
-            ],
-            "2": [
               "KONF.2.4"
             ]
           },
@@ -123750,33 +123476,30 @@
         "ours": {
           "gpp_controls": [
             "ASST.3.14",
-            "ASST.6.4",
-            "NOT.4.2"
+            "ASST.6.4"
           ],
           "n_saetze_stripped": 3,
           "saetze_referenziert": [
-            1,
             2,
             3
           ],
-          "saetze_nicht_referenziert": [],
+          "saetze_nicht_referenziert": [
+            1
+          ],
           "normative_saetze_abgedeckt": [
-            1,
             2,
             3
           ]
         },
         "satz_urteil": {
           "abgedeckte_normative_saetze": [
-            1,
             2,
             3
           ],
-          "nicht_abgedeckte_normative_saetze": [],
+          "nicht_abgedeckte_normative_saetze": [
+            1
+          ],
           "treffer": {
-            "1": [
-              "NOT.4.2"
-            ],
             "2": [
               "ASST.6.4"
             ],
@@ -128079,8 +127802,7 @@
           "gpp_controls": [
             "ASST.1.1.2",
             "ASST.1.1.3",
-            "ASST.3.1",
-            "SENS.7.1"
+            "ASST.3.1"
           ],
           "n_saetze_stripped": 2,
           "saetze_referenziert": [
@@ -128105,8 +127827,7 @@
             ],
             "2": [
               "ASST.1.1.3",
-              "ASST.3.1",
-              "SENS.7.1"
+              "ASST.3.1"
             ]
           },
           "nummerierung_ok": true
@@ -128137,6 +127858,7 @@
         },
         "ours": {
           "gpp_controls": [
+            "SENS.2.4",
             "SENS.2.4.1",
             "SENS.6.1",
             "SENS.6.2",
@@ -129108,6 +128830,7 @@
         "DET.6.1.3",
         "DEV.3.1",
         "DEV.4.8",
+        "DEV.5.2",
         "DEV.7.2",
         "DLS.3.3",
         "DLS.3.5",
@@ -129172,6 +128895,7 @@
         "STM.2.1.4.2",
         "STM.2.1.5",
         "STM.2.1.6",
+        "STM.3.1",
         "STM.5.1",
         "TEST.3.1.7",
         "TEST.3.1.8",
@@ -130588,6 +130312,7 @@
         "DET.5.8.1.1",
         "DEV.3.1",
         "DEV.4.8",
+        "DEV.5.2",
         "DEV.7.2",
         "DLS.3.3",
         "DLS.3.5",
@@ -130643,6 +130368,7 @@
         "STM.2.1.4.1",
         "STM.2.1.5",
         "STM.2.1.6",
+        "STM.3.1",
         "STM.5.1",
         "TEST.3.1.7",
         "VRB.6.1"
@@ -130650,7 +130376,7 @@
     },
     "konsistenz": {
       "ours_zielklassen": {
-        "official": 1607
+        "official": 1603
       },
       "ours_ziele_entfallen": [],
       "ours_ziele_ntt_custom": [],
@@ -131040,9 +130766,9 @@
     },
     "anker": {
       "erwartet": {
-        "ours_maps": 5145,
-        "ours_distinct_sources": 867,
-        "ours_distinct_targets": 1607,
+        "ours_maps": 5086,
+        "ours_distinct_sources": 865,
+        "ours_distinct_targets": 1603,
         "old_maps": 5521,
         "itgs_maps": 1185,
         "itgs_distinct_teilanforderungen": 824,
@@ -131054,14 +130780,14 @@
           "equal-to": 21
         },
         "gpp_controls": 1000,
-        "forward_gap_ours": 133,
+        "forward_gap_ours": 135,
         "itgs_dangling_gpp_targets": 17,
         "official_bausteine": 111
       },
       "ist": {
-        "ours_maps": 5145,
-        "ours_distinct_sources": 867,
-        "ours_distinct_targets": 1607,
+        "ours_maps": 5086,
+        "ours_distinct_sources": 865,
+        "ours_distinct_targets": 1603,
         "old_maps": 5521,
         "itgs_maps": 1185,
         "itgs_distinct_teilanforderungen": 824,
@@ -131073,7 +130799,7 @@
           "superset-of": 187
         },
         "gpp_controls": 1000,
-        "forward_gap_ours": 133,
+        "forward_gap_ours": 135,
         "itgs_dangling_gpp_targets": 17,
         "official_bausteine": 111
       },

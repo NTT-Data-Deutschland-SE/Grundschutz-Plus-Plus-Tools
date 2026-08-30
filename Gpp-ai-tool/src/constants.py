@@ -99,6 +99,7 @@ ED23_BATCH_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_ba
 ED23_SATZ_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_satz_response_schema.json")
 ED23_SATZ_VERIFY_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_satz_verify_response_schema.json")
 ED23_RELATION_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_relation_response_schema.json")
+ED23_RELATION_CONTROL_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_relation_control_response_schema.json")
 PROZESSBAUSTEINE_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/prozessbausteine_response_schema.json")
 
 # --- AI Model Configuration ---

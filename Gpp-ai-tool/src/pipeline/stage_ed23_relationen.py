@@ -1,37 +1,50 @@
 """
 Pipeline Stage: OSCAL relationship classification for the GS++ -> ED23 mapping.
 
-Upgrades hilfsdateien/gpp_ed23_anforderungen.json in place: every one of the verified
-(G++ control, ED23 Anforderung) map entries gets a differentiated OSCAL ``relationship``
-token (equal-to / equivalent-to / subset-of / superset-of / intersects-with) instead of
-the constant ``intersects-with``. The relationship makes the mapping usable for evidence
-migration the way the BSI's GSMap collection is: the token tells whether an existing
-Nachweis suffices (equal-to/equivalent-to), is too narrow (subset-of from the G++ side),
-or only overlaps.
+Re-klassifiziert hilfsdateien/gpp_ed23_anforderungen.json in place: jedes verifizierte
+(G++ control, ED23 Anforderung, Teilanforderung)-Paar erhaelt einen differenzierten
+OSCAL ``relationship``-Token (equal-to / equivalent-to / subset-of / superset-of /
+intersects-with); Begruendungen werden ersetzt, wo sie den Typ nicht tragen.
 
-Method: one strict, self-contained classification call per existing pair (~3k calls, no
-corpus cache needed) on GROUND_TRUTH_MODEL. Context per call: the G++ control (statement,
-guidance, Praktik) and the ED23 Anforderung's numbered sentences from the stripped corpus
-(the same corpus satz_nr indexes into), the carrying sentence marked. The mapping itself
-is NOT changed — same pairs, same satz refs, same remarks; only the relationship field
-per map entry differs, so the diff stays reviewable. OSCAL direction semantics: the token
-describes the SOURCE (G++ control) relative to the TARGET (ED23 Anforderung). Note that
-the BSI GSMap maps the opposite direction (ED23-UA -> GS++), so subset-of/superset-of
-histograms of the two collections must be mirrored before comparing.
+Umbau nach Issue #37 (Mapping-QS vom 30.08.2026): Die v2-Klassifikation lief pro Paar
+isoliert und ohne Subsumtionsregel — Ergebnis waren 15,9 % nicht haltbare Relationstypen
+(fast immer superset-of statt intersects-with), Familien-Inkonsistenzen und
+"deckt ... ab"-Begruendungen im Widerspruch zum eigenen Label. Diese Fassung hebt die
+Urteilseinheit auf das CONTROL:
 
-Resume: .partial checkpoint per control id. Skip guard: a mapping whose entries already
-carry more than one distinct relationship value counts as classified (an unclassified
-build is constantly intersects-with); OVERWRITE_TEMP_FILES=true forces reclassification.
-Not part of the full pipeline — run explicitly via
-`python src/main.py --stage stage_ed23_relationen`.
+* Ein Call je Control (Chunks ab ED23_RELATION_CHUNK_MAX Paaren, Ziel-Anforderungen
+  werden nie ueber Chunks geteilt): alle Paare als Familie, gruppiert nach
+  Ziel-Anforderung mit der vollen amtlichen Satzliste — Familien-Konsistenz und
+  Dedup-Blick, die pro-Paar-Prompts strukturell nicht haben.
+* Prompt mit expliziter Subsumtionsregel (zweites Verb / zweite Pflicht / andere
+  Phase -> intersects-with), Familien-Konsistenzregel und Begruendungs-Stilregel;
+  die bisherige Begruendung ist ausdruecklich nur Kontext.
+* Rueckgabe je Paar: relationship + optional begruendung_neu (nur wenn die alte
+  Begruendung den Typ nicht traegt); das "(Teilanforderung n)"-Praefix wird
+  maschinell wieder vorangestellt.
+* Ein gemeinsamer Prefix je Control statt 5er-Batches quer ueber Controls — weniger
+  Calls, cache-freundlich (vgl. docs/token-kostenplan.md).
+
+OSCAL direction semantics: the token describes the SOURCE (G++ control) relative to
+the TARGET (ED23 Anforderung / tragender Satz). The BSI GSMap maps the opposite
+direction, so subset-of/superset-of histograms must be mirrored before comparing.
+
+Resume: .partial checkpoint je Control-Chunk. Skip guard: ein Mapping, dessen
+Eintraege bereits mehr als einen Relationstyp tragen, gilt als klassifiziert;
+OVERWRITE_TEMP_FILES=true erzwingt die Re-Klassifikation (der Normalfall dieser
+Fassung). Kostenprobe: ED23_RELATION_CONTROLS="KONF.2.4,BER.4.1,..." beschraenkt
+den Lauf auf die genannten Controls. Not part of the full pipeline — run explicitly
+via `python -m pipeline.stage_ed23_relationen`.
 """
 
 import asyncio
 import json
 import logging
 import os
+import re
 import tempfile
 import time
+from collections import Counter
 from typing import Any, Dict, List, Optional, Tuple
 
 from config import app_config
@@ -44,15 +57,19 @@ from constants import (
     GPP_CATALOG_PIN_SHA256,
     GPP_ED23_ANFORDERUNGEN_JSON_PATH,
     ED23_ANFORDERUNGEN_STRIPPED_JSON_PATH,
-    ED23_RELATION_RESPONSE_SCHEMA_PATH,
+    ED23_RELATION_CONTROL_RESPONSE_SCHEMA_PATH,
     PROMPT_CONFIG_PATH,
 )
 
 logger = logging.getLogger(__name__)
 
 CHECKPOINT_PATH = GPP_ED23_ANFORDERUNGEN_JSON_PATH + ".relationen.partial"
-CHECKPOINT_KEY = "ed23_relationen_map"
+CHECKPOINT_KEY = "ed23_relationen_controls"
 DEFAULT_RELATIONSHIP = "intersects-with"
+CHUNK_MAX = int(os.environ.get("ED23_RELATION_CHUNK_MAX", "60"))
+CONTROLS_FILTER = os.environ.get("ED23_RELATION_CONTROLS", "").strip()
+
+TEILANF_PREFIX_RE = re.compile(r"^\(Teilanforderung (\d+)\)\s*")
 
 
 def _atomic_save_json(data: Dict[str, Any], path: str) -> None:
@@ -81,14 +98,14 @@ def _atomic_save_json(data: Dict[str, Any], path: str) -> None:
 
 
 def _load_checkpoint(path: str) -> Dict[str, Any]:
-    """Loads per-pair relationships from a prior run. Returns {} if absent/unreadable."""
+    """Loads per-chunk verdicts from a prior run. Returns {} if absent/unreadable."""
     if not os.path.exists(path):
         return {}
     try:
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
         done = data.get(CHECKPOINT_KEY, {})
-        logger.info(f"Resuming from checkpoint '{path}': {len(done)} pairs already classified.")
+        logger.info(f"Resuming from checkpoint '{path}': {len(done)} chunks already classified.")
         return done
     except Exception as e:
         logger.warning(f"Could not read checkpoint '{path}' ({e}); starting fresh.")
@@ -138,62 +155,130 @@ def load_mapping_matches(doc: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]
 
 
 def _pair_key(control_id: str, match: Dict[str, Any]) -> str:
-    # Includes the satz_nr: after the merge with the ED23-seitige Satz-Abdeckung one
-    # (control, Anforderung) pair may carry several entries, one per Teilanforderung,
-    # each classified on its own carrying sentence.
     return f"{control_id}|{match['id']}|{match.get('satz_nr') or 0}"
 
 
-def _numbered_saetze(saetze: List[str], carrying: Optional[int]) -> str:
-    lines = []
-    for i, satz in enumerate(saetze, start=1):
-        marker = " [tragend]" if carrying == i else ""
-        lines.append(f"(S{i}){marker} {satz}")
-    return "\n".join(lines) or "(keine)"
+def _chunk_matches(matches: List[Dict[str, Any]]) -> List[List[Dict[str, Any]]]:
+    """Splits a control's matches into chunks of <= CHUNK_MAX pairs.
+
+    Grouped by target Anforderung first and never splitting a group, so every chunk
+    still judges whole requirement families together.
+    """
+    groups: Dict[str, List[Dict[str, Any]]] = {}
+    order: List[str] = []
+    for m in matches:
+        if m["id"] not in groups:
+            groups[m["id"]] = []
+            order.append(m["id"])
+        groups[m["id"]].append(m)
+    chunks: List[List[Dict[str, Any]]] = [[]]
+    for rid in order:
+        group = sorted(groups[rid], key=lambda m: m.get("satz_nr") or 0)
+        if chunks[-1] and len(chunks[-1]) + len(group) > CHUNK_MAX:
+            chunks.append([])
+        chunks[-1].extend(group)
+    return [c for c in chunks if c]
 
 
-async def _classify_pair(
+def _render_pairs_block(
+    chunk: List[Dict[str, Any]], saetze_by_id: Dict[str, List[str]]
+) -> str:
+    """Renders the chunk as requirement-grouped blocks with numbered official sentences."""
+    lines: List[str] = []
+    current_rid = None
+    for n, m in enumerate(chunk, start=1):
+        if m["id"] != current_rid:
+            current_rid = m["id"]
+            lines.append(f"### Ziel-Anforderung {m['id']} — {m.get('name') or '(ohne Titel)'}")
+            saetze = saetze_by_id.get(m["id"], [])
+            if saetze:
+                lines.extend(f"(S{i}) {satz}" for i, satz in enumerate(saetze, start=1))
+            else:
+                lines.append("(keine Saetze im amtlichen Korpus)")
+        satz_ref = f"S{m['satz_nr']}" if m.get("satz_nr") else "(keiner — gesamte Anforderung)"
+        begruendung = TEILANF_PREFIX_RE.sub("", m.get("begruendung") or "(keine)")
+        lines.append(
+            f"[P{n}] tragender Satz: {satz_ref} | bisheriger Typ: "
+            f"{m.get('relationship') or DEFAULT_RELATIONSHIP}"
+        )
+        lines.append(f"      bisherige Begruendung: {begruendung}")
+    return "\n".join(lines)
+
+
+def _validate_verdicts(
+    verdict: Any, n_pairs: int
+) -> Optional[List[Tuple[int, str, Optional[str]]]]:
+    """Checks the structured response covers each pair exactly once; None if not."""
+    if not isinstance(verdict, dict) or not isinstance(verdict.get("pairs"), list):
+        return None
+    seen: Dict[int, Tuple[int, str, Optional[str]]] = {}
+    for item in verdict["pairs"]:
+        if not isinstance(item, dict):
+            return None
+        nr, rel = item.get("nr"), item.get("relationship")
+        if not isinstance(nr, int) or not (1 <= nr <= n_pairs) or nr in seen:
+            return None
+        if not isinstance(rel, str):
+            return None
+        neu = item.get("begruendung_neu")
+        seen[nr] = (nr, rel, neu.strip() if isinstance(neu, str) and neu.strip() else None)
+    if len(seen) != n_pairs:
+        return None
+    return [seen[i] for i in range(1, n_pairs + 1)]
+
+
+async def _classify_control_chunk(
     ai_client: AiClient,
     control_id: str,
     control: Dict[str, str],
-    match: Dict[str, Any],
+    chunk: List[Dict[str, Any]],
     saetze_by_id: Dict[str, List[str]],
     prompt_template: str,
     schema: Dict[str, Any],
     semaphore: asyncio.Semaphore,
-) -> Tuple[str, Optional[str]]:
-    """Classifies one pair; returns (pair_key, relationship or None on failure)."""
+) -> Optional[List[Dict[str, Any]]]:
+    """Classifies one control chunk; returns per-pair verdicts or None on failure."""
     prompt = prompt_template.format(
         praktik=control.get("praktik", ""),
         control_id=control_id,
         title=control.get("title", ""),
         prose=control.get("prose", ""),
         guidance=control.get("guidance") or "(keine)",
-        anf_id=match["id"],
-        anf_name=match["name"],
-        anf_saetze=_numbered_saetze(saetze_by_id.get(match["id"], []), match.get("satz_nr")),
-        begruendung=match.get("begruendung") or "(keine)",
+        n_pairs=len(chunk),
+        pairs_block=_render_pairs_block(chunk, saetze_by_id),
     )
     async with semaphore:
-        try:
-            verdict = await ai_client.generate_validated_json_response(
-                prompt=prompt,
-                json_schema=schema,
-                request_context_log=f"ED23Relation-{control_id}-{match['id']}",
-            )
-        except Exception as e:
-            logger.warning(
-                f"Relation classification failed for '{control_id}' -> '{match['id']}': {e}; "
-                f"keeping {DEFAULT_RELATIONSHIP}."
-            )
-            return _pair_key(control_id, match), None
-    relationship = verdict.get("relationship") if isinstance(verdict, dict) else None
-    return _pair_key(control_id, match), relationship
+        for attempt in (1, 2):
+            try:
+                verdict = await ai_client.generate_validated_json_response(
+                    prompt=prompt,
+                    json_schema=schema,
+                    request_context_log=f"ED23RelationCtrl-{control_id}-n{len(chunk)}",
+                )
+            except Exception as e:
+                logger.warning(
+                    f"Relation classification failed for '{control_id}' "
+                    f"(attempt {attempt}): {e}"
+                )
+                verdict = None
+            rows = _validate_verdicts(verdict, len(chunk)) if verdict else None
+            if rows is not None:
+                return [
+                    {"key": _pair_key(control_id, m), "relationship": rel, "begruendung_neu": neu}
+                    for m, (_, rel, neu) in zip(chunk, rows)
+                ]
+            if verdict is not None:
+                logger.warning(
+                    f"Incomplete/inconsistent verdict set for '{control_id}' "
+                    f"(attempt {attempt}); retrying." if attempt == 1 else
+                    f"Giving up on '{control_id}': keeping previous relations."
+                )
+    return None
 
 
 async def run_stage_ed23_relationen() -> None:
-    """Main entry point for the relationship classification pass."""
-    logger.info("Starting stage_ed23_relationen...")
+    """Main entry point for the control-grouped relationship re-classification."""
+    logger.info("Starting stage_ed23_relationen (control-grouped, Issue #37)...")
 
     with open(GPP_ED23_ANFORDERUNGEN_JSON_PATH, "r", encoding="utf-8") as f:
         mapping_doc = json.load(f)
@@ -204,7 +289,8 @@ async def run_stage_ed23_relationen() -> None:
         logger.info(
             "Mapping already carries differentiated relationships "
             f"({sorted(r for r in distinct_relations if r)}) and OVERWRITE_TEMP_FILES is "
-            "false. Skipping stage_ed23_relationen."
+            "false. Skipping stage_ed23_relationen (set OVERWRITE_TEMP_FILES=true to "
+            "re-classify)."
         )
         return
     logger.info(f"Loaded mapping: {len(per_control)} controls, {len(all_pairs)} pairs.")
@@ -221,68 +307,89 @@ async def run_stage_ed23_relationen() -> None:
     }
 
     prompt_config = load_json_file(PROMPT_CONFIG_PATH)
-    prompt_template = prompt_config["ed23_relation_prompt"]
-    schema = load_json_file(ED23_RELATION_RESPONSE_SCHEMA_PATH)
+    prompt_template = prompt_config["ed23_relation_control_prompt"]
+    schema = load_json_file(ED23_RELATION_CONTROL_RESPONSE_SCHEMA_PATH)
     ai_client = AiClient(app_config)
 
-    # Respect Test Mode (Rule 9.1): only the pairs of the first 3 controls.
+    control_ids = sorted(per_control)
+    if CONTROLS_FILTER:
+        wanted = {c.strip() for c in CONTROLS_FILTER.split(",") if c.strip()}
+        missing = wanted - set(control_ids)
+        if missing:
+            logger.warning(f"ED23_RELATION_CONTROLS unbekannt im Mapping: {sorted(missing)}")
+        control_ids = [c for c in control_ids if c in wanted]
+        logger.info(f"Kostenprobe: beschraenkt auf {len(control_ids)} Controls: {control_ids}")
     if app_config.is_test_mode:
-        test_controls = sorted(per_control)[:3]
-        all_pairs = [(cid, m) for cid, m in all_pairs if cid in test_controls]
-        logger.info(f"TEST mode: limiting to {len(all_pairs)} pairs of 3 controls.")
+        control_ids = control_ids[:3]
+        logger.info(f"TEST mode: limiting to controls {control_ids}.")
 
-    classified: Dict[str, str] = _load_checkpoint(CHECKPOINT_PATH)
-    pending = [
-        (cid, m) for cid, m in all_pairs if _pair_key(cid, m) not in classified
-    ]
+    chunks: List[Tuple[str, int, List[Dict[str, Any]]]] = []
+    for cid in control_ids:
+        for i, chunk in enumerate(_chunk_matches(per_control[cid])):
+            chunks.append((cid, i, chunk))
+
+    classified: Dict[str, List[Dict[str, Any]]] = _load_checkpoint(CHECKPOINT_PATH)
+    pending = [(cid, i, c) for cid, i, c in chunks if f"{cid}#{i}" not in classified]
     checkpoint_lock = asyncio.Lock()
     semaphore = asyncio.Semaphore(app_config.max_concurrent_ai_requests)
+    n_scope = sum(len(c) for _, _, c in chunks)
     logger.info(
-        f"Classifying {len(pending)} of {len(all_pairs)} pairs "
-        f"({len(classified)} restored from checkpoint)..."
+        f"Classifying {len(pending)} of {len(chunks)} control chunks "
+        f"({n_scope} pairs in scope, {len(classified)} chunks from checkpoint)..."
     )
 
-    # Checkpoint every N classifications instead of every single one: 3k full-file writes
-    # in quick succession invite transient Windows file locks and buy no extra safety.
-    checkpoint_every = 25
-    since_checkpoint = 0
-
-    async def _classify_and_checkpoint(cid: str, match: Dict[str, Any]) -> None:
-        nonlocal since_checkpoint
+    async def _classify_and_checkpoint(cid: str, idx: int, chunk: List[Dict[str, Any]]) -> None:
         control = gpp_contexts.get(cid)
         if control is None:
-            logger.warning(f"Control '{cid}' not in pinned G++ catalog; keeping default relation.")
+            logger.warning(f"Control '{cid}' not in pinned G++ catalog; keeping relations.")
             return
-        key, relationship = await _classify_pair(
-            ai_client, cid, control, match, saetze_by_id, prompt_template, schema, semaphore,
+        rows = await _classify_control_chunk(
+            ai_client, cid, control, chunk, saetze_by_id, prompt_template, schema, semaphore,
         )
-        if relationship:
+        if rows is not None:
             async with checkpoint_lock:
-                classified[key] = relationship
-                since_checkpoint += 1
-                if since_checkpoint >= checkpoint_every:
-                    _atomic_save_json({CHECKPOINT_KEY: classified}, CHECKPOINT_PATH)
-                    since_checkpoint = 0
+                classified[f"{cid}#{idx}"] = rows
+                _atomic_save_json({CHECKPOINT_KEY: classified}, CHECKPOINT_PATH)
 
     if pending:
-        await asyncio.gather(*(_classify_and_checkpoint(cid, m) for cid, m in pending))
+        await asyncio.gather(*(_classify_and_checkpoint(cid, i, c) for cid, i, c in pending))
 
-    # Apply classifications and re-serialize. Pairs without a verdict keep the default,
-    # explicitly, so the output never contains a null relationship.
-    histogram: Dict[str, int] = {}
+    # Apply verdicts. Pairs without a verdict keep their previous relationship.
+    by_key: Dict[str, Dict[str, Any]] = {
+        row["key"]: row for rows in classified.values() for row in rows
+    }
+    transitions: Counter = Counter()
+    histogram: Counter = Counter()
+    n_applied = n_new_remarks = 0
     for cid, match in all_pairs:
-        relationship = classified.get(_pair_key(cid, match)) or DEFAULT_RELATIONSHIP
-        match["relationship"] = relationship
-        histogram[relationship] = histogram.get(relationship, 0) + 1
+        row = by_key.get(_pair_key(cid, match))
+        old_rel = match.get("relationship") or DEFAULT_RELATIONSHIP
+        if row:
+            new_rel = row["relationship"]
+            match["relationship"] = new_rel
+            n_applied += 1
+            if new_rel != old_rel:
+                transitions[f"{old_rel} -> {new_rel}"] += 1
+            neu = row.get("begruendung_neu")
+            if neu:
+                prefix = f"(Teilanforderung {match['satz_nr']}) " if match.get("satz_nr") else ""
+                match["begruendung"] = prefix + neu
+                n_new_remarks += 1
+        histogram[match.get("relationship") or DEFAULT_RELATIONSHIP] += 1
 
     output = to_oscal_mapping_collection(per_control)
     save_json_file(output, GPP_ED23_ANFORDERUNGEN_JSON_PATH)
-    if os.path.exists(CHECKPOINT_PATH) and len(classified) >= len(all_pairs):
+    n_chunks_expected = len(chunks)
+    if os.path.exists(CHECKPOINT_PATH) and len(classified) >= n_chunks_expected and not CONTROLS_FILTER:
         os.remove(CHECKPOINT_PATH)
     logger.info(
-        f"stage_ed23_relationen finished. {len(classified)} of {len(all_pairs)} pairs "
-        f"classified; distribution: {dict(sorted(histogram.items()))}."
+        f"stage_ed23_relationen finished. {n_applied} of {n_scope} in-scope pairs applied; "
+        f"{n_new_remarks} remarks replaced; distribution now: {dict(sorted(histogram.items()))}."
     )
+    if transitions:
+        logger.info("Relation transitions: " + ", ".join(
+            f"{k}: {v}" for k, v in transitions.most_common()
+        ))
     ai_client.log_usage_summary("stage_ed23_relationen")
 
 
