@@ -126,6 +126,7 @@ In dieser Phase legen Sie das Fundament für Ihren Informationsverbund.
 Hier dokumentieren Sie die tatsächliche Umsetzung der Maßnahmen im Betrieb.
 * **Umsetzungsstatus**: Sie erfassen den Status (z. B. "umgesetzt", "geplant") sowie Verantwortliche und Termine für jedes Control.
 * **Workspace-Konzept**: Sie können begonnene Arbeiten jederzeit speichern und durch Laden der bearbeiteten JSON-Datei fortsetzen.
+* **Excel-Austausch**: Über „Excel-Austausch" in der Seitenleiste geht der gesamte Grundschutzcheck als `.xlsx` heraus — eine Zeile je Control und Komponente, mit Auswahlliste für den Status, aufgelösten Parametern im Anforderungstext, einem Blatt für die Tailoring-Parameter und einem Blatt mit der Ausfüllhilfe. Wer die Antworten hat, muss das Werkzeug nicht öffnen: ausfüllen, zurückschicken, dieselbe Datei wieder einlesen. Zugeordnet wird über Control-ID und Komponenten-UUID, Spalten dürfen also umsortiert und Zeilen gefiltert werden. Übernommen wird nur, was gültig ist — eine Zeile mit unzulässigem Status, unbekanntem Reifegrad oder fremder Control-ID wird komplett übersprungen und in der Log-Konsole namentlich genannt, nie halb eingetragen. Fehlt eine Spalte in der zurückgegebenen Datei, bleibt das zugehörige Feld im SSP unverändert.
 * **AI-Assistent**: Die Anwendung nutzt KI-Unterstützung für tiefere Einblicke:
     * **Verständnis**: Erklärungen helfen, komplexe Control-Texte zu interpretieren.
     * **Risikofokus**: Die KI zeigt Gefahren bei Nicht-Umsetzung auf.
@@ -289,7 +290,7 @@ Halte dich strikt an diese Übergabepunkte. Falls du die Namen der exportierten 
 | Phase | Werkzeug | Input | Output (Beispielname) |
 | :--- | :--- | :--- | :--- |
 | **1. Modell** | Blaupausen-Generator | (Katalog-URL) | `*_Profile.json`, `*_SSP.json` |
-| **2. Umsetzung** | SSP-Ausfüllen | `*_SSP.json` + `*_Profile.json` | `*_SSP-edited.json` |
+| **2. Umsetzung** | SSP-Ausfüllen | `*_SSP.json` + `*_Profile.json` (optional zurück: `*_Controls_JJJJ-MM-TT.xlsx`) | `*_SSP-edited.json`, `*_Controls_JJJJ-MM-TT.xlsx` |
 | **3. Audit** | Assessment Plan/Results | `*_SSP-edited.json` | `*_AP.json`, `*_AR.json` |
 | **4. Sanierung** | POA&M Generator | `*_AR.json` | `*_POAM.json` |
 

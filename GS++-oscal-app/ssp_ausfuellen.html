@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.4.0</title>
+    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.5.0</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
@@ -663,7 +663,7 @@
             <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>Kein SSP geladen
         </div>
         <div id="resource-status-ind" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 items-center hidden"></div>
-        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.2.0</span></span>
+        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.5.0</span></span>
     </div>
 </header>
 
@@ -727,6 +727,23 @@
 
         <!-- Component Navigation (Injected by JS) -->
         <div id="sb-comp-nav" class="space-y-1 mt-1 hidden"></div>
+
+        <!-- Excel-Austausch: Export und Import stehen bewusst nebeneinander und
+             nicht im Abspeichern-Dock — das ist ein Hin- und Rückweg, kein
+             Download. Der Grundschutzcheck wird oft von Fachverantwortlichen
+             ausgefüllt, die dieses Werkzeug gar nicht öffnen. -->
+        <div class="border border-slate-700 rounded overflow-hidden mt-1">
+            <button onclick="tog('sb-xls')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300">
+                &#9636; Excel-Austausch
+                <svg id="icon-sb-xls" class="chev open w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+            </button>
+            <div id="sb-xls-content" class="coll-content open p-2 bg-slate-900/30 space-y-1.5">
+                <button id="btn-xls-export" type="button" onclick="exportControlsXlsx()" class="w-full p-1.5 text-[10px] font-bold rounded border border-emerald-700/60 bg-emerald-900/30 text-emerald-300 hover:bg-emerald-800/50" title="Alle Controls aller Komponenten als .xlsx herunterladen">&#8681; Controls als Excel</button>
+                <button id="btn-xls-import" type="button" onclick="document.getElementById('xls-input').click()" class="w-full p-1.5 text-[10px] font-bold rounded border border-blue-700/60 bg-blue-900/30 text-blue-300 hover:bg-blue-800/50" title="Ausgefüllte Tabelle zurücklesen (Zuordnung über Control-ID und Komponenten-UUID)">&#8679; Ausgef&uuml;llte Excel laden</button>
+                <input type="file" id="xls-input" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="hidden" onchange="importControlsXlsx(event.target.files[0]); event.target.value='';">
+                <p class="text-[9px] text-slate-500 leading-snug">Status, Kommentar, Bearbeiter, Datum und Reifegrad je Control &mdash; ausf&uuml;llen und dieselbe Datei zur&uuml;ckladen.</p>
+            </div>
+        </div>
 
         <!-- Kein Export-Block mehr: das SSP wird bei jeder Änderung automatisch
              ins Set geschrieben; Dateien lädt man in der Übersicht herunter. -->
@@ -930,7 +947,7 @@
     // CONFIG & STATE
     // ============================================================
     // Build-Version der App (nicht zu verwechseln mit dem Session-Format `_v`).
-    const BUILD_VERSION = 'v1.4.0';
+    const BUILD_VERSION = 'v1.5.0';
 
     // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
     // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
@@ -1137,6 +1154,88 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
        beim Leeren der Felder wieder entfernen — fremde Props gehören dem Dokument. */
     const MANAGED_BC_PROPS = ['implementing-user', 'implementation-date', 'implemented-statement-id'];
 
+    /* Ein Control-Eintrag ins SSP zurückschreiben. Bewusst getrennt von der
+       DOM-Schleife: der Excel-Import trägt dieselben fünf Felder ein und muss
+       exakt dieselbe Semantik treffen — vor allem beim Leeren (siehe unten). */
+    function applyControlValues(requirements, controlId, compUuid, werte) {
+        const state = werte.state || '';
+        const description = werte.description || '';
+        const name = (werte.name || '').trim();
+        const date = werte.date || '';
+        const selectedStmtId = werte.statementId || '';
+
+        if (state || description || name || date || selectedStmtId) {
+            let req = requirements.find(r => r['control-id'] === controlId);
+            if (!req) {
+                req = { "uuid": crypto.randomUUID(), "control-id": controlId, "by-components": [] };
+                requirements.push(req);
+            }
+            if (!req['by-components']) req['by-components'] = [];
+
+            let byCompEntry = req['by-components'].find(bc => bc['component-uuid'] === compUuid);
+            if (!byCompEntry) {
+                byCompEntry = {
+                    "uuid": crypto.randomUUID(),
+                    "component-uuid": compUuid,
+                    "description": description,
+                    "implementation-status": { "state": state || "partial" },
+                    "props": []
+                };
+                req['by-components'].push(byCompEntry);
+            } else {
+                byCompEntry.description = description;
+                if(!byCompEntry['implementation-status']) byCompEntry['implementation-status'] = {};
+                byCompEntry['implementation-status'].state = state || "partial";
+                if(!byCompEntry.props) byCompEntry.props = [];
+            }
+
+            const setProp = (n, v) => {
+                let p = byCompEntry.props.find(x => x.name === n);
+                if(v) { p ? p.value = v : byCompEntry.props.push({ "name": n, "value": v }); }
+                else { byCompEntry.props = byCompEntry.props.filter(x => x.name !== n); }
+            };
+            setProp('implementing-user', name);
+            setProp('implementation-date', date);
+            setProp('implemented-statement-id', selectedStmtId);
+
+            if (byCompEntry.props.length === 0) delete byCompEntry.props;
+        } else {
+            /* Alle Felder sind leer. Entfernt werden deshalb NUR die Felder, die
+               dieser Editor verwaltet. Ein importiertes by-component kann remarks,
+               export/inherited/satisfied, links oder fremde props tragen — die zeigt
+               der Editor nie an und darf sie nicht wegwerfen (der Status "Offen" ist
+               eine normale Auswahl, kein Löschbefehl). Erst wenn nichts Fremdes übrig
+               bleibt, fällt der Eintrag weg. */
+            const req = requirements.find(r => r['control-id'] === controlId);
+            const byComps = req && req['by-components'];
+            const idx = byComps ? byComps.findIndex(bc => bc['component-uuid'] === compUuid) : -1;
+            if (idx >= 0) {
+                const bc = byComps[idx];
+                bc.description = '';   // schema-pflichtig, darf aber leer sein
+                delete bc['implementation-status'];
+                if (bc.props) {
+                    bc.props = bc.props.filter(p => !MANAGED_BC_PROPS.includes(p.name));
+                    if (!bc.props.length) delete bc.props;
+                }
+                const fremd = Object.keys(bc).filter(k => !['uuid', 'component-uuid', 'description'].includes(k));
+                if (!fremd.length) byComps.splice(idx, 1);
+                // Leeres by-components verletzt minItems:1 — Feld dann ganz entfernen
+                if (byComps.length === 0) delete req['by-components'];
+            }
+        }
+    }
+
+    /* Nur inhaltsleere Requirements entfernen — Anforderungen mit statements,
+       set-parameters, props, links oder remarks (ohne by-components) sind valides
+       OSCAL und bleiben erhalten. Das Schema verlangt mindestens einen Eintrag. */
+    function pruneImplementedRequirements(ci) {
+        let requirements = Array.isArray(ci['implemented-requirements']) ? ci['implemented-requirements'] : [];
+        requirements = requirements.filter(req => (req['by-components']?.length) || req.statements || req['set-parameters'] || req['responsible-roles'] || req.props || req.links || req.remarks);
+        if (requirements.some(r => r['control-id'] !== 'PLACEHOLDER')) requirements = requirements.filter(r => r['control-id'] !== 'PLACEHOLDER');
+        ci['implemented-requirements'] = requirements.length ? requirements
+            : [{ uuid: crypto.randomUUID(), 'control-id': 'PLACEHOLDER', remarks: 'Noch keine Umsetzung erfasst.' }];
+    }
+
     function updateSSPFromDOM() {
         if (!sspData) return;
         try {
@@ -1201,7 +1300,7 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
             if (!Array.isArray(ssp['control-implementation']['implemented-requirements'])) {
                 ssp['control-implementation']['implemented-requirements'] = [];
             }
-            let requirements = ssp['control-implementation']['implemented-requirements'];
+            const requirements = ssp['control-implementation']['implemented-requirements'];
             const controlEntries = document.querySelectorAll('.ctrl-entry');
 
             controlEntries.forEach(entry => {
@@ -1212,85 +1311,17 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
                 const stateEl = entry.querySelector(`#state-${uniqueDomId}`);
                 if (!stateEl) return;
 
-                const state = stateEl.value;
-                const description = entry.querySelector(`#desc-${uniqueDomId}`)?.value || '';
-                const name = (entry.querySelector(`#name-${uniqueDomId}`)?.value || '').trim();
-                const date = entry.querySelector(`#date-${uniqueDomId}`)?.value || '';
                 const statementRadio = entry.querySelector(`input[name="mat-${uniqueDomId}"]:checked`);
-                const selectedStmtId = (statementRadio && statementRadio.value !== 'manual') ? statementRadio.value : '';
-
-                if (state || description || name || date || selectedStmtId) {
-                    let req = requirements.find(r => r['control-id'] === controlId);
-                    if (!req) {
-                        req = { "uuid": crypto.randomUUID(), "control-id": controlId, "by-components": [] };
-                        requirements.push(req);
-                    }
-                    if (!req['by-components']) req['by-components'] = [];
-
-                    let byCompEntry = req['by-components'].find(bc => bc['component-uuid'] === compUuid);
-                    if (!byCompEntry) {
-                        byCompEntry = {
-                            "uuid": crypto.randomUUID(),
-                            "component-uuid": compUuid,
-                            "description": description,
-                            "implementation-status": { "state": state || "partial" },
-                            "props": []
-                        };
-                        req['by-components'].push(byCompEntry);
-                    } else {
-                        byCompEntry.description = description;
-                        if(!byCompEntry['implementation-status']) byCompEntry['implementation-status'] = {};
-                        byCompEntry['implementation-status'].state = state || "partial";
-                        if(!byCompEntry.props) byCompEntry.props = [];
-                    }
-
-                    const setProp = (n, v) => {
-                        let p = byCompEntry.props.find(x => x.name === n);
-                        if(v) { p ? p.value = v : byCompEntry.props.push({ "name": n, "value": v }); }
-                        else { byCompEntry.props = byCompEntry.props.filter(x => x.name !== n); }
-                    };
-                    setProp('implementing-user', name);
-                    setProp('implementation-date', date);
-                    setProp('implemented-statement-id', selectedStmtId);
-
-                    if (byCompEntry.props.length === 0) delete byCompEntry.props;
-                } else {
-                    /* Alle sichtbaren Felder sind leer. Entfernt werden deshalb NUR die
-                       Felder, die dieser Editor verwaltet. Ein importiertes by-component
-                       kann remarks, export/inherited/satisfied, links oder fremde props
-                       tragen — die zeigt der Editor nie an und darf sie nicht wegwerfen
-                       (der Status "Offen" ist eine normale Auswahl, kein Löschbefehl).
-                       Erst wenn nichts Fremdes übrig bleibt, fällt der Eintrag weg. */
-                    const req = requirements.find(r => r['control-id'] === controlId);
-                    const byComps = req && req['by-components'];
-                    const idx = byComps ? byComps.findIndex(bc => bc['component-uuid'] === compUuid) : -1;
-                    if (idx >= 0) {
-                        const bc = byComps[idx];
-                        bc.description = '';   // schema-pflichtig, darf aber leer sein
-                        delete bc['implementation-status'];
-                        if (bc.props) {
-                            bc.props = bc.props.filter(p => !MANAGED_BC_PROPS.includes(p.name));
-                            if (!bc.props.length) delete bc.props;
-                        }
-                        const fremd = Object.keys(bc).filter(k => !['uuid', 'component-uuid', 'description'].includes(k));
-                        if (!fremd.length) byComps.splice(idx, 1);
-                        // Leeres by-components verletzt minItems:1 — Feld dann ganz entfernen
-                        if (byComps.length === 0) delete req['by-components'];
-                    }
-                }
+                applyControlValues(requirements, controlId, compUuid, {
+                    state: stateEl.value,
+                    description: entry.querySelector(`#desc-${uniqueDomId}`)?.value || '',
+                    name: entry.querySelector(`#name-${uniqueDomId}`)?.value || '',
+                    date: entry.querySelector(`#date-${uniqueDomId}`)?.value || '',
+                    statementId: (statementRadio && statementRadio.value !== 'manual') ? statementRadio.value : ''
+                });
             });
 
-            // Nur inhaltsleere Requirements entfernen — Anforderungen mit statements,
-            // set-parameters, props, links oder remarks (ohne by-components) sind valides
-            // OSCAL und bleiben erhalten.
-            requirements = requirements.filter(req => (req['by-components']?.length) || req.statements || req['set-parameters'] || req['responsible-roles'] || req.props || req.links || req.remarks);
-            if (requirements.some(r => r['control-id'] !== 'PLACEHOLDER')) requirements = requirements.filter(r => r['control-id'] !== 'PLACEHOLDER');
-            if (requirements.length > 0) {
-                ssp['control-implementation']['implemented-requirements'] = requirements;
-            } else {
-                // Schema verlangt mindestens ein implemented-requirement
-                ssp['control-implementation']['implemented-requirements'] = [{ uuid: crypto.randomUUID(), 'control-id': 'PLACEHOLDER', remarks: 'Noch keine Umsetzung erfasst.' }];
-            }
+            pruneImplementedRequirements(ssp['control-implementation']);
         } catch (error) {
             console.error("DOM Sync Fehler:", error);
         }
@@ -2366,6 +2397,54 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         };
     }
 
+    /* Welche Controls gehören zu einer Komponente, und was steht schon drin?
+       Bewusst DOM-frei: gerendert wird immer nur das ausgewählte Asset (gekappt
+       auf implementationView.limit), der Excel-Export braucht aber alle.
+       sMap = Stand im SSP je Control, dMap = Soll aus dem Komponenten-Profil
+       inklusive der Reifegrade, sorted = die Vereinigung beider Seiten. */
+    function componentControlModel(comp, reqs) {
+        const dl = comp.links?.find(l => l.rel === 'profile' || l.rel === 'source-profile');
+        const cd = dl ? loadedProfiles.get(dl.href) : null;
+
+        const sMap = new Map();
+        (reqs || []).forEach(r => { const e = r['by-components']?.find(bc => bc['component-uuid'] === comp.uuid); if(e) sMap.set(r['control-id'], e); });
+
+        const dMap = new Map();
+        let tc = null;
+        try {
+            tc = cd?.['profile'] || null;
+            if (tc?.imports) {
+                tc.imports.forEach(i => { if(i) (i["include-controls"]||[]).forEach(ic => { if(ic) (ic["with-ids"]||[]).forEach(id => { if(id) dMap.set(id, { "control-id": id }); }); }); });
+            }
+            // Reifegrade/Statements liegen im Profil unter modify.alters[].adds[].parts (name:"statement").
+            // OSCAL erlaubt keine neuen statements in einer CDef → sie werden im Profil per `adds`
+            // als neue `part` an das Control angehängt. Hier in die statements des Controls überführen.
+            // Neue Form (issue 3.1): der Reifegrad-Text steht in pt.prose, Guidance/Assessment
+            // als verschachtelte parts. Alte Form: Text lag in props statement/guidance/
+            // assessment-method. Neue zuerst lesen, sonst auf alte zurückfallen.
+            (tc?.modify?.['alters'] || []).forEach(alt => {
+                const cid = alt && alt['control-id']; if(!cid) return;
+                const entry = dMap.get(cid) || { "control-id": cid };
+                entry.statements = entry.statements || [];
+                (alt.adds || []).forEach(add => (add.parts || []).filter(pt => pt && pt.name === 'statement').forEach(pt => {
+                    const props = pt.props || [];
+                    const propVal = (n) => props.find(p => p && p.name === n)?.value || '';
+                    const label = propVal('label');
+                    const sub = {};
+                    (pt.parts || []).forEach(np => { if(np && np.name) sub[np.name] = np.prose; });
+                    const statementText = (pt.prose != null && !propVal('statement')) ? pt.prose : (propVal('statement') || pt.prose || '');
+                    const guidanceText = sub.guidance || propVal('guidance') || '';
+                    const assessmentText = sub.assessment || propVal('assessment-method') || '';
+                    entry.statements.push({ "statement-id": pt.id, description: label, statementText, guidanceText, assessmentText, props });
+                }));
+                dMap.set(cid, entry);
+            });
+        } catch(cdErr) { console.warn('Fehler beim Lesen des Profils für', comp.title, cdErr); }
+
+        const allKeys = new Set([...sMap.keys(), ...dMap.keys(), ...profileModifications.alters.keys()]);
+        return { profile: tc, sMap, dMap, sorted: Array.from(allKeys).sort() };
+    }
+
     function renderImplementation(ssp) {
         implementationView.ssp = ssp;
         const comps = ssp['system-implementation']?.components || [];
@@ -2402,46 +2481,7 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
             const activeClass = !hasQuery && c.uuid === implementationView.selectedUuid ? 'border-emerald-600 bg-emerald-900/30 text-white' : 'border-transparent bg-slate-900/40 text-slate-300';
             navHtml += `<button onclick="selectImplementationComponent('${gppAttrArg(c.uuid)}')" class="w-full text-left p-1.5 text-[10px] font-bold hover:bg-slate-800 rounded truncate border ${activeClass}" title="Nur Controls dieses Assets anzeigen">◇ ${implEsc(c.title)}${sNivTag}</button>`;
 
-            let dl = c.links?.find(l => l.rel === 'profile' || l.rel === 'source-profile');
-            const cd = dl ? loadedProfiles.get(dl.href) : null;
-
-            const sMap = new Map();
-            reqs.forEach(r => { const e = r['by-components']?.find(bc => bc['component-uuid'] === c.uuid); if(e) sMap.set(r['control-id'], e); });
-
-            const dMap = new Map();
-            let tc = null;
-            try {
-                tc = cd?.['profile'] || null;
-                if (tc?.imports) {
-                    tc.imports.forEach(i => { if(i) (i["include-controls"]||[]).forEach(ic => { if(ic) (ic["with-ids"]||[]).forEach(id => { if(id) dMap.set(id, { "control-id": id }); }); }); });
-                }
-                // Reifegrade/Statements liegen im Profil unter modify.alters[].adds[].parts (name:"statement").
-                // OSCAL erlaubt keine neuen statements in einer CDef → sie werden im Profil per `adds`
-                // als neue `part` an das Control angehängt. Hier in die statements des Controls überführen.
-                // Neue Form (issue 3.1): der Reifegrad-Text steht in pt.prose, Guidance/Assessment
-                // als verschachtelte parts. Alte Form: Text lag in props statement/guidance/
-                // assessment-method. Neue zuerst lesen, sonst auf alte zurückfallen.
-                (tc?.modify?.['alters'] || []).forEach(alt => {
-                    const cid = alt && alt['control-id']; if(!cid) return;
-                    const entry = dMap.get(cid) || { "control-id": cid };
-                    entry.statements = entry.statements || [];
-                    (alt.adds || []).forEach(add => (add.parts || []).filter(pt => pt && pt.name === 'statement').forEach(pt => {
-                        const props = pt.props || [];
-                        const propVal = (n) => props.find(p => p && p.name === n)?.value || '';
-                        const label = propVal('label');
-                        const sub = {};
-                        (pt.parts || []).forEach(np => { if(np && np.name) sub[np.name] = np.prose; });
-                        const statementText = (pt.prose != null && !propVal('statement')) ? pt.prose : (propVal('statement') || pt.prose || '');
-                        const guidanceText = sub.guidance || propVal('guidance') || '';
-                        const assessmentText = sub.assessment || propVal('assessment-method') || '';
-                        entry.statements.push({ "statement-id": pt.id, description: label, statementText, guidanceText, assessmentText, props });
-                    }));
-                    dMap.set(cid, entry);
-                });
-            } catch(cdErr) { console.warn('Fehler beim Lesen des Profils für', c.title, cdErr); }
-
-            const allKeys = new Set([...sMap.keys(), ...dMap.keys(), ...profileModifications.alters.keys()]);
-            const sorted = Array.from(allKeys).sort();
+            const { profile: tc, sMap, dMap, sorted } = componentControlModel(c, reqs);
 
             // FIX C: Sammle ALLE Filter (Class, Modalverb, Tags etc.)
             sorted.forEach(cid => {
@@ -2961,8 +3001,591 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         finally { loader.style.display = 'none'; }
     };
 
-    /* Kein Export-Knopf mehr: autoSave() schreibt das SSP bei jeder Änderung
-       ins Set; heruntergeladen wird in der Übersicht (index.html). */
+    // ============================================================
+    // EXCEL-AUSTAUSCH (Issue #39)
+    // Der Grundschutzcheck wird selten am Stück im Browser ausgefüllt: die
+    // Antworten liegen bei Fachverantwortlichen, die dieses Werkzeug nicht
+    // öffnen. Sie bekommen eine Tabelle, tragen Status, Kommentar, Bearbeiter,
+    // Termin und Reifegrad ein, und dieselbe Datei kommt zurück.
+    //
+    // Zwei Punkte, die die Umsetzung bestimmen:
+    //   1. Export und Import arbeiten auf sspData, NICHT auf dem DOM — dort
+    //      steht immer nur das gerade gewählte Asset, gekappt auf 120 Controls.
+    //   2. .xlsx ist ein ZIP aus XML-Teilen. gppZip/gppUnzip aus gpp-core.js
+    //      reichen dafür; eine externe Bibliothek wäre bei file:// ohnehin nicht
+    //      erreichbar. Werte stehen als inlineStr in der Zelle, damit kein
+    //      sharedStrings-Teil nötig ist; gelesen werden beide Formen.
+    // ============================================================
+
+    /* Die Auswahlliste der Statusspalte. Die Beschriftungen sind dieselben wie
+       im <select> von renderControlEntry — was im Werkzeug steht, steht auch in
+       der Tabelle. '' ist der Normalfall "noch nicht bearbeitet". */
+    const XLS_STATUS = [
+        { state: '',                 label: 'Offen' },
+        { state: 'implemented',      label: 'Umgesetzt' },
+        { state: 'partial',          label: 'Teilweise' },
+        { state: 'planned',          label: 'Geplant' },
+        { state: 'not-implemented',  label: 'Nicht umgesetzt' },
+        { state: 'alternative',      label: 'Alternativ' },
+        { state: 'not-applicable',   label: 'N/A' }
+    ];
+
+    /* Spalten des Blatts "Controls". `kopf` ist der Vertrag zwischen Export und
+       Import: der Import sucht die Spalten über die Überschrift, nicht über die
+       Position — Spalten dürfen also verschoben oder ausgeblendet werden.
+       `bearbeitbar` steuert nur die Einfärbung; ausgewertet wird `key`. */
+    const XLS_SPALTEN = [
+        { key: 'cid',        kopf: 'Control-ID',           w: 16, stil: 'KEY'  },
+        { key: 'titel',      kopf: 'Titel',                w: 32, stil: 'INFO' },
+        { key: 'text',       kopf: 'Anforderung',          w: 62, stil: 'INFO' },
+        { key: 'komp',       kopf: 'Komponente',           w: 26, stil: 'INFO' },
+        { key: 'status',     kopf: 'Status',               w: 17, stil: 'EDIT' },
+        { key: 'kommentar',  kopf: 'Kommentar',            w: 46, stil: 'EDIT' },
+        { key: 'bearbeiter', kopf: 'Bearbeiter',           w: 20, stil: 'EDIT' },
+        { key: 'datum',      kopf: 'Datum (JJJJ-MM-TT)',   w: 16, stil: 'EDIT' },
+        { key: 'reifegrad',  kopf: 'Reifegrad',            w: 22, stil: 'EDIT', nurMitReifegrad: true },
+        { key: 'optionen',   kopf: 'Reifegrad-Optionen',   w: 32, stil: 'INFO', nurMitReifegrad: true },
+        { key: 'uuid',       kopf: 'Komponenten-UUID',     w: 38, stil: 'KEY'  }
+    ];
+    // Indizes in cellXfs von XLS_STYLES (unten): 0 Standard, 1 Kopfzeile,
+    // 2 Nur-Lesen (grau), 3 auszufüllen (hell hinterlegt), 4 Schlüsselspalte.
+    const XLS_STYLE = { NORM: 0, HEAD: 1, INFO: 2, EDIT: 3, KEY: 4 };
+
+    const XLS_PARAM_KOPF = ['Parameter-ID', 'Bezeichnung', 'Wert', 'Verwendet in'];
+
+    /* Überschriften vergleichbar machen: Groß-/Kleinschreibung, doppelte
+       Leerzeichen und Klammerzusätze ("Datum (JJJJ-MM-TT)") sind egal. */
+    const xlsKopfNorm = s => String(s ?? '').toLowerCase().replace(/\([^)]*\)/g, '').replace(/[\s\u00A0]+/g, ' ').trim();
+
+    /* XML-Text: die in XML 1.0 verbotenen Steuerzeichen fliegen raus — Excel
+       verweigert sonst die ganze Datei —, danach die fünf Sonderzeichen. */
+    const xlsEsc = v => String(v ?? '')
+        .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+    const XLS_CELL_MAX = 32000;          // Excel bricht ab 32767 Zeichen je Zelle ab
+    // 0 -> A, 25 -> Z, 26 -> AA
+    function xlsColName(n) {
+        let s = '';
+        for (let i = Number(n); i >= 0; i = Math.floor(i / 26) - 1) s = String.fromCharCode(65 + (i % 26)) + s;
+        return s;
+    }
+
+    const XLS_STYLES = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+        + '<fonts count="3">'
+        + '<font><sz val="11"/><name val="Calibri"/></font>'
+        + '<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>'
+        + '<font><sz val="11"/><color rgb="FF595959"/><name val="Calibri"/></font>'
+        + '</fonts>'
+        // Die Füllungen 0 (none) und 1 (gray125) sind vom Format vorgeschrieben.
+        + '<fills count="4">'
+        + '<fill><patternFill patternType="none"/></fill>'
+        + '<fill><patternFill patternType="gray125"/></fill>'
+        + '<fill><patternFill patternType="solid"><fgColor rgb="FF1F3864"/><bgColor indexed="64"/></patternFill></fill>'
+        + '<fill><patternFill patternType="solid"><fgColor rgb="FFFFF2CC"/><bgColor indexed="64"/></patternFill></fill>'
+        + '</fills>'
+        + '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>'
+        + '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
+        // numFmtId 49 = "@" (Text). Ohne das macht Excel aus "3.2" ein Datum und
+        // aus einer Control-ID im Zweifel eine Zahl — beides wäre beim Rücklesen weg.
+        + '<cellXfs count="5">'
+        + '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
+        + '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf>'
+        + '<xf numFmtId="49" fontId="2" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>'
+        + '<xf numFmtId="49" fontId="0" fillId="3" borderId="0" xfId="0" applyNumberFormat="1" applyFill="1" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>'
+        + '<xf numFmtId="49" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyAlignment="1"><alignment vertical="top"/></xf>'
+        + '</cellXfs>'
+        + '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
+        + '<dxfs count="0"/><tableStyles count="0"/></styleSheet>';
+
+    /* blatt = { name, cols:[{w,stil}], rows:[[{v,s}|null]], fixiert, filter,
+                 pruefungen:[{sqref, werte, fehler}] } */
+    function xlsSheetXml(blatt) {
+        const rows = blatt.rows || [];
+        const breite = rows.reduce((max, r) => Math.max(max, r.length), 1);
+        const colsXml = (blatt.cols || []).length
+            ? '<cols>' + blatt.cols.map((c, i) =>
+                '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + (c.w || 14) + '" customWidth="1"'
+                + (c.stil != null ? ' style="' + c.stil + '"' : '') + '/>').join('') + '</cols>'
+            : '';
+        const rowsXml = rows.map((zellen, ri) => {
+            const r = ri + 1;
+            const inhalt = zellen.map((zelle, ci) => {
+                if (!zelle) return '';
+                const ref = xlsColName(ci) + r;
+                const stil = zelle.s != null ? ' s="' + zelle.s + '"' : '';
+                const txt = String(zelle.v ?? '').slice(0, XLS_CELL_MAX);
+                return txt
+                    ? '<c r="' + ref + '"' + stil + ' t="inlineStr"><is><t xml:space="preserve">' + xlsEsc(txt) + '</t></is></c>'
+                    : '<c r="' + ref + '"' + stil + '/>';
+            }).join('');
+            return '<row r="' + r + '">' + inhalt + '</row>';
+        }).join('');
+        const letzte = xlsColName(breite - 1) + Math.max(1, rows.length);
+        const fixiert = blatt.fixiert ? '<pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A2" sqref="A2"/>' : '';
+        const filter = (blatt.filter && rows.length > 1) ? '<autoFilter ref="A1:' + letzte + '"/>' : '';
+        const pruef = (blatt.pruefungen || []).length
+            ? '<dataValidations count="' + blatt.pruefungen.length + '">' + blatt.pruefungen.map(p =>
+                '<dataValidation type="list" allowBlank="1" showInputMessage="1" showErrorMessage="1"'
+                + ' errorTitle="Wert nicht zulaessig" error="' + xlsEsc(p.fehler || 'Bitte einen Wert aus der Liste waehlen.') + '"'
+                + ' sqref="' + p.sqref + '"><formula1>&quot;' + xlsEsc(p.werte.join(',')) + '&quot;</formula1></dataValidation>').join('')
+              + '</dataValidations>'
+            : '';
+        // Reihenfolge der Elemente ist im Format vorgeschrieben:
+        // dimension, sheetViews, sheetFormatPr, cols, sheetData, autoFilter, dataValidations.
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            + '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+            + '<dimension ref="A1:' + letzte + '"/>'
+            + '<sheetViews><sheetView workbookViewId="0">' + fixiert + '</sheetView></sheetViews>'
+            + '<sheetFormatPr defaultRowHeight="15"/>' + colsXml
+            + '<sheetData>' + rowsXml + '</sheetData>' + filter + pruef + '</worksheet>';
+    }
+
+    // Blattnamen dürfen 31 Zeichen lang sein und []:*?/\ nicht enthalten.
+    const xlsBlattName = n => String(n || 'Tabelle').replace(/[\[\]:*?\/\\]/g, '-').slice(0, 31);
+
+    function xlsWorkbook(blaetter) {
+        const teile = [
+            { name: '[Content_Types].xml', text: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+                + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+                + '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+                + '<Default Extension="xml" ContentType="application/xml"/>'
+                + '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
+                + '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'
+                + blaetter.map((b, i) => '<Override PartName="/xl/worksheets/sheet' + (i + 1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join('')
+                + '</Types>' },
+            { name: '_rels/.rels', text: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+                + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+                + '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'
+                + '</Relationships>' },
+            { name: 'xl/workbook.xml', text: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+                + '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>'
+                + blaetter.map((b, i) => '<sheet name="' + xlsEsc(xlsBlattName(b.name)) + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>').join('')
+                + '</sheets></workbook>' },
+            { name: 'xl/_rels/workbook.xml.rels', text: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+                + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+                + blaetter.map((b, i) => '<Relationship Id="rId' + (i + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>').join('')
+                + '<Relationship Id="rId' + (blaetter.length + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
+                + '</Relationships>' },
+            { name: 'xl/styles.xml', text: XLS_STYLES }
+        ];
+        blaetter.forEach((b, i) => teile.push({ name: 'xl/worksheets/sheet' + (i + 1) + '.xml', text: xlsSheetXml(b) }));
+        return gppZip(teile);
+    }
+
+    /* ---------- Lesen: .xlsx -> { Blattname: Zeilen[][] } ----------
+       Zurückkommen kann alles, was Excel oder LibreOffice geschrieben haben:
+       sharedStrings statt inlineStr, deflate statt store, fehlende Zellen in
+       einer Zeile. Zahlen und Daten kommen als Rohtext, die Umrechnung macht
+       xlsDatum() an der einen Stelle, an der ein Datum erwartet wird. */
+    async function xlsRead(datei) {
+        const teile = new Map((await gppUnzip(datei)).map(e => [e.name.replace(/^\/+/, ''), e.text]));
+        const parse = txt => {
+            const doc = new DOMParser().parseFromString(txt, 'application/xml');
+            if (doc.getElementsByTagName('parsererror').length) throw new Error('Ein XML-Teil der Arbeitsmappe ist beschädigt.');
+            return doc;
+        };
+        const wbTxt = teile.get('xl/workbook.xml');
+        if (!wbTxt) throw new Error('Kein xl/workbook.xml enthalten — ist das wirklich eine .xlsx-Datei? (.xls und .csv gehen nicht.)');
+
+        const relNs = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+        const rels = new Map();
+        const relTxt = teile.get('xl/_rels/workbook.xml.rels');
+        if (relTxt) Array.from(parse(relTxt).getElementsByTagName('Relationship'))
+            .forEach(r => rels.set(r.getAttribute('Id'), r.getAttribute('Target') || ''));
+
+        // Text eines <si>/<is> einsammeln; <rPh> ist die japanische Ruby-Lesehilfe
+        // und gehört nicht zum Zellwert.
+        const textVon = el => {
+            let s = '';
+            Array.from(el.getElementsByTagName('t')).forEach(t => {
+                for (let p = t.parentNode; p && p !== el; p = p.parentNode) if (p.localName === 'rPh') return;
+                s += t.textContent;
+            });
+            return s;
+        };
+        const shared = [];
+        const ssTxt = teile.get('xl/sharedStrings.xml');
+        if (ssTxt) Array.from(parse(ssTxt).getElementsByTagName('si')).forEach(si => shared.push(textVon(si)));
+
+        const zellText = c => {
+            const t = c.getAttribute('t') || 'n';
+            if (t === 'inlineStr') { const is = c.getElementsByTagName('is')[0]; return is ? textVon(is) : ''; }
+            const v = c.getElementsByTagName('v')[0];
+            const roh = v ? v.textContent : '';
+            if (t === 's') { const i = parseInt(roh, 10); return Number.isFinite(i) ? (shared[i] ?? '') : ''; }
+            if (t === 'b') return roh === '1' ? 'WAHR' : 'FALSCH';
+            if (t === 'e') return '';
+            return roh;                       // n, str (Formelergebnis), d (ISO-Datum)
+        };
+
+        const blaetter = new Map();
+        Array.from(parse(wbTxt).getElementsByTagName('sheet')).forEach(sh => {
+            const name = sh.getAttribute('name') || '';
+            const rid = sh.getAttributeNS(relNs, 'id') || sh.getAttribute('r:id') || '';
+            const ziel = rels.get(rid) || '';
+            if (!ziel) return;
+            const pfad = ziel.startsWith('/') ? ziel.slice(1) : 'xl/' + ziel.replace(/^\.\//, '');
+            const txt = teile.get(pfad);
+            if (!txt) return;
+            const zeilen = [];
+            Array.from(parse(txt).getElementsByTagName('row')).forEach(rowEl => {
+                const rIdx = parseInt(rowEl.getAttribute('r') || '0', 10) - 1;
+                const zellen = [];
+                Array.from(rowEl.getElementsByTagName('c')).forEach(c => {
+                    const m = /^([A-Z]+)/.exec(c.getAttribute('r') || '');
+                    const ci = m ? m[1].split('').reduce((a, ch) => a * 26 + (ch.charCodeAt(0) - 64), 0) - 1 : zellen.length;
+                    zellen[ci] = zellText(c);
+                });
+                zeilen[rIdx >= 0 ? rIdx : zeilen.length] = zellen;
+            });
+            // Löcher (übersprungene Zeilen/Zellen) zu leeren Strings verdichten.
+            const dicht = [];
+            for (let i = 0; i < zeilen.length; i++) {
+                const z = zeilen[i] || [];
+                const d = [];
+                for (let j = 0; j < z.length; j++) d.push(String(z[j] ?? '').trim());
+                dicht.push(d);
+            }
+            blaetter.set(name, dicht);
+        });
+        if (!blaetter.size) throw new Error('Die Arbeitsmappe enthält kein lesbares Tabellenblatt.');
+        return blaetter;
+    }
+
+    /* Datum aus einer Excel-Zelle. Erlaubt sind JJJJ-MM-TT, TT.MM.JJJJ und die
+       Serienzahl, die Excel schreibt, wenn die Zelle als Datum formatiert wurde
+       (Epoche 1899-12-30, wegen des Schaltjahrfehlers von 1900). */
+    function xlsDatum(v) {
+        const s = String(v ?? '').trim();
+        if (!s) return { wert: '', ok: true };
+        if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return { wert: s, ok: true };
+        const iso = /^(\d{4}-\d{2}-\d{2})[T ]/.exec(s);
+        if (iso) return { wert: iso[1], ok: true };
+        const de = /^(\d{1,2})[.\/](\d{1,2})[.\/](\d{4})$/.exec(s);
+        if (de) return { wert: de[3] + '-' + de[2].padStart(2, '0') + '-' + de[1].padStart(2, '0'), ok: true };
+        if (/^\d+([.,]\d+)?$/.test(s)) {
+            const tage = Math.round(parseFloat(s.replace(',', '.')));
+            const d = new Date(Date.UTC(1899, 11, 30) + tage * 86400000);
+            if (!isNaN(d.getTime()) && tage > 0) return { wert: d.toISOString().slice(0, 10), ok: true };
+        }
+        return { wert: '', ok: false };
+    }
+
+    /* ---------- Export: alle Controls aller Komponenten in eine Mappe ---------- */
+    window.exportControlsXlsx = () => {
+        if (!sspData || !sspData['system-security-plan']) { alert('Kein SSP geladen — es gibt nichts zu exportieren.'); return; }
+        const t0 = performance.now();
+        updateSSPFromDOM();                     // was gerade im Formular steht, gehört mit in die Datei
+        const ssp = sspData['system-security-plan'];
+        const comps = ssp['system-implementation']?.components || [];
+        if (!comps.length) { alert('Das SSP enthält keine Komponenten — es gibt keine Controls zum Ausfüllen.'); return; }
+        const reqs = ssp['control-implementation']?.['implemented-requirements'] || [];
+        const pMap = new Map();
+        (ssp['control-implementation']?.['set-parameters'] || []).forEach(p => { if (p?.['param-id'] && p.values?.length) pMap.set(p['param-id'], p.values[0]); });
+
+        const paramRegex = /{{\s*insert:\s*param,\s*([a-zA-Z0-9._-]+)\s*}}/g;
+        const params = new Map();               // param-id -> { wert, controls: [] }
+        const zeilen = [];
+        let mitReifegrad = false;
+
+        comps.forEach(c => {
+            const { sMap, dMap, sorted } = componentControlModel(c, reqs);
+            sorted.forEach(cid => {
+                const sReq = sMap.get(cid), dReq = dMap.get(cid);
+                const cc = catalogControlMap.get(cid);
+                const prose = cc?.parts?.find(p => p && p.name === 'statement')?.prose || '';
+                const stmts = (dReq?.statements || []).filter(Boolean);
+                if (stmts.length) mitReifegrad = true;
+                const prop = n => sReq?.props?.find(p => p && p.name === n)?.value || '';
+                const gewaehlt = stmts.find(s => s['statement-id'] === prop('implemented-statement-id'));
+                const state = sReq?.['implementation-status']?.state || '';
+                /* Platzhalter im Anforderungstext auflösen — wer die Tabelle ausfüllt,
+                   soll die Frist lesen und nicht "{{ insert: param, … }}" — und die
+                   Parameter zugleich fürs zweite Blatt einsammeln. */
+                const text = prose.replace(paramRegex, (m, pid) => {
+                    const wert = pMap.get(pid) ?? profileModifications.setParams.get(pid) ?? '';
+                    const e = params.get(pid) || { wert, controls: [] };
+                    if (!e.controls.includes(cid)) e.controls.push(cid);
+                    params.set(pid, e);
+                    return wert || '[' + (catalogParamMap.get(pid)?.label || pid) + ']';
+                });
+                zeilen.push({
+                    cid, titel: cc?.title || '', text, komp: c.title || '', uuid: c.uuid,
+                    status: (XLS_STATUS.find(s => s.state === state) || {}).label || state,
+                    kommentar: sReq?.description || '',
+                    bearbeiter: prop('implementing-user'),
+                    datum: prop('implementation-date'),
+                    reifegrad: gewaehlt ? (gewaehlt.description || gewaehlt['statement-id'] || '') : '',
+                    optionen: stmts.map(s => s.description || s['statement-id'] || '').filter(Boolean).join(' | ')
+                });
+            });
+        });
+        // Gesetzte Parameter, die in keinem exportierten Anforderungstext vorkommen,
+        // dürfen trotzdem nicht unter den Tisch fallen.
+        pMap.forEach((wert, pid) => { if (!params.has(pid)) params.set(pid, { wert, controls: [] }); });
+
+        const spalten = XLS_SPALTEN.filter(s => !s.nurMitReifegrad || mitReifegrad);
+        const controlRows = [spalten.map(s => ({ v: s.kopf, s: XLS_STYLE.HEAD }))];
+        zeilen.forEach(z => controlRows.push(spalten.map(s => ({ v: z[s.key] || '', s: XLS_STYLE[s.stil] }))));
+        const statusSpalte = xlsColName(spalten.findIndex(s => s.key === 'status'));
+        const statusLabels = XLS_STATUS.map(s => s.label);
+
+        const paramRows = [XLS_PARAM_KOPF.map(k => ({ v: k, s: XLS_STYLE.HEAD }))];
+        Array.from(params.keys()).sort().forEach(pid => {
+            const e = params.get(pid);
+            paramRows.push([
+                { v: pid, s: XLS_STYLE.KEY },
+                { v: catalogParamMap.get(pid)?.label || '', s: XLS_STYLE.INFO },
+                { v: e.wert || '', s: XLS_STYLE.EDIT },
+                { v: e.controls.slice(0, 12).join(', ') + (e.controls.length > 12 ? ' …' : ''), s: XLS_STYLE.INFO }
+            ]);
+        });
+
+        const hinweis = (a, b) => [{ v: a, s: XLS_STYLE.KEY }, { v: b || '', s: XLS_STYLE.INFO }];
+        const hinweisRows = [
+            [{ v: 'Grundschutzcheck als Tabelle — so füllen Sie sie aus', s: XLS_STYLE.HEAD }, { v: '', s: XLS_STYLE.HEAD }],
+            hinweis('1.', 'Nur die hell hinterlegten Spalten ausfüllen: Status, Kommentar, Bearbeiter, Datum'
+                + (mitReifegrad ? ', Reifegrad' : '') + '. Die grauen Spalten sind Kontext und werden beim Zurücklesen ignoriert.'),
+            hinweis('2.', 'Control-ID und Komponenten-UUID bitte nicht ändern oder löschen — über diese beiden Spalten findet jede Zeile ihren Platz im SSP zurück.'),
+            hinweis('3.', 'Sortieren, filtern und Spalten ausblenden ist erlaubt. Neu hinzugefügte Zeilen werden beim Import gemeldet und übersprungen; gelöschte Zeilen bleiben im SSP unverändert stehen.'),
+            hinweis('4.', 'Status: nur die Werte der Auswahlliste — ' + statusLabels.join(', ') + '. Leer zählt als "Offen".'),
+            hinweis('5.', 'Datum im Format JJJJ-MM-TT (z. B. 2026-03-31). TT.MM.JJJJ und echte Excel-Datumszellen werden ebenfalls erkannt.'),
+            mitReifegrad
+                ? hinweis('6.', 'Reifegrad: einen der Werte aus der Spalte "Reifegrad-Optionen" derselben Zeile eintragen. Leer bedeutet "manuell, kein Level gewählt".')
+                : hinweis('6.', 'Reifegrade sind in diesem SSP nicht hinterlegt (kein Komponenten-Profil mit Reifegrad-Statements).'),
+            hinweis('7.', 'Eine Zeile mit einem unzulässigen Wert wird komplett übersprungen und in der Log-Konsole namentlich genannt — es wird nie halb übernommen.'),
+            hinweis('8.', 'Zurücklesen im OSCAL SSP Editor (ssp_ausfuellen.html) über „Excel-Austausch → Ausgefüllte Excel laden".'),
+            ['', ''].map(v => ({ v, s: XLS_STYLE.NORM })),
+            [{ v: 'Statuswerte', s: XLS_STYLE.HEAD }, { v: 'Bedeutung im OSCAL-SSP', s: XLS_STYLE.HEAD }],
+            hinweis('Offen', 'noch nicht bearbeitet (kein implementation-status)'),
+            hinweis('Umgesetzt', 'implemented'),
+            hinweis('Teilweise', 'partial'),
+            hinweis('Geplant', 'planned'),
+            hinweis('Nicht umgesetzt', 'not-implemented — eine Feststellung, kein Plan (Issue #2272 an usnistgov/OSCAL)'),
+            hinweis('Alternativ', 'alternative'),
+            hinweis('N/A', 'not-applicable'),
+            ['', ''].map(v => ({ v, s: XLS_STYLE.NORM })),
+            [{ v: 'Herkunft', s: XLS_STYLE.HEAD }, { v: '', s: XLS_STYLE.HEAD }],
+            hinweis('SSP', ssp.metadata?.title || '(ohne Titel)'),
+            hinweis('Datei', sspFileName),
+            hinweis('Exportiert am', new Date().toLocaleString('de-DE')),
+            hinweis('Werkzeug', 'OSCAL SSP Editor ' + BUILD_VERSION),
+            hinweis('Zeilen', zeilen.length + ' Control-Zuordnung(en) über ' + comps.length + ' Komponente(n)')
+        ];
+
+        const mappe = xlsWorkbook([
+            {
+                name: 'Controls', rows: controlRows, fixiert: true, filter: true,
+                cols: spalten.map(s => ({ w: s.w, stil: XLS_STYLE[s.stil] })),
+                pruefungen: zeilen.length ? [{
+                    sqref: statusSpalte + '2:' + statusSpalte + (zeilen.length + 1),
+                    werte: statusLabels,
+                    fehler: 'Erlaubt sind: ' + statusLabels.join(', ') + '.'
+                }] : []
+            },
+            { name: 'Parameter', rows: paramRows, fixiert: true, filter: true, cols: [{ w: 34, stil: XLS_STYLE.KEY }, { w: 30, stil: XLS_STYLE.INFO }, { w: 30, stil: XLS_STYLE.EDIT }, { w: 46, stil: XLS_STYLE.INFO }] },
+            { name: 'Hinweise', rows: hinweisRows, cols: [{ w: 22, stil: XLS_STYLE.KEY }, { w: 118, stil: XLS_STYLE.INFO }] }
+        ]);
+
+        const basis = (sspFileName || 'ssp').replace(/\.json$/i, '').replace(/[^\w.-]+/g, '_');
+        const name = basis + '_Controls_' + new Date().toISOString().slice(0, 10) + '.xlsx';
+        gppDownloadBlob(name, new Blob([mappe], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+        L.ok(`Excel-Export „${name}": ${zeilen.length} Control-Zeile(n) über ${comps.length} Komponente(n), ${params.size} Parameter — ${Math.round(performance.now() - t0)}ms.`);
+    };
+
+    /* ---------- Import: ausgefüllte Mappe zurücklesen ---------- */
+    window.importControlsXlsx = async (datei) => {
+        if (!datei) return;
+        if (!sspData || !sspData['system-security-plan']) { alert('Kein SSP geladen — bitte zuerst einen Arbeitsstand öffnen.'); return; }
+        const t0 = performance.now();
+        L.info(`Excel-Import: ${datei.name} (${(datei.size / 1024).toFixed(1)} kB) wird gelesen.`);
+        progress('Excel wird gelesen', 1, 3);
+        try {
+            const blaetter = await xlsRead(datei);
+            /* Offene Formulareingaben zuerst sichern, danach den entprellten
+               Autosave stoppen: er würde 2 s später mit dem alten DOM über das
+               gerade Importierte schreiben. */
+            updateSSPFromDOM();
+            clearTimeout(autoSaveTimer);
+
+            const ssp = sspData['system-security-plan'];
+            const ci = ssp['control-implementation'];
+            const comps = ssp['system-implementation']?.components || [];
+            const requirements = ci['implemented-requirements'];
+
+            // Zuordnung nur gegen das, was im SSP wirklich existiert.
+            const modelle = new Map();
+            const nachTitel = new Map();
+            comps.forEach(c => {
+                const m = componentControlModel(c, requirements);
+                modelle.set(c.uuid, { comp: c, sMap: m.sMap, dMap: m.dMap, ids: new Set(m.sorted) });
+                const t = (c.title || '').trim().toLowerCase();
+                if (t) nachTitel.set(t, nachTitel.has(t) ? '' : c.uuid);   // doppelter Titel = nicht eindeutig
+            });
+
+            let blattName = Array.from(blaetter.keys()).find(n => xlsKopfNorm(n) === 'controls');
+            if (!blattName) blattName = Array.from(blaetter.keys())[0];
+            const zeilen = blaetter.get(blattName) || [];
+            const kopfIdx = zeilen.findIndex(z => z.some(c => xlsKopfNorm(c) === 'control-id'));
+            if (kopfIdx < 0) throw new Error(`Im Blatt "${blattName}" gibt es keine Spalte "Control-ID". Stammt die Datei aus diesem Werkzeug?`);
+            const kopf = zeilen[kopfIdx].map(xlsKopfNorm);
+            /* Spalten über die Überschrift suchen, nicht über die Position: die
+               Tabelle darf umsortiert zurückkommen. Was fehlt, wird nicht
+               angefasst — eine gelöschte Spalte darf nichts leeren. */
+            const spalte = {};
+            XLS_SPALTEN.forEach(s => { const i = kopf.indexOf(xlsKopfNorm(s.kopf)); if (i >= 0) spalte[s.key] = i; });
+            const zell = (z, key) => spalte[key] != null ? String(z[spalte[key]] ?? '').trim() : '';
+            /* Fehlende Reifegrad-Spalte ist kein Mangel, wenn dieses SSP gar keine
+               Reifegrade kennt — dann hat der Export sie zu Recht weggelassen. */
+            const kenntReifegrad = Array.from(modelle.values())
+                .some(m => Array.from(m.dMap.values()).some(d => d.statements?.length));
+            const fehlend = XLS_SPALTEN
+                .filter(s => s.stil === 'EDIT' && spalte[s.key] == null && (s.key !== 'reifegrad' || kenntReifegrad))
+                .map(s => s.kopf);
+            if (fehlend.length) L.warn(`Nicht in der Datei enthalten und deshalb unverändert gelassen: ${fehlend.join(', ')}.`);
+
+            progress('Zeilen übernehmen', 2, 3);
+            let gelesen = 0, uebernommen = 0, unveraendert = 0;
+            const probleme = [];
+            const gesehen = new Set();
+
+            for (let i = kopfIdx + 1; i < zeilen.length; i++) {
+                const z = zeilen[i] || [];
+                if (!z.some(c => String(c ?? '').trim())) continue;        // Leerzeile
+                gelesen++;
+                const nr = i + 1;                                          // Zeilennummer wie in Excel
+                const cid = zell(z, 'cid');
+                if (!cid) { probleme.push(`Zeile ${nr}: ohne Control-ID.`); continue; }
+
+                let uuid = zell(z, 'uuid');
+                if (!uuid) {
+                    const t = zell(z, 'komp').toLowerCase();
+                    uuid = (t && nachTitel.get(t)) || (comps.length === 1 ? comps[0].uuid : '');
+                    if (!uuid) { probleme.push(`Zeile ${nr} (${cid}): Komponente nicht bestimmbar — Spalte "Komponenten-UUID" fehlt oder ist leer.`); continue; }
+                }
+                const modell = modelle.get(uuid);
+                if (!modell) { probleme.push(`Zeile ${nr} (${cid}): Komponente ${uuid} gibt es in diesem SSP nicht.`); continue; }
+                if (!modell.ids.has(cid)) { probleme.push(`Zeile ${nr}: Control ${cid} gehört nicht zu „${modell.comp.title || uuid}".`); continue; }
+                const schluessel = cid + '||' + uuid;
+                if (gesehen.has(schluessel)) { probleme.push(`Zeile ${nr} (${cid}): kommt ein zweites Mal vor — nur die erste Zeile zählt.`); continue; }
+                gesehen.add(schluessel);
+
+                const sReq = modell.sMap.get(cid);
+                const prop = n => sReq?.props?.find(p => p && p.name === n)?.value || '';
+                const werte = {
+                    state: sReq?.['implementation-status']?.state || '',
+                    description: sReq?.description || '',
+                    name: prop('implementing-user'),
+                    date: prop('implementation-date'),
+                    statementId: prop('implemented-statement-id')
+                };
+                const vorher = JSON.stringify(werte);
+
+                if (spalte.status != null) {
+                    const roh = zell(z, 'status');
+                    const kl = roh.toLowerCase();
+                    const treffer = XLS_STATUS.find(s => s.label.toLowerCase() === kl || (s.state && s.state === kl));
+                    if (!roh || kl === 'open') werte.state = '';
+                    else if (treffer) werte.state = treffer.state;
+                    else { probleme.push(`Zeile ${nr} (${cid}): Status "${roh}" ist keiner der erlaubten Werte.`); continue; }
+                }
+                if (spalte.kommentar != null) werte.description = zell(z, 'kommentar');
+                if (spalte.bearbeiter != null) werte.name = zell(z, 'bearbeiter');
+                if (spalte.datum != null) {
+                    const d = xlsDatum(zell(z, 'datum'));
+                    if (!d.ok) { probleme.push(`Zeile ${nr} (${cid}): "${zell(z, 'datum')}" ist kein Datum (erwartet JJJJ-MM-TT).`); continue; }
+                    werte.date = d.wert;
+                }
+                if (spalte.reifegrad != null) {
+                    const roh = zell(z, 'reifegrad');
+                    if (!roh) werte.statementId = '';
+                    else {
+                        const stmts = (modell.dMap.get(cid)?.statements || []).filter(Boolean);
+                        const kl = roh.toLowerCase();
+                        const treffer = stmts.find(s => (s['statement-id'] || '').toLowerCase() === kl || (s.description || '').toLowerCase() === kl);
+                        if (!treffer) {
+                            const moeglich = stmts.map(s => s.description || s['statement-id'] || '').filter(Boolean).join(', ');
+                            probleme.push(`Zeile ${nr} (${cid}): Reifegrad "${roh}" gibt es hier nicht — möglich: ${moeglich || 'keiner'}.`);
+                            continue;
+                        }
+                        werte.statementId = treffer['statement-id'] || '';
+                    }
+                }
+
+                if (JSON.stringify(werte) === vorher) { unveraendert++; continue; }
+                applyControlValues(requirements, cid, uuid, werte);
+                uebernommen++;
+            }
+
+            // Zweites Blatt: Tailoring-Parameter. Fehlt es, bleibt alles wie es war.
+            let paramGeaendert = 0;
+            const pBlatt = Array.from(blaetter.keys()).find(n => xlsKopfNorm(n) === 'parameter');
+            if (pBlatt) {
+                const pz = blaetter.get(pBlatt) || [];
+                const pKopfIdx = pz.findIndex(z => z.some(c => xlsKopfNorm(c) === 'parameter-id'));
+                if (pKopfIdx < 0) L.warn(`Blatt "${pBlatt}": Spalte "Parameter-ID" fehlt — Parameter wurden nicht übernommen.`);
+                else {
+                    const pKopf = pz[pKopfIdx].map(xlsKopfNorm);
+                    const idIdx = pKopf.indexOf('parameter-id'), wertIdx = pKopf.indexOf('wert');
+                    if (wertIdx < 0) L.warn(`Blatt "${pBlatt}": Spalte "Wert" fehlt — Parameter wurden nicht übernommen.`);
+                    else {
+                        /* Das vollständige values-Array halten: OSCAL erlaubt mehrwertige
+                           Parameter, die Tabelle zeigt nur den ersten Wert. */
+                        const pMap = new Map((ci['set-parameters'] || [])
+                            .filter(p => p?.['param-id'] && p.values?.length).map(p => [p['param-id'], p.values.slice()]));
+                        for (let i = pKopfIdx + 1; i < pz.length; i++) {
+                            const pid = String(pz[i]?.[idIdx] ?? '').trim();
+                            if (!pid) continue;
+                            if (!catalogParamMap.has(pid) && !pMap.has(pid) && !profileModifications.setParams.has(pid)) {
+                                probleme.push(`Blatt "${pBlatt}", Zeile ${i + 1}: Parameter ${pid} ist im Katalog unbekannt.`);
+                                continue;
+                            }
+                            const wert = String(pz[i]?.[wertIdx] ?? '').trim();
+                            const alt = pMap.get(pid);
+                            if (wert) {
+                                if (alt && alt.length > 1) { if (alt[0] === wert) continue; alt[0] = wert; }
+                                else { if (alt && alt[0] === wert) continue; pMap.set(pid, [wert]); }
+                            } else {
+                                if (!alt) continue;
+                                pMap.delete(pid);
+                            }
+                            paramGeaendert++;
+                        }
+                        const gesetzt = Array.from(pMap.entries()).map(([pid, values]) => ({ 'param-id': pid, values }));
+                        if (gesetzt.length) ci['set-parameters'] = gesetzt; else delete ci['set-parameters'];
+                    }
+                }
+            }
+
+            pruneImplementedRequirements(ci);
+            progress('Neu zeichnen', 3, 3);
+            renderSSP(ssp);
+            autoSave();
+
+            probleme.slice(0, 20).forEach(p => L.warn(p));
+            if (probleme.length > 20) L.warn(`… und ${probleme.length - 20} weitere Meldung(en) derselben Art.`);
+            const n = v => v.toLocaleString('de-DE');
+            const bericht = `Excel-Import aus „${datei.name}"`
+                + `\n• ${n(gelesen)} Zeile(n) gelesen (Blatt „${blattName}")`
+                + `\n• ${n(uebernommen)} Änderung(en) übernommen`
+                + `\n• ${n(unveraendert)} Zeile(n) unverändert`
+                + (paramGeaendert ? `\n• ${n(paramGeaendert)} Parameter angepasst` : '')
+                + (probleme.length ? `\n• ${n(probleme.length)} Zeile(n) übersprungen — Einzelheiten in der Log-Konsole` : '');
+            L.ok(`Excel-Import fertig in ${Math.round(performance.now() - t0)}ms: ${gelesen} gelesen, ${uebernommen} übernommen, ${unveraendert} unverändert, ${probleme.length} übersprungen.`);
+            progressEnd('Excel importiert');
+            alert(bericht);
+        } catch (e) {
+            console.error('Excel-Import fehlgeschlagen:', e);
+            L.err(`Excel-Import fehlgeschlagen: ${e.message}`);
+            progressEnd('Import fehlgeschlagen');
+            alert('Die Datei konnte nicht gelesen werden:\n\n' + e.message);
+        }
+    };
+
+    /* Kein Export-Knopf für das SSP selbst: autoSave() schreibt es bei jeder
+       Änderung ins Set; heruntergeladen wird in der Übersicht (index.html). */
 
 </script>
 </body>

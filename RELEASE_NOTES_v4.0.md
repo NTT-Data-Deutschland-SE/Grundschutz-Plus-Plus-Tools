@@ -149,6 +149,16 @@ Das G++↔ED23-Mapping wurde erstmals systematisch qualitätsgeprüft und auf Ba
 - **Neue Kernzahlen** (Analyzer `--strict` grün, Anker nachgezogen): 231 von 1.834 aktiven Anforderungen ohne dieses Mapping (12,6 %), 141 ohne jede der drei Quellen (7,7 %), 3.573 von 6.611 normativen Teilanforderungen abgedeckt (54,0 %), Gegenrichtung 135 von 1.000 Maßnahmen. `ed23_gap_report.md` weist jetzt den Qualitätsstand der Relationstypen und die **strukturelle Korpus-Lücke RISK** aus (Risikomethodik liegt in 200-3, nicht im Kompendium — dünne Scheintreffer werden nicht mehr geführt); Handbuch 10.5-3 entsprechend aktualisiert.
 - **Doku:** `matching-direction` ist jetzt im Namespace-Dokument definiert — einschließlich der Klarstellung, dass „beide" ein Konfidenz- und kein Qualitätssiegel ist (die QS fand einen erfundenen Begründungsinhalt auf einem beidseitig bestätigten Paar).
 
+## Nachtrag 31.08.2026 — Grundschutzcheck als Excel-Mappe, hin und zurück
+
+Der Grundschutzcheck wird selten am Stück im Browser ausgefüllt: die Antworten liegen bei Fachverantwortlichen, die das Werkzeug nicht öffnen. Der SSP-Editor (`ssp_ausfuellen.html`, jetzt v1.5.0) gibt die Controls deshalb als `.xlsx` heraus und liest die ausgefüllte Datei wieder ein (Issue [#39](https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/issues/39)).
+
+- **Export** (Seitenleiste → „Excel-Austausch"): eine Zeile je Control **und** Komponente über alle Assets — nicht nur über das gerade angezeigte, das im Editor auf 120 Einträge gekappt ist. Blatt „Controls" mit Auswahlliste für den Status, hell hinterlegten Ausfüllspalten, eingefrorener Kopfzeile und Autofilter; im Anforderungstext sind die Tailoring-Parameter durch ihre Werte ersetzt, statt `{{ insert: param, … }}` zu zeigen. Dazu ein Blatt „Parameter" für das Tailoring und ein Blatt „Hinweise" mit der Ausfüllhilfe und der Statuslegende.
+- **Import:** Zuordnung über Control-ID und Komponenten-UUID, Spalten werden über die Überschrift gefunden — umsortieren, filtern und Spalten ausblenden ist erlaubt. Fehlt eine Spalte, bleibt das zugehörige Feld im SSP unangetastet; eine gelöschte Spalte leert also nichts. Erkannt werden `JJJJ-MM-TT`, `TT.MM.JJJJ` und echte Excel-Datumszellen, Reifegrade über Bezeichnung oder Statement-ID, Statuswerte über die deutsche Beschriftung wie über den OSCAL-Wert.
+- **Ganz oder gar nicht:** Eine Zeile mit unzulässigem Status, unbekanntem Reifegrad, fremder Control-ID oder als Dublette wird komplett übersprungen und mit ihrer Excel-Zeilennummer in der Log-Konsole genannt — nie halb übernommen. Der Abschluss meldet gelesen/übernommen/unverändert/übersprungen.
+- **Fremde Felder bleiben stehen:** Import und DOM-Rückschreibung teilen sich jetzt eine Funktion (`applyControlValues`). Ein `by-component` aus einer fremden Quelle behält `remarks`, `links`, `export`/`inherited`/`satisfied` und fremde Props, auch wenn die Tabelle für dieses Control nichts enthält.
+- **Ohne Bibliothek:** `.xlsx` ist ein ZIP aus XML-Teilen und wird mit `gppZip`/`gppUnzip` aus dem gemeinsamen Kern geschrieben und gelesen — die Sammlung läuft weiter offline und per `file://`. Gegengeprüft mit openpyxl: drei Blätter, Datenprüfung, Fixierung, Autofilter, Spaltenbreiten und Formatierung kommen unverändert an.
+
 ## Nicht im Umfang von 4.0
 
 * Die produktive Härtung des Backends (TLS auf dem öffentlichen Port, GoTrue-Admin-API statt direkter `auth.users`-Schreibzugriff bei der Konto-Anlage) — die Terraform-Umgebung ist eine Testinstanz.
@@ -163,7 +173,7 @@ Das G++↔ED23-Mapping wurde erstmals systematisch qualitätsgeprüft und auf Ba
 | SSP-Generator (G++) | V5.12.0 |
 | GS++ Explorer (GSpp-Viewer) | v9.8 |
 | BSI → G++ Profil (Baustein_2_Profile) | 0.11.0 |
-| SSP-Editor (ssp_ausfuellen) | v1.4.0 |
+| SSP-Editor (ssp_ausfuellen) | v1.5.0 |
 | Prüfung AP/AR (pruefung_ap_ar) | build 9.6.0 |
 | POA&M-Generator | v2.4 |
 
