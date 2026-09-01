@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.5.0</title>
+    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.5.1</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
@@ -663,7 +663,7 @@
             <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>Kein SSP geladen
         </div>
         <div id="resource-status-ind" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 items-center hidden"></div>
-        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.5.0</span></span>
+        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.5.1</span></span>
     </div>
 </header>
 
@@ -709,6 +709,7 @@
             <button onclick="scrollToSec('sec-meta')" class="w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400">&#11041; Metadaten &amp; Status</button>
             <button onclick="scrollToSec('sec-chars')" class="w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400">&#9635; Charakteristika</button>
             <button onclick="scrollToSec('sec-risk')" class="w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400" id="nav-risk" style="display:none">&#9708; Risikoanalyse</button>
+            <button onclick="scrollToSec('sec-xls')" class="w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400" id="nav-xls" style="display:none">&#9636; Excel-Austausch</button>
         </div>
 
         <!-- Global Filters (Injected by JS) -->
@@ -728,22 +729,9 @@
         <!-- Component Navigation (Injected by JS) -->
         <div id="sb-comp-nav" class="space-y-1 mt-1 hidden"></div>
 
-        <!-- Excel-Austausch: Export und Import stehen bewusst nebeneinander und
-             nicht im Abspeichern-Dock — das ist ein Hin- und Rückweg, kein
-             Download. Der Grundschutzcheck wird oft von Fachverantwortlichen
-             ausgefüllt, die dieses Werkzeug gar nicht öffnen. -->
-        <div class="border border-slate-700 rounded overflow-hidden mt-1">
-            <button onclick="tog('sb-xls')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300">
-                &#9636; Excel-Austausch
-                <svg id="icon-sb-xls" class="chev open w-3 h-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
-            </button>
-            <div id="sb-xls-content" class="coll-content open p-2 bg-slate-900/30 space-y-1.5">
-                <button id="btn-xls-export" type="button" onclick="exportControlsXlsx()" class="w-full p-1.5 text-[10px] font-bold rounded border border-emerald-700/60 bg-emerald-900/30 text-emerald-300 hover:bg-emerald-800/50" title="Alle Controls aller Komponenten als .xlsx herunterladen">&#8681; Controls als Excel</button>
-                <button id="btn-xls-import" type="button" onclick="document.getElementById('xls-input').click()" class="w-full p-1.5 text-[10px] font-bold rounded border border-blue-700/60 bg-blue-900/30 text-blue-300 hover:bg-blue-800/50" title="Ausgefüllte Tabelle zurücklesen (Zuordnung über Control-ID und Komponenten-UUID)">&#8679; Ausgef&uuml;llte Excel laden</button>
-                <input type="file" id="xls-input" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="hidden" onchange="importControlsXlsx(event.target.files[0]); event.target.value='';">
-                <p class="text-[9px] text-slate-500 leading-snug">Status, Kommentar, Bearbeiter, Datum und Reifegrad je Control &mdash; ausf&uuml;llen und dieselbe Datei zur&uuml;ckladen.</p>
-            </div>
-        </div>
+        <!-- Der Excel-Austausch stand hier und ging in der Komponentenliste
+             unter, die mit jedem Zielobjekt waechst. Er hat jetzt einen eigenen
+             Abschnitt im Dokument (sec-xls) und oben einen Sprung-Eintrag. -->
 
         <!-- Kein Export-Block mehr: das SSP wird bei jeder Änderung automatisch
              ins Set geschrieben; Dateien lädt man in der Übersicht herunter. -->
@@ -798,6 +786,31 @@
                         <svg class="chevron-icon w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                     </button>
                     <div class="collapsible-content p-4 border-t border-slate-700 bg-slate-900" id="system-chars-content-inner"></div>
+                </div>
+
+                <!-- Excel-Austausch: Export und Import stehen bewusst nebeneinander
+                     und nicht im Abspeichern-Dock — das ist ein Hin- und Rückweg,
+                     kein Download. Der Grundschutzcheck wird oft von Fachverant-
+                     wortlichen ausgefüllt, die dieses Werkzeug gar nicht öffnen.
+                     Der Abschnitt steht vor dem Grundschutzcheck, weil er sonst
+                     hinter Hunderten von Control-Karten verschwindet; aufgeklappt
+                     ist er, weil scrollToSec nur das Chevron dreht. -->
+                <div id="sec-xls" class="border border-slate-700 rounded-lg overflow-hidden">
+                    <button class="collapsible-header w-full flex justify-between items-center p-4 bg-slate-800 hover:bg-slate-700 text-left">
+                        <h2 class="text-lg font-bold text-white">&#9636; Excel-Austausch</h2>
+                        <svg class="chevron-icon open w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                    </button>
+                    <div class="collapsible-content open p-4 border-t border-slate-700 bg-slate-900">
+                        <p class="text-sm text-slate-400 mb-4 max-w-3xl">Der gesamte Grundschutzcheck geht als <code class="text-slate-300">.xlsx</code> heraus &mdash; eine Zeile je Control und Komponente, &uuml;ber alle Zielobjekte. Wer die Antworten hat, muss dieses Werkzeug nicht &ouml;ffnen: ausf&uuml;llen lassen, dieselbe Datei wieder einlesen. Zugeordnet wird &uuml;ber Control-ID und Komponenten-UUID, Spalten d&uuml;rfen also umsortiert und Zeilen gefiltert werden.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <button id="btn-xls-export" type="button" onclick="exportControlsXlsx()" class="px-4 py-2 text-sm font-bold rounded border border-emerald-700/60 bg-emerald-900/30 text-emerald-300 hover:bg-emerald-800/50" title="Alle Controls aller Komponenten als .xlsx herunterladen">&#8681; Controls als Excel</button>
+                            <button id="btn-xls-import" type="button" onclick="document.getElementById('xls-input').click()" class="px-4 py-2 text-sm font-bold rounded border border-blue-700/60 bg-blue-900/30 text-blue-300 hover:bg-blue-800/50" title="Ausgefüllte Tabelle zurücklesen (Zuordnung über Control-ID und Komponenten-UUID)">&#8679; Ausgef&uuml;llte Excel laden</button>
+                            <!-- stopPropagation: sonst zieht das change-Event den Autosave
+                                 auf dem noch unveränderten Stand hoch (Listener auf main). -->
+                            <input type="file" id="xls-input" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="hidden" onchange="event.stopPropagation(); importControlsXlsx(event.target.files[0]); event.target.value='';">
+                        </div>
+                        <p class="text-xs text-slate-500 mt-3 leading-snug">Ausgef&uuml;llt werden Status, Kommentar, Bearbeiter, Datum und Reifegrad. Fehlt eine Spalte in der zur&uuml;ckgegebenen Datei, bleibt das zugeh&ouml;rige Feld unver&auml;ndert; eine ung&uuml;ltige Zeile wird ganz &uuml;bersprungen und mit ihrer Zeilennummer in der Log-Konsole genannt.</p>
+                    </div>
                 </div>
 
                 <!-- Implementation Area -->
@@ -947,7 +960,7 @@
     // CONFIG & STATE
     // ============================================================
     // Build-Version der App (nicht zu verwechseln mit dem Session-Format `_v`).
-    const BUILD_VERSION = 'v1.5.0';
+    const BUILD_VERSION = 'v1.5.1';
 
     // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
     // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
@@ -2068,6 +2081,7 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
             document.getElementById('ssp-status-ind').classList.replace('text-slate-400', 'text-emerald-400');
 
             editorDiv.classList.remove('hidden');
+            document.getElementById('nav-xls').style.display = 'block';
             progress('Autosave', 6, PHASES);
             autoSave();
             L.ok(`Workspace fertig in ${Math.round(performance.now() - t0)}ms — ${catalogControlMap.size} Controls im Katalog.`);
