@@ -2,6 +2,8 @@
 
 Diese Sammlung enthält Werkzeuge zur Erstellung, Verwaltung und Dokumentation von **Systemsicherheitsprofilen (SSP)** im Kontext nutzergenerierter Inhalte. Die Tools sind webbasiert (HTML/JS) und ermöglichen einen durchgängigen Workflow von der Planung bis zur Zertifizierung und dem Abarbeiten der Festellungen.
 
+**NEU** [Schulungsvideo zu OSCAL, GS++ und den Tools](https://youtu.be/nqLAiSsXqqA)
+
 Und es gibt auch eine Anwendung den Anwenderkatalog zu betrachten: [GSpp-Viewer.html](./GSpp-Viewer.html).
 
 **Katalog-Pinning (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8):** Alle Tools laden den G++-Anwenderkatalog von einer Commit-gepinnten URL und verifizieren den Inhalt per SHA-256 gegen den im Repo hinterlegten Pin (gleiche Werte wie `Gpp-ai-tool/src/constants.py` und die Back-Matter-Resources der 229 gepinnten Profile). Fragment-Importe (`href: "#uuid"`) werden über die Back-Matter aufgelöst und — wo ein Hash hinterlegt ist — geprüft; erzeugte OSCAL-Artefakte (Profile, SSPs, AP/AR, POA&M) schreiben ihre Referenzen selbst im Pin-Muster. Ein Katalog-Update ist ein bewusster Pin-Wechsel: neue Werte in `Gpp-ai-tool/src/constants.py`, Skript-Neulauf über die Profile und Aktualisierung der Pin-Konstanten in den hier liegenden Apps — in einem Commit.
