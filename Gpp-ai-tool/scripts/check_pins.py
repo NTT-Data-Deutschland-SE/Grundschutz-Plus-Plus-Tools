@@ -16,7 +16,8 @@ Prueft die Quellen-Pins der Werkzeugsammlung gegen Upstream
    alt-identifier, UUIDs und last-modified zaehlen NICHT als Aenderung;
    nur Wortlaut-/Struktur-Abweichungen ergeben "DRIFT".
 4. Selbst-Pins (eigenes Repo) laufen lokal ueber `git diff --quiet
-   <pin> origin/main -- <pfad>` statt ueber die API.
+   <pin> HEAD -- <pfad>` statt ueber die API (HEAD, damit der Lauf auch
+   vor dem Push stimmt: Pin muss den aktuellen Inhalt zeigen).
 5. SHA-256-Pin-Konstanten (*PIN*SHA256*, z. B. GPP_CATALOG_PIN_SHA256) werden gegen den Hash des
    gepinnten Inhalts geprueft.
 
@@ -310,7 +311,7 @@ def compare_content(old: bytes, new: bytes) -> ContentDiff:
 # Selbst-Pins lokal
 # --------------------------------------------------------------------------
 
-def git_path_changed(root: Path, pin: str, path: str, ref: str = "origin/main") -> bool | None:
+def git_path_changed(root: Path, pin: str, path: str, ref: str = "HEAD") -> bool | None:
     try:
         r = subprocess.run(["git", "-C", str(root), "diff", "--quiet", pin, ref, "--", path],
                            capture_output=True, text=True, timeout=60)
@@ -376,7 +377,7 @@ def main(argv=None) -> int:
             changed = git_path_changed(root, s.sha, s.path)
             entry["status"] = ("AKTUELL" if changed is False else
                                "DRIFT" if changed else "UNBEKANNT (git)")
-            entry["upstream"] = "origin/main (lokal)"
+            entry["upstream"] = "HEAD (lokal)"
             if changed:
                 exit_code = max(exit_code, 1)
         elif fetcher is None:
