@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.13.0</title>
+    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.13.1</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -630,7 +630,7 @@
 
         <div class="topbar-actions">
             <div id="catalog-status" class="pill"><span class="dot animate-pulse"></span>Lade Basis-Katalog…</div>
-            <div class="pill pill-quiet">BUILD V5.13.0</div>
+            <div class="pill pill-quiet">BUILD V5.13.1</div>
         </div>
 
         <div class="progress-track"><div id="ai-doc-progress-bar" class="progress-fill"></div></div>
@@ -686,7 +686,7 @@
             </div>
         </div>
 
-        <div class="rail-foot">BUILD V5.13.0</div>
+        <div class="rail-foot">BUILD V5.13.1</div>
     </aside>
 
     <div id="rail-splitter" class="splitter" title="Rail-Breite ziehen"></div>
@@ -4443,6 +4443,19 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             return `${customName || cdefName}: ${compTitle || 'Komponente'}`;
         }
 
+        /* Dieselbe CDef darf mehrfach instanziiert werden — zwei Keycloaks, drei
+           Netzsegmente sind getrennte Zielobjekte mit eigenem Status, Schutzbedarf
+           und eigener Umsetzung. Was sie unterscheidet, ist der Name; der muss
+           deshalb eindeutig sein (auch der Editor und mergeEditorWork ordnen
+           notfalls über den Titel zu). Ohne eigenen Namen wird hochgezaehlt. */
+        function eindeutigerAssetName(name) {
+            const vorhanden = new Set(bpState.components.map(c => String(c.name || '').toLowerCase()));
+            if (!vorhanden.has(name.toLowerCase())) return name;
+            let n = 2;
+            while (vorhanden.has(`${name} (${n})`.toLowerCase())) n++;
+            return `${name} (${n})`;
+        }
+
         /* Ein CDef-Bauteil in die Asset-Form bringen: dieselben Felder wie ein
            Profil-Asset (id, name, source, state, schutzbedarf, controls), dazu `cdef`
            mit der Herkunft (Quelle, SHA-256, Quell-UUID, Vorlagentexte). `uuid`
@@ -4477,16 +4490,16 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             const customName = customNameInput?.value.trim() || '';
             const finalState = stateInput?.value || 'operational';
             const finalSchutzbedarf = schutzbedarfInput?.value || 'normal-SdT';
-            if (bpState.components.some(c => c.cdef && c.cdef.source === url)) return alert('Diese BSI-Komponente ist bereits als Zielobjekt angelegt.');
             toggleLoader(true, `Lade BSI-Komponente ${cdefName}...`);
             try {
                 const bc = await loadBsiComponentDefinition(url, cdefName);
                 if (!bc.components.length) throw new Error('Die Component Definition enthält keine Komponenten.');
+                const instanz = bpState.components.filter(c => c.cdef && c.cdef.source === url).length ? ' (weitere Instanz)' : '';
                 bc.components.forEach(comp => bpState.components.push(cdefAssetFromComponent(bc, comp, {
-                    name: cdefAssetName(customName, bc.name, comp.title, bc.components.length),
+                    name: eindeutigerAssetName(cdefAssetName(customName, bc.name, comp.title, bc.components.length)),
                     state: finalState, schutzbedarf: finalSchutzbedarf
                 })));
-                aiLog(bc.unmapped ? 'warn' : 'ok', `BSI-Komponente „${bc.name}": ${bc.components.length} Zielobjekt(e) angelegt, ${bc.mapped} Anforderungen auf G++ gemappt${bc.unmapped ? `, ${bc.unmapped} ohne Mapping (nicht im Anwenderkatalog)` : ''}.`);
+                aiLog(bc.unmapped ? 'warn' : 'ok', `BSI-Komponente „${bc.name}"${instanz}: ${bc.components.length} Zielobjekt(e) angelegt, ${bc.mapped} Anforderungen auf G++ gemappt${bc.unmapped ? `, ${bc.unmapped} ohne Mapping (nicht im Anwenderkatalog)` : ''}.`);
                 if (ddC) ddC.selectedIndex = 0;
                 if (customNameInput) customNameInput.value = '';
                 if (stateInput) stateInput.selectedIndex = 0;
@@ -4601,15 +4614,16 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 }
                 if (!bc) { comps.forEach(c => restored.push(fromSsp(c))); continue; }
 
-                const used = new Set();
+                // Instanzen sind Kopien: mehrere SSP-Komponenten duerfen auf dasselbe
+                // Quell-Bauteil zeigen (zwei Keycloaks) — jede bekommt die frischen
+                // Zuordnungen der CDef und behaelt ihre eigene UUID und ihren Namen.
                 comps.forEach(c => {
                     const su = sourceUuidOf(c);
-                    let comp = su && bc.components.find(x => !used.has(x) && x.sourceUuid === su);
-                    if (!comp) comp = bc.components.find(x => !used.has(x) && (x.title === c.title || `${bc.name}: ${x.title}` === c.title));
+                    let comp = su && bc.components.find(x => x.sourceUuid === su);
+                    if (!comp) comp = bc.components.find(x => x.title === c.title || `${bc.name}: ${x.title}` === c.title);
                     // Bauteil, das der SSP kennt, die CDef aber nicht (mehr) liefert:
                     // mit seinen SSP-Zuordnungen erhalten.
                     if (!comp) { restored.push(fromSsp(c, bc)); return; }
-                    used.add(comp);
                     restored.push(cdefAssetFromComponent(bc, comp, felder(c)));
                 });
             }

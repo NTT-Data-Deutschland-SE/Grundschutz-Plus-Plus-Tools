@@ -174,6 +174,7 @@ Component Definitions aus dem `implementation_layer` der Stand-der-Technik-Bibli
 - **Vierte Quelle in „4. Zielobjekte anlegen" (#42).** Die BSI-Komponente ist ein weiteres Select neben Nutzergeneriert, G++-Zielobjekten und Arbeitsstand; Name, Status und Schutzbedarf gelten wie für jedes Profil-Asset. Jedes Bauteil der CDef wird ein eigenes Zielobjekt (bei mehreren Bauteilen mit dem eigenen Namen als Präfix), erscheint in der Asset-Liste mit Badge „BSI-Komponente" und im Tailoring als eigene Quelle. Abschnitt 3b ist weg. SSP-Generator V5.13.0.
 - **Vorlagentext ist Referenz, keine Umsetzung (#43).** Im SSP steht er jetzt in `remarks` des by-component, `description` bleibt für die eigene Umsetzung frei. Der SSP-Editor (v1.6.0) zeigt ihn schreibgeschützt als „Vorlage aus BSI-Komponente · <Name>" über dem Kommentarfeld — erkannt über den `rel="source"`-Link auf die gepinnte CDef-Resource.
 - **Kein Status mehr vorbelegt (#44).** Die by-components tragen keinen `implementation-status`; der Editor zeigt „Offen".
+- **Mehrere Instanzen derselben BSI-Komponente (Nachtrag 11.09., V5.13.1).** Zwei Keycloaks oder drei Netzsegmente sind getrennte Zielobjekte mit eigenem Status, Schutzbedarf und eigener Umsetzung. Die Sperre „bereits angelegt" ist weg; der eigene Name unterscheidet die Instanzen, ohne Namen wird hochgezählt („Keycloak: Realm (2)"). Im SSP teilen sich alle Instanzen die gepinnte CDef-Resource; die Wiederherstellung ordnet jede Instanz ihrem Quell-Bauteil zu und behält UUID und Namen.
 - **Bestehende SSPs:** Beim Neuzusammenbau nimmt der Generator eine unredigierte Vorbefüllung alter Bauart (Vorlagentext in `description`, Status `planned` mit Marker-Bemerkung, keine Bearbeiter-Props) nicht mehr als Editor-Arbeit mit; alles, was jemand angefasst hat, bleibt erhalten. Die Wiederherstellung aus dem SSP versteht beide Formen.
 
 ## Nachtrag 10.09.2026 — UI-Feedback (#40), erster Teil: Scrollbalken, Artefakte-Fläche, gemeinsames Stylesheet
@@ -196,7 +197,7 @@ Component Definitions aus dem `implementation_layer` der Stand-der-Technik-Bibli
 | gemeinsames Stylesheet (gpp-core.css) | 2 · Cache-Buster v4.0 |
 | Übersicht (index.html) | 1.6 |
 | OSCAL Schema Validator | 1.11.2 |
-| SSP-Generator (G++) | V5.13.0 |
+| SSP-Generator (G++) | V5.13.1 |
 | GS++ Explorer (GSpp-Viewer) | v9.8 |
 | BSI → G++ Profil (Baustein_2_Profile) | 0.11.0 |
 | SSP-Editor (ssp_ausfuellen) | v1.6.1 |
