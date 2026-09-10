@@ -128,3 +128,22 @@
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]):not([data-theme="light"]) .aurora { opacity: .30; }
 }
+
+/* Listenfilter (gppListFilter): Suchfeld als erster Eintrag langer Listen.
+   Klebt beim Scrollen oben, damit es in einer langen Liste erreichbar bleibt. */
+.gpp-listfilter {
+  position: sticky; top: 0; z-index: 2;
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 0 6px; margin: 0; list-style: none;
+  background: var(--bg-deep);
+}
+.gpp-listfilter input[type="search"] {
+  flex: 1; min-width: 0;
+  padding: 6px 10px; border-radius: 8px;
+  border: 1px solid var(--border-2); background: var(--bg-sunken);
+  color: var(--text-primary); font: inherit; font-size: .78rem;
+}
+.gpp-listfilter input[type="search"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.gpp-listfilter input[type="search"]::placeholder { color: var(--text-quiet); }
+.gpp-listfilter-count { font-size: .7rem; color: var(--text-quiet); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.gpp-listfilter-hidden { display: none !important; }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Grundschutz++ OSCAL Tools · v1.6</title>
+  <title>Grundschutz++ OSCAL Tools · v1.7</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="gpp-core.css?v=4.0">
   <script>/* Farbschema vor dem ersten Rendern (gpp-core.js laedt erst am Ende): Wert aus localStorage, Vorgabe dunkel, "system" = kein Attribut */try{var _t=localStorage.getItem("gpp:cfg:ui:theme")||"dark";if(_t!=="system")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
@@ -299,7 +299,7 @@
     const CORE_OK = typeof gppArtefacts !== "undefined"
       && typeof GPP_CORE_VERSION !== "undefined" && Number(GPP_CORE_VERSION) >= 2;
 
-    const APP_VERSION = "1.6";
+    const APP_VERSION = "1.7";
     document.getElementById("build-pill").textContent = `build ${APP_VERSION}`;
     /* Kein schwebendes Speichermenü in der Übersicht: Sie bettet die Werkzeuge
        als iframe ein, und ein Dock im Elterndokument liegt pixelgenau über dem
@@ -488,6 +488,8 @@
       list.querySelectorAll("[data-dl]").forEach(b => b.addEventListener("click", () => downloadOne(b.dataset.dl)));
       list.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => removeOne(b.dataset.del)));
       list.querySelectorAll("[data-open]").forEach(b => b.addEventListener("click", () => { closeSheet(); select(b.dataset.open, true); }));
+      // Ab elf Artefakten ein Suchfeld als erster Eintrag (Kern: gppListFilter).
+      if (typeof gppListFilter === "function") gppListFilter(list, { item: ":scope > .art", placeholder: "Artefakte filtern …" });
     }
     function escapeHtml(s) { return String(s == null ? "" : s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
     function escapeAttr(s) { return escapeHtml(s).replace(/"/g, "&quot;"); }

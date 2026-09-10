@@ -185,6 +185,10 @@ Component Definitions aus dem `implementation_layer` der Stand-der-Technik-Bibli
 - **Bearbeiter aus einer Liste (SSP-Editor v1.6.1).** Das Bearbeiter-Feld jeder Control-Karte schlägt jetzt Namen vor: alle, die im geladenen SSP schon als Bearbeiter stehen, die gerade eingetippten Felder und das angemeldete Konto, wenn die gemeinsame Datenbank aktiv ist. Freitext bleibt möglich; ein neuer Name steht ab dem nächsten Feld in der Liste. Dublette nach Groß-/Kleinschreibung zählt einmal.
 - **Helles Farbschema (#40, letzter Punkt).** Umschalten über den Knopf „◐" in der Kopfzeile der Übersicht (Dunkel → Hell → System) oder in den Einstellungen unter „Darstellung"; die Wahl gilt für alle Werkzeuge dieses Browsers und wird gemerkt, „System" folgt dem Betriebssystem. Dunkel bleibt die Vorgabe. Technisch: `gpp-core.css` v2 trägt den hellen Token-Satz (ausdrücklich per `data-theme="light"` oder über `prefers-color-scheme`), ein Snippet im `<head>` jeder Seite setzt das Attribut vor dem ersten Rendern, `gppTheme` im Kern übernimmt Wechsel zur Laufzeit und aus anderen Tabs. Dafür wurden rund 400 feste Farbwerte in den Stylesheets der neun Seiten auf Tokens umgestellt — Aufhellungen und Absenkungen laufen über die Kanäle `--tint`/`--shade`, farbige Tönungen über `color-mix` mit dem jeweiligen Token. Im dunklen Schema ändert sich dadurch nichts sichtbar. Übersicht 1.6.
 
+## Nachtrag 11.09.2026 — Suchfeld in langen Listen
+
+Listen mit mehr als zehn Einträgen beginnen jetzt mit einem Suchfeld, das die Einträge nach Text ein- und ausblendet: Zielobjekte und Control-Quellen im SSP-Generator (V5.13.2), die Komponenten-Navigation im SSP-Editor (v1.6.2), die Artefakte in der Übersicht (1.7). Der Zähler daneben zeigt Treffer / gesamt, Escape leert das Feld, der Suchtext überlebt ein Neu-Rendern der Liste. Die Funktion (`gppListFilter`) und ihre Styles liegen im Kern, damit weitere Listen mit einer Zeile nachziehen können.
+
 ## Nicht im Umfang von 4.0
 
 * Die produktive Härtung des Backends (TLS auf dem öffentlichen Port, GoTrue-Admin-API statt direkter `auth.users`-Schreibzugriff bei der Konto-Anlage) — die Terraform-Umgebung ist eine Testinstanz.
@@ -195,12 +199,12 @@ Component Definitions aus dem `implementation_layer` der Stand-der-Technik-Bibli
 |---|---|
 | gemeinsamer Kern (gpp-core.js) | 3 · Cache-Buster v4.0 |
 | gemeinsames Stylesheet (gpp-core.css) | 2 · Cache-Buster v4.0 |
-| Übersicht (index.html) | 1.6 |
+| Übersicht (index.html) | 1.7 |
 | OSCAL Schema Validator | 1.11.2 |
-| SSP-Generator (G++) | V5.13.1 |
+| SSP-Generator (G++) | V5.13.2 |
 | GS++ Explorer (GSpp-Viewer) | v9.8 |
 | BSI → G++ Profil (Baustein_2_Profile) | 0.11.0 |
-| SSP-Editor (ssp_ausfuellen) | v1.6.1 |
+| SSP-Editor (ssp_ausfuellen) | v1.6.2 |
 | Prüfung AP/AR (pruefung_ap_ar) | build 9.6.0 |
 | POA&M-Generator | v2.4 |
 

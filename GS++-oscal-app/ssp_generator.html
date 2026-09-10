@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.13.1</title>
+    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.13.2</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -630,7 +630,7 @@
 
         <div class="topbar-actions">
             <div id="catalog-status" class="pill"><span class="dot animate-pulse"></span>Lade Basis-Katalog…</div>
-            <div class="pill pill-quiet">BUILD V5.13.1</div>
+            <div class="pill pill-quiet">BUILD V5.13.2</div>
         </div>
 
         <div class="progress-track"><div id="ai-doc-progress-bar" class="progress-fill"></div></div>
@@ -686,7 +686,7 @@
             </div>
         </div>
 
-        <div class="rail-foot">BUILD V5.13.1</div>
+        <div class="rail-foot">BUILD V5.13.2</div>
     </aside>
 
     <div id="rail-splitter" class="splitter" title="Rail-Breite ziehen"></div>
@@ -4859,6 +4859,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     </li>
                 `;
             });
+            // Ab elf Zielobjekten ein Suchfeld als erster Eintrag (Kern: gppListFilter).
+            if (typeof gppListFilter === 'function') gppListFilter(list, { item: ':scope > li', placeholder: 'Zielobjekte filtern …' });
         }
 
         window.removeAsset = function (i) {
@@ -4975,6 +4977,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                         <span class="block text-[10px] text-slate-500 mt-0.5">${source.controls.size} Controls</span>
                     </button>`;
                 }).join('') || '<p class="text-xs text-slate-500 p-2">Noch keine Control-Quellen vorhanden.</p>';
+                if (typeof gppListFilter === 'function') gppListFilter(nav, { item: ':scope > button', placeholder: 'Quellen filtern …' });
             }
 
             function renderGroup(source, filteredControls) {

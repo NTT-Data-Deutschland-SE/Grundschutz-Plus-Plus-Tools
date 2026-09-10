@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.6.1</title>
+    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.6.2</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
@@ -642,7 +642,7 @@
             <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>Kein SSP geladen
         </div>
         <div id="resource-status-ind" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 items-center hidden"></div>
-        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.6.1</span></span>
+        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.6.2</span></span>
     </div>
 </header>
 
@@ -939,7 +939,7 @@
     // CONFIG & STATE
     // ============================================================
     // Build-Version der App (nicht zu verwechseln mit dem Session-Format `_v`).
-    const BUILD_VERSION = 'v1.6.1';
+    const BUILD_VERSION = 'v1.6.2';
 
     // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
     // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
@@ -2644,6 +2644,8 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         // Nur der aktive Asset-Layer beziehungsweise die Suchtreffer kommen ins DOM.
         document.getElementById('impl-area').innerHTML = compHtml;
         document.getElementById('sb-comp-nav').innerHTML = navHtml;
+        // Ab elf Komponenten ein Suchfeld als erster Eintrag (Kern: gppListFilter).
+        if (typeof gppListFilter === 'function') gppListFilter(document.getElementById('sb-comp-nav'), { item: ':scope > button', placeholder: 'Komponenten filtern …' });
         document.getElementById('sb-comp-nav').classList.remove('hidden');
 
         // Build Filters mit ConfigMap Bezeichnern

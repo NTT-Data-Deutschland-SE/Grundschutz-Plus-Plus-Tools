@@ -73,6 +73,53 @@ if (typeof document !== "undefined") {
   window.addEventListener("storage", e => { if (e.key === GPP_CFG_PREFIX + GPP_THEME_KEY) gppTheme.apply(); });
 }
 
+/* ---------- Listenfilter ----------
+   Eine Liste mit mehr als `min` Eintraegen (Vorgabe 10) bekommt als ersten
+   Eintrag ein Suchfeld, das die Eintraege per Textvergleich ein- und ausblendet
+   — Zielobjekte im Generator, Komponenten im Editor, Artefakte in der
+   Uebersicht. Aufruf nach JEDEM Neu-Rendern des Containers; der Suchtext
+   ueberlebt das Neu-Rendern (gemerkt je Container-ID). Ausblenden ueber eine
+   Klasse mit !important, weil Eintraege oft eigene display-Klassen (flex)
+   tragen, gegen die das hidden-Attribut verliert. */
+const _gppListFilterText = new Map();
+function gppListFilter(container, opts = {}) {
+  if (!container) return 0;
+  const min = opts.min ?? 10;
+  const key = opts.key || container.id || "";
+  const alt = container.querySelector(":scope > .gpp-listfilter");
+  if (alt) alt.remove();
+  const items = [...container.querySelectorAll(opts.item || ":scope > *")].filter(el => !el.classList.contains("gpp-listfilter"));
+  items.forEach(el => el.classList.remove("gpp-listfilter-hidden"));
+  if (items.length <= min) return items.length;
+
+  const wrap = document.createElement(/^(UL|OL)$/.test(container.tagName) ? "li" : "div");
+  wrap.className = "gpp-listfilter";
+  const input = document.createElement("input");
+  input.type = "search"; input.autocomplete = "off"; input.spellcheck = false;
+  input.placeholder = opts.placeholder || `${items.length} Einträge filtern …`;
+  input.setAttribute("aria-label", "Liste filtern");
+  input.value = _gppListFilterText.get(key) || "";
+  const count = document.createElement("span");
+  count.className = "gpp-listfilter-count";
+  const apply = () => {
+    const q = input.value.trim().toLowerCase();
+    let n = 0;
+    items.forEach(el => {
+      const hit = !q || (el.textContent || "").toLowerCase().includes(q);
+      el.classList.toggle("gpp-listfilter-hidden", !hit);
+      if (hit) n++;
+    });
+    count.textContent = q ? `${n} / ${items.length}` : String(items.length);
+    _gppListFilterText.set(key, input.value);
+  };
+  input.addEventListener("input", apply);
+  input.addEventListener("keydown", e => { if (e.key === "Escape") { input.value = ""; apply(); } });
+  wrap.append(input, count);
+  container.prepend(wrap);
+  apply();
+  return items.length;
+}
+
 /* ---------- Konfiguration ---------- */
 const GPP_CFG_DEFAULTS = {
   "ai:backend": "gemini",
