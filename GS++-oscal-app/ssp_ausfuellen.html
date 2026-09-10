@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.6.0</title>
+    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.6.1</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
@@ -641,7 +641,7 @@
             <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>Kein SSP geladen
         </div>
         <div id="resource-status-ind" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 items-center hidden"></div>
-        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.6.0</span></span>
+        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.6.1</span></span>
     </div>
 </header>
 
@@ -938,7 +938,7 @@
     // CONFIG & STATE
     // ============================================================
     // Build-Version der App (nicht zu verwechseln mit dem Session-Format `_v`).
-    const BUILD_VERSION = 'v1.6.0';
+    const BUILD_VERSION = 'v1.6.1';
 
     // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
     // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
@@ -1079,6 +1079,11 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         // Auto-save listeners on DOM changes
         document.querySelector('main').addEventListener('input', scheduleAutoSave);
         document.querySelector('main').addEventListener('change', scheduleAutoSave);
+        /* Ein neu eingetippter Bearbeiter steht ab dem naechsten Feld in der
+           Vorschlagsliste — nicht erst nach dem Autosave. */
+        document.querySelector('main').addEventListener('change', e => {
+            if (e.target?.id?.startsWith('name-')) refreshBearbeiterListe();
+        });
     });
 
     function setupDragAndDrop() {
@@ -2437,6 +2442,31 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         return { profile: tc, sMap, dMap, sorted: Array.from(allKeys).sort() };
     }
 
+    /* Vorschlagsliste fuer das Bearbeiter-Feld (Issue #40): Wer 40 Controls
+       ausfuellt, tippt seinen Namen sonst 40 Mal, und Kollegen schreiben ihn
+       jedes Mal etwas anders — Filter und Excel-Export fallen dann auseinander.
+       Quellen: alle implementing-user-Props im geladenen SSP, die gerade
+       sichtbaren Felder (noch nicht gespeichert) und das angemeldete Konto,
+       wenn die gemeinsame Datenbank aktiv ist. Freitext bleibt moeglich; die
+       Liste ist eine datalist, kein Zwang. Dublette nach Gross-/Kleinschreibung
+       -> erste Schreibweise gewinnt. */
+    function refreshBearbeiterListe() {
+        let dl = document.getElementById('bearbeiter-liste');
+        if (!dl) { dl = document.createElement('datalist'); dl.id = 'bearbeiter-liste'; document.body.appendChild(dl); }
+        const namen = new Map();   // key (lower) -> Schreibweise
+        const add = v => { const s = String(v ?? '').trim(); if (s && !namen.has(s.toLowerCase())) namen.set(s.toLowerCase(), s); };
+        try {
+            if (typeof gppRemote !== 'undefined' && gppRemote.enabled?.() && gppRemote.loggedIn?.()) add(gppRemote.user?.()?.email);
+        } catch (e) { /* kein Konto */ }
+        (sspData?.['system-security-plan']?.['control-implementation']?.['implemented-requirements'] || []).forEach(r =>
+            (r['by-components'] || []).forEach(bc =>
+                (bc.props || []).forEach(p => { if (p && p.name === 'implementing-user') add(p.value); })));
+        document.querySelectorAll('input[id^="name-"]').forEach(i => add(i.value));
+        const sortiert = [...namen.values()].sort((a, b) => a.localeCompare(b, 'de'));
+        dl.innerHTML = sortiert.map(n => `<option value="${implEsc(n).replace(/"/g, '&quot;')}"></option>`).join('');
+        return sortiert.length;
+    }
+
     function renderImplementation(ssp) {
         implementationView.ssp = ssp;
         const comps = ssp['system-implementation']?.components || [];
@@ -2638,6 +2668,7 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         });
         document.getElementById('sb-filters').innerHTML = fHtml;
         L.ok(`Implementierungs-Layer gerendert: ${document.querySelectorAll('.comp-card').length} von ${comps.length} Asset(s), ${document.querySelectorAll('.ctrl-entry').length} von ${totalMatches} passenden Controls.`);
+        refreshBearbeiterListe();
     }
 
     /* Vorlagentext aus einer BSI-Komponente (Component Definition aus dem SdT
@@ -2779,7 +2810,7 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                 <div><label class="block text-[10px] text-slate-400 uppercase font-bold mb-0.5">Kommentar</label><textarea id="desc-${rk}" rows="2" class="inp text-xs w-full p-1.5">${sReq?.description||''}</textarea></div>
                 <div class="flex flex-col gap-2">
-                    <div><label class="block text-[10px] text-slate-400 uppercase font-bold mb-0.5">Bearbeiter</label><input type="text" id="name-${rk}" class="inp text-xs py-1 px-2 w-full" value="${sReqPropVal('implementing-user')}"></div>
+                    <div><label class="block text-[10px] text-slate-400 uppercase font-bold mb-0.5">Bearbeiter</label><input type="text" id="name-${rk}" list="bearbeiter-liste" autocomplete="off" class="inp text-xs py-1 px-2 w-full" value="${sReqPropVal('implementing-user')}" title="Freitext; die Liste schlägt Namen vor, die im SSP schon stehen, und das angemeldete Konto"></div>
                     <div><label class="block text-[10px] text-slate-400 uppercase font-bold mb-0.5">Datum</label><input type="date" id="date-${rk}" class="inp text-xs py-1 px-2 w-full" value="${sReqPropVal('implementation-date')}"></div>
                 </div>
             </div>

@@ -197,7 +197,7 @@ Dieses Tool dient der detaillierten Bearbeitung von **System Security Plans (SSP
 * Die **Suche** erlaubt das schnelle Auffinden von Control-IDs oder Stichworten über alle Komponenten hinweg.
 
 ### 4. Umsetzung dokumentieren (Implementation)
-* **Status & Details**: Wähle pro Maßnahme den Umsetzungsstatus und trage Bearbeiter sowie Datum ein.
+* **Status & Details**: Wähle pro Maßnahme den Umsetzungsstatus und trage Bearbeiter sowie Datum ein. Das Bearbeiter-Feld schlägt Namen vor, die im SSP schon stehen (und das angemeldete Konto, wenn die Datenbank aktiv ist) — Freitext bleibt möglich, ein neuer Name steht ab dem nächsten Feld in der Liste.
 * **Reifegrade**: Wähle bei Bedarf vordefinierte Umsetzungs-Level (Statements) aus, um die Beschreibung automatisch zu füllen.
 * **KI-Features**:
     * **Umsetzungsvorschlag**: Generiert konkrete Praxisbeispiele.
