@@ -37,9 +37,48 @@ if (typeof document !== "undefined" && typeof getComputedStyle === "function") {
   } catch (e) { /* kein DOM (Worker o. ae.) */ }
 }
 
+/* ---------- Farbschema (Issue #40) ----------
+   Die Tokens liegen in gpp-core.css; hier nur das Attribut am <html> und die
+   gemerkte Wahl. Das erste Setzen uebernimmt ein Snippet im <head> jeder Seite
+   (dieser Kern laedt erst am Ende des Bodys); hier kommen Wechsel zur Laufzeit
+   und die Uebernahme aus anderen Tabs (storage-Event) dazu. */
+const GPP_THEME_KEY = "ui:theme";
+const gppTheme = {
+  options: [["dark", "Dunkel"], ["light", "Hell"], ["system", "System"]],
+  get() {
+    const v = localStorage.getItem(GPP_CFG_PREFIX + GPP_THEME_KEY) || "dark";
+    return ["dark", "light", "system"].includes(v) ? v : "dark";
+  },
+  /* Wirksames Schema — bei "system" entscheidet das Betriebssystem. */
+  effective() {
+    const v = this.get();
+    if (v !== "system") return v;
+    return (typeof matchMedia === "function" && matchMedia("(prefers-color-scheme: light)").matches) ? "light" : "dark";
+  },
+  label(v) { const o = this.options.find(x => x[0] === (v || this.get())); return o ? o[1] : "Dunkel"; },
+  apply(v, doc) {
+    const root = (doc || document).documentElement;
+    v = v || this.get();
+    if (v === "system") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", v);
+  },
+  set(v) {
+    localStorage.setItem(GPP_CFG_PREFIX + GPP_THEME_KEY, v);
+    this.apply(v);
+  },
+  /* Naechster Wert fuer einen Kreis-Knopf: Dunkel -> Hell -> System -> Dunkel */
+  next() { const i = this.options.findIndex(x => x[0] === this.get()); return this.options[(i + 1) % this.options.length][0]; },
+};
+if (typeof document !== "undefined") {
+  try { gppTheme.apply(); } catch (e) { /* kein DOM */ }
+  window.addEventListener("storage", e => { if (e.key === GPP_CFG_PREFIX + GPP_THEME_KEY) gppTheme.apply(); });
+}
+
 /* ---------- Konfiguration ---------- */
 const GPP_CFG_DEFAULTS = {
   "ai:backend": "gemini",
+  // Farbschema aller Seiten: dark | light | system (Issue #40). Dunkel ist die
+  // Vorgabe, weil die Sammlung so gebaut wurde und Umsteiger nichts merken sollen.
+  "ui:theme": "dark",
   "ai:model:gemini": "gemini-3.6-flash",
   "ai:model:openrouter": "",
   // Dritter Weg: ein selbst betriebener OpenAI-kompatibler Endpoint

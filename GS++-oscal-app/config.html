@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Einstellungen · Grundschutz++ OSCAL Tools</title>
 <link rel="stylesheet" href="gpp-core.css?v=4.0">
+<script>/* Farbschema vor dem ersten Rendern (gpp-core.js laedt erst am Ende): Wert aus localStorage, Vorgabe dunkel, "system" = kein Attribut */try{var _t=localStorage.getItem("gpp:cfg:ui:theme")||"dark";if(_t!=="system")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <style>
-    select,option{background-color:#1b1b23;color:#e8e8ef}
-    select{color-scheme:dark}
+    select,option{background-color:var(--bg-deep);color:var(--text-primary)}
 :root {
   --mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
 }
@@ -317,6 +317,20 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
     <div class="note" id="db-off-note" style="display:none">Ohne Server-URL bleibt dieser Abschnitt aus — alle Werkzeuge arbeiten rein lokal wie bisher.</div>
   </div>
 
+  <div class="card" id="sec-darstellung">
+    <h2>Darstellung</h2>
+    <p class="sub">Das Farbschema gilt für alle Werkzeuge der Sammlung und wird in diesem Browser gemerkt. „System" folgt der
+      Einstellung des Betriebssystems. Umschalten geht auch über den Knopf in der Kopfzeile der Übersicht.</p>
+    <div style="max-width:320px">
+      <label class="f" for="ui-theme">Farbschema</label>
+      <select id="ui-theme">
+        <option value="dark">Dunkel</option>
+        <option value="light">Hell</option>
+        <option value="system">System (Betriebssystem)</option>
+      </select>
+    </div>
+  </div>
+
   <div class="card" id="sec-speicher">
     <h2>Speicher</h2>
     <p class="sub">Artefakte liegen in der IndexedDB <code>gpp-artefacts</code>, Einstellungen im <code>localStorage</code> unter <code>gpp:cfg:</code>.
@@ -367,6 +381,7 @@ const FIELDS = [
      gespeichert, nur direkt an gppRemote.login() gereicht. */
   ["db-url", "db:url"], ["db-anonkey", "db:anonkey"], ["db-mode", "db:auth:mode"],
   ["db-provider", "db:auth:provider"], ["db-email", "db:email"],
+  ["ui-theme", "ui:theme"],
 ];
 const TOGGLES = [["grounding", "ai:grounding"], ["or-structuredonly", "ai:or:structuredonly"]];
 
@@ -379,6 +394,7 @@ FIELDS.forEach(([id, key]) => {
   const write = () => {
     gppCfg.set(key, el.value.trim()); flashSaved();
     if (key === "ai:backend") applyBackend();
+    if (key === "ui:theme") gppTheme.apply(el.value);
     if (key.startsWith("db:")) renderRemote();
   };
   let t;

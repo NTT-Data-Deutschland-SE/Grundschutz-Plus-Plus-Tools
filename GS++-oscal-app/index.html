@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Grundschutz++ OSCAL Tools · v1.5</title>
+  <title>Grundschutz++ OSCAL Tools · v1.6</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="gpp-core.css?v=4.0">
+  <script>/* Farbschema vor dem ersten Rendern (gpp-core.js laedt erst am Ende): Wert aus localStorage, Vorgabe dunkel, "system" = kein Attribut */try{var _t=localStorage.getItem("gpp:cfg:ui:theme")||"dark";if(_t!=="system")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
   <style>
-    select,option{background-color:#1b1b23;color:#e8e8ef}
-    select{color-scheme:dark}
+    select,option{background-color:var(--bg-deep);color:var(--text-primary)}
     :root {
       --mono: 'JetBrains Mono', ui-monospace, monospace;
     }
@@ -210,7 +210,8 @@
     <button class="btn" id="btn-artefacts" title="Alle erzeugten Artefakte ansehen und exportieren">◱ ARTEFAKTE <span id="art-total"></span></button>
     <button class="btn" id="btn-help" title="Anleitung der Sammlung (readme), formatiert">? HILFE</button>
     <button class="btn" id="btn-handbuch" title="Grundschutz++ Handbuch mit Kapitelnavigation">▤ HANDBUCH</button>
-    <a class="btn" href="config.html" title="Zentrale Einstellungen: KI-Zugang, Prompts, Quellen-Pins">⚙ EINSTELLUNGEN</a>
+    <button class="btn" id="btn-theme" title="Farbschema wechseln: Dunkel → Hell → System (gilt für alle Werkzeuge, auch in den Einstellungen)">◐ DUNKEL</button>
+    <a class="btn" href="config.html" title="Zentrale Einstellungen: KI-Zugang, Prompts, Quellen-Pins, Farbschema">⚙ EINSTELLUNGEN</a>
     <a class="btn" id="open-standalone" href="#" target="_blank" rel="noopener" title="Aktuelle App in neuem Tab öffnen">↗ STANDALONE</a>
     <a class="btn" href="../one-page-apps/readme.md" target="_blank" rel="noopener" title="Einzelwerkzeuge außerhalb des Arbeitsablaufs: SSP-Generator Edition 2023, YAML→OSCAL">↗ EINZELWERKZEUGE</a>
     <a class="btn" href="https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools" target="_blank" rel="noopener">GitHub</a>
@@ -298,7 +299,7 @@
     const CORE_OK = typeof gppArtefacts !== "undefined"
       && typeof GPP_CORE_VERSION !== "undefined" && Number(GPP_CORE_VERSION) >= 2;
 
-    const APP_VERSION = "1.5";
+    const APP_VERSION = "1.6";
     document.getElementById("build-pill").textContent = `build ${APP_VERSION}`;
     /* Kein schwebendes Speichermenü in der Übersicht: Sie bettet die Werkzeuge
        als iframe ein, und ein Dock im Elterndokument liegt pixelgenau über dem
@@ -342,6 +343,25 @@
     frame.addEventListener("load", () => {
       if (frame.src !== "about:blank") loading.classList.add("hidden");
     });
+
+    /* Farbschema (Issue #40): Kreis-Knopf Dunkel -> Hell -> System. Das
+       eingebettete Werkzeug liest die Wahl selbst beim Start; laeuft es schon,
+       bekommt es sie direkt (gleicher Origin), ein storage-Event gibt es im
+       eigenen Dokument nicht. Andere Tabs reagieren ueber das storage-Event. */
+    const themeBtn = document.getElementById("btn-theme");
+    if (typeof gppTheme !== "undefined") {
+      const syncThemeButton = () => { themeBtn.textContent = "◐ " + gppTheme.label().toUpperCase(); };
+      themeBtn.addEventListener("click", () => {
+        gppTheme.set(gppTheme.next());
+        try { if (frame.contentDocument) gppTheme.apply(null, frame.contentDocument); } catch (e) { /* fremder Origin */ }
+        syncThemeButton();
+      });
+      window.addEventListener("storage", e => { if (e.key === "gpp:cfg:ui:theme") syncThemeButton(); });
+      syncThemeButton();
+    } else {
+      themeBtn.disabled = true;
+      themeBtn.title = "gpp-core.js fehlt — Farbschema nicht umschaltbar";
+    }
 
     window.addEventListener("hashchange", () => select(location.hash.slice(1) || APPS[0].id, false));
     select(location.hash.slice(1) || APPS[0].id, false);

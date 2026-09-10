@@ -1,4 +1,4 @@
-/* ==GPP-CORE-CSS== v1 ——————————————————————————————————————————
+/* ==GPP-CORE-CSS== v2 ——————————————————————————————————————————
    Gemeinsames Stylesheet aller GS++-oscal-app: Design-Tokens (Farben) und
    die Scrollbalken. Wird von jeder Seite VOR ihrem eigenen <style> eingebunden
    (<link rel="stylesheet" href="gpp-core.css?v=4.0">), damit seitenspezifische
@@ -10,6 +10,14 @@
    (Issue #40, offen) braucht genau einen Ort, an dem die Tokens umgeschaltet
    werden — den gibt es jetzt. Seitenspezifische Tokens (Rail-Breite,
    Topbar-Hoehe, Sonderfarben) bleiben in der jeweiligen Seite.
+
+   Farbschema (v2): Dunkel ist der Normalfall (:root). Hell gibt es auf zwei
+   Wegen — ausdruecklich per data-theme="light" am <html>, oder ueber die
+   Systemeinstellung, wenn die Wahl "system" ist (dann fehlt das Attribut und
+   prefers-color-scheme entscheidet). Beide Wege tragen denselben Token-Satz;
+   er steht deshalb zweimal hier. Gesetzt wird das Attribut vor dem ersten
+   Rendern von einem kleinen Snippet im <head> jeder Seite (Wert aus
+   localStorage gpp:cfg:ui:theme), danach von gppTheme im Kern.
    —————————————————————————————————————————————————— */
 
 :root {
@@ -30,6 +38,10 @@
   --amber:          oklch(0.80 0.15 80);
   --green:          oklch(0.75 0.18 145);
   --blue:           oklch(0.70 0.15 240);
+  /* Abgesenkte Flaechen (Eingabefelder, Log-Konsole, Vorlagen-Kaesten):
+     dunkler als der Grund im dunklen Schema, leicht grau im hellen. */
+  --bg-sunken:      oklch(0.10 0.02 280 / 0.45);
+  color-scheme: dark;
 
   /* Scrollbalken: Die alte Daumenfarbe (--bg-elev-3, 8 % Weiss) war auf dem
      dunklen Grund praktisch unsichtbar — man fand den Balken erst mit der Maus
@@ -48,3 +60,55 @@
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); background-clip: padding-box; }
 ::-webkit-scrollbar-corner { background: transparent; }
+
+/* ---------- Helles Schema ---------- */
+:root[data-theme="light"] {
+  --bg-deep:        oklch(0.975 0.005 280);
+  --bg-elev-1:      oklch(0.20 0.02 280 / 0.035);
+  --bg-elev-2:      oklch(0.20 0.02 280 / 0.055);
+  --bg-elev-3:      oklch(0.20 0.02 280 / 0.09);
+  --bg-sunken:      oklch(0.20 0.02 280 / 0.05);
+  --border-1:       oklch(0.20 0.02 280 / 0.09);
+  --border-2:       oklch(0.20 0.02 280 / 0.16);
+  --text-primary:   oklch(0.20 0.02 280);
+  --text-secondary: oklch(0.34 0.02 280);
+  --text-tertiary:  oklch(0.44 0.02 280);
+  --text-quiet:     oklch(0.52 0.02 280);
+  --accent:         oklch(0.48 0.20 300);
+  --accent-soft:    oklch(0.48 0.20 300 / 0.12);
+  --accent-glow:    oklch(0.48 0.20 300 / 0.35);
+  --red:            oklch(0.55 0.20 25);
+  --amber:          oklch(0.60 0.15 80);
+  --green:          oklch(0.52 0.17 145);
+  --blue:           oklch(0.50 0.15 240);
+  --scroll-track:       oklch(0.20 0.02 280 / 0.06);
+  --scroll-thumb:       oklch(0.20 0.02 280 / 0.30);
+  --scroll-thumb-hover: oklch(0.48 0.20 300 / 0.70);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]):not([data-theme="light"]) {
+    --bg-deep:        oklch(0.975 0.005 280);
+    --bg-elev-1:      oklch(0.20 0.02 280 / 0.035);
+    --bg-elev-2:      oklch(0.20 0.02 280 / 0.055);
+    --bg-elev-3:      oklch(0.20 0.02 280 / 0.09);
+    --bg-sunken:      oklch(0.20 0.02 280 / 0.05);
+    --border-1:       oklch(0.20 0.02 280 / 0.09);
+    --border-2:       oklch(0.20 0.02 280 / 0.16);
+    --text-primary:   oklch(0.20 0.02 280);
+    --text-secondary: oklch(0.34 0.02 280);
+    --text-tertiary:  oklch(0.44 0.02 280);
+    --text-quiet:     oklch(0.52 0.02 280);
+    --accent:         oklch(0.48 0.20 300);
+    --accent-soft:    oklch(0.48 0.20 300 / 0.12);
+    --accent-glow:    oklch(0.48 0.20 300 / 0.35);
+    --red:            oklch(0.55 0.20 25);
+    --amber:          oklch(0.60 0.15 80);
+    --green:          oklch(0.52 0.17 145);
+    --blue:           oklch(0.50 0.15 240);
+    --scroll-track:       oklch(0.20 0.02 280 / 0.06);
+    --scroll-thumb:       oklch(0.20 0.02 280 / 0.30);
+    --scroll-thumb-hover: oklch(0.48 0.20 300 / 0.70);
+    color-scheme: light;
+  }
+}
