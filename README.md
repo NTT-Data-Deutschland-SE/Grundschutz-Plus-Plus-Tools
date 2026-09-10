@@ -174,6 +174,7 @@ Es dient dazu,
 - Parameterwerte zu setzen,
 - Risiken mit Maßnahmen zu verknüpfen,
 - Inhalte per Suche und Filtern gezielt zu bearbeiten,
+- den Grundschutzcheck als Excel-Mappe heraus- und ausgefüllt wieder hereinzugeben,
 - optional KI-Unterstützung für Verständnis, Umsetzung und Einordnung zu verwenden.
 
 ##### `pruefung_ap_ar.html`
