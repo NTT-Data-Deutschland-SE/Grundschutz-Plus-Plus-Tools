@@ -159,6 +159,14 @@ Der Grundschutzcheck wird selten am Stück im Browser ausgefüllt: die Antworten
 - **Fremde Felder bleiben stehen:** Import und DOM-Rückschreibung teilen sich jetzt eine Funktion (`applyControlValues`). Ein `by-component` aus einer fremden Quelle behält `remarks`, `links`, `export`/`inherited`/`satisfied` und fremde Props, auch wenn die Tabelle für dieses Control nichts enthält.
 - **Ohne Bibliothek:** `.xlsx` ist ein ZIP aus XML-Teilen und wird mit `gppZip`/`gppUnzip` aus dem gemeinsamen Kern geschrieben und gelesen — die Sammlung läuft weiter offline und per `file://`. Gegengeprüft mit openpyxl: drei Blätter, Datenprüfung, Fixierung, Autofilter, Spaltenbreiten und Formatierung kommen unverändert an.
 
+## Nachtrag 10.09.2026 — Stand-der-Technik-Bibliothek auf Rolling-Publication vom 10.09., Pin-Prüfung als Skript
+
+Turnusmäßige Pin-Prüfung, diesmal mit Werkzeug: `Gpp-ai-tool/scripts/check_pins.py` inventarisiert alle gepinnten Quellen der Sammlung (URL-Pins mit 40er-SHA, nackte Pin-Konstanten, SHA-256-Konstanten), fragt je Quelle den jüngsten Upstream-Commit ab und vergleicht bei Abweichung die Katalogstände strukturell — rotierende `alt-identifier`, UUIDs und Zeitstempel zählen nicht, nur Wortlaut- und Strukturänderungen an Controls ergeben „DRIFT". Selbst-Pins werden lokal gegen `origin/main` geprüft. Exit-Code 1 bei Drift, damit der Lauf auch in einer Pipeline taugt.
+
+- **Stand-der-Technik-Bibliothek neu gepinnt (`4e117794`, Rolling-Publication vom 10.09.).** Gegenüber `36a0fac4` (27.08.) haben sich im Anwenderkatalog und im Methodik-Katalog genau zwei Controls geändert: **GC.12.1** bekommt einen Parameter `gc.12.1-prm1` („eine einheitliche Methodik"), die Prosa trägt jetzt den Insert-Platzhalter, und die Dokumentations-Zuordnung wechselt von „Risikobewertung" zu „Risikobetrachtung“; **PERF.2.1** heißt jetzt „Überprüfung“ statt „Überwachung der Einhaltung von Verpflichtungen“. Der Kernel-Katalog ist nur kosmetisch anders (UUID-Rotation), Risiko-Katalog und ITGS-Mapping unverändert. Katalog-Pin, SHA-256, Resource-UUID und Kurzform synchron in den Werkzeugen, `constants.py` und allen 229 Profilen.
+- **Unverändert gelassen:** ED23-Katalog (`62f08039`), ITGS-GSMap (`8f0bcd1f`), Selbst-Pins; `hilfsdateien/` behält wie bisher seine Provenienz-Referenzen.
+- **Bekannte, akzeptierte Drift:** Das Reifegrad-Statement m3 zu GC.12.1 in `methodik_process_profile_enhanced.json` zitiert noch den alten Wortlaut ohne Platzhalter (Präzedenz KONF.7.14). Das Handbuch bleibt auf seiner normativen Basis Build 2026-07-29 und führt PERF.2.1 und die GC.12.1-Dokumentzuordnung entsprechend alt; ein Nachzug gehört in den nächsten Handbuch-Verifikationslauf.
+
 ## Nicht im Umfang von 4.0
 
 * Die produktive Härtung des Backends (TLS auf dem öffentlichen Port, GoTrue-Admin-API statt direkter `auth.users`-Schreibzugriff bei der Konto-Anlage) — die Terraform-Umgebung ist eine Testinstanz.
