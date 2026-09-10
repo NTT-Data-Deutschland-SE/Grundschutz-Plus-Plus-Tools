@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.5.1</title>
+    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.6.0</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
@@ -663,7 +663,7 @@
             <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>Kein SSP geladen
         </div>
         <div id="resource-status-ind" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 items-center hidden"></div>
-        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.5.1</span></span>
+        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.6.0</span></span>
     </div>
 </header>
 
@@ -960,7 +960,7 @@
     // CONFIG & STATE
     // ============================================================
     // Build-Version der App (nicht zu verwechseln mit dem Session-Format `_v`).
-    const BUILD_VERSION = 'v1.5.1';
+    const BUILD_VERSION = 'v1.6.0';
 
     // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
     // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
@@ -2662,6 +2662,22 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         L.ok(`Implementierungs-Layer gerendert: ${document.querySelectorAll('.comp-card').length} von ${comps.length} Asset(s), ${document.querySelectorAll('.ctrl-entry').length} von ${totalMatches} passenden Controls.`);
     }
 
+    /* Vorlagentext aus einer BSI-Komponente (Component Definition aus dem SdT
+       implementation_layer): der Generator fuehrt ihn seit V5.13 in remarks des
+       by-component und verlinkt die Quell-Resource (rel="source", Prop
+       source-type=component-definition). Der Text ist eine Referenz — er wird
+       angezeigt, nie in die Felder geschrieben; die Umsetzung dokumentiert der
+       Bearbeiter selbst im Kommentar (Issue #43). */
+    function cdefVorlage(sReq) {
+        if (!sReq?.remarks) return null;
+        const link = (sReq.links || []).find(l => l && l.rel === 'source' && String(l.href || '').startsWith('#'));
+        if (!link) return null;
+        const res = (sspData?.['system-security-plan']?.['back-matter']?.resources || []).find(r => r && r.uuid === link.href.slice(1));
+        if (!res || !(res.props || []).some(p => p && p.name === 'source-type' && p.value === 'component-definition')) return null;
+        const name = String(res.title || '').replace(/^BSI-Komponente \(Component Definition\):\s*/, '');
+        return { name, text: String(sReq.remarks) };
+    }
+
     function renderControlEntry(cid, comp, sReq, dReq, pMap) {
         const rk = `${cid.replace(/[^a-zA-Z0-9]/g, '-')}-${comp.uuid}`;
         const st = sReq?.['implementation-status']?.state || '';
@@ -2746,6 +2762,13 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
         // Safe prop extraction helpers
         const sReqPropVal = (n) => sReq?.props?.find(p => p && p.name === n)?.value || '';
 
+        const vorlage = cdefVorlage(sReq);
+        const escV = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        const vorlageHtml = vorlage
+            ? `<div class="mb-3 p-2.5 bg-amber-900/10 border border-amber-800/40 rounded text-xs text-slate-300 leading-relaxed whitespace-pre-line" title="Vorlagentext aus der Component Definition — Referenz, keine belegte Umsetzung. Die eigene Umsetzung gehoert in den Kommentar.">
+                <div class="text-[9px] text-amber-400 uppercase font-bold mb-1">Vorlage aus BSI-Komponente${vorlage.name ? ` · ${escV(vorlage.name)}` : ''}</div>${escV(vorlage.text)}</div>`
+            : '';
+
         return `<div class="ctrl-entry border border-slate-700 bg-slate-800 rounded-lg p-3 shadow-sm" data-cid="${cid}" data-comp="${comp.uuid}" data-filter="${fStr}" data-search="${sStr}">
             <div class="flex justify-between items-start mb-2">
                 <h4 class="font-bold text-white text-sm"><span class="text-blue-400 font-mono mr-1">${cid}</span> ${title}</h4>
@@ -2772,6 +2795,8 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präzise und du nutzt kein
             ${pRef.size > 0 ? `<div class="mb-3 p-2 bg-blue-900/10 border border-blue-900/30 rounded grid grid-cols-1 md:grid-cols-2 gap-2">
                 ${Array.from(pRef).map(pid => `<div><label class="block text-[9px] text-blue-400 uppercase font-bold">${catalogParamMap.get(pid)?.label||pid}</label><input type="text" data-param-id="${pid}" class="param-input inp text-xs py-1 px-2 w-full" value="${(pMap.get(pid)||(profileModifications.setParams.get(pid)||'')).replace(/"/g,'&quot;')}"></div>`).join('')}
             </div>` : ''}
+
+            ${vorlageHtml}
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                 <div><label class="block text-[10px] text-slate-400 uppercase font-bold mb-0.5">Kommentar</label><textarea id="desc-${rk}" rows="2" class="inp text-xs w-full p-1.5">${sReq?.description||''}</textarea></div>

@@ -167,6 +167,15 @@ Turnusmäßige Pin-Prüfung, diesmal mit Werkzeug: `Gpp-ai-tool/scripts/check_pi
 - **Unverändert gelassen:** ED23-Katalog (`62f08039`), ITGS-GSMap (`8f0bcd1f`), Selbst-Pins; `hilfsdateien/` behält wie bisher seine Provenienz-Referenzen.
 - **Bekannte, akzeptierte Drift:** Das Reifegrad-Statement m3 zu GC.12.1 in `methodik_process_profile_enhanced.json` zitiert noch den alten Wortlaut ohne Platzhalter (Präzedenz KONF.7.14). Das Handbuch bleibt auf seiner normativen Basis Build 2026-07-29 und führt PERF.2.1 und die GC.12.1-Dokumentzuordnung entsprechend alt; ein Nachzug gehört in den nächsten Handbuch-Verifikationslauf.
 
+## Nachtrag 10.09.2026 — BSI-Komponenten sind Zielobjekte wie alle anderen (#42, #43, #44)
+
+Component Definitions aus dem `implementation_layer` der Stand-der-Technik-Bibliothek kamen über einen eigenen Abschnitt „3b" in den SSP-Generator: ohne Name, Status und Schutzbedarf, mit dem Vorlagentext der CDef als Umsetzungsbeschreibung und dem Status „geplant" für jede Anforderung. Im SSP-Editor las sich das so, als hätte jemand die Umsetzung schon dokumentiert.
+
+- **Vierte Quelle in „4. Zielobjekte anlegen" (#42).** Die BSI-Komponente ist ein weiteres Select neben Nutzergeneriert, G++-Zielobjekten und Arbeitsstand; Name, Status und Schutzbedarf gelten wie für jedes Profil-Asset. Jedes Bauteil der CDef wird ein eigenes Zielobjekt (bei mehreren Bauteilen mit dem eigenen Namen als Präfix), erscheint in der Asset-Liste mit Badge „BSI-Komponente" und im Tailoring als eigene Quelle. Abschnitt 3b ist weg. SSP-Generator V5.13.0.
+- **Vorlagentext ist Referenz, keine Umsetzung (#43).** Im SSP steht er jetzt in `remarks` des by-component, `description` bleibt für die eigene Umsetzung frei. Der SSP-Editor (v1.6.0) zeigt ihn schreibgeschützt als „Vorlage aus BSI-Komponente · <Name>" über dem Kommentarfeld — erkannt über den `rel="source"`-Link auf die gepinnte CDef-Resource.
+- **Kein Status mehr vorbelegt (#44).** Die by-components tragen keinen `implementation-status`; der Editor zeigt „Offen".
+- **Bestehende SSPs:** Beim Neuzusammenbau nimmt der Generator eine unredigierte Vorbefüllung alter Bauart (Vorlagentext in `description`, Status `planned` mit Marker-Bemerkung, keine Bearbeiter-Props) nicht mehr als Editor-Arbeit mit; alles, was jemand angefasst hat, bleibt erhalten. Die Wiederherstellung aus dem SSP versteht beide Formen.
+
 ## Nicht im Umfang von 4.0
 
 * Die produktive Härtung des Backends (TLS auf dem öffentlichen Port, GoTrue-Admin-API statt direkter `auth.users`-Schreibzugriff bei der Konto-Anlage) — die Terraform-Umgebung ist eine Testinstanz.
@@ -178,10 +187,10 @@ Turnusmäßige Pin-Prüfung, diesmal mit Werkzeug: `Gpp-ai-tool/scripts/check_pi
 | gemeinsamer Kern (gpp-core.js) | 3 · Cache-Buster v4.0 |
 | Übersicht (index.html) | 1.4 |
 | OSCAL Schema Validator | 1.11.2 |
-| SSP-Generator (G++) | V5.12.0 |
+| SSP-Generator (G++) | V5.13.0 |
 | GS++ Explorer (GSpp-Viewer) | v9.8 |
 | BSI → G++ Profil (Baustein_2_Profile) | 0.11.0 |
-| SSP-Editor (ssp_ausfuellen) | v1.5.1 |
+| SSP-Editor (ssp_ausfuellen) | v1.6.0 |
 | Prüfung AP/AR (pruefung_ap_ar) | build 9.6.0 |
 | POA&M-Generator | v2.4 |
 

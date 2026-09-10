@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.12.0</title>
+    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.13.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -655,7 +655,7 @@
 
         <div class="topbar-actions">
             <div id="catalog-status" class="pill"><span class="dot animate-pulse"></span>Lade Basis-Katalog…</div>
-            <div class="pill pill-quiet">BUILD V5.12.0</div>
+            <div class="pill pill-quiet">BUILD V5.13.0</div>
         </div>
 
         <div class="progress-track"><div id="ai-doc-progress-bar" class="progress-fill"></div></div>
@@ -711,7 +711,7 @@
             </div>
         </div>
 
-        <div class="rail-foot">BUILD V5.12.0</div>
+        <div class="rail-foot">BUILD V5.13.0</div>
     </aside>
 
     <div id="rail-splitter" class="splitter" title="Rail-Breite ziehen"></div>
@@ -1477,7 +1477,6 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             manualControls: new Set(),
             modifications: new Map(),
             components: [],
-            bsiComponents: [], // Importierte BSI-Component-Definitions (SdT implementation_layer)
             altIdIndex: new Map(), // alt-identifier (UUID) -> G++ Control-ID, für das Mapping der SdT-Komponenten
             riskData: [],
             customControls: new Map(),
@@ -1501,18 +1500,16 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
             }
             renderMainStructure();
-            /* Die drei Zielobjekt-Quellen schließen einander aus: eine Wahl setzt
-               die anderen zurück (ddN/ddG regeln das untereinander in
-               fetchGitHubComponents — das gelingt dort aber nur, wenn GitHub
-               antwortet; die Set-Quelle braucht kein Netz und hängt hier). */
+            /* Die vier Zielobjekt-Quellen (Nutzergeneriert, G++, Arbeitsstand,
+               BSI-Komponente) schließen einander aus: eine Wahl setzt die anderen
+               zurück. Bewusst hier und nicht in den Ladefunktionen — die hängen
+               am Netz, die Set-Quelle nicht. */
             {
-                const ddS = document.getElementById('dd-set-profile');
-                const ddN = document.getElementById('dd-nutzer');
-                const ddG = document.getElementById('dd-gplus');
-                if (ddS) {
-                    ddS.addEventListener('change', () => { if (ddS.value) { ddN.selectedIndex = 0; ddG.selectedIndex = 0; } });
-                    [ddN, ddG].forEach(dd => dd.addEventListener('change', () => { if (dd.value) ddS.selectedIndex = 0; }));
-                }
+                const quellen = ['dd-nutzer', 'dd-gplus', 'dd-set-profile', 'dd-sdt-comp']
+                    .map(id => document.getElementById(id)).filter(Boolean);
+                quellen.forEach(dd => dd.addEventListener('change', () => {
+                    if (dd.value) quellen.forEach(o => { if (o !== dd) o.selectedIndex = 0; });
+                }));
             }
             refreshSetSourceOptions();
             initSidebar();
@@ -4207,20 +4204,10 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     </div>
                 </div>
 
-                <div class="mb-6 p-5 bg-slate-900/80 border border-amber-700/60 rounded-xl shadow-inner">
-                    <h3 class="text-sm font-bold text-amber-400 uppercase mb-2">3b. BSI-Komponenten (SdT implementation_layer, Optional)</h3>
-                    <p class="text-xs text-slate-400 mb-4">Fertige Component-Definitions aus der Stand-der-Technik-Bibliothek (z.B. Keycloak, Netzarchitektur, Passwortrichtlinie). Sie werden als SSP-Komponenten übernommen und liefern vorbefüllte Umsetzungsbeschreibungen für die abgedeckten G++-Anforderungen.</p>
-                    <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 mb-3">
-                        <select id="dd-sdt-comp" class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white"><option value="">Lade BSI-Komponenten...</option></select>
-                        <button onclick="addBsiComponent()" class="px-5 py-2 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-500 transition-colors text-sm shadow-md">Komponente importieren</button>
-                    </div>
-                    <ul id="bsi-components-list" class="space-y-2"></ul>
-                </div>
-
                 <div class="pt-2">
                     <h3 class="text-sm font-bold text-slate-300 uppercase mb-2">4. Zielobjekte anlegen</h3>
-                    <p class="text-xs text-slate-400 mb-4">Ein Zielobjekt entsteht aus einem Profil: aus den vorbereiteten Bausteinen (Nutzergeneriert), den G++-Zielobjektkategorien oder einem Profil aus dem aktiven Arbeitsstand (z.&nbsp;B. aus „BSI → G++ Profil"). Die Controls des Profils landen beim Zielobjekt und sind im Tailoring anpassbar; mitgebrachte Ergänzungen (<code>alters</code>) werden als Anpassungen übernommen.</p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <p class="text-xs text-slate-400 mb-4">Ein Zielobjekt entsteht aus einem Profil — aus den vorbereiteten Bausteinen (Nutzergeneriert), den G++-Zielobjektkategorien oder einem Profil aus dem aktiven Arbeitsstand (z.&nbsp;B. aus „BSI → G++ Profil") — oder aus einer fertigen BSI-Komponente (Component Definition aus der Stand-der-Technik-Bibliothek, z.&nbsp;B. Keycloak, Netzarchitektur, Passwortrichtlinie). Die Controls landen beim Zielobjekt und sind im Tailoring anpassbar; mitgebrachte Ergänzungen (<code>alters</code>) werden als Anpassungen übernommen. Bei einer BSI-Komponente kommen die gemappten G++-Anforderungen mit; ihr Vorlagentext erscheint im SSP-Editor nur als Referenz, die eigene Umsetzung wird dort dokumentiert.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Nutzergeneriert</label>
                             <select id="dd-nutzer" class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white"><option value="">Lade...</option></select>
@@ -4232,6 +4219,10 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Aus dem Arbeitsstand (Profil)</label>
                             <select id="dd-set-profile" class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white"><option value="">— Profil aus dem Set wählen —</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">BSI-Komponente (SdT)</label>
+                            <select id="dd-sdt-comp" class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white"><option value="">Lade BSI-Komponenten...</option></select>
                         </div>
                     </div>
 
@@ -4424,7 +4415,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 const { files } = await gppRepoList({ owner: SDT_REPO_OWNER, repo: SDT_REPO_NAME,
                     ref: SDT_PIN_COMMIT, dir: 'implementation_layer',
                     ext: '-component_definition.json', recursive: true });
-                dd.innerHTML = '<option value="" disabled selected>BSI-Komponente wählen...</option>';
+                dd.innerHTML = '<option value="" disabled selected>Asset wählen...</option>';
                 files.forEach(f => dd.appendChild(new Option(
                     f.name.replace('-component_definition.json', ''), f.url)));
                 if (!files.length) dd.innerHTML = '<option value="">Keine BSI-Komponenten gefunden</option>';
@@ -4435,10 +4426,10 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         }
 
         /* Quell-CDef laden, hashen und auf G++-Controls mappen. Gemeinsamer Weg für
-           den Import aus der Auswahlliste (addBsiComponent) und die Wiederherstellung
-           aus dem SSP beim Seitenstart (restoreBsiComponentsFromSSP) — beide müssen
-           dieselbe Struktur liefern, sonst schreibt der nächste Live-Sync etwas anderes
-           ins Set als vorher drinstand. */
+           das Anlegen aus Kapitel 4 (addCdefAssets) und die Wiederherstellung aus dem
+           SSP beim Seitenstart (restoreCdefAssetsFromSSP) — beide müssen dieselbe
+           Struktur liefern, sonst schreibt der nächste Live-Sync etwas anderes ins
+           Set als vorher drinstand. */
         async function loadBsiComponentDefinition(url, name) {
             // Bytes laden und hashen: Die Quell-CDef wird im SSP als gepinnte
             // back-matter-Resource (rlink + SHA-256, Grundregel 8) geführt.
@@ -4470,17 +4461,68 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             return { uuid: cd.uuid || crypto.randomUUID(), name, source: url, sha256, components, mapped, unmapped, reloaded: true };
         }
 
-        async function addBsiComponent() {
-            const dd = document.getElementById('dd-sdt-comp');
-            const url = dd?.value;
-            if (!url) return alert('Bitte zuerst eine BSI-Komponente auswählen.');
-            if (bpState.bsiComponents.some(bc => bc.source === url)) return alert('Diese BSI-Komponente ist bereits importiert.');
+        /* Name eines Zielobjekts aus einer CDef: der eigene Name gilt bei einer
+           Ein-Bauteil-CDef direkt, bei mehreren Bauteilen als Präfix. */
+        function cdefAssetName(customName, cdefName, compTitle, anzahlBauteile) {
+            if (anzahlBauteile <= 1) return customName || compTitle || cdefName;
+            return `${customName || cdefName}: ${compTitle || 'Komponente'}`;
+        }
+
+        /* Ein CDef-Bauteil in die Asset-Form bringen: dieselben Felder wie ein
+           Profil-Asset (id, name, source, state, schutzbedarf, controls), dazu `cdef`
+           mit der Herkunft (Quelle, SHA-256, Quell-UUID, Vorlagentexte). `uuid`
+           erlaubt, die SSP-UUID bei der Wiederherstellung zu behalten. */
+        function cdefAssetFromComponent(bc, comp, { name, state, schutzbedarf, uuid } = {}) {
+            return {
+                id: uuid || comp.uuid || crypto.randomUUID(),
+                name: name || comp.title || bc.name,
+                source: bc.source || '',
+                state: state || 'operational',
+                schutzbedarf: schutzbedarf || 'normal-SdT',
+                controls: new Set((comp.impls || []).map(i => i.gppId)),
+                cdef: {
+                    name: bc.name, source: bc.source || null, sha256: bc.sha256 || null,
+                    sourceUuid: comp.sourceUuid || null, type: comp.type || 'software',
+                    description: comp.description || '', impls: comp.impls || [],
+                    reloaded: bc.reloaded !== false
+                }
+            };
+        }
+
+        /* BSI-Komponente (Component Definition aus dem SdT implementation_layer) als
+           Zielobjekt(e) anlegen — derselbe Weg wie ein Profil-Asset mit Name, Status
+           und Schutzbedarf aus Kapitel 4 (Issue #42); nur die Controls kommen aus den
+           gemappten implemented-requirements der CDef statt aus include-controls.
+           Jedes Bauteil der CDef wird ein eigenes Zielobjekt. */
+        async function addCdefAssets(url, cdefName) {
+            const customNameInput = document.getElementById('asset-custom-name');
+            const stateInput = document.getElementById('asset-state');
+            const schutzbedarfInput = document.getElementById('asset-schutzbedarf');
+            const ddC = document.getElementById('dd-sdt-comp');
+            const customName = customNameInput?.value.trim() || '';
+            const finalState = stateInput?.value || 'operational';
+            const finalSchutzbedarf = schutzbedarfInput?.value || 'normal-SdT';
+            if (bpState.components.some(c => c.cdef && c.cdef.source === url)) return alert('Diese BSI-Komponente ist bereits als Zielobjekt angelegt.');
+            toggleLoader(true, `Lade BSI-Komponente ${cdefName}...`);
             try {
-                const name = dd.options[dd.selectedIndex].text;
-                bpState.bsiComponents.push(await loadBsiComponentDefinition(url, name));
-                renderBsiComponentsList();
+                const bc = await loadBsiComponentDefinition(url, cdefName);
+                if (!bc.components.length) throw new Error('Die Component Definition enthält keine Komponenten.');
+                bc.components.forEach(comp => bpState.components.push(cdefAssetFromComponent(bc, comp, {
+                    name: cdefAssetName(customName, bc.name, comp.title, bc.components.length),
+                    state: finalState, schutzbedarf: finalSchutzbedarf
+                })));
+                aiLog(bc.unmapped ? 'warn' : 'ok', `BSI-Komponente „${bc.name}": ${bc.components.length} Zielobjekt(e) angelegt, ${bc.mapped} Anforderungen auf G++ gemappt${bc.unmapped ? `, ${bc.unmapped} ohne Mapping (nicht im Anwenderkatalog)` : ''}.`);
+                if (ddC) ddC.selectedIndex = 0;
+                if (customNameInput) customNameInput.value = '';
+                if (stateInput) stateInput.selectedIndex = 0;
+                if (schutzbedarfInput) schutzbedarfInput.selectedIndex = 0;
+                renderAssetsList();
+                renderTailoredList();
+                refreshRiskUI();
             } catch (e) {
                 alert('BSI-Komponente konnte nicht geladen werden: ' + e.message);
+            } finally {
+                toggleLoader(false);
             }
         }
 
@@ -4492,37 +4534,29 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             return file.replace('-component_definition.json', '').replace(/\.json$/, '') || 'BSI-Komponente';
         }
 
-        /* BSI-Komponenten aus einem SSP zurückholen (Gegenstück zu generateSSP).
-           Ohne diesen Schritt fehlten sie nach einem Seitenstart in bpState, und der
-           nächste Live-Sync schrieb den SSP OHNE sie ins Set zurück — stiller Datenverlust.
+        /* Zielobjekte aus BSI-Komponenten aus einem SSP zurückholen (Gegenstück zum
+           Export in generateSSP). Ohne diesen Schritt fehlten sie nach einem
+           Seitenstart in bpState, und der nächste Live-Sync schrieb den SSP OHNE sie
+           ins Set zurück — stiller Datenverlust.
            Erkennung: Komponenten mit Link rel="component-definition" auf eine
            back-matter-Resource, deren rlink die Quell-CDef (URL + SHA-256) nennt.
-           Primärweg: CDef erneut laden (derselbe Weg wie addBsiComponent), dabei die
-           SSP-UUIDs der Bauteile übernehmen, damit die by-components der
-           implemented-requirements weiter passen. Fallback bei Netz-/Katalogfehler:
-           Bauteile samt Zuordnungen aus dem SSP selbst rekonstruieren (reloaded:false),
-           damit der nächste Sync sie durchreicht statt löscht. */
-        async function restoreBsiComponentsFromSSP(ssp, bsiSspComponents) {
+           Primärweg: CDef erneut laden (derselbe Weg wie addCdefAssets), das Bauteil
+           über die Quell-Komponenten-UUID (Prop source-component-uuid), ersatzweise
+           über den Titel zuordnen und die SSP-UUID behalten, damit die by-components
+           der implemented-requirements weiter passen. Fallback bei Netz-/Katalog-
+           fehler: Controls und Vorlagen aus dem SSP selbst rekonstruieren
+           (reloaded:false), damit der nächste Sync sie durchreicht statt löscht. */
+        async function restoreCdefAssetsFromSSP(ssp, bsiSspComponents) {
             const restored = [];
             if (!ssp || !bsiSspComponents.length) return restored;
             const resources = ssp['back-matter']?.resources || [];
             const reqs = ssp['control-implementation']?.['implemented-requirements'] || [];
             const RES_TITLE_PREFIX = 'BSI-Komponente (Component Definition):';
 
-            // Nach Resource (= eine CDef) gruppieren; Links ohne auflösbare Resource
-            // landen unter ihrem Fragment, damit sie nicht verloren gehen.
-            const groups = new Map();
-            bsiSspComponents.forEach(({ c, href }) => {
-                const key = String(href || '');
-                if (!groups.has(key)) groups.set(key, []);
-                groups.get(key).push(c);
-            });
-
-            // Zuordnungen aus dem SSP: by-components, die auf ein BSI-Bauteil zeigen.
-            // Nur Controls des Basis-Katalogs (wie das alt-identifier-Mapping) — sie
-            // wandern über generateProfile in den Basis-Import; Controls aus
-            // Zusatzkatalogen tragen ihren Editor-Text über mergeEditorWork weiter.
-            // Ist der Katalog-Index leer (Ladefehler), wird nichts verworfen.
+            // Zuordnungen aus dem SSP: by-components, die auf dieses Bauteil zeigen.
+            // Nur Controls des Basis-Katalogs (wie das alt-identifier-Mapping); ist der
+            // Katalog-Index leer (Ladefehler), wird nichts verworfen. Der Vorlagentext
+            // steht seit V5.13 in remarks, ältere SSPs trugen ihn in description.
             const baseControls = bpState.catalogs[0]?.controls || new Set();
             const inBaseCatalog = cid => !baseControls.size || baseControls.has(cid);
             const implsFromSsp = (compUuid) => {
@@ -4533,11 +4567,24 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     (r['by-components'] || []).forEach(bc => {
                         if (bc['component-uuid'] !== compUuid) return;
                         if (impls.some(i => i.gppId === cid)) return;
-                        impls.push({ gppId: cid, text: bc.description || '' });
+                        impls.push({ gppId: cid, text: bc.remarks || bc.description || '' });
                     });
                 });
                 return impls;
             };
+            const sourceUuidOf = c => (c.props || []).find(p => p.name === 'source-component-uuid')?.value || null;
+            const schutzbedarfOf = c => (c.props || []).find(p => p.name === 'sicherheitsniveau')?.value || 'normal-SdT';
+            const felder = c => ({ name: c.title, state: c.status?.state || 'operational', schutzbedarf: schutzbedarfOf(c), uuid: c.uuid });
+
+            // Nach Resource (= eine CDef) gruppieren; Links ohne auflösbare Resource
+            // landen unter ihrem Fragment, damit sie nicht verloren gehen.
+            const groups = new Map();
+            bsiSspComponents.forEach(({ c, href }) => {
+                const key = String(href || '');
+                if (!groups.has(key)) groups.set(key, []);
+                groups.get(key).push(c);
+            });
+            const geladen = new Map();   // Quelle → CDef oder null (Laden gescheitert); eine Anfrage je Quelle
 
             for (const [href, comps] of groups) {
                 const res = href.startsWith('#') ? resources.find(r => r.uuid === href.slice(1)) : null;
@@ -4546,97 +4593,52 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 const name = (res?.title || '').startsWith(RES_TITLE_PREFIX)
                     ? res.title.slice(RES_TITLE_PREFIX.length).trim()
                     : bsiComponentNameFromUrl(source);
-                const stripPrefix = t => (t && t.startsWith(`${name}: `)) ? t.slice(name.length + 2) : (t || 'Komponente');
-                const sourceUuidOf = c => (c.props || []).find(p => p.name === 'source-component-uuid')?.value || null;
-
-                // Dublette über die Quell-URL (z. B. zwei Resources auf dieselbe CDef):
-                // Bauteile dem vorhandenen Eintrag zuschlagen, nicht doppelt anlegen.
-                const dup = source && restored.find(bc => bc.source === source);
-                if (dup) {
-                    comps.forEach(c => {
-                        if (dup.components.some(x => x.uuid === c.uuid)) return;
-                        const impls = implsFromSsp(c.uuid);
-                        dup.components.push({ uuid: c.uuid, sourceUuid: sourceUuidOf(c), title: stripPrefix(c.title), type: c.type || 'software', description: c.description || '', impls });
-                        dup.mapped += impls.length;
-                    });
-                    continue;
-                }
-
-                // Fallback-Eintrag aus dem SSP (wird genutzt, wenn das Nachladen scheitert).
-                const fromSsp = () => {
-                    const components = comps.map(c => ({
-                        uuid: c.uuid, sourceUuid: sourceUuidOf(c), title: stripPrefix(c.title),
-                        type: c.type || 'software', description: c.description || '', impls: implsFromSsp(c.uuid)
-                    }));
-                    return {
-                        uuid: crypto.randomUUID(), name, source, sha256, components,
-                        mapped: components.reduce((s, c) => s + c.impls.length, 0), unmapped: 0, reloaded: false
-                    };
-                };
+                // Fallback-Zielobjekt aus dem SSP selbst (Titel ist der Asset-Name;
+                // vor V5.13 hießen die Bauteile "<CDef>: <Titel>", das bleibt so stehen).
+                const fromSsp = (c, bc) => cdefAssetFromComponent(
+                    bc || { name, source, sha256, reloaded: false },
+                    { uuid: c.uuid, sourceUuid: sourceUuidOf(c), title: c.title, type: c.type || 'software', description: c.description || '', impls: implsFromSsp(c.uuid) },
+                    felder(c));
 
                 if (!source) {
-                    aiLog('warn', `BSI-Komponente „${name}": Quelle im SSP nicht auflösbar (${href}) — Bauteile aus dem SSP übernommen, Zuordnungen bleiben erhalten.`);
-                    restored.push(fromSsp());
+                    aiLog('warn', `BSI-Komponente „${name}": Quelle im SSP nicht auflösbar (${href}) — Zielobjekte aus dem SSP übernommen, Zuordnungen bleiben erhalten.`);
+                    comps.forEach(c => restored.push(fromSsp(c)));
                     continue;
                 }
-
-                try {
-                    const bc = await loadBsiComponentDefinition(source, name);
-                    if (sha256 && bc.sha256 !== sha256) {
-                        aiLog('warn', `BSI-Komponente „${name}": Inhalt der Quelle weicht vom im SSP gepinnten SHA-256 ab — neuer Stand wird übernommen.`);
+                let bc;
+                if (geladen.has(source)) bc = geladen.get(source);
+                else {
+                    try {
+                        bc = await loadBsiComponentDefinition(source, name);
+                        if (sha256 && bc.sha256 !== sha256) aiLog('warn', `BSI-Komponente „${name}": Inhalt der Quelle weicht vom im SSP gepinnten SHA-256 ab — neuer Stand wird übernommen.`);
+                        // Kein einziges Mapping, obwohl der SSP Zuordnungen trägt: dann fehlt
+                        // der alt-identifier-Index (Katalog nicht geladen) — SSP-Stand behalten.
+                        const sspImplCount = comps.reduce((s, c) => s + implsFromSsp(c.uuid).length, 0);
+                        if (bc.mapped === 0 && sspImplCount > 0) {
+                            aiLog('warn', `BSI-Komponente „${name}": Mapping auf G++-Controls nicht möglich (Katalog-Index fehlt) — ${sspImplCount} Zuordnungen aus dem SSP beibehalten.`);
+                            bc = null;
+                        }
+                    } catch (e) {
+                        aiLog('warn', `BSI-Komponente „${name}": Quelle nicht nachgeladen (${e.message}) — Zielobjekte und Zuordnungen aus dem SSP beibehalten; beim nächsten Sync bleiben sie erhalten.`);
+                        bc = null;
                     }
-                    // SSP-UUIDs wiederverwenden: Zuordnung über die Quell-Komponenten-UUID
-                    // (Prop source-component-uuid), ersatzweise über den Titel.
-                    const used = new Set();
-                    bc.components.forEach(comp => {
-                        let match = comp.sourceUuid && comps.find(c => !used.has(c.uuid) && sourceUuidOf(c) === comp.sourceUuid);
-                        if (!match) match = comps.find(c => !used.has(c.uuid) && stripPrefix(c.title) === comp.title);
-                        if (!match) return;
-                        used.add(match.uuid);
-                        comp.uuid = match.uuid;
-                    });
-                    // Bauteile, die der SSP kennt, die CDef aber nicht (mehr) liefert,
-                    // bleiben mit ihren SSP-Zuordnungen erhalten.
-                    comps.filter(c => !used.has(c.uuid)).forEach(c => {
-                        const impls = implsFromSsp(c.uuid);
-                        bc.components.push({ uuid: c.uuid, sourceUuid: sourceUuidOf(c), title: stripPrefix(c.title), type: c.type || 'software', description: c.description || '', impls });
-                        bc.mapped += impls.length;
-                    });
-                    // Kein einziges Mapping, obwohl der SSP Zuordnungen trägt: dann fehlt
-                    // der alt-identifier-Index (Katalog nicht geladen) — SSP-Stand behalten.
-                    const sspImplCount = comps.reduce((s, c) => s + implsFromSsp(c.uuid).length, 0);
-                    if (bc.mapped === 0 && sspImplCount > 0) {
-                        aiLog('warn', `BSI-Komponente „${name}": Mapping auf G++-Controls nicht möglich (Katalog-Index fehlt) — ${sspImplCount} Zuordnungen aus dem SSP beibehalten.`);
-                        restored.push(fromSsp());
-                        continue;
-                    }
-                    restored.push(bc);
-                } catch (e) {
-                    aiLog('warn', `BSI-Komponente „${name}": Quelle nicht nachgeladen (${e.message}) — Bauteile und Zuordnungen aus dem SSP beibehalten; beim nächsten Sync bleiben sie erhalten.`);
-                    restored.push(fromSsp());
+                    geladen.set(source, bc);
                 }
+                if (!bc) { comps.forEach(c => restored.push(fromSsp(c))); continue; }
+
+                const used = new Set();
+                comps.forEach(c => {
+                    const su = sourceUuidOf(c);
+                    let comp = su && bc.components.find(x => !used.has(x) && x.sourceUuid === su);
+                    if (!comp) comp = bc.components.find(x => !used.has(x) && (x.title === c.title || `${bc.name}: ${x.title}` === c.title));
+                    // Bauteil, das der SSP kennt, die CDef aber nicht (mehr) liefert:
+                    // mit seinen SSP-Zuordnungen erhalten.
+                    if (!comp) { restored.push(fromSsp(c, bc)); return; }
+                    used.add(comp);
+                    restored.push(cdefAssetFromComponent(bc, comp, felder(c)));
+                });
             }
             return restored;
-        }
-
-        function removeBsiComponent(uuid) {
-            bpState.bsiComponents = bpState.bsiComponents.filter(bc => bc.uuid !== uuid);
-            renderBsiComponentsList();
-        }
-
-        function renderBsiComponentsList() {
-            const ul = document.getElementById('bsi-components-list');
-            if (!ul) return;
-            const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-            ul.innerHTML = bpState.bsiComponents.map(bc => `
-                <li class="flex items-center justify-between bg-slate-800 border border-amber-800/60 rounded-lg px-4 py-2 text-sm">
-                    <span class="text-white">
-                        <span class="font-semibold text-amber-300">${esc(bc.name)}</span>
-                        <span class="text-slate-400 ml-2">${bc.components.length} Komponente(n), ${bc.mapped} Anforderungen auf G++ gemappt${bc.unmapped ? `, ${bc.unmapped} ohne Mapping` : ''}</span>
-                        ${bc.reloaded === false ? `<span class="text-amber-400 ml-2" title="Die Quell-Component-Definition konnte beim Seitenstart nicht nachgeladen werden. Bauteile und Zuordnungen stammen aus dem gespeicherten SSP und bleiben beim nächsten Sync erhalten.">⚠ aus dem SSP wiederhergestellt, Quelle nicht nachgeladen</span>` : ''}
-                    </span>
-                    <button onclick="removeBsiComponent('${esc(bc.uuid)}')" class="text-red-400 hover:text-red-300 font-bold ml-3" title="Entfernen">✕</button>
-                </li>`).join('');
         }
 
         async function fetchGitHubComponents() {
@@ -4677,8 +4679,6 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     url: f.download_url
                 }));
 
-                ddN.addEventListener('change', () => ddG.selectedIndex = 0);
-                ddG.addEventListener('change', () => ddN.selectedIndex = 0);
             } catch (e) { }
         }
 
@@ -4686,16 +4686,20 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             const ddN = document.getElementById('dd-nutzer');
             const ddG = document.getElementById('dd-gplus');
             const ddS = document.getElementById('dd-set-profile');
+            const ddC = document.getElementById('dd-sdt-comp');
             const customNameInput = document.getElementById('asset-custom-name');
             const stateInput = document.getElementById('asset-state');
 
-            /* Drei Herkünfte, ein Knopf: GitHub-Profil (Nutzergeneriert / G++-
-               Zielobjekt) oder ein Profil aus dem aktiven Arbeitsstand. Letzteres
-               liegt bereits geparst im Artefaktspeicher — kein Netz, kein Pin. */
+            /* Vier Herkünfte, ein Knopf: GitHub-Profil (Nutzergeneriert / G++-
+               Zielobjekt), ein Profil aus dem aktiven Arbeitsstand (liegt bereits
+               geparst im Artefaktspeicher — kein Netz, kein Pin) oder eine BSI-
+               Komponente (Component Definition; eigener Weg in addCdefAssets, weil
+               die Controls aus den gemappten implemented-requirements kommen). */
             let url = '', originalName = '', setId = '';
             if (ddN.value) { url = ddN.value; originalName = ddN.options[ddN.selectedIndex].text; }
             else if (ddG.value) { url = ddG.value; originalName = ddG.options[ddG.selectedIndex].text; }
             else if (ddS && ddS.value) { setId = ddS.value; }
+            else if (ddC && ddC.value) { await addCdefAssets(ddC.value, ddC.options[ddC.selectedIndex].text); return; }
             else return alert("Bitte wähle ein Asset.");
 
             const finalState = stateInput.value;
@@ -4750,6 +4754,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
                 ddN.selectedIndex = 0; ddG.selectedIndex = 0;
                 if (ddS) ddS.selectedIndex = 0;
+                if (ddC) ddC.selectedIndex = 0;
                 customNameInput.value = '';
                 stateInput.selectedIndex = 0;
                 schutzbedarfInput.selectedIndex = 0;
@@ -4841,8 +4846,12 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 list.innerHTML = `<li class="text-slate-500 text-sm italic">Keine optionalen Assets geladen.</li>`;
                 return;
             }
+            const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
             bpState.components.forEach((c, i) => {
                 const stateBadge = c.state === 'operational' ? 'bg-emerald-900 text-emerald-300' : 'bg-amber-900 text-amber-300';
+                const cdefBadge = c.cdef
+                    ? `<span class="px-2 py-0.5 rounded text-[10px] uppercase bg-amber-900 text-amber-300 border border-amber-700" title="Zielobjekt aus der BSI-Komponente „${esc(c.cdef.name)}" (Component Definition, SdT implementation_layer)${c.cdef.reloaded === false ? ' — Quelle beim Seitenstart nicht nachgeladen, Stand aus dem SSP' : ''}">⚙ BSI-Komponente${c.cdef.reloaded === false ? ' ⚠' : ''}</span>`
+                    : '';
                 // Badge-Farbe kommt aus derselben Map wie das Diagramm in der Auswertung.
                 const schutzColor = SCHUTZBEDARF_COLORS[c.schutzbedarf] || SCHUTZBEDARF_COLORS['normal-SdT'];
                 list.innerHTML += `
@@ -4852,9 +4861,10 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                                 ▣ ${c.name}
                                 <span class="px-2 py-0.5 rounded text-[10px] uppercase ${stateBadge} border border-slate-600">${c.state}</span>
                                 <span class="px-2 py-0.5 rounded text-[10px] uppercase border" style="${badgeStyle(schutzColor)}">◈ ${c.schutzbedarf || 'normal-SdT'}</span>
+                                ${cdefBadge}
                                 ${c.aiGenerated ? '<span class="px-2 py-0.5 rounded text-[10px] uppercase bg-purple-900 text-purple-300 border border-purple-700" title="Aus der KI-Dokumentanalyse zugeordnet">◉ KI</span>' : ''}
                             </div>
-                            <div class="text-xs text-indigo-400 mt-1">+ ${c.controls.size} Controls importiert</div>
+                            <div class="text-xs text-indigo-400 mt-1">+ ${c.controls.size} Controls ${c.cdef ? 'aus der Component Definition (auf G++ gemappt)' : 'importiert'}</div>
                         </button>
                         <button onclick="removeAsset(${i})" class="text-red-400 hover:text-red-300 font-bold p-2 text-sm">✕</button>
                     </li>
@@ -5645,7 +5655,6 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             bpState.manualControls = new Set();
             bpState.modifications = new Map();
             bpState.components = [];
-            bpState.bsiComponents = [];
             bpState.riskData = [];
             bpState.customControls = new Map();
             bpState.aiAnalysis = null;
@@ -5817,15 +5826,13 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     }
                 }
 
-                // --- BSI-Komponenten (SdT implementation_layer) wiederherstellen ---
+                // --- Zielobjekte aus BSI-Komponenten (CDefs) wiederherstellen ---
                 if (bsiSspComponents.length) {
-                    bpState.bsiComponents = await restoreBsiComponentsFromSSP(ssp, bsiSspComponents);
-                    const n = bpState.bsiComponents.length;
-                    const stale = bpState.bsiComponents.filter(bc => bc.reloaded === false).length;
-                    aiLog(stale ? 'warn' : 'ok', `${n} BSI-Komponente(n) aus dem SSP wiederhergestellt${stale ? ` (${stale} davon ohne Nachladen der Quelle)` : ''}.`);
+                    const cdefAssets = await restoreCdefAssetsFromSSP(ssp, bsiSspComponents);
+                    cdefAssets.forEach(a => bpState.components.push(a));
+                    const stale = cdefAssets.filter(a => a.cdef.reloaded === false).length;
+                    aiLog(stale ? 'warn' : 'ok', `${cdefAssets.length} Zielobjekt(e) aus BSI-Komponenten wiederhergestellt${stale ? ` (${stale} davon ohne Nachladen der Quelle)` : ''}.`);
                 }
-                const bsiCids = new Set();
-                bpState.bsiComponents.forEach(bc => bc.components.forEach(c => (c.impls || []).forEach(i => bsiCids.add(i.gppId))));
 
                 // --- Manual controls: implemented-requirements whose by-components target the risk component
                 //     AND which aren't covered by methodik / praktiken / assets / catalogs.
@@ -5840,10 +5847,6 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     const cid = r['control-id'];
                     if (!cid || cid === 'PLACEHOLDER') return;
                     if (knownCids.has(cid)) return;
-                    // Ein Control, das nur über eine BSI-Komponente hereinkommt, ist kein
-                    // manuelles Control — es sei denn, der Eintrag zielt zusätzlich auf die
-                    // Risiko-Komponente (dann war es vor dem Reload beides).
-                    if (bsiCids.has(cid) && !(r['by-components'] || []).some(bc => riskCompUuid && bc['component-uuid'] === riskCompUuid)) return;
                     bpState.manualControls.add(cid);
                 });
 
@@ -5999,7 +6002,6 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             // --- Re-render UI ---
             renderCatalogsList();
             renderAssetsList();
-            renderBsiComponentsList();
             // Prozess-Liste passend zur importierten Methodik (Standard/Erweitert) neu laden,
             // damit die wiederhergestellten Prozesse als angehakt erscheinen.
             await fetchPraktikenProfiles();
@@ -6028,6 +6030,18 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
            "this-system" wechselt je Generierung). Der Generator bestimmt die
            Struktur (welche Controls, welche Komponenten), der Editor die
            Inhalte (description, Umsetzungsstatus, Bearbeiter-Props). */
+        /* Vorbefüllung des Generators vor V5.13 (Vorlagentext der BSI-Komponente in
+           description, Status planned mit Marker-Remark), die niemand angefasst hat:
+           Text unverändert (gleich der jetzt in remarks geführten Vorlage) und keine
+           Bearbeiter-Props. Alles andere ist redigiert und bleibt erhalten. */
+        function istUnredigierteCdefVorlage(pbc, genSlot) {
+            const st = pbc['implementation-status'];
+            if (!st || st.state !== 'planned' || !/^Vorbefüllung aus der BSI-Komponente/.test(st.remarks || '')) return false;
+            if ((pbc.props || []).length) return false;
+            const vorlage = genSlot?.remarks || '';
+            return !pbc.description || pbc.description === vorlage;
+        }
+
         function mergeEditorWork(genSsp, prevSsp) {
             if (!prevSsp) return 0;
             const genComps = genSsp['system-implementation']?.components || [];
@@ -6053,6 +6067,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     if (!target) return;   // Komponente existiert nicht mehr
                     if (!gr['by-components']) gr['by-components'] = [];
                     let slot = gr['by-components'].find(x => x['component-uuid'] === target.uuid);
+                    if (istUnredigierteCdefVorlage(pbc, slot)) return;
                     if (!slot) {
                         slot = { uuid: pbc.uuid || crypto.randomUUID(), 'component-uuid': target.uuid, description: '' };
                         gr['by-components'].push(slot);
@@ -6221,10 +6236,6 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             ]);
             bpState.praktiken.forEach(p => p.controls.forEach(cid => baseImportReqIds.add(cid)));
             bpState.components.forEach(c => c.controls.forEach(cid => baseImportReqIds.add(cid)));
-            // BSI-Komponenten (CDefs) erzeugen im SSP implemented-requirements für ihre
-            // gemappten G++-Controls — jedes davon muss Teil des Profil-Baselines sein,
-            // sonst referenziert der SSP Controls außerhalb des aufgelösten import-profile.
-            bpState.bsiComponents.forEach(bc => bc.components.forEach(c => (c.impls || []).forEach(impl => baseImportReqIds.add(impl.gppId))));
 
             if (baseImportReqIds.size > 0 && profile.profile.imports.length > 0) {
                 profile.profile.imports[0]["include-controls"] = [{ "with-ids": Array.from(baseImportReqIds).sort() }];
@@ -6377,33 +6388,49 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 });
             });
 
-            // BSI-Komponenten (SdT implementation_layer) als SSP-Komponenten übernehmen.
-            // Kopie-Semantik: Die CDef wird instanziiert, nicht importiert. Der Link zeigt
-            // auf eine gepinnte back-matter-Resource (rlink + SHA-256, Grundregel 8) statt
-            // auf eine nackte URL; die Quell-Komponenten-UUID bleibt als Prop erhalten.
-            const bsiCdefResourceUuids = new Map();
-            bpState.bsiComponents.forEach(bc => {
-                const resUuid = crypto.randomUUID();
-                bsiCdefResourceUuids.set(bc.uuid, resUuid);
-                bc.components.forEach(c => {
-                    sspComponents.push({
-                        uuid: c.uuid,
-                        type: c.type,
-                        title: `${bc.name}: ${c.title}`,
-                        description: c.description,
-                        status: { state: "operational" },
-                        props: c.sourceUuid ? [{
-                            name: 'source-component-uuid',
-                            ns: OSCAL_NAMESPACES.componentDefinition,
-                            value: c.sourceUuid,
-                            remarks: 'UUID der Quellkomponente in der Component Definition; diese SSP-Komponente ist eine bei der Generierung erzeugte Instanz (Kopie).'
-                        }] : undefined,
-                        links: [{ href: `#${resUuid}`, rel: "component-definition" }]
-                    });
-                });
+            /* Zielobjekte aus BSI-Komponenten (CDefs): eine gepinnte back-matter-
+               Resource je Quell-CDef (rlink + SHA-256, Grundregel 8); Komponenten-Link
+               und die rel="source"-Links der by-components zeigen als Fragment darauf. */
+            const cdefResourceKey = c => c.cdef.source || `cdef:${c.cdef.name}`;
+            const cdefResourceUuids = new Map();   // Quelle → Resource-UUID
+            const cdefResourceMeta = new Map();    // Quelle → { name, source, sha256 }
+            bpState.components.filter(c => c.cdef).forEach(c => {
+                const key = cdefResourceKey(c);
+                if (cdefResourceUuids.has(key)) return;
+                cdefResourceUuids.set(key, crypto.randomUUID());
+                cdefResourceMeta.set(key, { name: c.cdef.name, source: c.cdef.source, sha256: c.cdef.sha256 });
             });
 
             bpState.components.forEach(c => {
+                if (c.cdef) {
+                    /* Kopie-Semantik: Die CDef wird instanziiert, nicht importiert. Der
+                       Link zeigt auf die gepinnte Resource statt auf eine nackte URL; die
+                       Quell-Komponenten-UUID bleibt als Prop erhalten. Name, Status und
+                       Schutzbedarf kommen wie bei jedem Zielobjekt aus Kapitel 4 (#42). */
+                    sspComponents.push({
+                        uuid: c.id,
+                        type: c.cdef.type || 'software',
+                        title: c.name,
+                        description: c.cdef.description || `Instanz '${c.name}' der BSI-Komponente ${c.cdef.name} (Component Definition).`,
+                        status: { state: c.state || "operational" },
+                        props: [
+                            {
+                                name: "sicherheitsniveau",
+                                ns: "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/security_level.csv",
+                                value: c.schutzbedarf || "normal-SdT",
+                                remarks: `Schutzbedarf des Assets '${c.name}': ${c.schutzbedarf || 'normal-SdT'}. Festgelegt im Rahmen der Blaupausen-Erstellung.`
+                            },
+                            ...(c.cdef.sourceUuid ? [{
+                                name: 'source-component-uuid',
+                                ns: OSCAL_NAMESPACES.componentDefinition,
+                                value: c.cdef.sourceUuid,
+                                remarks: 'UUID der Quellkomponente in der Component Definition; diese SSP-Komponente ist eine bei der Generierung erzeugte Instanz (Kopie).'
+                            }] : [])
+                        ],
+                        links: [{ href: `#${cdefResourceUuids.get(cdefResourceKey(c))}`, rel: "component-definition" }]
+                    });
+                    return;
+                }
                 /* Zielobjekt aus dem Arbeitsstand: Profilname statt Artefakt-ID in
                    Beschreibung und Bemerkung, Kategorie aus dem Profil selbst. */
                 const ausSet = String(c.source || '').startsWith('set://');
@@ -6786,13 +6813,20 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 return requirement;
             }).filter(req => req["by-components"].length > 0);
 
-            // BSI-Komponenten: vorbefüllte Umsetzungsbeschreibungen aus dem implementation_layer
-            // in die implemented-requirements mergen (per G++-Control-ID, gemappt via alt-identifier).
-            if (bpState.bsiComponents.length > 0) {
+            /* Zielobjekte aus BSI-Komponenten: je gemappter G++-Anforderung ein
+               by-component. Der Vorlagentext der CDef ist eine Referenz, keine belegte
+               Umsetzung — er steht deshalb in remarks (der Editor zeigt ihn schreib-
+               geschützt an), description bleibt für die eigene Umsetzung frei (#43),
+               und es gibt keinen Umsetzungsstatus: der Editor zeigt „Offen" (#44).
+               Der rel="source"-Link auf die gepinnte CDef-Resource hält die Herkunft
+               je Eintrag fest — nur so bleibt bei einer Re-Generierung unterscheidbar,
+               was Vorlage und was redigierter Text ist. */
+            const cdefAssets = bpState.components.filter(c => c.cdef);
+            if (cdefAssets.length) {
                 const reqByControl = new Map(reqs.map(r => [r['control-id'], r]));
-                bpState.bsiComponents.forEach(bc => {
-                    const cdefResUuid = bsiCdefResourceUuids.get(bc.uuid);
-                    bc.components.forEach(c => (c.impls || []).forEach(impl => {
+                cdefAssets.forEach(c => {
+                    const resUuid = cdefResourceUuids.get(cdefResourceKey(c));
+                    (c.cdef.impls || []).forEach(impl => {
                         let req = reqByControl.get(impl.gppId);
                         if (!req) {
                             req = {
@@ -6804,19 +6838,15 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                             reqByControl.set(impl.gppId, req);
                             reqs.push(req);
                         }
-                        // Vorlagentext aus der CDef ist ein Entwurf, keine belegte Umsetzung:
-                        // Status 'planned' statt 'implemented' ("Offene Stellen sind als offen
-                        // markiert"). Der rel="source"-Link auf die gepinnte CDef-Resource hält
-                        // die Herkunft je Eintrag fest — nur so bleibt bei einer Re-Generierung
-                        // unterscheidbar, was Vorlage und was redigierter Text ist.
+                        if (req['by-components'].some(bc => bc['component-uuid'] === c.id)) return;
                         req['by-components'].push({
-                            'component-uuid': c.uuid,
                             uuid: crypto.randomUUID(),
-                            description: impl.text,
-                            'implementation-status': { state: 'planned', remarks: 'Vorbefüllung aus der BSI-Komponente (Vorlagentext) — tatsächliche Umsetzung im System ist im weiteren SSP-Lebenszyklus zu bestätigen.' },
-                            ...(cdefResUuid ? { links: [{ href: `#${cdefResUuid}`, rel: 'source' }] } : {})
+                            'component-uuid': c.id,
+                            description: '',
+                            ...(impl.text ? { remarks: impl.text } : {}),
+                            ...(resUuid ? { links: [{ href: `#${resUuid}`, rel: 'source' }] } : {})
                         });
-                    }));
+                    });
                 });
             }
 
@@ -6944,23 +6974,22 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     }]
                 });
             });
-            // Jede importierte BSI-Komponente (CDef) bekommt eine gepinnte Resource
+            // Jede Quell-CDef der Zielobjekte bekommt eine gepinnte Resource
             // (rlink + SHA-256, Grundregel 8); Komponenten-Links und die rel="source"-Links
             // der by-components zeigen als Fragment hierauf.
-            bpState.bsiComponents.forEach(bc => {
-                const resUuid = bsiCdefResourceUuids.get(bc.uuid);
-                if (!resUuid) return;
+            cdefResourceUuids.forEach((resUuid, key) => {
+                const meta = cdefResourceMeta.get(key) || {};
                 backMatterResources.push({
                     uuid: resUuid,
-                    title: `BSI-Komponente (Component Definition): ${bc.name}`,
-                    description: 'Quell-Component-Definition aus der Stand-der-Technik-Bibliothek (implementation_layer). Komponenten und Umsetzungsbeschreibungen wurden bei der Generierung per Kopie instanziiert (kein Live-Import); Änderungen an der Quelle wirken nicht automatisch auf diesen SSP.',
+                    title: `BSI-Komponente (Component Definition): ${meta.name || bsiComponentNameFromUrl(meta.source)}`,
+                    description: 'Quell-Component-Definition aus der Stand-der-Technik-Bibliothek (implementation_layer). Komponenten und Vorlagentexte wurden bei der Generierung per Kopie instanziiert (kein Live-Import); Änderungen an der Quelle wirken nicht automatisch auf diesen SSP.',
                     props: [{ name: 'source-type', ns: OSCAL_NAMESPACES.componentDefinition, value: 'component-definition' }],
                     // Ohne bekannte Quelle (aus einem SSP ohne auflösbare Resource
                     // wiederhergestellt) keinen rlink mit leerem href schreiben.
-                    ...(bc.source ? {
+                    ...(meta.source ? {
                         rlinks: [{
-                            href: bc.source,
-                            ...(bc.sha256 ? { hashes: [{ algorithm: 'SHA-256', value: bc.sha256 }] } : {})
+                            href: meta.source,
+                            ...(meta.sha256 ? { hashes: [{ algorithm: 'SHA-256', value: meta.sha256 }] } : {})
                         }]
                     } : {})
                 });
