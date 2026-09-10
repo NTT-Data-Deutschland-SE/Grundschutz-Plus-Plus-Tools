@@ -25,6 +25,18 @@
 const GPP_CORE_VERSION = "3";
 const GPP_CFG_PREFIX = "gpp:cfg:";
 
+/* gpp-core.css gehoert seit Issue #40 zum Kern (Design-Tokens, Scrollbalken):
+   die Seiten tragen ihre Farben nicht mehr selbst. Fehlt das Stylesheet, ist
+   alles grau — das soll im Log stehen, nicht geraten werden. Kein Abbruch:
+   die Werkzeuge funktionieren, sie sehen nur falsch aus. */
+if (typeof document !== "undefined" && typeof getComputedStyle === "function") {
+  try {
+    if (!getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim()) {
+      console.error("gpp-core.css fehlt oder wurde nicht geladen — bitte die komplette Sammlung (Ordner bzw. GS++-oscal-app.zip) entpacken; Farben und Scrollbalken kommen aus dem gemeinsamen Stylesheet.");
+    }
+  } catch (e) { /* kein DOM (Worker o. ae.) */ }
+}
+
 /* ---------- Konfiguration ---------- */
 const GPP_CFG_DEFAULTS = {
   "ai:backend": "gemini",

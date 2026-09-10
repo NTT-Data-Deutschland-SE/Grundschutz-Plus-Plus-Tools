@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="gpp-core.css?v=4.0">
     <style>
     /* Optionsliste zeichnet das OS — halbtransparente Flaechen greifen dort nicht */
     select,option{background-color:#1b1b23;color:#e8e8ef}
@@ -17,23 +18,6 @@
            Akzent ist Violett. Body-Text immer --text-primary.
            ================================================================== */
         :root {
-            --bg-deep:        oklch(0.13 0.02 280);
-            --bg-elev-1:      oklch(0.95 0.005 280 / 0.04);
-            --bg-elev-2:      oklch(0.95 0.005 280 / 0.06);
-            --bg-elev-3:      oklch(0.95 0.005 280 / 0.08);
-            --border-1:       oklch(0.95 0.005 280 / 0.06);
-            --border-2:       oklch(0.95 0.005 280 / 0.10);
-            --text-primary:   oklch(0.95 0.005 280);
-            --text-secondary: oklch(0.75 0.02 280);
-            --text-tertiary:  oklch(0.65 0.02 280);
-            --text-quiet:     oklch(0.55 0.02 280);
-            --accent:         oklch(0.7 0.18 300);
-            --accent-soft:    oklch(0.7 0.18 300 / 0.15);
-            --accent-glow:    oklch(0.7 0.18 300 / 0.4);
-            --red:            oklch(0.65 0.2 25);
-            --amber:          oklch(0.80 0.15 80);
-            --green:          oklch(0.75 0.18 145);
-            --blue:           oklch(0.70 0.15 240);
 
             --font-ui:   'Inter', system-ui, -apple-system, sans-serif;
             --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
@@ -59,12 +43,6 @@
 
         ::selection { background: oklch(0.7 0.18 300 / 0.35); color: oklch(0.95 0.005 280); }
 
-        /* Scrollbar: 6px, transparente Spur, Glass-Thumb, Akzent beim Hover */
-        * { scrollbar-width: thin; scrollbar-color: var(--bg-elev-3) transparent; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--bg-elev-3); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
         a { color: var(--accent); text-decoration: none; }
         a:hover { text-decoration: underline; }

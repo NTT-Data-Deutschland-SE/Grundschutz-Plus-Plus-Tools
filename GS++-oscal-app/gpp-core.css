@@ -1,0 +1,50 @@
+/* ==GPP-CORE-CSS== v1 ——————————————————————————————————————————
+   Gemeinsames Stylesheet aller GS++-oscal-app: Design-Tokens (Farben) und
+   die Scrollbalken. Wird von jeder Seite VOR ihrem eigenen <style> eingebunden
+   (<link rel="stylesheet" href="gpp-core.css?v=4.0">), damit seitenspezifische
+   Regeln weiter gewinnen. Liegt wie gpp-core.js neben den HTML-Dateien —
+   Weitergabe nur als kompletter Ordner bzw. GS++-oscal-app.zip.
+
+   Warum zentral: Vor Issue #40 trug jede der neun Seiten dieselben 17 Tokens
+   und dieselben Scrollbar-Regeln als lokale Kopie. Ein helles Farbschema
+   (Issue #40, offen) braucht genau einen Ort, an dem die Tokens umgeschaltet
+   werden — den gibt es jetzt. Seitenspezifische Tokens (Rail-Breite,
+   Topbar-Hoehe, Sonderfarben) bleiben in der jeweiligen Seite.
+   —————————————————————————————————————————————————— */
+
+:root {
+  --bg-deep:        oklch(0.13 0.02 280);
+  --bg-elev-1:      oklch(0.95 0.005 280 / 0.04);
+  --bg-elev-2:      oklch(0.95 0.005 280 / 0.06);
+  --bg-elev-3:      oklch(0.95 0.005 280 / 0.08);
+  --border-1:       oklch(0.95 0.005 280 / 0.06);
+  --border-2:       oklch(0.95 0.005 280 / 0.10);
+  --text-primary:   oklch(0.95 0.005 280);
+  --text-secondary: oklch(0.75 0.02 280);
+  --text-tertiary:  oklch(0.65 0.02 280);
+  --text-quiet:     oklch(0.55 0.02 280);
+  --accent:         oklch(0.7  0.18 300);
+  --accent-soft:    oklch(0.7  0.18 300 / 0.15);
+  --accent-glow:    oklch(0.7  0.18 300 / 0.4);
+  --red:            oklch(0.65 0.20 25);
+  --amber:          oklch(0.80 0.15 80);
+  --green:          oklch(0.75 0.18 145);
+  --blue:           oklch(0.70 0.15 240);
+
+  /* Scrollbalken: Die alte Daumenfarbe (--bg-elev-3, 8 % Weiss) war auf dem
+     dunklen Grund praktisch unsichtbar — man fand den Balken erst mit der Maus
+     (Issue #40). Jetzt 30 % Weiss auf leicht abgesetzter Spur, 10 px breit. */
+  --scroll-track:       oklch(0.95 0.005 280 / 0.05);
+  --scroll-thumb:       oklch(0.95 0.005 280 / 0.30);
+  --scroll-thumb-hover: oklch(0.7  0.18 300 / 0.75);
+}
+
+* { scrollbar-width: auto; scrollbar-color: var(--scroll-thumb) var(--scroll-track); }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--scroll-track); }
+::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb); border-radius: 5px;
+  border: 2px solid transparent; background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); background-clip: padding-box; }
+::-webkit-scrollbar-corner { background: transparent; }

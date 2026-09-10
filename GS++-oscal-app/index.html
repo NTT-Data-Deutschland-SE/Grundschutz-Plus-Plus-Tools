@@ -3,25 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Grundschutz++ OSCAL Tools · v1.4</title>
+  <title>Grundschutz++ OSCAL Tools · v1.5</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="gpp-core.css?v=4.0">
   <style>
     select,option{background-color:#1b1b23;color:#e8e8ef}
     select{color-scheme:dark}
     :root {
-      --bg-deep:      oklch(0.13 0.02 280);
-      --bg-elev-1:    oklch(0.95 0.005 280 / 0.04);
-      --bg-elev-2:    oklch(0.95 0.005 280 / 0.06);
-      --bg-elev-3:    oklch(0.95 0.005 280 / 0.08);
-      --border-1:     oklch(0.95 0.005 280 / 0.06);
-      --border-2:     oklch(0.95 0.005 280 / 0.10);
-      --text-primary: oklch(0.95 0.005 280);
-      --text-secondary: oklch(0.75 0.02 280);
-      --text-quiet:   oklch(0.55 0.02 280);
-      --accent:       oklch(0.7 0.18 300);
-      --accent-soft:  oklch(0.7 0.18 300 / 0.15);
-      --accent-glow:  oklch(0.7 0.18 300 / 0.4);
-      --green:        oklch(0.75 0.18 145);
       --mono: 'JetBrains Mono', ui-monospace, monospace;
     }
     * { box-sizing: border-box; }
@@ -32,10 +20,6 @@
       background: var(--bg-deep); color: var(--text-primary);
     }
     ::selection { background: oklch(0.7 0.18 300 / 0.35); color: var(--text-primary); }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
     /* Aurora atmosphere */
     .aurora { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
@@ -125,6 +109,11 @@
     }
     .sheet.open { display: block; }
     .sheet h2 { margin: 0 0 4px; font-size: 1rem; }
+    /* Kopfzeile der Fläche: Titel links, Rückweg rechts — die Fläche überlagert
+       das Werkzeug, und ein zweiter Klick auf ARTEFAKTE war als Rückweg nicht
+       zu erraten (Issue #40). */
+    .sheet-head { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+    .sheet-head h2 { margin: 0; flex: 1; }
     .sheet .sub { margin: 0 0 18px; font-size: .78rem; color: var(--text-quiet); line-height: 1.55; max-width: 70ch; }
     .stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(122px, 1fr)); gap: 10px; margin-bottom: 20px; }
     .stage-card {
@@ -237,7 +226,10 @@
     <iframe id="app-frame" title="App" src="about:blank"></iframe>
 
     <section class="sheet" id="art-sheet" aria-label="Artefakte">
-      <h2 id="art-h2">Artefakte</h2>
+      <div class="sheet-head">
+        <h2 id="art-h2">Artefakte</h2>
+        <button class="btn" id="btn-art-close" title="Fläche schließen und zum Werkzeug zurückkehren (auch: Klick auf ARTEFAKTE oben oder auf einen Werkzeug-Reiter)">✕ Zurück zum Werkzeug</button>
+      </div>
       <p class="sub">Ein <b>Set</b> ist ein zusammengehöriger Arbeitsstand — Profil, SSP, Prüfung, POA&M. Alle Werkzeuge
         lesen und schreiben immer das aktive Set (IndexedDB <code>gpp-artefacts</code>, im Browser dieses Rechners,
         nicht auf einem Server). Hier wechselst du Sets, lädst sie als ZIP herunter oder ein exportiertes Set wieder hoch.</p>
@@ -255,19 +247,24 @@
         <button class="btn" id="btn-set-delete">Set löschen</button>
       </div>
       <div class="stage-grid" id="stage-grid"></div>
-      <div class="btn-row" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
-        <button class="btn" id="btn-export-files">Einzeldateien</button>
-        <button class="btn" id="btn-export-zip">Set als ZIP</button>
-        <button class="btn" id="btn-refresh-art">⟳ Aktualisieren</button>
+      <div class="btn-row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px">
+        <span style="font-size:.74rem;color:var(--text-quiet)">⤓ Herunterladen:</span>
+        <button class="btn" id="btn-export-files" title="Jedes Artefakt des aktiven Sets als eigene JSON-Datei — ein Browser-Download je Datei">Einzeldateien (JSON)</button>
+        <button class="btn" id="btn-export-zip" title="Alle Artefakte des aktiven Sets in einem ZIP mit manifest.json und Prüfsummen — zum Weitergeben oder späteren Hochladen">Set als ZIP</button>
+        <button class="btn" id="btn-refresh-art" title="Liste neu aus dem Artefaktspeicher lesen">⟳ Aktualisieren</button>
         <span style="flex:1"></span>
         <button class="btn" id="btn-clear-art">Set leeren</button>
       </div>
+      <p class="sub" style="margin:0 0 10px">Einzeldateien liefert jedes Artefakt als eigene JSON-Datei, Set als ZIP das ganze Set in einem Archiv mit <code>manifest.json</code> (Prüfsummen) — das ZIP lässt sich über „Hochladen" wieder einspielen. Ein einzelnes Artefakt lädt der ⤓-Knopf in seiner Zeile.</p>
       <div id="export-note" class="sub" style="margin-bottom:14px"></div>
       <div id="art-list"></div>
     </section>
 
     <section class="sheet" id="doc-sheet" aria-label="Dokumentation">
-      <h2 id="doc-title">Hilfe</h2>
+      <div class="sheet-head">
+        <h2 id="doc-title">Hilfe</h2>
+        <button class="btn" id="btn-doc-close" title="Fläche schließen und zum Werkzeug zurückkehren">✕ Zurück zum Werkzeug</button>
+      </div>
       <p class="sub" id="doc-sub"></p>
       <div id="doc-nav"></div>
       <article id="doc-body" class="md"></article>
@@ -301,7 +298,7 @@
     const CORE_OK = typeof gppArtefacts !== "undefined"
       && typeof GPP_CORE_VERSION !== "undefined" && Number(GPP_CORE_VERSION) >= 2;
 
-    const APP_VERSION = "1.4";
+    const APP_VERSION = "1.5";
     document.getElementById("build-pill").textContent = `build ${APP_VERSION}`;
     /* Kein schwebendes Speichermenü in der Übersicht: Sie bettet die Werkzeuge
        als iframe ein, und ein Dock im Elterndokument liegt pixelgenau über dem
@@ -319,7 +316,9 @@
       b.dataset.id = app.id;
       b.title = app.desc;
       b.innerHTML = `<span class="ico">${app.icon}</span>${app.label}<span class="cnt zero" data-cnt="${app.id}">0</span>`;
-      b.addEventListener("click", () => select(app.id, true));
+      /* Ein Werkzeug-Reiter holt das Werkzeug nach vorn — auch wenn gerade
+         Artefakte oder Hilfe darüberliegen (Issue #40). */
+      b.addEventListener("click", () => { closeSheet(); closeDoc(); select(app.id, true); });
       nav.appendChild(b);
     });
 
@@ -795,7 +794,10 @@
 
     /* Hält die Kopfzeilen-Knöpfe im Gleichklang mit den überlagernden Flächen */
     function syncOverlayButtons() {
-      document.getElementById("btn-artefacts").classList.toggle("on", sheet.classList.contains("open"));
+      const artOpen = sheet.classList.contains("open");
+      const artBtn = document.getElementById("btn-artefacts");
+      artBtn.classList.toggle("on", artOpen);
+      artBtn.title = artOpen ? "Artefakte schließen — zurück zum Werkzeug" : "Alle erzeugten Artefakte ansehen und exportieren";
       document.getElementById("btn-help").classList.toggle("on", docMode === "help");
       document.getElementById("btn-handbuch").classList.toggle("on", docMode === "handbuch");
     }
@@ -804,6 +806,8 @@
     document.getElementById("btn-artefacts").addEventListener("click", () => {
       sheet.classList.contains("open") ? closeSheet() : openSheet();
     });
+    document.getElementById("btn-art-close").addEventListener("click", closeSheet);
+    document.getElementById("btn-doc-close").addEventListener("click", () => closeDoc());
 
     /* ================= Hilfe & Handbuch =================
        Markdown wird mit einem kleinen eigenen Renderer dargestellt — die

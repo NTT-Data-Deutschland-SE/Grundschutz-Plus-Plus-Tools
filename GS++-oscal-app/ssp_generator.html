@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="gpp-core.css?v=4.0">
     <style>
     /* Optionsliste zeichnet das OS — halbtransparente Flaechen greifen dort nicht */
     select,option{background-color:#1b1b23;color:#e8e8ef}
@@ -20,23 +21,6 @@
            werden hier ausschliesslich von diesem Stylesheet bedient.
            ===================================================================== */
         :root {
-            --bg-deep: oklch(0.13 0.02 280);
-            --bg-elev-1: oklch(0.95 0.005 280 / 0.04);
-            --bg-elev-2: oklch(0.95 0.005 280 / 0.06);
-            --bg-elev-3: oklch(0.95 0.005 280 / 0.08);
-            --border-1: oklch(0.95 0.005 280 / 0.06);
-            --border-2: oklch(0.95 0.005 280 / 0.10);
-            --text-primary: oklch(0.95 0.005 280);
-            --text-secondary: oklch(0.75 0.02 280);
-            --text-tertiary: oklch(0.65 0.02 280);
-            --text-quiet: oklch(0.55 0.02 280);
-            --accent: oklch(0.7 0.18 300);
-            --accent-soft: oklch(0.7 0.18 300 / 0.15);
-            --accent-glow: oklch(0.7 0.18 300 / 0.4);
-            --red: oklch(0.65 0.2 25);
-            --amber: oklch(0.8 0.15 80);
-            --green: oklch(0.75 0.18 145);
-            --blue: oklch(0.7 0.15 240);
             --orange: oklch(0.65 0.2 50);
             --sunken: oklch(0.1 0.02 280 / 0.5);
             --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -90,16 +74,6 @@
             background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><filter id=%22n%22><feTurbulence baseFrequency=%220.9%22/></filter><rect width=%22100%22 height=%22100%22 filter=%22url(%23n)%22/></svg>');
         }
 
-        /* --- Scrollbars: 6px, transparenter Track, Glas-Thumb --- */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--bg-elev-3); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent-soft); }
-        * { scrollbar-width: thin; scrollbar-color: var(--bg-elev-3) transparent; }
-        .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: var(--bg-elev-3); border-radius: 3px; }
-        .custom-scroll::-webkit-scrollbar-thumb:hover { background: var(--accent-soft); }
 
         /* =====================  LAYOUT-SHELL  ===================== */
         .topbar {

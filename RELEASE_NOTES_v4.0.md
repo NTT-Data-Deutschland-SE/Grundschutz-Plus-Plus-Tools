@@ -176,6 +176,13 @@ Component Definitions aus dem `implementation_layer` der Stand-der-Technik-Bibli
 - **Kein Status mehr vorbelegt (#44).** Die by-components tragen keinen `implementation-status`; der Editor zeigt „Offen".
 - **Bestehende SSPs:** Beim Neuzusammenbau nimmt der Generator eine unredigierte Vorbefüllung alter Bauart (Vorlagentext in `description`, Status `planned` mit Marker-Bemerkung, keine Bearbeiter-Props) nicht mehr als Editor-Arbeit mit; alles, was jemand angefasst hat, bleibt erhalten. Die Wiederherstellung aus dem SSP versteht beide Formen.
 
+## Nachtrag 10.09.2026 — UI-Feedback (#40), erster Teil: Scrollbalken, Artefakte-Fläche, gemeinsames Stylesheet
+
+- **Scrollbalken sind wieder zu sehen.** Der Daumen war mit 8 % Weiß auf dem dunklen Grund praktisch unsichtbar, man fand ihn erst mit der Maus. Jetzt 30 % Weiß auf leicht abgesetzter Spur, 10 px breit, in allen Seiten gleich.
+- **Artefakte-Fläche:** Die Download-Knöpfe heißen „Einzeldateien (JSON)" und „Set als ZIP", tragen Tooltips und einen Satz darunter, was sie liefern (jedes Artefakt einzeln bzw. das Set als Archiv mit `manifest.json`, wieder hochladbar). Oben rechts steht „✕ Zurück zum Werkzeug"; der ARTEFAKTE-Knopf sagt im Tooltip, dass ein zweiter Klick schließt, und ein Klick auf einen Werkzeug-Reiter schließt Artefakte und Hilfe ebenfalls. Dieselbe Rückkehr gibt es in Hilfe und Handbuch. Übersicht 1.5.
+- **Neu: `gpp-core.css`.** Alle neun Seiten trugen dieselben 17 Design-Tokens und dieselben Scrollbar-Regeln als lokale Kopie. Sie liegen jetzt einmal im gemeinsamen Stylesheet, das jede Seite vor ihrem eigenen `<style>` einbindet; seitenspezifische Tokens (Rail-Breite, Sonderfarben) bleiben in der Seite. Damit hat das **helle Farbschema** (#40, noch offen) einen einzigen Schalter. Fehlt die Datei, meldet `gpp-core.js` das in der Konsole. Das Auslieferungsarchiv hat jetzt 12 Dateien.
+- **Noch offen aus #40:** helles Farbschema, Bearbeiter-Auswahl aus einer Liste im SSP-Editor.
+
 ## Nicht im Umfang von 4.0
 
 * Die produktive Härtung des Backends (TLS auf dem öffentlichen Port, GoTrue-Admin-API statt direkter `auth.users`-Schreibzugriff bei der Konto-Anlage) — die Terraform-Umgebung ist eine Testinstanz.
@@ -185,7 +192,8 @@ Component Definitions aus dem `implementation_layer` der Stand-der-Technik-Bibli
 | Anwendung | Version |
 |---|---|
 | gemeinsamer Kern (gpp-core.js) | 3 · Cache-Buster v4.0 |
-| Übersicht (index.html) | 1.4 |
+| gemeinsames Stylesheet (gpp-core.css) | 1 · Cache-Buster v4.0 |
+| Übersicht (index.html) | 1.5 |
 | OSCAL Schema Validator | 1.11.2 |
 | SSP-Generator (G++) | V5.13.0 |
 | GS++ Explorer (GSpp-Viewer) | v9.8 |
