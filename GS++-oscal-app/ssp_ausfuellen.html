@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="gpp-core.css?v=4.0">
     <script>/* Farbschema vor dem ersten Rendern (gpp-core.js laedt erst am Ende): Wert aus localStorage, Vorgabe dunkel, "system" = kein Attribut */try{var _t=localStorage.getItem("gpp:cfg:ui:theme")||"dark";if(_t!=="system")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
     <style>
-    select,option{background-color:#1b1b23;color:#e8e8ef}
+    select,option{background-color:var(--bg-deep);color:var(--text-primary)}
     select{color-scheme:dark}
     /* ==========================================================================
        DESIGN SYSTEM "Glassmorphic Deep" — handgeschrieben, kein Tailwind-CDN.
@@ -25,7 +25,7 @@
         --cyan:    oklch(0.75 0.12 200);
         --fuchsia: oklch(0.72 0.20 330);
         --indigo:  oklch(0.68 0.15 275);
-        --inset:   oklch(0.10 0.02 280 / 0.45);
+        --inset:   var(--bg-sunken);
         /* Shell-Geometrie */
         --topbar-h: 64px;
         --log-h:    220px;
@@ -57,15 +57,15 @@
     hr { border: 0; border-top: 1px solid var(--border-1); }
     table { border-collapse: collapse; }
 
-    ::selection { background: oklch(0.7 0.18 300 / 0.35); color: oklch(0.95 0.005 280); }
+    ::selection { background: color-mix(in oklab, var(--accent) 35%, transparent); color: var(--text-primary); }
     :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
     /* ---------- Atmosphaere: Aurora-Blobs + Noise ---------- */
     .aurora { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
     .aurora-a { width: 600px; height: 600px; top: -200px; left: -100px; filter: blur(60px);
-                background: radial-gradient(circle, oklch(0.4 0.18 300 / .5), transparent 70%); }
+                background: radial-gradient(circle, color-mix(in oklab, var(--accent) 50%, transparent), transparent 70%); }
     .aurora-b { width: 700px; height: 700px; bottom: -300px; right: -200px; filter: blur(80px);
-                background: radial-gradient(circle, oklch(0.4 0.16 240 / .4), transparent 70%); }
+                background: radial-gradient(circle, color-mix(in oklab, var(--blue) 40%, transparent), transparent 70%); }
     .noise { position: fixed; inset: 0; opacity: .03; pointer-events: none; z-index: 0;
         background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><filter id='n'><feTurbulence baseFrequency='0.9'/></filter><rect width='100' height='100' filter='url(%23n)'/></svg>"); }
 
@@ -103,7 +103,7 @@
         transition: background .15s ease, color .15s ease, border-color .15s ease;
     }
     .sb-toggle:hover { background: var(--bg-elev-3); color: var(--text-primary); }
-    .sb-toggle.shifted { color: var(--accent); border-color: oklch(0.7 0.18 300 / 0.35); }
+    .sb-toggle.shifted { color: var(--accent); border-color: color-mix(in oklab, var(--accent) 35%, transparent); }
 
     .shell { position: relative; z-index: 1; flex: 1 1 auto; min-height: 0; display: flex; }
 
@@ -130,7 +130,7 @@
     .progress-strip {
         position: fixed; top: var(--topbar-h); left: 0; right: 0; z-index: 40;
         display: flex; align-items: center; gap: 12px; padding: 7px 16px 0;
-        background: oklch(0.13 0.02 280 / 0.85);
+        background: oklch(var(--shade) / 0.85);
         backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
         border-bottom: 1px solid var(--border-1);
     }
@@ -191,7 +191,7 @@
     .log-warn  .log-lvl { color: var(--amber); }
     .log-err   .log-lvl { color: var(--red); }
     .log-debug .log-lvl { color: var(--text-quiet); }
-    .log-err   .log-msg { color: oklch(0.82 0.10 25); }
+    .log-err   .log-msg { color: color-mix(in oklab, var(--red) 72%, var(--text-primary)); }
     .log-debug .log-msg { color: var(--text-quiet); }
 
     /* ==========================================================================
@@ -248,10 +248,10 @@
         background-size: 9px 6px !important;
         padding-right: 1.6rem !important;
     }
-    select.inp option { background: #17131f; color: #eae7ef; }
+    select.inp option { background: var(--bg-deep); color: var(--text-primary); }
     textarea { resize: vertical; }
     textarea.inp { resize: vertical; min-height: 80px; font-family: 'JetBrains Mono', ui-monospace, monospace; }
-    input[type="radio"], input[type="checkbox"] { accent-color: oklch(0.7 0.18 300); cursor: pointer; }
+    input[type="radio"], input[type="checkbox"] { accent-color: var(--accent); cursor: pointer; }
 
     /* KI-Antworten (marked.js Output) */
     .ai-response-content { font-size: .8125rem; line-height: 1.65; color: var(--text-secondary); }
@@ -429,7 +429,7 @@
     .rounded-bl { border-bottom-left-radius: 8px; }
     .rounded-full { border-radius: 9999px; }
     .ring-2 { box-shadow: 0 0 0 2px var(--ring-color, transparent); }
-    .ring-emerald-500 { --ring-color: oklch(0.7 0.18 300 / .55); }
+    .ring-emerald-500 { --ring-color: color-mix(in oklab, var(--accent) 55%, transparent); }
 
     /* Effekte / Motion */
     .opacity-50 { opacity: .5; }
@@ -444,11 +444,11 @@
 
     /* --- Flaechen (slate -> Glas) --- */
     .bg-slate-900 { background-color: transparent; }
-    .bg-slate-900\/30 { background-color: oklch(0.10 0.02 280 / .30); }
-    .bg-slate-900\/40 { background-color: oklch(0.10 0.02 280 / .34); }
-    .bg-slate-900\/50 { background-color: oklch(0.10 0.02 280 / .40); }
-    .bg-slate-900\/60 { background-color: oklch(0.10 0.02 280 / .46); }
-    .bg-slate-900\/80 { background-color: oklch(0.10 0.02 280 / .55); }
+    .bg-slate-900\/30 { background-color: oklch(var(--shade) / .30); }
+    .bg-slate-900\/40 { background-color: oklch(var(--shade) / .34); }
+    .bg-slate-900\/50 { background-color: oklch(var(--shade) / .40); }
+    .bg-slate-900\/60 { background-color: oklch(var(--shade) / .46); }
+    .bg-slate-900\/80 { background-color: oklch(var(--shade) / .55); }
     .bg-slate-800 { background-color: var(--bg-elev-1); }
     .bg-slate-700 { background-color: var(--bg-elev-3); }
     .hover\:bg-slate-600:hover { background-color: var(--bg-elev-3); }
@@ -475,118 +475,118 @@
     .hover\:border-slate-700:hover { border-color: var(--border-2); }
 
     /* --- Akzent: violett (ersetzt Emerald/Blau/Purple als Interaktionsfarbe) --- */
-    .bg-emerald-600 { background-color: var(--accent); color: oklch(0.16 0.03 300); box-shadow: 0 6px 20px var(--accent-glow); }
-    .hover\:bg-emerald-500:hover { background-color: oklch(0.76 0.17 300); }
-    .bg-purple-700 { background-color: var(--bg-elev-2); border: 1px solid oklch(0.7 0.18 300 / .35); color: var(--text-primary); }
+    .bg-emerald-600 { background-color: var(--accent); color: oklch(var(--shade)); box-shadow: 0 6px 20px var(--accent-glow); }
+    .hover\:bg-emerald-500:hover { background-color: var(--accent); }
+    .bg-purple-700 { background-color: var(--bg-elev-2); border: 1px solid color-mix(in oklab, var(--accent) 35%, transparent); color: var(--text-primary); }
     .hover\:bg-purple-600:hover { background-color: var(--accent-soft); }
     .hover\:text-emerald-400:hover { color: var(--accent); }
     .hover\:text-white:hover { color: var(--text-primary); }
     .hover\:border-emerald-500:hover, .hover\:border-blue-500:hover, .hover\:border-purple-500:hover { border-color: var(--accent); }
-    .text-violet-300 { color: oklch(0.82 0.12 300); }
+    .text-violet-300 { color: color-mix(in oklab, var(--accent) 72%, var(--text-primary)); }
     .text-violet-400 { color: var(--accent); }
     .bg-violet-900 { background-color: var(--accent-soft); }
-    .bg-violet-900\/50 { background-color: oklch(0.7 0.18 300 / .12); }
-    .hover\:bg-violet-800:hover { background-color: oklch(0.7 0.18 300 / .24); }
-    .border-violet-700 { border-color: oklch(0.7 0.18 300 / .45); }
-    .border-violet-700\/50 { border-color: oklch(0.7 0.18 300 / .30); }
-    .border-violet-800\/30 { border-color: oklch(0.7 0.18 300 / .22); }
-    .bg-purple-900\/50 { background-color: oklch(0.7 0.18 300 / .12); }
-    .border-purple-800 { border-color: oklch(0.7 0.18 300 / .35); }
-    .text-purple-200 { color: oklch(0.85 0.09 300); }
+    .bg-violet-900\/50 { background-color: color-mix(in oklab, var(--accent) 12%, transparent); }
+    .hover\:bg-violet-800:hover { background-color: color-mix(in oklab, var(--accent) 24%, transparent); }
+    .border-violet-700 { border-color: color-mix(in oklab, var(--accent) 45%, transparent); }
+    .border-violet-700\/50 { border-color: color-mix(in oklab, var(--accent) 30%, transparent); }
+    .border-violet-800\/30 { border-color: color-mix(in oklab, var(--accent) 22%, transparent); }
+    .bg-purple-900\/50 { background-color: color-mix(in oklab, var(--accent) 12%, transparent); }
+    .border-purple-800 { border-color: color-mix(in oklab, var(--accent) 35%, transparent); }
+    .text-purple-200 { color: color-mix(in oklab, var(--accent) 72%, var(--text-primary)); }
 
     /* --- Gruen (Erfolg / umgesetzt) --- */
-    .text-emerald-200 { color: oklch(0.85 0.10 145); }
+    .text-emerald-200 { color: color-mix(in oklab, var(--green) 72%, var(--text-primary)); }
     .text-emerald-400 { color: var(--green); }
     .text-emerald-500 { color: var(--accent); }
-    .text-green-100 { color: oklch(0.93 0.05 145); }
-    .text-green-200 { color: oklch(0.85 0.10 145); }
-    .text-green-300 { color: oklch(0.82 0.13 145); }
+    .text-green-100 { color: color-mix(in oklab, var(--green) 72%, var(--text-primary)); }
+    .text-green-200 { color: color-mix(in oklab, var(--green) 72%, var(--text-primary)); }
+    .text-green-300 { color: color-mix(in oklab, var(--green) 72%, var(--text-primary)); }
     .text-green-400 { color: var(--green); }
     .bg-emerald-500 { background-color: var(--green); }
-    .bg-emerald-900\/10 { background-color: oklch(0.75 0.18 145 / .06); }
-    .bg-emerald-900\/60 { background-color: oklch(0.75 0.18 145 / .16); }
-    .bg-green-900 { background-color: oklch(0.75 0.18 145 / .16); }
-    .bg-green-900\/50 { background-color: oklch(0.75 0.18 145 / .14); }
-    .bg-green-700\/80 { background-color: oklch(0.75 0.18 145 / .36); }
-    .border-emerald-700 { border-color: oklch(0.75 0.18 145 / .45); }
-    .border-emerald-800\/50 { border-color: oklch(0.75 0.18 145 / .28); }
-    .border-green-400 { border-color: oklch(0.75 0.18 145 / .70); }
-    .border-green-700 { border-color: oklch(0.75 0.18 145 / .40); }
-    .border-green-800 { border-color: oklch(0.75 0.18 145 / .32); }
+    .bg-emerald-900\/10 { background-color: color-mix(in oklab, var(--green) 6%, transparent); }
+    .bg-emerald-900\/60 { background-color: color-mix(in oklab, var(--green) 16%, transparent); }
+    .bg-green-900 { background-color: color-mix(in oklab, var(--green) 16%, transparent); }
+    .bg-green-900\/50 { background-color: color-mix(in oklab, var(--green) 14%, transparent); }
+    .bg-green-700\/80 { background-color: color-mix(in oklab, var(--green) 36%, transparent); }
+    .border-emerald-700 { border-color: color-mix(in oklab, var(--green) 45%, transparent); }
+    .border-emerald-800\/50 { border-color: color-mix(in oklab, var(--green) 28%, transparent); }
+    .border-green-400 { border-color: color-mix(in oklab, var(--green) 70%, transparent); }
+    .border-green-700 { border-color: color-mix(in oklab, var(--green) 40%, transparent); }
+    .border-green-800 { border-color: color-mix(in oklab, var(--green) 32%, transparent); }
 
     /* --- Blau (Info / Schutzziel Integritaet / ED23) --- */
-    .text-blue-100 { color: oklch(0.93 0.05 240); }
-    .text-blue-200 { color: oklch(0.85 0.09 240); }
-    .text-blue-300 { color: oklch(0.82 0.12 240); }
+    .text-blue-100 { color: color-mix(in oklab, var(--blue) 72%, var(--text-primary)); }
+    .text-blue-200 { color: color-mix(in oklab, var(--blue) 72%, var(--text-primary)); }
+    .text-blue-300 { color: color-mix(in oklab, var(--blue) 72%, var(--text-primary)); }
     .text-blue-400 { color: var(--accent); }
-    .bg-blue-900 { background-color: oklch(0.70 0.15 240 / .18); }
-    .bg-blue-900\/50 { background-color: oklch(0.70 0.15 240 / .14); }
-    .bg-blue-900\/10 { background-color: oklch(0.7 0.18 300 / .06); }
-    .bg-blue-700\/80 { background-color: oklch(0.70 0.15 240 / .36); }
-    .border-blue-400 { border-color: oklch(0.70 0.15 240 / .70); }
-    .border-blue-700 { border-color: oklch(0.70 0.15 240 / .42); }
-    .border-blue-700\/50 { border-color: oklch(0.70 0.15 240 / .30); }
-    .border-blue-800 { border-color: oklch(0.70 0.15 240 / .34); }
-    .border-blue-800\/30 { border-color: oklch(0.70 0.15 240 / .22); }
-    .border-blue-900\/30 { border-color: oklch(0.7 0.18 300 / .18); }
-    .hover\:bg-blue-800:hover { background-color: oklch(0.70 0.15 240 / .24); }
+    .bg-blue-900 { background-color: color-mix(in oklab, var(--blue) 18%, transparent); }
+    .bg-blue-900\/50 { background-color: color-mix(in oklab, var(--blue) 14%, transparent); }
+    .bg-blue-900\/10 { background-color: color-mix(in oklab, var(--accent) 6%, transparent); }
+    .bg-blue-700\/80 { background-color: color-mix(in oklab, var(--blue) 36%, transparent); }
+    .border-blue-400 { border-color: color-mix(in oklab, var(--blue) 70%, transparent); }
+    .border-blue-700 { border-color: color-mix(in oklab, var(--blue) 42%, transparent); }
+    .border-blue-700\/50 { border-color: color-mix(in oklab, var(--blue) 30%, transparent); }
+    .border-blue-800 { border-color: color-mix(in oklab, var(--blue) 34%, transparent); }
+    .border-blue-800\/30 { border-color: color-mix(in oklab, var(--blue) 22%, transparent); }
+    .border-blue-900\/30 { border-color: color-mix(in oklab, var(--accent) 18%, transparent); }
+    .hover\:bg-blue-800:hover { background-color: color-mix(in oklab, var(--blue) 24%, transparent); }
 
     /* --- Amber / Gelb (Warnung / Verfuegbarkeit / offen) --- */
-    .text-amber-300 { color: oklch(0.86 0.11 80); }
+    .text-amber-300 { color: color-mix(in oklab, var(--amber) 72%, var(--text-primary)); }
     .text-amber-400 { color: var(--amber); }
     .bg-amber-500 { background-color: var(--amber); }
-    .bg-amber-900\/30 { background-color: oklch(0.80 0.15 80 / .12); }
-    .border-amber-700\/50 { border-color: oklch(0.80 0.15 80 / .32); }
-    .text-yellow-100 { color: oklch(0.93 0.05 80); }
-    .text-yellow-200 { color: oklch(0.86 0.09 80); }
-    .text-yellow-300 { color: oklch(0.84 0.12 80); }
-    .bg-yellow-900 { background-color: oklch(0.80 0.15 80 / .16); }
-    .bg-yellow-900\/50 { background-color: oklch(0.80 0.15 80 / .13); }
-    .bg-yellow-700\/80 { background-color: oklch(0.80 0.15 80 / .34); }
-    .border-yellow-400 { border-color: oklch(0.80 0.15 80 / .70); }
-    .border-yellow-800 { border-color: oklch(0.80 0.15 80 / .32); }
+    .bg-amber-900\/30 { background-color: color-mix(in oklab, var(--amber) 12%, transparent); }
+    .border-amber-700\/50 { border-color: color-mix(in oklab, var(--amber) 32%, transparent); }
+    .text-yellow-100 { color: color-mix(in oklab, var(--amber) 72%, var(--text-primary)); }
+    .text-yellow-200 { color: color-mix(in oklab, var(--amber) 72%, var(--text-primary)); }
+    .text-yellow-300 { color: color-mix(in oklab, var(--amber) 72%, var(--text-primary)); }
+    .bg-yellow-900 { background-color: color-mix(in oklab, var(--amber) 16%, transparent); }
+    .bg-yellow-900\/50 { background-color: color-mix(in oklab, var(--amber) 13%, transparent); }
+    .bg-yellow-700\/80 { background-color: color-mix(in oklab, var(--amber) 34%, transparent); }
+    .border-yellow-400 { border-color: color-mix(in oklab, var(--amber) 70%, transparent); }
+    .border-yellow-800 { border-color: color-mix(in oklab, var(--amber) 32%, transparent); }
 
     /* --- Orange (Risiken / fehlende Ressourcen) --- */
-    .text-orange-200 { color: oklch(0.86 0.09 55); }
-    .text-orange-300 { color: oklch(0.83 0.13 55); }
+    .text-orange-200 { color: color-mix(in oklab, var(--orange) 72%, var(--text-primary)); }
+    .text-orange-300 { color: color-mix(in oklab, var(--orange) 72%, var(--text-primary)); }
     .text-orange-400 { color: var(--orange); }
     .bg-orange-500 { background-color: var(--orange); }
-    .bg-orange-900 { background-color: oklch(0.72 0.17 55 / .18); }
-    .bg-orange-900\/40 { background-color: oklch(0.72 0.17 55 / .13); }
-    .bg-orange-900\/50 { background-color: oklch(0.72 0.17 55 / .14); }
-    .bg-orange-900\/60 { background-color: oklch(0.72 0.17 55 / .16); }
+    .bg-orange-900 { background-color: color-mix(in oklab, var(--orange) 18%, transparent); }
+    .bg-orange-900\/40 { background-color: color-mix(in oklab, var(--orange) 13%, transparent); }
+    .bg-orange-900\/50 { background-color: color-mix(in oklab, var(--orange) 14%, transparent); }
+    .bg-orange-900\/60 { background-color: color-mix(in oklab, var(--orange) 16%, transparent); }
     .border-orange-500 { border-color: var(--orange); }
-    .border-orange-500\/30 { border-color: oklch(0.72 0.17 55 / .32); }
-    .border-orange-700 { border-color: oklch(0.72 0.17 55 / .42); }
-    .border-orange-700\/50 { border-color: oklch(0.72 0.17 55 / .30); }
-    .hover\:bg-orange-800:hover { background-color: oklch(0.72 0.17 55 / .24); }
+    .border-orange-500\/30 { border-color: color-mix(in oklab, var(--orange) 32%, transparent); }
+    .border-orange-700 { border-color: color-mix(in oklab, var(--orange) 42%, transparent); }
+    .border-orange-700\/50 { border-color: color-mix(in oklab, var(--orange) 30%, transparent); }
+    .hover\:bg-orange-800:hover { background-color: color-mix(in oklab, var(--orange) 24%, transparent); }
 
     /* --- Rot (Fehler / Vertraulichkeit) --- */
-    .text-red-100 { color: oklch(0.93 0.05 25); }
-    .text-red-200 { color: oklch(0.85 0.09 25); }
-    .text-red-300 { color: oklch(0.82 0.13 25); }
+    .text-red-100 { color: color-mix(in oklab, var(--red) 72%, var(--text-primary)); }
+    .text-red-200 { color: color-mix(in oklab, var(--red) 72%, var(--text-primary)); }
+    .text-red-300 { color: color-mix(in oklab, var(--red) 72%, var(--text-primary)); }
     .text-red-400 { color: var(--red); }
-    .bg-red-900 { background-color: oklch(0.65 0.20 25 / .18); }
-    .bg-red-900\/20 { background-color: oklch(0.65 0.20 25 / .10); }
-    .bg-red-900\/40 { background-color: oklch(0.65 0.20 25 / .13); }
-    .bg-red-900\/50 { background-color: oklch(0.65 0.20 25 / .14); }
-    .bg-red-700\/80 { background-color: oklch(0.65 0.20 25 / .36); }
-    .border-red-400 { border-color: oklch(0.65 0.20 25 / .70); }
+    .bg-red-900 { background-color: color-mix(in oklab, var(--red) 18%, transparent); }
+    .bg-red-900\/20 { background-color: color-mix(in oklab, var(--red) 10%, transparent); }
+    .bg-red-900\/40 { background-color: color-mix(in oklab, var(--red) 13%, transparent); }
+    .bg-red-900\/50 { background-color: color-mix(in oklab, var(--red) 14%, transparent); }
+    .bg-red-700\/80 { background-color: color-mix(in oklab, var(--red) 36%, transparent); }
+    .border-red-400 { border-color: color-mix(in oklab, var(--red) 70%, transparent); }
     .border-red-500 { border-color: var(--red); }
-    .border-red-500\/30 { border-color: oklch(0.65 0.20 25 / .32); }
-    .border-red-700 { border-color: oklch(0.65 0.20 25 / .42); }
-    .border-red-800 { border-color: oklch(0.65 0.20 25 / .34); }
+    .border-red-500\/30 { border-color: color-mix(in oklab, var(--red) 32%, transparent); }
+    .border-red-700 { border-color: color-mix(in oklab, var(--red) 42%, transparent); }
+    .border-red-800 { border-color: color-mix(in oklab, var(--red) 34%, transparent); }
 
     /* --- Weitere Datenfarben --- */
-    .text-cyan-200 { color: oklch(0.86 0.08 200); }
-    .bg-cyan-900\/60 { background-color: oklch(0.75 0.12 200 / .16); }
-    .border-cyan-700 { border-color: oklch(0.75 0.12 200 / .40); }
-    .text-fuchsia-200 { color: oklch(0.86 0.10 330); }
-    .bg-fuchsia-900\/60 { background-color: oklch(0.72 0.20 330 / .16); }
-    .border-fuchsia-700 { border-color: oklch(0.72 0.20 330 / .40); }
-    .text-indigo-200 { color: oklch(0.86 0.08 275); }
-    .bg-indigo-900\/60 { background-color: oklch(0.68 0.15 275 / .16); }
-    .border-indigo-700 { border-color: oklch(0.68 0.15 275 / .40); }
+    .text-cyan-200 { color: color-mix(in oklab, var(--cyan) 72%, var(--text-primary)); }
+    .bg-cyan-900\/60 { background-color: color-mix(in oklab, var(--cyan) 16%, transparent); }
+    .border-cyan-700 { border-color: color-mix(in oklab, var(--cyan) 40%, transparent); }
+    .text-fuchsia-200 { color: color-mix(in oklab, var(--fuchsia) 72%, var(--text-primary)); }
+    .bg-fuchsia-900\/60 { background-color: color-mix(in oklab, var(--fuchsia) 16%, transparent); }
+    .border-fuchsia-700 { border-color: color-mix(in oklab, var(--fuchsia) 40%, transparent); }
+    .text-indigo-200 { color: color-mix(in oklab, var(--indigo) 72%, var(--text-primary)); }
+    .bg-indigo-900\/60 { background-color: color-mix(in oklab, var(--indigo) 16%, transparent); }
+    .border-indigo-700 { border-color: color-mix(in oklab, var(--indigo) 40%, transparent); }
 
     /* Formularelemente aus dem entfernten Tailwind-Forms-Plugin */
     .form-radio { width: .75rem; height: .75rem; margin: 0; }
@@ -612,7 +612,7 @@
         .sidebar {
             position: fixed; top: var(--topbar-h); left: 0; z-index: 40;
             width: 88%; min-width: 88%; height: calc(100% - var(--topbar-h) - var(--log-h));
-            background: oklch(0.13 0.02 280 / 0.97);
+            background: oklch(var(--shade) / 0.97);
         }
         .sidebar.collapsed { margin-left: -100%; }
         .splitter { display: none; }

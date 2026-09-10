@@ -41,6 +41,11 @@
   /* Abgesenkte Flaechen (Eingabefelder, Log-Konsole, Vorlagen-Kaesten):
      dunkler als der Grund im dunklen Schema, leicht grau im hellen. */
   --bg-sunken:      oklch(0.10 0.02 280 / 0.45);
+  /* Kanaele fuer Aufhellung und Absenkung: die Seiten schreiben
+     oklch(var(--tint) / a) bzw. oklch(var(--shade) / a) statt fester Werte —
+     im dunklen Schema sind das exakt die alten Literale. */
+  --tint:           0.95 0.005 280;
+  --shade:          0.10 0.02 280;
   color-scheme: dark;
 
   /* Scrollbalken: Die alte Daumenfarbe (--bg-elev-3, 8 % Weiss) war auf dem
@@ -84,6 +89,8 @@
   --scroll-track:       oklch(0.20 0.02 280 / 0.06);
   --scroll-thumb:       oklch(0.20 0.02 280 / 0.30);
   --scroll-thumb-hover: oklch(0.48 0.20 300 / 0.70);
+  --tint:           0.20 0.02 280;
+  --shade:          0.90 0.01 280;
   color-scheme: light;
 }
 @media (prefers-color-scheme: light) {
@@ -109,6 +116,15 @@
     --scroll-track:       oklch(0.20 0.02 280 / 0.06);
     --scroll-thumb:       oklch(0.20 0.02 280 / 0.30);
     --scroll-thumb-hover: oklch(0.48 0.20 300 / 0.70);
+    --tint:           0.20 0.02 280;
+    --shade:          0.90 0.01 280;
     color-scheme: light;
   }
+}
+
+/* Die Hintergrund-Schleier (.aurora) sind fuer den dunklen Grund gemacht;
+   auf hellem Grund werden sie zu violetten Flecken — abschwaechen. */
+:root[data-theme="light"] .aurora { opacity: .30; }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]):not([data-theme="light"]) .aurora { opacity: .30; }
 }

@@ -14,7 +14,7 @@
     <script>/* Farbschema vor dem ersten Rendern (gpp-core.js laedt erst am Ende): Wert aus localStorage, Vorgabe dunkel, "system" = kein Attribut */try{var _t=localStorage.getItem("gpp:cfg:ui:theme")||"dark";if(_t!=="system")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
     <style>
     /* Optionsliste zeichnet das OS — halbtransparente Flaechen greifen dort nicht */
-    select,option{background-color:#1b1b23;color:#e8e8ef}
+    select,option{background-color:var(--bg-deep);color:var(--text-primary)}
     select{color-scheme:dark}
         /* =====================================================================
            Design-System "Glassmorphic Deep" — handgeschrieben, kein Tailwind.
@@ -23,7 +23,7 @@
            ===================================================================== */
         :root {
             --orange: oklch(0.65 0.2 50);
-            --sunken: oklch(0.1 0.02 280 / 0.5);
+            --sunken: var(--bg-sunken);
             --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
             --ui: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
             --topbar-h: 64px;
@@ -57,18 +57,18 @@
         button { background: none; border: 0; cursor: pointer; }
         button:disabled { cursor: not-allowed; }
 
-        ::selection { background: oklch(0.7 0.18 300 / 0.35); color: oklch(0.95 0.005 280); }
+        ::selection { background: color-mix(in oklab, var(--accent) 35%, transparent); color: var(--text-primary); }
 
         /* --- Hintergrund-Atmosphaere: zwei Aurora-Blobs + Noise --- */
         .fx-blob, .fx-noise { position: fixed; pointer-events: none; z-index: 0; }
         .fx-blob { border-radius: 50%; }
         .fx-blob-a {
             width: 600px; height: 600px; top: -200px; left: -100px; filter: blur(60px);
-            background: radial-gradient(circle, oklch(0.4 0.18 300 / .5), transparent 70%);
+            background: radial-gradient(circle, color-mix(in oklab, var(--accent) 50%, transparent), transparent 70%);
         }
         .fx-blob-b {
             width: 700px; height: 700px; bottom: -300px; right: -200px; filter: blur(80px);
-            background: radial-gradient(circle, oklch(0.4 0.16 240 / .4), transparent 70%);
+            background: radial-gradient(circle, color-mix(in oklab, var(--blue) 40%, transparent), transparent 70%);
         }
         .fx-noise {
             inset: 0; opacity: .03;
@@ -80,7 +80,7 @@
         .topbar {
             position: fixed; top: 0; left: 0; right: 0; height: var(--topbar-h); z-index: 60;
             display: flex; align-items: center; gap: 18px; padding: 0 20px;
-            background: oklch(0.95 0.005 280 / 0.04);
+            background: oklch(var(--tint) / 0.04);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-2);
         }
@@ -96,8 +96,8 @@
             font-family: var(--mono); font-size: 11px; color: var(--text-secondary); white-space: nowrap;
         }
         .pill-quiet { color: var(--text-quiet); }
-        .pill-ok { color: var(--green); border-color: oklch(0.75 0.18 145 / .35); }
-        .pill-err { color: var(--red); border-color: oklch(0.65 0.2 25 / .35); }
+        .pill-ok { color: var(--green); border-color: color-mix(in oklab, var(--green) 35%, transparent); }
+        .pill-err { color: var(--red); border-color: color-mix(in oklab, var(--red) 35%, transparent); }
         .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
 
         /* Run-Status + 1px-Hairline-Progress (kein Spinner) */
@@ -115,18 +115,18 @@
         .progress-fill { height: 100%; width: 0%; background: var(--amber); transition: width .2s ease, background .2s ease; }
         .progress-fill.done { background: var(--green); }
         .btn-cancel {
-            flex-shrink: 0; padding: 3px 10px; border-radius: 6px; border: 1px solid oklch(0.65 0.2 25 / .45);
+            flex-shrink: 0; padding: 3px 10px; border-radius: 6px; border: 1px solid color-mix(in oklab, var(--red) 45%, transparent);
             color: var(--red); font-family: var(--mono); font-size: 10px; font-weight: 600;
             transition: background .15s ease;
         }
-        .btn-cancel:hover { background: oklch(0.65 0.2 25 / .12); }
+        .btn-cancel:hover { background: color-mix(in oklab, var(--red) 12%, transparent); }
         .btn-cancel:disabled { opacity: .4; }
 
         /* Linke Rail — fest, 220-260px, Navigation + Konfiguration */
         .rail {
             position: fixed; top: var(--topbar-h); bottom: var(--dock-h); left: 0; width: var(--rail-w); z-index: 45;
             display: flex; flex-direction: column; gap: 14px; padding: 16px 14px; overflow-y: auto;
-            background: oklch(0.95 0.005 280 / 0.03);
+            background: oklch(var(--tint) / 0.03);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-right: 1px solid var(--border-2);
             transition: transform .2s ease;
@@ -165,7 +165,7 @@
         .rail-hint { font-family: var(--mono); font-size: 9px; line-height: 1.5; color: var(--text-quiet); min-width: 0; overflow: hidden; text-overflow: ellipsis; }
         .rail-hint-warn {
             display: block; color: var(--amber); padding: 4px 0 4px 8px; margin: -4px 2px 8px;
-            border-left: 2px solid oklch(0.8 0.15 80 / .45); white-space: normal; overflow: visible; text-overflow: clip;
+            border-left: 2px solid color-mix(in oklab, var(--amber) 45%, transparent); white-space: normal; overflow: visible; text-overflow: clip;
         }
         .rail-mini-btn {
             flex-shrink: 0; padding: 2px 7px; border-radius: 6px; border: 1px solid var(--border-2);
@@ -199,7 +199,7 @@
         /* Log-Konsole unten — Glas, ganze Breite */
         #ai-log-console {
             position: fixed; left: 0; right: 0; bottom: 0; z-index: 55;
-            background: oklch(0.11 0.02 280 / 0.72);
+            background: oklch(var(--shade) / 0.72);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid var(--border-2);
             font-family: var(--mono); font-size: 11px;
@@ -209,8 +209,8 @@
 
         /* =====================  KARTEN & FORMULARE  ===================== */
         .card, .modal-container, [data-section-id] {
-            background: oklch(0.95 0.005 280 / 0.04);
-            border: 1px solid oklch(0.95 0.005 280 / 0.08);
+            background: oklch(var(--tint) / 0.04);
+            border: 1px solid oklch(var(--tint) / 0.08);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-radius: 12px;
         }
@@ -235,7 +235,7 @@
         input::placeholder, textarea::placeholder { color: var(--text-quiet); }
         /* Fliesstext-Felder bleiben Inter; Prompts/JSON tragen .font-mono im Markup. */
         textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
-        select option { background: oklch(0.16 0.02 280); color: var(--text-primary); }
+        select option { background: oklch(var(--shade)); color: var(--text-primary); }
         input[type=checkbox], input[type=radio] { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
 
         .search-result-item { transition: background .15s ease; }
@@ -495,48 +495,48 @@
         .focus\:border-emerald-500:focus, .focus\:border-cyan-500:focus { border-color: var(--accent); }
 
         /* Flaechen: slate -> Glas */
-        .bg-slate-950, .bg-slate-950\/95 { background-color: oklch(0.1 0.02 280 / .55); }
+        .bg-slate-950, .bg-slate-950\/95 { background-color: oklch(var(--shade) / .55); }
         .bg-slate-900, .bg-slate-900\/50, .bg-slate-900\/70, .bg-slate-900\/80 { background-color: var(--sunken); }
         .bg-slate-800, .bg-slate-800\/50, .bg-slate-800\/60 { background-color: var(--bg-elev-1); }
         .bg-slate-700 { background-color: var(--bg-elev-3); }
-        .hover\:bg-slate-600:hover, .hover\:bg-slate-700:hover { background-color: oklch(0.95 0.005 280 / .12); }
+        .hover\:bg-slate-600:hover, .hover\:bg-slate-700:hover { background-color: oklch(var(--tint) / .12); }
 
         /* Modal-Scrims dunkler als eine normale Flaeche */
-        #modify-modal, #search-modal, #loading-overlay { background-color: oklch(0.08 0.02 280 / .72); }
+        #modify-modal, #search-modal, #loading-overlay { background-color: oklch(var(--shade) / .72); }
 
         /* Rahmenfarben */
         .border-slate-600, .border-slate-700, .border-slate-700\/50, .border-slate-800 { border-color: var(--border-2); }
-        .hover\:border-slate-500:hover, .hover\:border-slate-600:hover { border-color: oklch(0.95 0.005 280 / .18); }
+        .hover\:border-slate-500:hover, .hover\:border-slate-600:hover { border-color: oklch(var(--tint) / .18); }
 
         /* Akzent: emerald/cyan/indigo/purple/violet -> Violett */
         .bg-emerald-600, .bg-cyan-600, .bg-cyan-700, .bg-indigo-600, .bg-purple-600, .bg-violet-700 {
-            background-color: var(--accent); color: oklch(0.15 0.02 300);
+            background-color: var(--accent); color: oklch(var(--shade));
             box-shadow: 0 6px 20px var(--accent-glow);
         }
         .hover\:bg-emerald-500:hover, .hover\:bg-cyan-500:hover, .hover\:bg-cyan-600:hover,
         .hover\:bg-indigo-500:hover, .hover\:bg-purple-500:hover, .hover\:bg-violet-600:hover {
-            background-color: oklch(0.76 0.18 300); color: oklch(0.15 0.02 300);
+            background-color: var(--accent); color: oklch(var(--shade));
         }
-        .bg-emerald-900, .bg-emerald-900\/50 { background-color: oklch(0.75 0.18 145 / .15); }
+        .bg-emerald-900, .bg-emerald-900\/50 { background-color: color-mix(in oklab, var(--green) 15%, transparent); }
         .bg-cyan-900, .bg-indigo-900, .bg-indigo-950, .bg-purple-900, .bg-purple-900\/50 { background-color: var(--accent-soft); }
-        .bg-blue-900, .bg-blue-900\/50 { background-color: oklch(0.7 0.15 240 / .18); }
-        .bg-sky-900 { background-color: oklch(0.7 0.15 240 / .18); }
+        .bg-blue-900, .bg-blue-900\/50 { background-color: color-mix(in oklab, var(--blue) 18%, transparent); }
+        .bg-sky-900 { background-color: color-mix(in oklab, var(--blue) 18%, transparent); }
         .bg-amber-500 { background-color: var(--amber); }
-        .bg-amber-600 { background-color: var(--amber); color: oklch(0.18 0.02 80); }
-        .hover\:bg-amber-500:hover { background-color: oklch(0.85 0.15 80); color: oklch(0.18 0.02 80); }
-        .bg-amber-900, .bg-amber-900\/40, .bg-amber-950\/30, .bg-amber-950\/40 { background-color: oklch(0.8 0.15 80 / .12); }
+        .bg-amber-600 { background-color: var(--amber); color: oklch(var(--shade)); }
+        .hover\:bg-amber-500:hover { background-color: var(--amber); color: oklch(var(--shade)); }
+        .bg-amber-900, .bg-amber-900\/40, .bg-amber-950\/30, .bg-amber-950\/40 { background-color: color-mix(in oklab, var(--amber) 12%, transparent); }
         .tab-button, .tab-content { /* Struktur-Hooks für die Modal-Tabs, keine eigene Optik */ }
-        .bg-red-900\/50 { background-color: oklch(0.65 0.2 25 / .16); }
-        .hover\:bg-red-900\/30:hover, .hover\:bg-red-950\/40:hover { background-color: oklch(0.65 0.2 25 / .14); }
+        .bg-red-900\/50 { background-color: color-mix(in oklab, var(--red) 16%, transparent); }
+        .hover\:bg-red-900\/30:hover, .hover\:bg-red-950\/40:hover { background-color: color-mix(in oklab, var(--red) 14%, transparent); }
         .hover\:bg-cyan-950\/40:hover { background-color: var(--accent-soft); }
 
-        .border-emerald-700, .border-emerald-700\/60 { border-color: oklch(0.75 0.18 145 / .4); }
+        .border-emerald-700, .border-emerald-700\/60 { border-color: color-mix(in oklab, var(--green) 40%, transparent); }
         .border-emerald-500 { border-color: var(--accent); }
         .border-cyan-400, .border-cyan-700, .border-cyan-700\/60, .border-cyan-800,
-        .border-indigo-800, .border-purple-700 { border-color: oklch(0.7 0.18 300 / .4); }
-        .border-blue-700, .border-blue-700\/60, .border-sky-700 { border-color: oklch(0.7 0.15 240 / .4); }
-        .border-amber-600, .border-amber-700, .border-amber-700\/60, .border-amber-800\/60 { border-color: oklch(0.8 0.15 80 / .4); }
-        .border-red-700, .border-red-800, .border-red-900 { border-color: oklch(0.65 0.2 25 / .4); }
+        .border-indigo-800, .border-purple-700 { border-color: color-mix(in oklab, var(--accent) 40%, transparent); }
+        .border-blue-700, .border-blue-700\/60, .border-sky-700 { border-color: color-mix(in oklab, var(--blue) 40%, transparent); }
+        .border-amber-600, .border-amber-700, .border-amber-700\/60, .border-amber-800\/60 { border-color: color-mix(in oklab, var(--amber) 40%, transparent); }
+        .border-red-700, .border-red-800, .border-red-900 { border-color: color-mix(in oklab, var(--red) 40%, transparent); }
         .hover\:border-emerald-500:hover { border-color: var(--accent); }
         .hover\:border-blue-500:hover { border-color: var(--blue); }
 
@@ -552,20 +552,20 @@
         .text-emerald-400, .text-emerald-500 { color: var(--accent); }
         .text-cyan-300, .text-cyan-400, .text-cyan-500,
         .text-indigo-300, .text-indigo-400, .text-purple-300, .text-purple-400 { color: var(--accent); }
-        .hover\:text-cyan-200:hover { color: oklch(0.8 0.14 300); }
+        .hover\:text-cyan-200:hover { color: color-mix(in oklab, var(--accent) 72%, var(--text-primary)); }
         .text-blue-300, .text-blue-400, .text-blue-500, .text-sky-300 { color: var(--blue); }
         .text-amber-100, .text-amber-200, .text-amber-300, .text-amber-400 { color: var(--amber); }
-        .text-amber-200\/60 { color: oklch(0.8 0.15 80 / .6); }
-        .text-amber-200\/80 { color: oklch(0.8 0.15 80 / .8); }
+        .text-amber-200\/60 { color: color-mix(in oklab, var(--amber) 60%, transparent); }
+        .text-amber-200\/80 { color: color-mix(in oklab, var(--amber) 80%, transparent); }
         .text-red-300, .text-red-400 { color: var(--red); }
-        .hover\:text-red-300:hover { color: oklch(0.72 0.2 25); }
+        .hover\:text-red-300:hover { color: var(--red); }
         .hover\:text-white:hover { color: var(--text-primary); }
         .hover\:text-slate-200:hover { color: var(--text-primary); }
         .hover\:text-slate-300:hover { color: var(--text-secondary); }
 
         /* Solide Akzent-Buttons: dunkle Schrift schlaegt .text-white (Reihenfolge zaehlt) */
         .bg-emerald-600, .bg-cyan-600, .bg-cyan-700, .bg-indigo-600, .bg-purple-600,
-        .bg-violet-700, .bg-amber-600 { color: oklch(0.16 0.03 300); }
+        .bg-violet-700, .bg-amber-600 { color: oklch(var(--shade)); }
 
         /* Breakpoints */
         @media (min-width: 640px) {

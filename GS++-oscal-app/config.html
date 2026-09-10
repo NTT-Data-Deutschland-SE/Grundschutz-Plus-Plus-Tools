@@ -19,8 +19,8 @@ body {
   min-height: 100vh; padding: 0 0 60px;
 }
 .aurora { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
-.aurora-1 { width: 600px; height: 600px; top: -220px; left: -120px; background: radial-gradient(circle, oklch(0.4 0.18 300 / .45), transparent 70%); filter: blur(60px); }
-.aurora-2 { width: 700px; height: 700px; bottom: -320px; right: -220px; background: radial-gradient(circle, oklch(0.4 0.16 240 / .35), transparent 70%); filter: blur(80px); }
+.aurora-1 { width: 600px; height: 600px; top: -220px; left: -120px; background: radial-gradient(circle, color-mix(in oklab, var(--accent) 45%, transparent), transparent 70%); filter: blur(60px); }
+.aurora-2 { width: 700px; height: 700px; bottom: -320px; right: -220px; background: radial-gradient(circle, color-mix(in oklab, var(--blue) 35%, transparent), transparent 70%); filter: blur(80px); }
 header, main { position: relative; z-index: 1; }
 header {
   display: flex; align-items: center; gap: 12px; height: 62px; padding: 0 20px;
@@ -50,7 +50,7 @@ main { max-width: 940px; margin: 0 auto; padding: 24px 20px; }
 label.f { display: block; font-family: var(--mono); font-size: .62rem; letter-spacing: .1em;
   text-transform: uppercase; color: var(--text-quiet); margin: 0 0 5px; }
 input[type=text], input[type=password], input[type=url], input[type=search], select, textarea {
-  width: 100%; background: oklch(0.10 0.02 280); color: var(--text-primary);
+  width: 100%; background: oklch(var(--shade)); color: var(--text-primary);
   border: 1px solid var(--border-2); border-radius: 8px; padding: 8px 10px;
   font-size: .82rem; font-family: inherit;
 }

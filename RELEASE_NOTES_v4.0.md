@@ -182,7 +182,7 @@ Component Definitions aus dem `implementation_layer` der Stand-der-Technik-Bibli
 - **Artefakte-Fläche:** Die Download-Knöpfe heißen „Einzeldateien (JSON)" und „Set als ZIP", tragen Tooltips und einen Satz darunter, was sie liefern (jedes Artefakt einzeln bzw. das Set als Archiv mit `manifest.json`, wieder hochladbar). Oben rechts steht „✕ Zurück zum Werkzeug"; der ARTEFAKTE-Knopf sagt im Tooltip, dass ein zweiter Klick schließt, und ein Klick auf einen Werkzeug-Reiter schließt Artefakte und Hilfe ebenfalls. Dieselbe Rückkehr gibt es in Hilfe und Handbuch. Übersicht 1.5.
 - **Neu: `gpp-core.css`.** Alle neun Seiten trugen dieselben 17 Design-Tokens und dieselben Scrollbar-Regeln als lokale Kopie. Sie liegen jetzt einmal im gemeinsamen Stylesheet, das jede Seite vor ihrem eigenen `<style>` einbindet; seitenspezifische Tokens (Rail-Breite, Sonderfarben) bleiben in der Seite. Damit hat das **helle Farbschema** (#40, noch offen) einen einzigen Schalter. Fehlt die Datei, meldet `gpp-core.js` das in der Konsole. Das Auslieferungsarchiv hat jetzt 12 Dateien.
 - **Bearbeiter aus einer Liste (SSP-Editor v1.6.1).** Das Bearbeiter-Feld jeder Control-Karte schlägt jetzt Namen vor: alle, die im geladenen SSP schon als Bearbeiter stehen, die gerade eingetippten Felder und das angemeldete Konto, wenn die gemeinsame Datenbank aktiv ist. Freitext bleibt möglich; ein neuer Name steht ab dem nächsten Feld in der Liste. Dublette nach Groß-/Kleinschreibung zählt einmal.
-- **Noch offen aus #40:** helles Farbschema.
+- **Helles Farbschema (#40, letzter Punkt).** Umschalten über den Knopf „◐" in der Kopfzeile der Übersicht (Dunkel → Hell → System) oder in den Einstellungen unter „Darstellung"; die Wahl gilt für alle Werkzeuge dieses Browsers und wird gemerkt, „System" folgt dem Betriebssystem. Dunkel bleibt die Vorgabe. Technisch: `gpp-core.css` v2 trägt den hellen Token-Satz (ausdrücklich per `data-theme="light"` oder über `prefers-color-scheme`), ein Snippet im `<head>` jeder Seite setzt das Attribut vor dem ersten Rendern, `gppTheme` im Kern übernimmt Wechsel zur Laufzeit und aus anderen Tabs. Dafür wurden rund 400 feste Farbwerte in den Stylesheets der neun Seiten auf Tokens umgestellt — Aufhellungen und Absenkungen laufen über die Kanäle `--tint`/`--shade`, farbige Tönungen über `color-mix` mit dem jeweiligen Token. Im dunklen Schema ändert sich dadurch nichts sichtbar. Übersicht 1.6.
 
 ## Nicht im Umfang von 4.0
 
@@ -193,8 +193,8 @@ Component Definitions aus dem `implementation_layer` der Stand-der-Technik-Bibli
 | Anwendung | Version |
 |---|---|
 | gemeinsamer Kern (gpp-core.js) | 3 · Cache-Buster v4.0 |
-| gemeinsames Stylesheet (gpp-core.css) | 1 · Cache-Buster v4.0 |
-| Übersicht (index.html) | 1.5 |
+| gemeinsames Stylesheet (gpp-core.css) | 2 · Cache-Buster v4.0 |
+| Übersicht (index.html) | 1.6 |
 | OSCAL Schema Validator | 1.11.2 |
 | SSP-Generator (G++) | V5.13.0 |
 | GS++ Explorer (GSpp-Viewer) | v9.8 |

@@ -46,15 +46,15 @@ input,select,textarea{font:inherit;color:inherit}
 code{font-family:var(--font-mono);font-size:.92em}
 a{color:var(--accent);text-decoration:none}
 svg{display:block}
-::selection{background:oklch(0.7 0.18 300 / 0.35);color:oklch(0.95 0.005 280)}
+::selection{background:color-mix(in oklab, var(--accent) 35%, transparent);color:var(--text-primary)}
 
 
 /* --- Atmosphäre: Aurora-Blobs + Noise ----------------------------------- */
 .atmo{position:fixed;pointer-events:none;z-index:0}
 .atmo-a{width:600px;height:600px;border-radius:50%;top:-200px;left:-100px;filter:blur(60px);
-  background:radial-gradient(circle,oklch(0.4 0.18 300/.5),transparent 70%)}
+  background:radial-gradient(circle,color-mix(in oklab, var(--accent) 50%, transparent),transparent 70%)}
 .atmo-b{width:700px;height:700px;border-radius:50%;bottom:-300px;right:-200px;filter:blur(80px);
-  background:radial-gradient(circle,oklch(0.4 0.16 240/.4),transparent 70%)}
+  background:radial-gradient(circle,color-mix(in oklab, var(--blue) 40%, transparent),transparent 70%)}
 .atmo-noise{inset:0;opacity:.03;
   background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><filter id=%22n%22><feTurbulence baseFrequency=%220.9%22/></filter><rect width=%22100%22 height=%22100%22 filter=%22url(%23n)%22/></svg>')}
 
@@ -122,7 +122,7 @@ svg{display:block}
 /* --- Glas-Flächen -------------------------------------------------------- */
 .glass,.card{
   background:var(--bg-elev-1);
-  border:1px solid oklch(0.95 0.005 280 / 0.08);
+  border:1px solid oklch(var(--tint) / 0.08);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-radius:12px;
 }
@@ -134,7 +134,7 @@ svg{display:block}
 .lbl{display:block;font-family:var(--font-mono);font-size:9px;font-weight:600;color:var(--text-quiet);
   text-transform:uppercase;letter-spacing:.12em;margin-bottom:.25rem}
 .inp{
-  padding:.42rem .6rem;background:oklch(0.95 0.005 280 / 0.03);
+  padding:.42rem .6rem;background:oklch(var(--tint) / 0.03);
   border:1px solid var(--border-2);border-radius:8px;font-size:.8rem;color:var(--text-primary);
   outline:none;width:100%;transition:border-color .15s ease,box-shadow .15s ease,background .15s ease;
 }
@@ -142,7 +142,7 @@ svg{display:block}
 .inp:hover{background:var(--bg-elev-2)}
 .inp:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
 select.inp{appearance:none;background-image:none;cursor:pointer}
-select.inp option{background:oklch(0.17 0.02 280);color:var(--text-primary)}
+select.inp option{background:oklch(var(--shade));color:var(--text-primary)}
 textarea{resize:vertical}
 textarea.inp{min-height:70px;line-height:1.5;overflow-y:auto}
 .ptxt{font-family:var(--font-mono);resize:vertical;min-height:200px;line-height:1.5}
@@ -150,7 +150,7 @@ input[type=date].inp{color-scheme:dark}
 .form-checkbox{accent-color:var(--accent);cursor:pointer}
 
 /* --- Segment-Umschalter (Backend-Auswahl) -------------------------------- */
-.seg{display:flex;gap:4px;padding:3px;background:oklch(0.95 0.005 280 / 0.03);
+.seg{display:flex;gap:4px;padding:3px;background:oklch(var(--tint) / 0.03);
   border:1px solid var(--border-2);border-radius:9px}
 .seg-btn{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;
   padding:5px 6px;border-radius:6px;font-family:var(--font-mono);font-size:9px;font-weight:600;
@@ -164,11 +164,11 @@ input[type=date].inp{color-scheme:dark}
 /* --- Buttons ------------------------------------------------------------- */
 .ai-btn{
   background:var(--accent-soft);color:var(--accent);font-weight:600;border-radius:7px;font-size:10px;
-  padding:3px 9px;border:1px solid oklch(0.7 0.18 300 / 0.35);cursor:pointer;
+  padding:3px 9px;border:1px solid color-mix(in oklab, var(--accent) 35%, transparent);cursor:pointer;
   font-family:var(--font-mono);letter-spacing:.04em;
   transition:background .15s ease,color .15s ease;
 }
-.ai-btn:hover{background:oklch(0.7 0.18 300 / 0.28);color:var(--text-primary)}
+.ai-btn:hover{background:color-mix(in oklab, var(--accent) 28%, transparent);color:var(--text-primary)}
 .ai-btn:disabled{opacity:.45;cursor:wait}
 
 /* --- Collapsibles -------------------------------------------------------- */
@@ -181,7 +181,7 @@ input[type=date].inp{color-scheme:dark}
 .sb{font-family:var(--font-mono);font-size:9px;padding:2px 7px;border-radius:999px;font-weight:600;
   text-transform:uppercase;letter-spacing:.08em;border:1px solid;white-space:nowrap}
 .poam-card{transition:border-color .15s ease,background .15s ease}
-.poam-card:hover{border-color:var(--border-2);background:oklch(0.95 0.005 280 / 0.05)}
+.poam-card:hover{border-color:var(--border-2);background:oklch(var(--tint) / 0.05)}
 .prio-high{border-left:3px solid var(--red)}
 .prio-medium{border-left:3px solid var(--amber)}
 .prio-low{border-left:3px solid var(--blue)}
@@ -220,7 +220,7 @@ input[type=date].inp{color-scheme:dark}
 /* --- Statistik-Karte (nur SVG/CSS) -------------------------------------- */
 .stats-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 @media(max-width:700px){.stats-grid{grid-template-columns:minmax(0,1fr)}}
-.stat-sub{background:oklch(0.95 0.005 280 / 0.03);border:1px solid var(--border-1);border-radius:10px;padding:12px 14px;min-width:0}
+.stat-sub{background:oklch(var(--tint) / 0.03);border:1px solid var(--border-1);border-radius:10px;padding:12px 14px;min-width:0}
 .stat-sub-h{font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
   color:var(--text-quiet);margin-bottom:10px}
 .donut-wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -231,7 +231,7 @@ input[type=date].inp{color-scheme:dark}
 .legend-val{font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);margin-left:auto;padding-left:8px}
 .hbar-row{display:flex;align-items:center;gap:9px;margin-bottom:6px}
 .hbar-label{font-size:11px;color:var(--text-secondary);width:104px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hbar-track{flex:1;min-width:0;height:6px;background:oklch(0.95 0.005 280 / 0.06);border-radius:3px;overflow:hidden}
+.hbar-track{flex:1;min-width:0;height:6px;background:oklch(var(--tint) / 0.06);border-radius:3px;overflow:hidden}
 .hbar-fill{height:100%;border-radius:3px;transition:width .35s cubic-bezier(.4,0,.2,1)}
 .hbar-value{font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);width:26px;text-align:right;flex-shrink:0}
 .kpi-row{display:flex;gap:22px;align-items:flex-end}
@@ -344,12 +344,12 @@ input[type=date].inp{color-scheme:dark}
 /* --- Farbabbildung: Flächen (slate -> Glas) ------------------------------ */
 .bg-slate-700{background-color:var(--bg-elev-3)}
 .bg-slate-800{background-color:var(--bg-elev-1)}
-.bg-slate-800\/50{background-color:oklch(0.95 0.005 280 / 0.05)}
-.bg-slate-800\/60{background-color:oklch(0.95 0.005 280 / 0.05)}
-.bg-slate-900{background-color:oklch(0.95 0.005 280 / 0.03)}
-.bg-slate-900\/30{background-color:oklch(0.95 0.005 280 / 0.02)}
-.bg-slate-900\/40{background-color:oklch(0.95 0.005 280 / 0.02)}
-.bg-slate-900\/60{background-color:oklch(0.95 0.005 280 / 0.03)}
+.bg-slate-800\/50{background-color:oklch(var(--tint) / 0.05)}
+.bg-slate-800\/60{background-color:oklch(var(--tint) / 0.05)}
+.bg-slate-900{background-color:oklch(var(--tint) / 0.03)}
+.bg-slate-900\/30{background-color:oklch(var(--tint) / 0.02)}
+.bg-slate-900\/40{background-color:oklch(var(--tint) / 0.02)}
+.bg-slate-900\/60{background-color:oklch(var(--tint) / 0.03)}
 .bg-gradient-to-br{background-image:none}
 .from-slate-900{--tw-from:none}
 .to-slate-800{--tw-to:none}
@@ -367,40 +367,40 @@ input[type=date].inp{color-scheme:dark}
 .text-slate-500{color:var(--text-quiet)}
 
 /* --- Semantik: rot ------------------------------------------------------- */
-.bg-red-900{background-color:oklch(0.65 0.2 25 / 0.16)}
-.bg-red-900\/50{background-color:oklch(0.65 0.2 25 / 0.14)}
-.bg-red-950\/20{background-color:oklch(0.65 0.2 25 / 0.08)}
+.bg-red-900{background-color:color-mix(in oklab, var(--red) 16%, transparent)}
+.bg-red-900\/50{background-color:color-mix(in oklab, var(--red) 14%, transparent)}
+.bg-red-950\/20{background-color:color-mix(in oklab, var(--red) 8%, transparent)}
 .text-red-300{color:var(--red)}
 .text-red-300\/80{color:var(--red)}
 .text-red-400{color:var(--red)}
 .text-red-500{color:var(--red)}
-.border-red-700{border-color:oklch(0.65 0.2 25 / 0.45)}
-.border-red-800{border-color:oklch(0.65 0.2 25 / 0.35)}
-.hover\:bg-red-900:hover{background-color:oklch(0.65 0.2 25 / 0.26)}
+.border-red-700{border-color:color-mix(in oklab, var(--red) 45%, transparent)}
+.border-red-800{border-color:color-mix(in oklab, var(--red) 35%, transparent)}
+.hover\:bg-red-900:hover{background-color:color-mix(in oklab, var(--red) 26%, transparent)}
 
 /* --- Semantik: amber (Warnung / "in Arbeit" / Prio mittel) --------------- */
-.bg-amber-900{background-color:oklch(0.80 0.15 80 / 0.16)}
-.bg-amber-900\/30{background-color:oklch(0.80 0.15 80 / 0.10)}
+.bg-amber-900{background-color:color-mix(in oklab, var(--amber) 16%, transparent)}
+.bg-amber-900\/30{background-color:color-mix(in oklab, var(--amber) 10%, transparent)}
 .bg-amber-500{background-color:var(--amber)}
 .text-amber-300{color:var(--amber)}
-.border-amber-700{border-color:oklch(0.80 0.15 80 / 0.42)}
+.border-amber-700{border-color:color-mix(in oklab, var(--amber) 42%, transparent)}
 
 /* --- Semantik: grün ------------------------------------------------------ */
-.bg-emerald-900{background-color:oklch(0.75 0.18 145 / 0.16)}
-.bg-emerald-900\/50{background-color:oklch(0.75 0.18 145 / 0.14)}
+.bg-emerald-900{background-color:color-mix(in oklab, var(--green) 16%, transparent)}
+.bg-emerald-900\/50{background-color:color-mix(in oklab, var(--green) 14%, transparent)}
 .text-emerald-300{color:var(--green)}
 .text-emerald-400{color:var(--green)}
-.border-emerald-700{border-color:oklch(0.75 0.18 145 / 0.42)}
+.border-emerald-700{border-color:color-mix(in oklab, var(--green) 42%, transparent)}
 
 /* --- Semantik: blau (Prio niedrig / Beobachtung) ------------------------- */
-.bg-blue-900{background-color:oklch(0.70 0.15 240 / 0.16)}
-.bg-blue-950\/20{background-color:oklch(0.70 0.15 240 / 0.08)}
+.bg-blue-900{background-color:color-mix(in oklab, var(--blue) 16%, transparent)}
+.bg-blue-950\/20{background-color:color-mix(in oklab, var(--blue) 8%, transparent)}
 .text-blue-300{color:var(--blue)}
 .text-blue-300\/80{color:var(--blue)}
 .text-blue-400{color:var(--blue)}
 .text-blue-500{color:var(--blue)}
-.border-blue-700{border-color:oklch(0.70 0.15 240 / 0.42)}
-.border-blue-800{border-color:oklch(0.70 0.15 240 / 0.32)}
+.border-blue-700{border-color:color-mix(in oklab, var(--blue) 42%, transparent)}
+.border-blue-800{border-color:color-mix(in oklab, var(--blue) 32%, transparent)}
 
 /* --- Komponenten-Chip (ehemals cyan) -> ruhiges Glas --------------------- */
 .bg-cyan-950\/40{background-color:var(--bg-elev-2)}
@@ -414,20 +414,20 @@ input[type=date].inp{color-scheme:dark}
 .hover\:border-purple-500:hover{border-color:var(--accent)}
 .bg-violet-900,.bg-purple-900{background-color:var(--accent-soft)}
 .text-violet-300,.text-purple-300{color:var(--accent)}
-.border-violet-700,.border-purple-700{border-color:oklch(0.7 0.18 300 / 0.45)}
+.border-violet-700,.border-purple-700{border-color:color-mix(in oklab, var(--accent) 45%, transparent)}
 /* Sekundär-Button (Session speichern / neuer Eintrag) */
 .bg-purple-700,.bg-amber-700{background-color:var(--accent-soft);color:var(--accent);
-  border:1px solid oklch(0.7 0.18 300 / 0.35);transition:background .15s ease,color .15s ease}
-.hover\:bg-purple-600:hover,.hover\:bg-amber-600:hover{background-color:oklch(0.7 0.18 300 / 0.26);color:var(--text-primary)}
+  border:1px solid color-mix(in oklab, var(--accent) 35%, transparent);transition:background .15s ease,color .15s ease}
+.hover\:bg-purple-600:hover,.hover\:bg-amber-600:hover{background-color:color-mix(in oklab, var(--accent) 26%, transparent);color:var(--text-primary)}
 .hover\:bg-slate-600:hover{background-color:var(--bg-elev-3)}
 /* Primär-CTA: solides Violett mit Glow */
-.bg-amber-600{background-color:var(--accent);color:oklch(0.16 0.03 300);
+.bg-amber-600{background-color:var(--accent);color:oklch(var(--shade));
   box-shadow:0 6px 20px var(--accent-glow);transition:background .15s ease,box-shadow .15s ease}
-.hover\:bg-amber-500:hover{background-color:oklch(0.76 0.17 300);box-shadow:0 8px 24px var(--accent-glow)}
+.hover\:bg-amber-500:hover{background-color:var(--accent);box-shadow:0 8px 24px var(--accent-glow)}
 /* Indigo bleibt als eigener Statuston (Abweichung genehmigt) */
-.bg-indigo-900{background-color:oklch(0.62 0.13 265 / 0.18)}
+.bg-indigo-900{background-color:color-mix(in oklab, var(--indigo) 18%, transparent)}
 .text-indigo-300{color:var(--indigo)}
-.border-indigo-700{border-color:oklch(0.62 0.13 265 / 0.45)}
+.border-indigo-700{border-color:color-mix(in oklab, var(--indigo) 45%, transparent)}
 
 /* --- Responsive Varianten ----------------------------------------------- */
 @media(min-width:768px){
@@ -442,7 +442,7 @@ input[type=date].inp{color-scheme:dark}
 @media(max-width:768px){
   .sidebar{width:min(88vw,320px);min-width:min(88vw,320px);flex-basis:min(88vw,320px);
     position:fixed;top:var(--topbar-h);left:0;z-index:40;height:calc(100vh - var(--topbar-h) - var(--log-h));
-    background:oklch(0.16 0.02 280)}
+    background:oklch(var(--shade))}
   .sidebar.collapsed{margin-left:-100%}
   .splitter{display:none}
   .kpi-row{flex-wrap:wrap;gap:14px}

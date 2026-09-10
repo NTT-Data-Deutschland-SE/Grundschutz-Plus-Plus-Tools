@@ -12,7 +12,7 @@
     <script>/* Farbschema vor dem ersten Rendern (gpp-core.js laedt erst am Ende): Wert aus localStorage, Vorgabe dunkel, "system" = kein Attribut */try{var _t=localStorage.getItem("gpp:cfg:ui:theme")||"dark";if(_t!=="system")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
     <style>
     /* Optionsliste zeichnet das OS — halbtransparente Flaechen greifen dort nicht */
-    select,option{background-color:#1b1b23;color:#e8e8ef}
+    select,option{background-color:var(--bg-deep);color:var(--text-primary)}
     select{color-scheme:dark}
 /* ============================================================
    Design-System „Glassmorphic Deep" — handgeschriebenes CSS.
@@ -41,14 +41,14 @@ h1,h2,h3,h4,p,ul,ol,figure{margin:0}
 button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
 a{color:var(--accent);text-decoration:none}
 a:hover{text-decoration:underline}
-::selection{background:oklch(0.7 0.18 300 / 0.35);color:oklch(0.95 0.005 280)}
+::selection{background:color-mix(in oklab, var(--accent) 35%, transparent);color:var(--text-primary)}
 
 /* --- Atmosphäre: Aurora-Blobs + Noise --- */
 .atmo{position:fixed;pointer-events:none;z-index:0}
 .atmo-a{width:600px;height:600px;border-radius:50%;top:-200px;left:-100px;filter:blur(60px);
-  background:radial-gradient(circle,oklch(0.4 0.18 300/.5),transparent 70%)}
+  background:radial-gradient(circle,color-mix(in oklab, var(--accent) 50%, transparent),transparent 70%)}
 .atmo-b{width:700px;height:700px;border-radius:50%;bottom:-300px;right:-200px;filter:blur(80px);
-  background:radial-gradient(circle,oklch(0.4 0.16 240/.4),transparent 70%)}
+  background:radial-gradient(circle,color-mix(in oklab, var(--blue) 40%, transparent),transparent 70%)}
 .atmo-noise{inset:0;opacity:.03;
   background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><filter id=%22n%22><feTurbulence baseFrequency=%220.9%22/></filter><rect width=%22100%22 height=%22100%22 filter=%22url(%23n)%22/></svg>')}
 
@@ -136,7 +136,7 @@ main{flex:1 1 auto;overflow-y:auto;min-height:0;min-width:0;padding:24px}
 .inp:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft);background:var(--bg-elev-2)}
 select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--text-quiet) 50%),linear-gradient(135deg,var(--text-quiet) 50%,transparent 50%);
   background-position:calc(100% - 14px) 52%,calc(100% - 9px) 52%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:26px}
-select.inp option{background:oklch(0.18 0.02 280);color:var(--text-primary)}
+select.inp option{background:oklch(var(--shade));color:var(--text-primary)}
 textarea{resize:vertical}
 textarea.inp{min-height:80px;line-height:1.55}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;
@@ -144,9 +144,9 @@ textarea.inp{min-height:80px;line-height:1.55}
   color:var(--text-secondary);padding:.4rem .7rem;font-size:11px;font-weight:600;
   transition:background 140ms ease,color 140ms ease,border-color 140ms ease}
 .btn:hover{background:var(--bg-elev-3);color:var(--text-primary)}
-.btn-primary{background:var(--accent);border-color:transparent;color:oklch(0.16 0.02 300);
+.btn-primary{background:var(--accent);border-color:transparent;color:oklch(var(--shade));
   box-shadow:0 6px 20px var(--accent-glow)}
-.btn-primary:hover{background:oklch(0.75 0.18 300);color:oklch(0.16 0.02 300)}
+.btn-primary:hover{background:var(--accent);color:oklch(var(--shade))}
 .btn:disabled{opacity:.4;cursor:wait}
 
 /* --- Collapsibles / Chevrons --- */
@@ -168,10 +168,10 @@ textarea.inp{min-height:80px;line-height:1.55}
 .stat-bar{transition:width .6s cubic-bezier(.4,0,.2,1)}
 
 /* --- KI-Buttons + Markdown-Ausgabe --- */
-.ai-btn{background:var(--accent-soft);border:1px solid oklch(0.7 0.18 300 / 0.35);color:var(--accent);
+.ai-btn{background:var(--accent-soft);border:1px solid color-mix(in oklab, var(--accent) 35%, transparent);color:var(--accent);
   font-weight:600;border-radius:7px;font-size:12px;padding:2px 9px;cursor:pointer;
   transition:background 140ms ease,color 140ms ease}
-.ai-btn:hover{background:oklch(0.7 0.18 300 / 0.28);color:var(--text-primary)}
+.ai-btn:hover{background:color-mix(in oklab, var(--accent) 28%, transparent);color:var(--text-primary)}
 .ai-btn:disabled{opacity:.4;cursor:wait}
 .ai-explain{background:var(--bg-elev-2);border-color:var(--border-2);color:var(--text-secondary)}
 .ai-explain:hover{background:var(--bg-elev-3);color:var(--text-primary)}
@@ -355,7 +355,7 @@ textarea.inp{min-height:80px;line-height:1.55}
 .text-red-400{color:var(--red)}
 /* Hover-Varianten */
 .hover\:bg-slate-600:hover,.hover\:bg-slate-700:hover,.hover\:bg-slate-800:hover{background-color:var(--bg-elev-3)}
-.hover\:bg-emerald-500:hover{background-color:oklch(0.78 0.18 145)}
+.hover\:bg-emerald-500:hover{background-color:var(--green)}
 .hover\:bg-blue-500:hover{background-color:color-mix(in oklab,var(--blue) 55%,transparent)}
 .hover\:bg-purple-600:hover{background-color:color-mix(in oklab,var(--magenta) 44%,transparent)}
 .hover\:bg-indigo-600:hover{background-color:color-mix(in oklab,var(--accent) 44%,transparent)}
@@ -369,7 +369,7 @@ textarea.inp{min-height:80px;line-height:1.55}
   position:relative;transition:background 120ms ease,border-color 120ms ease}
 .form-checkbox:checked{background:var(--accent);border-color:var(--accent)}
 .form-checkbox:checked::after{content:"";position:absolute;left:50%;top:46%;width:3px;height:6px;
-  border:solid oklch(0.16 0.02 300);border-width:0 1.6px 1.6px 0;transform:translate(-50%,-50%) rotate(45deg)}
+  border:solid oklch(var(--shade));border-width:0 1.6px 1.6px 0;transform:translate(-50%,-50%) rotate(45deg)}
 .form-checkbox:focus-visible{outline:2px solid var(--accent-soft);outline-offset:1px}
 /* Responsive */
 @media(min-width:768px){

@@ -19,18 +19,18 @@
       font-family: 'Inter', system-ui, sans-serif;
       background: var(--bg-deep); color: var(--text-primary);
     }
-    ::selection { background: oklch(0.7 0.18 300 / 0.35); color: var(--text-primary); }
+    ::selection { background: color-mix(in oklab, var(--accent) 35%, transparent); color: var(--text-primary); }
 
     /* Aurora atmosphere */
     .aurora { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
     .aurora-1 {
       width: 600px; height: 600px; top: -200px; left: -100px;
-      background: radial-gradient(circle, oklch(0.4 0.18 300 / .5), transparent 70%);
+      background: radial-gradient(circle, color-mix(in oklab, var(--accent) 50%, transparent), transparent 70%);
       filter: blur(60px);
     }
     .aurora-2 {
       width: 700px; height: 700px; bottom: -300px; right: -200px;
-      background: radial-gradient(circle, oklch(0.4 0.16 240 / .4), transparent 70%);
+      background: radial-gradient(circle, color-mix(in oklab, var(--blue) 40%, transparent), transparent 70%);
       filter: blur(80px);
     }
     .noise {
@@ -98,7 +98,7 @@
     nav button .cnt {
       font-family: var(--mono); font-size: 0.58rem; line-height: 1;
       padding: 3px 5px; border-radius: 5px; min-width: 16px; text-align: center;
-      background: var(--green); color: oklch(0.15 0.02 280); font-weight: 700;
+      background: var(--green); color: oklch(var(--shade)); font-weight: 700;
     }
     nav button .cnt.zero { display: none; }
 
@@ -139,7 +139,7 @@
       border-radius: 7px; padding: 4px 9px; font-size: .7rem; cursor: pointer; font-family: var(--mono);
     }
     .btn-s:hover { color: var(--text-primary); border-color: var(--accent); }
-    .btn-s.danger:hover { color: var(--red, oklch(0.65 0.2 25)); border-color: oklch(0.65 0.2 25); }
+    .btn-s.danger:hover { color: var(--red, var(--red)); border-color: var(--red); }
     .empty-art {
       padding: 26px; text-align: center; color: var(--text-quiet); font-size: .82rem;
       border: 1px dashed var(--border-2); border-radius: 10px;
