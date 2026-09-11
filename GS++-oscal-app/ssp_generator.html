@@ -4,9 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.13.2</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
+    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.14.0</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -630,7 +628,7 @@
 
         <div class="topbar-actions">
             <div id="catalog-status" class="pill"><span class="dot animate-pulse"></span>Lade Basis-Katalog…</div>
-            <div class="pill pill-quiet">BUILD V5.13.2</div>
+            <div class="pill pill-quiet">BUILD V5.14.0</div>
         </div>
 
         <div class="progress-track"><div id="ai-doc-progress-bar" class="progress-fill"></div></div>
@@ -664,6 +662,7 @@
                 <select id="ai-doc-provider">
                     <option value="gemini">Google Gemini</option>
                     <option value="openrouter">OpenRouter</option>
+                    <option value="openai">OpenAI-kompatibel</option>
                 </select>
                 <div id="ai-doc-or-catalog-field" class="hidden">
                     <select id="ai-doc-or-catalog"></select>
@@ -686,7 +685,7 @@
             </div>
         </div>
 
-        <div class="rail-foot">BUILD V5.13.2</div>
+        <div class="rail-foot">BUILD V5.14.0</div>
     </aside>
 
     <div id="rail-splitter" class="splitter" title="Rail-Breite ziehen"></div>
@@ -873,7 +872,7 @@
 
 <script src="gpp-core.js?v=4.0"></script>
     <script>
-        if (typeof gppCfg === 'undefined' || typeof GPP_CORE_VERSION === 'undefined' || Number(GPP_CORE_VERSION) < 2) {
+        if (typeof gppCfg === 'undefined' || typeof GPP_CORE_VERSION === 'undefined' || Number(GPP_CORE_VERSION) < 4) {
             document.body.innerHTML = '<div style="font:15px/1.6 system-ui;padding:40px;max-width:60ch;color:#eee;background:#0f172a">' +
                 '<h1 style="font-size:1.1rem">gpp-core.js fehlt oder ist veraltet</h1><p>Dieses Werkzeug braucht die gemeinsame Bibliothek ' +
                 '<code>gpp-core.js</code> im selben Ordner. Bitte die komplette Sammlung entpacken (GS++-oscal-app.zip) ' +
@@ -1471,9 +1470,9 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
         // --- INIT ---
         document.addEventListener('DOMContentLoaded', async () => {
-            if (window.pdfjsLib) {
-                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-            }
+            // Kern v4: Log-Konsole und Token-Statistik dieses Werkzeugs an gppAi haengen.
+            gppAi.log = aiLog;
+            gppAi.onUsage = recordAIUsage;
             renderMainStructure();
             /* Die vier Zielobjekt-Quellen (Nutzergeneriert, G++, Arbeitsstand,
                BSI-Komponente) schließen einander aus: eine Wahl setzt die anderen
@@ -1839,26 +1838,26 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         };
         const AI_DEFAULT_MODEL = 'gemini-3.6-flash';
 
-        // --- BACKENDS: Gemini (nativ) und OpenRouter (Multi-Vendor, browsertauglich) ---
+        // --- BACKENDS: Gemini (nativ), OpenRouter (Multi-Vendor) und ein eigener
+        // OpenAI-kompatibler Endpoint (vLLM, Ollama, LiteLLM …). Die Aufrufe selbst
+        // macht seit Kern v4 gppAi in gpp-core.js; hier bleiben die Auswahl und
+        // die aus config.html gespiegelten Felder.
         // Der frühere Direktpfad zu api.anthropic.com ist entfallen: er verlangt den Header
         // anthropic-dangerous-direct-browser-access und funktioniert nur in einer
         // Artifact-Umgebung; per file:// oder lokalem Server scheitert er an CORS.
         // OpenRouter liefert dieselben Anthropic-Modelle mit erlaubtem Browser-CORS.
-        const AI_BACKENDS = ['gemini', 'openrouter'];
-        const AI_BACKEND_LABELS = { gemini: 'Google Gemini', openrouter: 'OpenRouter' };
+        const AI_BACKENDS = ['gemini', 'openrouter', 'openai'];
+        const AI_BACKEND_LABELS = { gemini: 'Google Gemini', openrouter: 'OpenRouter', openai: 'OpenAI-kompatibel' };
         const AI_BACKEND_STORAGE_KEY = 'ssp-generator-ai-backend';
         const AI_MODEL_STORAGE_PREFIX = 'ssp-generator-ai-model-';   // je Backend getrennt (localStorage)
         const AI_KEY_STORAGE_PREFIX = 'ssp-generator-ai-key-';       // je Backend getrennt (sessionStorage)
         const AI_LEGACY_CONFIG_KEY = 'ssp-generator-ai-document-config';
         const AI_LEGACY_SESSION_KEY = 'ssp-generator-ai-document-key';
-        const AI_OPENROUTER_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
         const AI_OPENROUTER_MODELS_ENDPOINT = 'https://openrouter.ai/api/v1/models';
         const AI_OPENROUTER_CATALOG_KEY = 'ssp-generator-openrouter-catalog';
         const AI_OPENROUTER_CATALOG_TTL = 24 * 60 * 60 * 1000; // 24 h, danach automatisch neu laden
         const AI_OPENROUTER_DEFAULT_MODEL = 'anthropic/claude-sonnet-5';
         const AI_OPENROUTER_TITLE = 'OSCAL Blaupausen Generator';
-        // Gemini kennt thinkingConfig.thinkingLevel, OpenRouter nur reasoning.effort.
-        const AI_REASONING_EFFORT = { minimal: 'low', low: 'low', medium: 'medium', high: 'high' };
         // Migration: wer zuletzt den Claude-Direktpfad gespeichert hatte, bekommt einen
         // passenden OpenRouter-Slug vorgeschlagen — der Anthropic-Key wird NICHT übernommen.
         const AI_CLAUDE_TO_OPENROUTER = {
@@ -2030,17 +2029,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         }
 
         // Cache-Schlüssel für Chunk-Ergebnisse: SHA-256 über Provider|Modell|Version|Chunktext.
-        async function aiCacheKey(parts) {
-            const payload = parts.join('\u0000');
-            if (crypto.subtle) {
-                const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(payload));
-                return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
-            }
-            // Fallback ohne WebCrypto (nicht-sichere Kontexte)
-            let hash = 5381;
-            for (let i = 0; i < payload.length; i++) hash = ((hash << 5) + hash + payload.charCodeAt(i)) >>> 0;
-            return `djb2-${hash.toString(16)}-${payload.length}`;
-        }
+        const aiCacheKey = parts => gppAi.cacheKey(parts);   // SHA-256 ueber alle Teile (Kern v4)
 
         function normalizeAIBackend(value) {
             return AI_BACKENDS.includes(String(value || '')) ? String(value) : 'gemini';
@@ -2057,7 +2046,9 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         function readStoredAIModel(backend) {
             const central = cleanAIString(gppCfg.get('ai:model:' + backend) || '');
             if (central) return central;
-            return backend === 'gemini' ? AI_DEFAULT_MODEL : AI_OPENROUTER_DEFAULT_MODEL;
+            if (backend === 'gemini') return AI_DEFAULT_MODEL;
+            if (backend === 'openrouter') return AI_OPENROUTER_DEFAULT_MODEL;
+            return '';   // eigener Endpoint: kein sinnvoller Vorschlag, Modell kommt aus config.html
         }
 
         function readStoredAIKey(backend) {
@@ -2413,38 +2404,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             }
         }
 
-        async function extractPdfDocumentText(file) {
-            if (!window.pdfjsLib) throw new Error('PDF.js wurde nicht geladen.');
-            const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
-            const pages = [];
-            for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
-                const page = await pdf.getPage(pageNumber);
-                const content = await page.getTextContent();
-                pages.push(content.items.map(item => item.str).join(' '));
-            }
-            return pages.join('\n\n');
-        }
-
-        async function extractAIDocumentText(file) {
-            const extension = (file.name.split('.').pop() || '').toLowerCase();
-            if (extension === 'pdf' || file.type === 'application/pdf') {
-                return extractPdfDocumentText(file);
-            }
-            if (extension === 'docx' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-                if (!window.mammoth) throw new Error('Mammoth.js wurde nicht geladen.');
-                const result = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
-                return result.value;
-            }
-            const raw = await file.text();
-            if (extension === 'json') {
-                try { return JSON.stringify(JSON.parse(raw.replace(/^\uFEFF/, '')), null, 2); } catch (e) { return raw; }
-            }
-            if (['html', 'htm', 'xml'].includes(extension)) {
-                const parsed = new DOMParser().parseFromString(raw, extension === 'xml' ? 'application/xml' : 'text/html');
-                return parsed.documentElement?.textContent || raw;
-            }
-            return raw;
-        }
+        // Textextraktion (PDF, DOCX, Text, JSON, XML, HTML): seit Kern v4 gppDocText in gpp-core.js.
 
         window.handleAIDocumentDrop = function (event) {
             event.preventDefault();
@@ -2469,7 +2429,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     );
                     if (duplicate) continue;
                     try {
-                        const text = (await extractAIDocumentText(file)).replace(/\u0000/g, '').trim();
+                        const text = await gppDocText(file);
                         if (!text) throw new Error('kein auswertbarer Text gefunden');
                         const record = {
                             id: crypto.randomUUID(),
@@ -2531,239 +2491,39 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             }).join('');
         }
 
-        function parseAIJson(text) {
-            const cleaned = String(text || '').trim()
-                .replace(/^```(?:json)?\s*/i, '')
-                .replace(/\s*```$/i, '');
-            try {
-                return JSON.parse(cleaned);
-            } catch (firstError) {
-                const start = cleaned.indexOf('{');
-                const end = cleaned.lastIndexOf('}');
-                if (start >= 0 && end > start) return JSON.parse(cleaned.slice(start, end + 1));
-                throw firstError;
-            }
-        }
+        // Backend-Weiche, Retry, JSON-Parsen, Abbruch und Worker-Pool liegen seit
+        // Kern v4 in gpp-core.js (gppAi). Hier bleiben die Bruecken zum Bestandscode.
+        const parseAIJson = text => gppAi.parseJson(text);
+        const truncateApiError = message => gppAi.truncate(message);
+        const parseErrorResponse = response => gppAi.errorText(response);
+        const runPool = (tasks, limit, onProgress) => gppAi.pool(tasks, limit, onProgress);
+        const collectPoolProblems = (results, describe) => gppAi.problems(results, describe);
 
-        // Rohe API-Fehlermeldung — auf ~400 Zeichen gekürzt, damit Alert und Log lesbar bleiben.
-        function truncateApiError(message) {
-            const text = String(message ?? '').replace(/\s+/g, ' ').trim();
-            return text.length > 400 ? `${text.slice(0, 400)}…` : text;
-        }
-
-        async function parseErrorResponse(response) {
-            try {
-                const data = await response.json();
-                return truncateApiError(data.error?.message || data.message || JSON.stringify(data));
-            } catch (e) {
-                try { return truncateApiError(await response.text()); } catch (ignored) { return `HTTP ${response.status}`; }
-            }
-        }
-
-        // Optionale Attributionskopfzeile; unter file:// gibt es keinen brauchbaren Origin.
-        function openRouterReferer() {
-            try {
-                if (typeof location !== 'undefined' && /^https?:$/.test(location.protocol) && location.origin) return location.origin;
-            } catch (e) { }
-            return 'https://localhost';
-        }
-
-        async function callOpenRouterStructured(config, systemPrompt, prompt, schema, label = 'KI-Aufruf') {
-            const t0 = performance.now();
-            const messages = [];
-            if (systemPrompt) messages.push({ role: 'system', content: systemPrompt });
-            messages.push({ role: 'user', content: prompt });
-            const body = {
-                // Bewusst KEINE Sampling-Parameter (temperature/top_p/top_k): auf aktuellen
-                // Modellen wirkungslos bis fehlerhaft — Determinismus kommt aus
-                // Prompt + JSON-Schema.
-                model: config.model,
-                messages,
-                response_format: { type: 'json_schema', json_schema: { name: 'ssp_generator_result', strict: true, schema } },
-                // Nur Provider ansteuern, die response_format wirklich einhalten.
-                provider: { require_parameters: true }
-            };
-            // OpenRouter kennt kein thinkingConfig; das Thinking-Bedienelement wird abgebildet.
-            const effort = AI_REASONING_EFFORT[getAIRunSettings().thinkingLevel];
-            if (effort) body.reasoning = { effort };
-            const response = await fetch(AI_OPENROUTER_ENDPOINT, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${config.key}`,
-                    'HTTP-Referer': openRouterReferer(),
-                    'X-Title': AI_OPENROUTER_TITLE
-                },
-                body: JSON.stringify(body)
-            });
-            if (!response.ok) throw new Error(`OpenRouter API (${response.status}): ${await parseErrorResponse(response)}`);
-            const data = await response.json();
-            // OpenRouter liefert Provider-Fehler auch mit HTTP 200 im Body aus.
-            if (data.error) {
-                throw new Error(`OpenRouter API: ${truncateApiError(data.error.message || JSON.stringify(data.error))}`);
-            }
-            const usage = data.usage || {};
-            recordAIUsage({
-                input: usage.prompt_tokens || 0,
-                output: usage.completion_tokens || 0,
-                thoughts: usage.completion_tokens_details?.reasoning_tokens || 0,
-                cacheRead: usage.prompt_tokens_details?.cached_tokens || 0
-            }, label, performance.now() - t0);
-            const choice = data.choices?.[0];
-            if (!choice) throw new Error('OpenRouter hat keinen Antwortkandidaten geliefert.');
-            if (choice.finish_reason === 'length') throw new Error('OpenRouter-Ausgabe wurde wegen des Token-Limits abgeschnitten.');
-            const text = String(choice.message?.content ?? '');
-            if (!text.trim()) throw new Error('OpenRouter hat keine auswertbare Antwort geliefert.');
-            return parseAIJson(text);
-        }
-
-        async function performGeminiRequest(config, prompt, systemPrompt, generationConfig) {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(config.model)}:generateContent`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-goog-api-key': config.key
-                },
-                body: JSON.stringify({
-                    system_instruction: { parts: [{ text: systemPrompt }] },
-                    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-                    generationConfig
-                })
-            });
-            const data = response.ok ? await response.json() : null;
-            return { response, data };
-        }
-
-        async function callGeminiStructured(config, systemPrompt, prompt, schema, label = 'KI-Aufruf') {
-            // Gemini 3.x: Thinking-Tokens zählen in maxOutputTokens mit — ein knappes Budget
-            // wird vom Reasoning aufgebraucht und schneidet das JSON ab (MAX_TOKENS).
-            // Bewusst KEINE Sampling-Parameter (temperature/topP/topK/candidateCount):
-            // deprecated auf 3.x, künftige Modelle antworten darauf mit HTTP 400.
-            const common = {
-                maxOutputTokens: 65536,
-                thinkingConfig: { thinkingLevel: getAIRunSettings().thinkingLevel }
-            };
-            // Dokumentierte Form zuerst; responseSchema bleibt als Fallback für ältere Endpunkte.
-            const attempts = [
-                { ...common, responseMimeType: 'application/json', responseJsonSchema: schema },
-                { ...common, responseMimeType: 'application/json', responseSchema: schema }
-            ];
-            let lastError = '';
-            for (let index = 0; index < attempts.length; index++) {
-                const t0 = performance.now();
-                const { response, data } = await performGeminiRequest(config, prompt, systemPrompt, attempts[index]);
-                if (response.ok) {
-                    const um = data.usageMetadata || {};
-                    recordAIUsage({
-                        input: um.promptTokenCount || 0,
-                        output: (um.candidatesTokenCount || 0) + (um.thoughtsTokenCount || 0),
-                        thoughts: um.thoughtsTokenCount || 0,
-                        cacheRead: um.cachedContentTokenCount || 0
-                    }, label, performance.now() - t0);
-                    const candidate = data.candidates?.[0];
-                    if (!candidate) {
-                        const blockReason = data.promptFeedback?.blockReason || 'keine Antwort';
-                        throw new Error(`Gemini hat keinen Antwortkandidaten geliefert (${blockReason}).`);
-                    }
-                    if (candidate.finishReason === 'MAX_TOKENS') throw new Error('Gemini-Ausgabe wurde wegen des Token-Limits abgeschnitten.');
-                    const text = (candidate.content?.parts || []).map(part => part.text || '').join('');
-                    return parseAIJson(text);
-                }
-                lastError = await parseErrorResponse(response);
-                if (response.status !== 400 || index === attempts.length - 1) {
-                    throw new Error(`Gemini API (${response.status}): ${lastError}`);
-                }
-                aiLog('warn', `${label}: Structured-Output-Variante ${index + 1} abgelehnt (400) — versuche Variante ${index + 2}`);
-            }
-            throw new Error(`Gemini API: ${lastError || 'unbekannter Fehler'}`);
-        }
-
-        // Die EINZIGE Backend-Weiche im Stack. Alles darüber — runPool, Retry-Wrapper,
-        // parseAIJson, die editierbaren Prompts, Abbruch, Fortschritt, Logging,
-        // Chunk-Cache und Auswertung — bleibt backend-agnostisch.
-        async function callAIDocumentModelOnce(systemPrompt, prompt, schema, label = 'KI-Aufruf') {
-            const config = getAIDocumentConfig();
-            const backendLabel = AI_BACKEND_LABELS[config.provider] || config.provider;
-            // Unternehmenskontext aus config.html an die System-Instruktion.
-            const system = gppWithContext(systemPrompt);
-            aiLog('info', `→ ${label} · Backend ${backendLabel} · Modell ${config.model} · ${(prompt.length / 1024).toFixed(1)} kB Prompt`);
-            try {
-                if (config.provider === 'openrouter') return await callOpenRouterStructured(config, system, prompt, schema, label);
-                return await callGeminiStructured(config, system, prompt, schema, label);
-            } catch (e) {
-                aiLog('err', `${label} · ${backendLabel}/${config.model}: ${e.message}`);
-                throw e;
-            }
-        }
-
-        // --- ABBRUCH, RETRIES & WORKER-POOL ---
-        const aiRun = { running: false, cancel: false };
-        const aiSleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-        const AI_CANCEL_MESSAGE = 'Abgebrochen (Benutzerabbruch).';
+        // Laufzustand; der Abbruch-Token selbst liegt im Kern (gppAi.cancel.requested).
+        const aiRun = { running: false };
+        const AI_CANCEL_MESSAGE = gppAi.CANCELLED;
 
         window.cancelAIRun = function () {
             if (!aiRun.running) return;
-            aiRun.cancel = true;
+            gppAi.cancel.requested = true;
             const button = document.getElementById('ai-doc-cancel');
             if (button) { button.disabled = true; button.textContent = 'Abbruch angefordert…'; }
             aiLog('warn', 'Abbruch angefordert — laufende Aufrufe werden zu Ende geführt, es werden keine neuen gestartet.');
         };
 
-        // Retry mit exponentiellem Backoff (500 ms → 1 s → 2 s …), respektiert den Abbruch.
+        // Ein Modellaufruf mit Retry und Structured Output. Backend, Modell und Key
+        // kommen aus den (aus config.html gespiegelten) Feldern dieses Werkzeugs,
+        // Retries und Thinking-Stufe aus den Laufzeiteinstellungen; den
+        // Unternehmenskontext haengt der Kern an die System-Instruktion.
         async function callAIDocumentModel(systemPrompt, prompt, schema, label = 'KI-Aufruf') {
-            getAIDocumentConfig(); // Konfigurationsfehler nicht wiederholen, sondern sofort melden
-            const retries = getAIRunSettings().retries;
-            let attempt = 0;
-            while (true) {
-                if (aiRun.cancel) throw new Error(AI_CANCEL_MESSAGE);
-                try {
-                    return await callAIDocumentModelOnce(systemPrompt, prompt, schema, label);
-                } catch (e) {
-                    attempt++;
-                    if (attempt > retries || aiRun.cancel) throw e;
-                    const wait = 500 * Math.pow(2, attempt - 1);
-                    aiLog('warn', `${label}: Versuch ${attempt}/${retries} fehlgeschlagen — neuer Versuch in ${wait} ms`);
-                    await aiSleep(wait);
-                }
-            }
-        }
-
-        // Führt `tasks` (Array von () => Promise) mit höchstens `limit` gleichzeitig aus.
-        // onProgress(done, total) feuert nach jeder Auflösung; abgebrochene Tasks werden
-        // gar nicht erst gestartet und als { cancelled: true } zurückgegeben.
-        async function runPool(tasks, limit, onProgress) {
-            const results = new Array(tasks.length);
-            let done = 0, next = 0;
-            const workerCount = Math.max(1, Math.min(limit, tasks.length));
-            const workers = Array.from({ length: workerCount }, async () => {
-                while (next < tasks.length) {
-                    const index = next++;
-                    if (aiRun.cancel) {
-                        results[index] = { cancelled: true };
-                    } else {
-                        try { results[index] = await tasks[index](); }
-                        catch (e) { results[index] = { error: e }; }
-                    }
-                    done++;
-                    if (onProgress) onProgress(done, tasks.length);
-                }
+            const config = getAIDocumentConfig(); // Konfigurationsfehler sofort melden, nicht wiederholen
+            const settings = getAIRunSettings();
+            return gppAi.call(systemPrompt, prompt, {
+                schema, label,
+                target: { backend: config.provider, key: config.key, model: config.model },
+                retries: settings.retries, thinking: settings.thinkingLevel,
+                title: AI_OPENROUTER_TITLE
             });
-            await Promise.all(workers);
-            // Sicherheitsnetz: nie dispatchte Einträge als abgebrochen markieren.
-            for (let index = 0; index < results.length; index++) {
-                if (results[index] === undefined) results[index] = { cancelled: true };
-            }
-            return results;
-        }
-
-        // Fehler-/Abbruchmeldungen eines Pool-Laufs auf lesbare Zeilen bringen.
-        function collectPoolProblems(results, describe) {
-            const problems = [];
-            results.forEach((result, index) => {
-                if (result && result.error) problems.push(`${describe(index)}: ${result.error.message}`);
-                else if (result && result.cancelled) problems.push(`${describe(index)}: abgebrochen`);
-            });
-            return problems;
         }
 
         function ensureAIDocumentConsent() {
@@ -2801,7 +2561,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
         function setAIDocumentBusy(busy) {
             aiRun.running = busy;
-            if (busy) aiRun.cancel = false;
+            if (busy) gppAi.cancel.requested = false;
             ['ai-doc-classify-button', 'ai-doc-extract-button', 'ai-desc-generate', 'ai-risk-generate'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.disabled = busy;
@@ -2873,23 +2633,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             }
         };
 
-        function splitAIDocumentText(text, maxLength = getAIRunSettings().chunkSize) {
-            const chunks = [];
-            let offset = 0;
-            while (offset < text.length) {
-                let end = Math.min(offset + maxLength, text.length);
-                if (end < text.length) {
-                    const paragraph = text.lastIndexOf('\n\n', end);
-                    const line = text.lastIndexOf('\n', end);
-                    const candidate = Math.max(paragraph, line);
-                    if (candidate > offset + Math.floor(maxLength * 0.65)) end = candidate;
-                }
-                const chunk = text.slice(offset, end).trim();
-                if (chunk) chunks.push(chunk);
-                offset = end;
-            }
-            return chunks;
-        }
+        // Zerlegung nach Zeichen an Absatz-/Zeilengrenzen: Kern v4 (gppAi.chunk).
+        function splitAIDocumentText(text, maxLength = getAIRunSettings().chunkSize) { return gppAi.chunk(text, maxLength); }
 
         function cleanAIString(value) {
             return String(value ?? '').replace(/\u0000/g, '').trim();
@@ -3195,7 +2940,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 const problems = collectPoolProblems(outcomes, describeChunk);
                 problems.forEach(problem => aiLog('err', `Extraktion fehlgeschlagen — ${problem}`));
                 const extractions = chunkResults.filter(Boolean);
-                if (aiRun.cancel) {
+                if (gppAi.cancel.requested) {
                     aiLog('warn', `Extraktion abgebrochen: ${extractions.length} von ${workItems.length} Chunks fertig — die Ergebnisse liegen im Chunk-Cache, ein erneuter Lauf holt nur die fehlenden.`);
                     throw new Error(`Abgebrochen — ${extractions.length}/${workItems.length} Chunks fertig. Ein erneuter Lauf setzt auf dem Chunk-Cache auf.`);
                 }
@@ -3505,7 +3250,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     }
                 });
             });
-            if (aiRun.cancel) throw new Error(AI_CANCEL_MESSAGE);
+            if (gppAi.cancel.requested) throw new Error(AI_CANCEL_MESSAGE);
             analysis.coverageCompletedAt = new Date().toISOString();
             const coveredCount = analysis.controls.filter(c => c.coveredBy).length;
             aiLog('ok', `Abdeckungsprüfung abgeschlossen: ${coveredCount}/${analysis.controls.length} Maßnahmen abgedeckt, ${analysis.controls.length - coveredCount} werden als manuelle Controls ergänzt`);

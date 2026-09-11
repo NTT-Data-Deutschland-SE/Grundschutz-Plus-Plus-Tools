@@ -15,14 +15,17 @@
      IndexedDB     gpp-remote/outbox   noch nicht übertragene Datenbank-Pushes
                    (eigene DB, damit alte Kern-Stände im Cache nie an einer
                    hochgezählten gpp-artefacts-Version scheitern)
+     IndexedDB     gpp-ai-cache/results   Ergebnisse von KI-Aufrufen je Chunk (v4)
    ———————————————————————————————————————————————————————————————————— */
 /* Wird erhöht, sobald der Kern etwas anbietet, ohne das die Werkzeuge nicht mehr
    starten (v2: gppFloatingSave, gppAttrArg; v3: gppRemote — Sync mit der
    gemeinsamen Datenbank). Jede Seite prüft beim Start gegen
    ihren Mindeststand — nur so fällt ein alter, aus dem Browser-Cache geladener
    Kern auf, statt beim ersten Aufruf einer neuen Funktion das ganze Skript
-   abzubrechen. Die Prüfung auf ein beliebiges Symbol reicht dafür nicht. */
-const GPP_CORE_VERSION = "3";
+   abzubrechen. Die Prüfung auf ein beliebiges Symbol reicht dafür nicht.
+   v4: gppAi (KI-Aufrufe mit Schema, Pool, Chunking, Cache) und gppDocText
+   (Text aus PDF/DOCX/…) — Generator und Editor haben keine eigene Kopie mehr. */
+const GPP_CORE_VERSION = "4";
 const GPP_CFG_PREFIX = "gpp:cfg:";
 
 /* gpp-core.css gehoert seit Issue #40 zum Kern (Design-Tokens, Scrollbalken):
@@ -2158,5 +2161,416 @@ function gppConfigBanner(targetEl, opts = {}) {
   if (old) old.remove();
   targetEl.prepend(el);
   return el;
+}
+/* ---------- KI-Aufrufe, Chunking, Pool, Cache (v4) ----------
+   Eine Backend-Weiche fuer alle Werkzeuge: Gemini nativ, OpenRouter und der
+   eigene OpenAI-kompatible Endpoint aus config.html. Mit `schema` liefert
+   gppAi.call() geparstes JSON (Structured Output), ohne Schema den
+   Antworttext. Alles darueber — Prompts, Chunking, Pool, Cache — ist
+   backend-agnostisch. Vor v4 trug jedes Werkzeug eine eigene Kopie dieser
+   Schicht; der Nachweis-Abgleich im SSP-Editor (Issue #41) braucht dieselbe,
+   also wandert sie hierher. Generator und Editor nutzen sie seit 4.1, die
+   uebrigen Werkzeuge folgen.
+
+   Bewusst KEINE Sampling-Parameter (temperature/top_p/top_k/candidate_count):
+   auf Gemini 3.x abgekuendigt (HTTP 400), auf anderen Modellen wirkungslos —
+   Determinismus kommt aus Prompt und Schema.
+
+   Haken fuer die Werkzeuge:
+     gppAi.log = (level, text) => …     Log-Konsole des Werkzeugs (info|ok|warn|err|debug)
+     gppAi.onUsage = (usage, label, ms) Token-Statistik ({input, output, thoughts, cacheRead})
+     gppAi.cancel.requested = true      stoppt Retry-Schleife und Pool vor dem naechsten Start
+   Optionen von call(): schema, label, target {backend, key, model, baseUrl}
+   (Vorgabe: gppCfg.target()), retries (Vorgabe run:retries), thinking
+   (Vorgabe ai:thinking), title (X-Title bei OpenRouter), context:false
+   unterdrueckt den Unternehmenskontext aus config.html. */
+const GPP_AI_LABELS = { gemini: "Google Gemini", openrouter: "OpenRouter", openai: "OpenAI-kompatibel" };
+const GPP_AI_THINKING = ["minimal", "low", "medium", "high"];
+/* Gemini kennt thinkingConfig.thinkingLevel, die Chat-Completions-Form nur reasoning.effort. */
+const GPP_AI_EFFORT = { minimal: "low", low: "low", medium: "medium", high: "high" };
+const GPP_AI_CANCELLED = "Abgebrochen (Benutzerabbruch).";
+const GPP_NUL = String.fromCharCode(0);
+
+const gppAi = {
+  log(level, text) {
+    const f = level === "err" ? console.error : level === "warn" ? console.warn : console.log;
+    f(`[gppAi ${level}] ${text}`);
+  },
+  onUsage: null,
+  cancel: { requested: false },
+  CANCELLED: GPP_AI_CANCELLED,
+
+  label(backend) { return GPP_AI_LABELS[backend] || String(backend || "?"); },
+  /* Ziel eines Aufrufs: ausdrueckliches target (Werkzeug mit eigenen Feldern)
+     oder die zentrale Konfiguration. `provider` gilt als Alias fuer `backend`. */
+  target(opts = {}) {
+    const t = opts.target ? { ...opts.target } : gppCfg.target(opts.backend);
+    if (!t.backend && t.provider) t.backend = t.provider;
+    if (t.backend === "openai" && t.baseUrl == null) t.baseUrl = (gppCfg.get("ai:base:openai") || "").replace(/\/+$/, "");
+    return t;
+  },
+  /* Konfigurationsfehler sind nicht retry-faehig — vor der Schleife pruefen. */
+  check(t) {
+    if (!t.backend || !GPP_AI_LABELS[t.backend]) throw new Error(`Unbekanntes KI-Backend "${t.backend || ""}".`);
+    if (!t.key) throw new Error(`Kein API-Key für Backend ${this.label(t.backend)} — Einstellungen in config.html.`);
+    if (!t.model) throw new Error(`Kein Modell gewählt für Backend ${this.label(t.backend)} — Einstellungen in config.html.`);
+    if (t.backend === "openai" && !t.baseUrl) throw new Error("Keine Basis-URL für den OpenAI-kompatiblen Endpoint — Einstellungen in config.html.");
+    return t;
+  },
+  thinking(opts = {}) {
+    const v = opts.thinking || gppCfg.get("ai:thinking");
+    return GPP_AI_THINKING.includes(v) ? v : "medium";
+  },
+  retries(opts = {}) {
+    const n = opts.retries != null ? Number(opts.retries) : gppCfg.getNum("run:retries", 2);
+    return Number.isFinite(n) ? Math.max(0, Math.min(5, n)) : 2;
+  },
+
+  /* Rohe API-Fehlermeldungen koennen seitenlang sein — auf ~400 Zeichen kuerzen. */
+  truncate(message) {
+    const text = String(message ?? "").replace(/\s+/g, " ").trim();
+    return text.length > 400 ? `${text.slice(0, 400)}…` : text;
+  },
+  /* Antwort kann bei CORS-/Proxy-Fehlern HTML statt JSON sein — dann den Text
+     durchreichen statt am JSON-Parser zu scheitern. */
+  async errorText(response) {
+    try {
+      const data = await response.clone().json();
+      return this.truncate(data.error?.message || data.message || JSON.stringify(data));
+    } catch (e) {
+      try { return this.truncate(await response.text()); } catch (e2) { return `HTTP ${response.status}`; }
+    }
+  },
+  /* JSON aus einer Modellantwort: Markdown-Zaeune abstreifen, notfalls das
+     erste {…} herausschneiden. */
+  parseJson(text) {
+    const cleaned = String(text || "").trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
+    try {
+      return JSON.parse(cleaned);
+    } catch (firstError) {
+      const start = cleaned.indexOf("{");
+      const end = cleaned.lastIndexOf("}");
+      if (start >= 0 && end > start) return JSON.parse(cleaned.slice(start, end + 1));
+      throw firstError;
+    }
+  },
+  /* HTTP-Referer ist bei OpenRouter optional; unter file:// ist der Origin
+     "null" — dann weglassen statt Unsinn zu senden. */
+  referer() {
+    try {
+      if (/^https?:$/.test(location.protocol) && location.origin && location.origin !== "null") return location.origin;
+    } catch (e) { /* kein location */ }
+    return "";
+  },
+
+  /* Ein Aufruf ohne Retry. */
+  async callOnce(system, prompt, opts = {}) {
+    const t = this.check(this.target(opts));
+    const label = opts.label || "KI-Aufruf";
+    const sys = opts.context === false ? String(system || "") : gppWithContext(system);
+    this.log("info", `→ ${label} · Backend ${this.label(t.backend)} · Modell ${t.model} · ${(String(prompt).length / 1024).toFixed(1)} kB Prompt${opts.schema ? " · JSON-Schema" : ""}`);
+    try {
+      if (t.backend === "gemini") return await this._gemini(t, sys, String(prompt), opts, label);
+      return await this._chat(t, sys, String(prompt), opts, label);
+    } catch (e) {
+      this.log("err", `${label} · ${this.label(t.backend)}/${t.model}: ${e.message}`);
+      throw e;
+    }
+  },
+
+  /* Retry mit exponentiellem Backoff (500 ms → 1 s → 2 s …), respektiert den Abbruch. */
+  async call(system, prompt, opts = {}) {
+    this.check(this.target(opts));
+    const retries = this.retries(opts);
+    const label = opts.label || "KI-Aufruf";
+    let attempt = 0;
+    while (true) {
+      if (this.cancel.requested) throw new Error(GPP_AI_CANCELLED);
+      const t0 = performance.now();
+      try {
+        const result = await this.callOnce(system, prompt, opts);
+        this.log("ok", `${label} ← fertig in ${Math.round(performance.now() - t0)} ms`);
+        return result;
+      } catch (e) {
+        attempt++;
+        if (attempt > retries || this.cancel.requested) throw e;
+        const wait = 500 * Math.pow(2, attempt - 1);
+        this.log("warn", `${label}: Versuch ${attempt}/${retries} fehlgeschlagen — neuer Versuch in ${wait} ms`);
+        await new Promise(r => setTimeout(r, wait));
+      }
+    }
+  },
+
+  _usage(usage, label, ms) {
+    if (typeof this.onUsage === "function") { try { this.onUsage(usage, label, ms); } catch (e) { console.warn(e); } }
+  },
+
+  /* Gemini nativ. Thinking-Tokens zaehlen in maxOutputTokens mit — ein knappes
+     Budget wird vom Reasoning aufgebraucht und schneidet das JSON ab
+     (MAX_TOKENS). Structured Output: responseJsonSchema ist die dokumentierte
+     Form, responseSchema der Fallback aelterer Endpunkte. Ohne Schema faellt
+     ein 400 auf thinkingConfig auf einen Aufruf ohne generationConfig zurueck
+     (aeltere Modelle kennen thinkingLevel nicht). */
+  async _gemini(t, system, prompt, opts, label) {
+    const thinking = { thinkingConfig: { thinkingLevel: this.thinking(opts) } };
+    const attempts = opts.schema
+      ? [{ maxOutputTokens: 65536, ...thinking, responseMimeType: "application/json", responseJsonSchema: opts.schema },
+         { maxOutputTokens: 65536, ...thinking, responseMimeType: "application/json", responseSchema: opts.schema }]
+      : [thinking, null];
+    let lastError = "";
+    for (let i = 0; i < attempts.length; i++) {
+      const body = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+      if (system) body.system_instruction = { parts: [{ text: system }] };
+      if (attempts[i]) body.generationConfig = attempts[i];
+      const t0 = performance.now();
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(t.model)}:generateContent`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": t.key },
+        body: JSON.stringify(body),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const um = data.usageMetadata || {};
+        this._usage({
+          input: um.promptTokenCount || 0,
+          output: (um.candidatesTokenCount || 0) + (um.thoughtsTokenCount || 0),
+          thoughts: um.thoughtsTokenCount || 0,
+          cacheRead: um.cachedContentTokenCount || 0,
+        }, label, performance.now() - t0);
+        const candidate = data.candidates?.[0];
+        if (!candidate) throw new Error(`Gemini hat keinen Antwortkandidaten geliefert (${data.promptFeedback?.blockReason || "keine Antwort"}).`);
+        if (candidate.finishReason === "MAX_TOKENS") throw new Error("Gemini-Ausgabe wurde wegen des Token-Limits abgeschnitten.");
+        const text = (candidate.content?.parts || []).map(p => p.text || "").join(opts.schema ? "" : "\n");
+        return opts.schema ? this.parseJson(text) : text;
+      }
+      lastError = await this.errorText(response);
+      if (response.status !== 400 || i === attempts.length - 1) throw new Error(`Gemini API (${response.status}): ${lastError}`);
+      this.log("warn", `${label}: Anfrage-Variante ${i + 1} abgelehnt (400) — versuche Variante ${i + 2}`);
+    }
+    throw new Error(`Gemini API: ${lastError || "unbekannter Fehler"}`);
+  },
+
+  /* Chat-Completions-Form: OpenRouter und der eigene OpenAI-kompatible
+     Endpoint. Mit Schema wird response_format json_schema (strict) verlangt;
+     OpenRouter soll dann nur Provider ansteuern, die das einhalten. Lehnt ein
+     eigener Endpoint response_format mit 400 ab, folgt ein Versuch ohne — das
+     JSON kommt dann aus dem Text. */
+  async _chat(t, system, prompt, opts, label) {
+    const url = t.backend === "openrouter" ? "https://openrouter.ai/api/v1/chat/completions" : `${t.baseUrl}/chat/completions`;
+    const messages = [];
+    if (system) messages.push({ role: "system", content: system });
+    messages.push({ role: "user", content: prompt });
+    const headers = { "Content-Type": "application/json", "Authorization": `Bearer ${t.key}` };
+    if (t.backend === "openrouter") {
+      headers["X-Title"] = opts.title || (typeof document !== "undefined" && document.title) || "GS++ OSCAL Tools";
+      const ref = this.referer();
+      if (ref) headers["HTTP-Referer"] = ref;
+    }
+    const variants = opts.schema && t.backend === "openai" ? [true, false] : [true];
+    let lastError = "";
+    for (let i = 0; i < variants.length; i++) {
+      const withSchema = Boolean(opts.schema) && variants[i];
+      const body = { model: t.model, messages };
+      if (withSchema) {
+        body.response_format = { type: "json_schema", json_schema: { name: "gpp_result", strict: true, schema: opts.schema } };
+        if (t.backend === "openrouter") body.provider = { require_parameters: true };
+      }
+      if (t.backend === "openrouter") body.reasoning = { effort: GPP_AI_EFFORT[this.thinking(opts)] };
+      const t0 = performance.now();
+      const response = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
+      if (!response.ok) {
+        lastError = await this.errorText(response);
+        if (withSchema && response.status === 400 && i < variants.length - 1) {
+          this.log("warn", `${label}: response_format abgelehnt (400) — Versuch ohne Schema, JSON aus dem Text`);
+          continue;
+        }
+        throw new Error(`${this.label(t.backend)} API (${response.status}): ${lastError}`);
+      }
+      const data = await response.json();
+      // Provider-Fehler kommen bei OpenRouter auch mit HTTP 200 im Body.
+      if (data.error) throw new Error(`${this.label(t.backend)} API: ${this.truncate(data.error.message || JSON.stringify(data.error))}`);
+      const usage = data.usage || {};
+      this._usage({
+        input: usage.prompt_tokens || 0,
+        output: usage.completion_tokens || 0,
+        thoughts: usage.completion_tokens_details?.reasoning_tokens || 0,
+        cacheRead: usage.prompt_tokens_details?.cached_tokens || 0,
+      }, label, performance.now() - t0);
+      const choice = data.choices?.[0];
+      if (!choice) throw new Error(`${this.label(t.backend)} hat keinen Antwortkandidaten geliefert.`);
+      if (choice.finish_reason === "length") throw new Error(`${this.label(t.backend)}-Ausgabe wurde wegen des Token-Limits abgeschnitten.`);
+      const text = String(choice.message?.content ?? "");
+      if (!opts.schema) return text;
+      if (!text.trim()) throw new Error(`${this.label(t.backend)} hat keine auswertbare Antwort geliefert.`);
+      return this.parseJson(text);
+    }
+    throw new Error(`${this.label(t.backend)} API: ${lastError || "unbekannter Fehler"}`);
+  },
+
+  /* Text nach Zeichen zerlegen, moeglichst an Absatz- oder Zeilengrenzen
+     (nicht vor 65 % der Zielgroesse). Vorgabe: run:chunkchars. */
+  chunk(text, maxChars) {
+    const max = Math.max(500, Number(maxChars) || gppCfg.getNum("run:chunkchars", 28000));
+    const s = String(text || "");
+    const chunks = [];
+    let offset = 0;
+    while (offset < s.length) {
+      let end = Math.min(offset + max, s.length);
+      if (end < s.length) {
+        const candidate = Math.max(s.lastIndexOf("\n\n", end), s.lastIndexOf("\n", end));
+        if (candidate > offset + Math.floor(max * 0.65)) end = candidate;
+      }
+      const piece = s.slice(offset, end).trim();
+      if (piece) chunks.push(piece);
+      offset = end;
+    }
+    return chunks;
+  },
+
+  /* Cache-Schluessel aus beliebigen Teilen (Backend, Modell, Prompt, Text …). */
+  async cacheKey(parts) {
+    const payload = (parts || []).map(p => String(p ?? "")).join(GPP_NUL);
+    try { return await gppSha256(payload); } catch (e) { /* kein WebCrypto */ }
+    let hash = 5381;
+    for (let i = 0; i < payload.length; i++) hash = ((hash << 5) + hash + payload.charCodeAt(i)) >>> 0;
+    return `djb2-${hash.toString(16)}-${payload.length}`;
+  },
+
+  /* Fuehrt tasks (Array von () => Promise) mit hoechstens limit gleichzeitig
+     aus. onProgress(done, total) nach jeder Aufloesung. Nach einem Abbruch
+     werden keine neuen Tasks gestartet; sie enden als { cancelled: true },
+     Fehler als { error }. */
+  async pool(tasks, limit, onProgress) {
+    const results = new Array(tasks.length);
+    let done = 0, next = 0;
+    const workerCount = Math.max(1, Math.min(Number(limit) || 1, tasks.length));
+    const workers = Array.from({ length: workerCount }, async () => {
+      while (next < tasks.length) {
+        const index = next++;
+        if (this.cancel.requested) {
+          results[index] = { cancelled: true };
+        } else {
+          try { results[index] = await tasks[index](); }
+          catch (e) { results[index] = { error: e }; }
+        }
+        done++;
+        if (onProgress) onProgress(done, tasks.length);
+      }
+    });
+    await Promise.all(workers);
+    for (let i = 0; i < results.length; i++) if (results[i] === undefined) results[i] = { cancelled: true };
+    return results;
+  },
+  /* Fehler- und Abbruchmeldungen eines Pool-Laufs als lesbare Zeilen. */
+  problems(results, describe) {
+    const out = [];
+    (results || []).forEach((r, i) => {
+      if (r && r.error) out.push(`${describe(i)}: ${r.error.message}`);
+      else if (r && r.cancelled) out.push(`${describe(i)}: abgebrochen`);
+    });
+    return out;
+  },
+
+  /* Ergebnis-Cache in IndexedDB (gpp-ai-cache/results): Schluessel aus
+     cacheKey(), Wert beliebiges JSON. Wiederholungslaeufe nach Abbruch oder
+     Prompt-Feinschliff kosten so nur die fehlenden Aufrufe. Fehler im Cache
+     brechen nie einen Lauf ab — dann wird eben neu gerechnet. */
+  cache: {
+    open() {
+      return new Promise((resolve, reject) => {
+        if (typeof indexedDB === "undefined") return reject(new Error("IndexedDB nicht verfügbar."));
+        const req = indexedDB.open("gpp-ai-cache", 1);
+        req.onupgradeneeded = () => { if (!req.result.objectStoreNames.contains("results")) req.result.createObjectStore("results", { keyPath: "id" }); };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error || new Error("KI-Cache konnte nicht geöffnet werden."));
+      });
+    },
+    async run(mode, fn) {
+      const db = await this.open();
+      try {
+        return await new Promise((resolve, reject) => {
+          const tx = db.transaction("results", mode);
+          const r = fn(tx.objectStore("results"));
+          r.onsuccess = () => resolve(r.result);
+          r.onerror = () => reject(r.error || new Error("KI-Cache: Operation fehlgeschlagen."));
+        });
+      } finally { db.close(); }
+    },
+    async get(id) { try { const rec = await this.run("readonly", s => s.get(id)); return rec ? rec.value : undefined; } catch (e) { console.warn(e); return undefined; } },
+    async put(id, value, meta = {}) { try { await this.run("readwrite", s => s.put({ id, value, ...meta, cachedAt: new Date().toISOString() })); } catch (e) { console.warn(e); } },
+    async clear() { try { await this.run("readwrite", s => s.clear()); } catch (e) { console.warn(e); } },
+  },
+};
+
+/* ---------- Text aus Dateien (v4) ----------
+   PDF (pdf.js), DOCX (mammoth), Text, Markdown, CSV, JSON, XML, HTML. Die
+   beiden Bibliotheken kommen erst bei Bedarf vom CDN — die Seiten tragen keine
+   Script-Tags mehr dafuer, und wer nie ein PDF laedt, laedt auch pdf.js nie.
+   Unter file:// funktioniert das Nachladen wie ein normales Script-Tag.
+   pageMarkers:true setzt vor jede PDF-Seite "[Seite n]", damit ein Modell
+   Fundstellen nennen kann (Nachweis-Abgleich im Editor); der Generator laesst
+   es aus, sonst aenderten sich seine Chunk-Cache-Schluessel. */
+const GPP_LIBS = {
+  pdfjs: {
+    ready: () => typeof window !== "undefined" && !!window.pdfjsLib,
+    src: "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
+    after: () => { window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; },
+  },
+  mammoth: {
+    ready: () => typeof window !== "undefined" && !!window.mammoth,
+    src: "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js",
+  },
+};
+const _gppLibPending = new Map();
+function gppLoadLib(name) {
+  const lib = GPP_LIBS[name];
+  if (!lib) return Promise.reject(new Error(`Unbekannte Bibliothek: ${name}`));
+  if (lib.ready()) {
+    if (!lib.done && lib.after) { lib.after(); lib.done = true; }
+    return Promise.resolve();
+  }
+  if (_gppLibPending.has(name)) return _gppLibPending.get(name);
+  const p = new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = lib.src; s.async = true;
+    s.onload = () => { try { if (lib.after) lib.after(); lib.done = true; resolve(); } catch (e) { reject(e); } };
+    s.onerror = () => { _gppLibPending.delete(name); reject(new Error(`${name} konnte nicht vom CDN geladen werden (${lib.src}) — Netzwerk oder Adblocker prüfen.`)); };
+    document.head.appendChild(s);
+  });
+  _gppLibPending.set(name, p);
+  return p;
+}
+
+async function gppDocText(file, opts = {}) {
+  const ext = (String(file.name || "").split(".").pop() || "").toLowerCase();
+  const type = String(file.type || "");
+  let text;
+  if (ext === "pdf" || type === "application/pdf") {
+    await gppLoadLib("pdfjs");
+    const pdf = await window.pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+    const pages = [];
+    for (let n = 1; n <= pdf.numPages; n++) {
+      const page = await pdf.getPage(n);
+      const content = await page.getTextContent();
+      const body = content.items.map(item => item.str).join(" ");
+      pages.push(opts.pageMarkers ? `[Seite ${n}]\n${body}` : body);
+    }
+    text = pages.join("\n\n");
+  } else if (ext === "docx" || type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+    await gppLoadLib("mammoth");
+    text = (await window.mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() })).value;
+  } else {
+    const raw = await file.text();
+    const noBom = raw.charCodeAt(0) === 0xFEFF ? raw.slice(1) : raw;
+    if (ext === "json") {
+      try { text = JSON.stringify(JSON.parse(noBom), null, 2); } catch (e) { text = raw; }
+    } else if (["html", "htm", "xml"].includes(ext)) {
+      const parsed = new DOMParser().parseFromString(noBom, ext === "xml" ? "application/xml" : "text/html");
+      text = parsed.documentElement?.textContent || raw;
+    } else {
+      text = raw;
+    }
+  }
+  return String(text || "").split(GPP_NUL).join("").trim();
 }
 /* ==GPP-CORE-END== */
