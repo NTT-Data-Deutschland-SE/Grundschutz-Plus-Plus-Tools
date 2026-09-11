@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.14.0</title>
+    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.14.1</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -628,7 +628,7 @@
 
         <div class="topbar-actions">
             <div id="catalog-status" class="pill"><span class="dot animate-pulse"></span>Lade Basis-Katalog…</div>
-            <div class="pill pill-quiet">BUILD V5.14.0</div>
+            <div class="pill pill-quiet">BUILD V5.14.1</div>
         </div>
 
         <div class="progress-track"><div id="ai-doc-progress-bar" class="progress-fill"></div></div>
@@ -685,7 +685,7 @@
             </div>
         </div>
 
-        <div class="rail-foot">BUILD V5.14.0</div>
+        <div class="rail-foot">BUILD V5.14.1</div>
     </aside>
 
     <div id="rail-splitter" class="splitter" title="Rail-Breite ziehen"></div>
@@ -1500,6 +1500,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             setupSearchListeners();
             setupRiskTabListeners();
             document.getElementById('main-editor').classList.remove('hidden');
+            applyGenView();
             renderStats();
             await switchMethodik('standard');
             /* Arbeitsstand aus dem Set übernehmen: liegt dort ein SSP (und ggf.
@@ -1940,15 +1941,38 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             aiLog('debug', `${label}: ↑${usage.input || 0} ↓${usage.output || 0} Tokens${usage.thoughts ? ` (davon Thinking ${usage.thoughts})` : ''}, ${Math.round(ms)} ms`);
         }
 
-        window.navigateToSection = function (id) {
-            const wrapper = document.querySelector(`[data-section-id="${id}"]`);
-            if (!wrapper) return;
-            wrapper.querySelector('.collapsible-content')?.classList.add('open');
-            wrapper.querySelector('.chevron-icon')?.classList.add('open');
-            wrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            document.querySelectorAll('#sidebar .nav-item').forEach(item => {
-                item.classList.toggle('active', (item.getAttribute('onclick') || '').includes(`'${id}'`));
+        /* Die Hauptflaeche zeigt immer GENAU einen Abschnitt — Metadaten,
+           KI-Dokumentanalyse, Methodik & Assets, Tailoring (dort nur die gewaehlte
+           Quelle), Risikoanalyse oder Auswertung. Ein Klick in der Rail ersetzt
+           den Inhalt, statt durch den Stapel aller Abschnitte zu scrollen; die
+           Wahl ueberlebt das Neuladen (localStorage). Wie im SSP-Editor v1.7.1. */
+        const GEN_SECTIONS = ['sec-meta', 'sec-ai-documents', 'sec-components', 'sec-tailoring', 'sec-risks', 'sec-stats'];
+        const GEN_VIEW_KEY = 'ssp-generator-view';
+        const genView = { section: (() => { try { const v = localStorage.getItem(GEN_VIEW_KEY); return GEN_SECTIONS.includes(v) ? v : 'sec-meta'; } catch (e) { return 'sec-meta'; } })() };
+
+        function applyGenView() {
+            GEN_SECTIONS.forEach(id => {
+                const wrapper = document.querySelector(`[data-section-id="${id}"]`);
+                if (!wrapper) return;
+                const zeigen = id === genView.section;
+                wrapper.classList.toggle('hidden', !zeigen);
+                if (zeigen) {
+                    // Ein gezeigter Abschnitt ist aufgeklappt — zugeklappt waere die Flaeche leer.
+                    wrapper.querySelector('.collapsible-content')?.classList.add('open');
+                    wrapper.querySelector('.chevron-icon')?.classList.add('open');
+                }
             });
+            document.querySelectorAll('#sidebar .nav-item').forEach(item => {
+                item.classList.toggle('active', (item.getAttribute('onclick') || '').includes(`'${genView.section}'`));
+            });
+        }
+
+        window.navigateToSection = function (id) {
+            if (!GEN_SECTIONS.includes(id)) return;
+            genView.section = id;
+            try { localStorage.setItem(GEN_VIEW_KEY, id); } catch (e) { /* privater Modus */ }
+            applyGenView();
+            document.getElementById('main-area')?.scrollTo({ top: 0 });
             // Unter 900px überlagert die Rail den Inhalt — nach Klick schließen
             if (window.innerWidth <= 900) setSidebar(false);
         };
@@ -6899,9 +6923,9 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     </div>`);
             }
 
+            // Sichtbarkeit der Karte regelt die Navigation (applyGenView), nicht die Datenlage.
             if (cards.length === 0) {
-                card.classList.add('hidden');
-                grid.innerHTML = '';
+                grid.innerHTML = '<p class="text-xs text-slate-500">Noch keine Daten — Zielobjekte anlegen, Umsetzungsstatus zuordnen oder Risiken erfassen.</p>';
                 if (meta) meta.textContent = '';
                 return;
             }
@@ -6910,7 +6934,6 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 meta.textContent = `${stats.counts.assets} Assets · ${stats.counts.risks} Risiken · `
                     + `${stats.counts.implementations} Umsetzungsangaben`;
             }
-            card.classList.remove('hidden');
         }
 
         function downloadJSON(obj, filename) {

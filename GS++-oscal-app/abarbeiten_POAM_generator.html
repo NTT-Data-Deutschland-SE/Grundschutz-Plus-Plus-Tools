@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL POA&M Generator v2.4</title>
+    <title>OSCAL POA&M Generator v2.5</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -486,6 +486,7 @@ input[type=date].inp{color-scheme:dark}
             <div class="space-y-1">
                 <button class="nav-item" data-nav="sec-meta" onclick="navTo(this,'sec-meta')"><span class="gly">▣</span>Metadaten</button>
                 <button class="nav-item" data-nav="items-area" onclick="navTo(this,'items-area')"><span class="gly">◈</span>POA&amp;M Items</button>
+                <button class="nav-item" data-nav="stats-dash" onclick="navTo(this,'stats-dash')"><span class="gly">◉</span>Auswertung</button>
             </div>
         </div>
 
@@ -586,7 +587,7 @@ gppCollapsibleLog({consoleEl:document.querySelector('.logbox'),
   headEl:document.querySelector('.logbox .log-tools'),toolId:GPP_TOOL_ID});
 /* Kein Speichermenü mehr: das POA&M wird fortlaufend aus den Items erzeugt
    und als Einzelstück ins aktive Set gelegt (Live-Sync weiter unten). */
-const BUILD='v2.4';
+const BUILD='v2.5';
 const P={arFilename:'',sspHref:'',sysName:'',catalog:new Map(),findings:[],observations:[],risks:[],items:[],meta:{title:'',version:'1.0.0',desc:''},responsible:{name:'',role:'system-owner',email:''}};
 // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
 // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
@@ -695,15 +696,23 @@ function mkItem(fU,rU,cid,title,desc,comp,compUuid,obsTxt,rskTxt,remTxt){return{
 // SIDEBAR / RAIL
 function toggleSidebar(){const sb=document.getElementById('sidebar'),btn=document.getElementById('sb-btn');sb.classList.toggle('collapsed');btn.classList.toggle('shifted')}
 window.tog=id=>{document.getElementById(id+'-content')?.classList.toggle('open');document.getElementById('icon-'+id)?.classList.toggle('open')};
-window.scrollToSec = id => {
-    const el = document.getElementById(id);
-    if(el) {
-        el.scrollIntoView({behavior: 'smooth', block: 'start'});
-        el.classList.add('ring-2', 'ring-amber-500');
-        setTimeout(() => el.classList.remove('ring-2', 'ring-amber-500'), 1500);
-    }
-};
-window.navTo=(btn,id)=>{document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));btn?.classList.add('active');scrollToSec(id)};
+/* Die Hauptflaeche zeigt immer GENAU einen Abschnitt — Metadaten, POA&M-Items
+   (dort nur das gewaehlte Asset) oder Auswertung. Ein Klick in der Rail ersetzt
+   den Inhalt statt zu scrollen; die Wahl ueberlebt das Neuladen (localStorage).
+   Wie im SSP-Editor v1.7.1. */
+const POAM_SECTIONS=['sec-meta','items-area','stats-dash'];
+const POAM_VIEW_KEY='oscal_poam_view';
+const poamView={section:(()=>{try{const v=localStorage.getItem(POAM_VIEW_KEY);return POAM_SECTIONS.includes(v)?v:'items-area'}catch(e){return 'items-area'}})()};
+function applyPoamView(){
+    POAM_SECTIONS.forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('hidden',id!==poamView.section)});
+    document.querySelectorAll('.nav-item[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===poamView.section));
+    const sel=document.getElementById('flt-comp')?.value||'';
+    document.querySelectorAll('#poam-comp-nav [data-comp]').forEach(b=>b.classList.toggle('active',poamView.section==='items-area'&&b.dataset.comp===sel));
+}
+window.showSection=id=>{if(!POAM_SECTIONS.includes(id))return;poamView.section=id;try{localStorage.setItem(POAM_VIEW_KEY,id)}catch(e){}applyPoamView();document.getElementById('main')?.scrollTo({top:0})};
+window.navTo=(btn,id)=>showSection(id);
+// Beim Start den Hinweis der leeren Auswertung setzen und die gemerkte Ansicht zeigen.
+document.addEventListener('DOMContentLoaded',()=>{try{renderStats()}catch(e){}applyPoamView()});
 
 // Ziehbarer Splitter; Rail-Breite in localStorage.
 const RAIL_LS='oscal_poam_rail',RAIL_MIN=200,RAIL_MAX=420;
@@ -760,7 +769,7 @@ function importAR(d,fn){
     P.sysName=(ar.metadata?.title||'').replace(/ - Assessment Results/,'');
     P.meta.title=`${P.sysName} - POA&M`;
     document.getElementById('m-title').value=P.meta.title;
-    document.getElementById('sec-meta').classList.remove('hidden');
+    applyPoamView();
 
     P.findings=(res.findings||[]).map(f=>({
         uuid:f.uuid,
@@ -831,7 +840,7 @@ function restoreS(d){
     P._arSha=d.arSha||'';
     document.getElementById('m-title').value=P.meta.title;document.getElementById('m-ver').value=P.meta.version;
     document.getElementById('m-resp').value=P.responsible.name;document.getElementById('m-email').value=P.responsible.email;
-    document.getElementById('sec-meta').classList.remove('hidden');
+    applyPoamView();
     l.ok(`Session geladen: ${P.items.length} Items · Quelle ${P.arFilename||'(unbekannt)'}`);
     setSt('ar-status',true,`Session: ${P.items.length} Items`);render()
 }
@@ -1218,8 +1227,8 @@ function hBarRows(items){
 
 function renderStats(){
     const d=document.getElementById('stats-dash'),n=P.items.length;
-    if(!n){d.innerHTML='';d.style.display='none';return}
-    d.style.display='';
+    // Sichtbarkeit regelt die Navigation (applyPoamView), nicht die Datenlage.
+    if(!n){d.innerHTML='<div class="card p-4 text-xs text-slate-500">Noch keine Items — Assessment Results importieren oder Einträge anlegen.</div>';return}
     const bySt={},byPr={},byComp={};
     P.items.forEach(i=>{bySt[i.status]=(bySt[i.status]||0)+1;byPr[i.priority]=(byPr[i.priority]||0)+1;const c=(i.component||'').trim();if(c)byComp[c]=(byComp[c]||0)+1});
     const today=new Date().toISOString().split('T')[0];
@@ -1368,8 +1377,9 @@ function updateCompFilter() {
     const nav=document.getElementById('poam-comp-nav');
     if(nav){
         const selected=sel.value;
-        nav.innerHTML=`<div class="rail-label">Assets</div><button type="button" onclick="selectPoamComponent('')" class="nav-item ${selected?'':'active'}"><span class="gly">◇</span>Alle Items</button>`+
-            [...comps].sort().map(c=>{const enc=gppAttrArg(c);return `<button type="button" onclick="selectPoamComponent('${enc}')" class="nav-item ${selected===enc?'active':''}" title="Nur Controls dieses Assets anzeigen"><span class="gly">▣</span>${esc(c)}</button>`}).join('');
+        nav.innerHTML=`<div class="rail-label">Assets</div><button type="button" data-comp="" onclick="selectPoamComponent('')" class="nav-item ${selected?'':'active'}"><span class="gly">◇</span>Alle Items</button>`+
+            [...comps].sort().map(c=>{const enc=gppAttrArg(c);return `<button type="button" data-comp="${enc}" onclick="selectPoamComponent('${enc}')" class="nav-item ${selected===enc?'active':''}" title="Nur Controls dieses Assets anzeigen"><span class="gly">▣</span>${esc(c)}</button>`}).join('');
+        applyPoamView();
     }
 }
 
@@ -1397,9 +1407,9 @@ window.addMS=i=>{P.items[i].milestones.push({uuid:crypto.randomUUID(),title:'Mei
 window.tMS=(i,mi,d)=>{P.items[i].milestones[mi].done=d;renderStats()};
 window.uMS=(i,mi,k,v)=>{P.items[i].milestones[mi][k]=v};
 window.dMS=(i,mi)=>{P.items[i].milestones.splice(mi,1);renderItems()};
-window.flt=()=>{POAM_VIEW.limit=100;renderItems()};
-window.queuePoamFilter=()=>{clearTimeout(POAM_VIEW.timer);POAM_VIEW.limit=100;POAM_VIEW.timer=setTimeout(renderItems,120)};
-window.selectPoamComponent=encoded=>{const sel=document.getElementById('flt-comp');if(sel)sel.value=encoded;POAM_VIEW.limit=100;renderItems()};
+window.flt=()=>{POAM_VIEW.limit=100;renderItems();if(poamView.section!=='items-area')showSection('items-area')};
+window.queuePoamFilter=()=>{clearTimeout(POAM_VIEW.timer);POAM_VIEW.limit=100;POAM_VIEW.timer=setTimeout(()=>{renderItems();if(poamView.section!=='items-area')showSection('items-area')},120)};
+window.selectPoamComponent=encoded=>{const sel=document.getElementById('flt-comp');if(sel)sel.value=encoded;POAM_VIEW.limit=100;renderItems();showSection('items-area')};
 window.showMorePoamItems=()=>{POAM_VIEW.limit+=100;renderItems()};
 
 // AI

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Assessment Plan & Results Generator v9 (build 9.6.0 — Backends Gemini | OpenRouter, editierbare Prompts, Structured Outputs)</title>
+    <title>OSCAL Assessment Plan & Results Generator v9 (build 9.7.0 — Backends Gemini | OpenRouter, editierbare Prompts, Structured Outputs)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -387,6 +387,8 @@ textarea.inp{min-height:80px;line-height:1.55}
     width:min(320px,86vw);flex-basis:auto}
   .splitter{display:none}
 }
+    /* Navigation: der aktive Abschnitt bzw. die gewaehlte Komponente (showSection) */
+    .nav-on { color: var(--text-primary) !important; background: color-mix(in oklab, var(--green) 18%, transparent) !important; box-shadow: inset 3px 0 0 var(--green); }
     </style>
 </head>
 <body>
@@ -404,7 +406,7 @@ textarea.inp{min-height:80px;line-height:1.55}
         <span class="sub">OSCAL AP &amp; AR — SSP → Prüfung → Assessment Plan + Results</span>
     </div>
     <div class="topbar-meta">
-        <span class="pill">build 9.6.0</span>
+        <span class="pill">build 9.7.0</span>
         <span id="cat-status" class="pill">Katalog wird geladen …</span>
         <span id="ssp-status" class="pill">Kein SSP</span>
         <span id="comp-status" class="pill hidden"></span>
@@ -437,15 +439,20 @@ textarea.inp{min-height:80px;line-height:1.55}
             </div>
             <input type="number" id="ai-retries" min="0" max="5" value="2">
         </div>
-        <!-- Navigation -->
+        <!-- Navigation: jeder Eintrag zeigt GENAU einen Abschnitt der Hauptflaeche
+             (showSection); die Komponentenliste darunter zeigt den Controls-Bereich
+             mit genau dieser Komponente. -->
         <div class="lbl mb-0 mt-1">◉ Navigation</div>
-        <!-- Terms Navigation -->
-        <div class="border border-slate-700 rounded overflow-hidden">
-            <button onclick="scrollToSec('sec-terms')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300 hover:text-emerald-400 transition-colors">◐ Rahmenbedingungen</button>
-        </div>
-        <!-- Meta Navigation -->
-        <div class="border border-slate-700 rounded overflow-hidden">
-            <button onclick="scrollToSec('sec-meta')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300 hover:text-emerald-400 transition-colors">◇ Metadaten &amp; Assessor</button>
+        <div id="sb-nav-sections" class="space-y-1">
+            <div class="border border-slate-700 rounded overflow-hidden">
+                <button type="button" data-sec="sec-terms" onclick="showSection('sec-terms')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300 hover:text-emerald-400 transition-colors">◐ Rahmenbedingungen</button>
+            </div>
+            <div class="border border-slate-700 rounded overflow-hidden">
+                <button type="button" data-sec="sec-meta" onclick="showSection('sec-meta')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300 hover:text-emerald-400 transition-colors">◇ Metadaten &amp; Assessor</button>
+            </div>
+            <div class="border border-slate-700 rounded overflow-hidden">
+                <button type="button" data-sec="stats-dash" onclick="showSection('stats-dash')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 text-[10px] font-bold text-slate-300 hover:text-emerald-400 transition-colors">▣ Auswertung</button>
+            </div>
         </div>
         <!-- Filters -->
         <div class="border border-slate-700 rounded overflow-hidden">
@@ -459,7 +466,9 @@ textarea.inp{min-height:80px;line-height:1.55}
                 <div id="flt-count" class="text-[10px] text-emerald-400 font-mono"></div>
             </div>
         </div>
-        <!-- Component nav (populated dynamically) -->
+        <!-- Component nav (populated dynamically): ein Klick zeigt die Controls
+             genau dieser Komponente. -->
+        <div id="sb-comp-head" class="lbl mb-0 mt-1 hidden">◇ Controls je Komponente</div>
         <div id="sb-comp-nav" class="space-y-1 hidden"></div>
         <!-- Bulk actions -->
         <div id="sb-bulk" class="hidden space-y-1">
@@ -707,7 +716,7 @@ const METHOD_COL={EXAMINE:'oklch(0.70 0.15 240)',INTERVIEW:'oklch(0.80 0.15 80)'
 // ============================================================
 document.addEventListener('DOMContentLoaded',()=>{
     initSplitter();
-    L.info('OSCAL AP & AR — build 9.6.0 gestartet');
+    L.info('OSCAL AP & AR — build 9.7.0 gestartet');
     L.debug('Bei CORS-Fehlern: Ordner mit `python -m http.server` bedienen und über http://localhost:8000/ öffnen.');
     initPrompts();
     loadAICfg();
@@ -1118,14 +1127,12 @@ function mkEntry(st,desc){return{status:st,user:'',date:'',desc:desc||'',stmtId:
 
 function showUI(){
     renderStats();renderControls();
-    document.getElementById('stats-dash').classList.remove('hidden');
-    document.getElementById('ctrl-area').classList.remove('hidden');
     document.getElementById('sb-comp-nav').classList.remove('hidden');
+    document.getElementById('sb-comp-head')?.classList.remove('hidden');
     document.getElementById('sb-bulk').classList.remove('hidden');
 
-    // Reveal top-level sections
-    const sm = document.getElementById('sec-meta'); if(sm) sm.classList.remove('hidden');
-    const st = document.getElementById('sec-terms'); if(st) st.classList.remove('hidden');
+    // Hauptflaeche: genau ein Abschnitt (gemerkte Wahl), siehe showSection.
+    apView.ready=true;applyApView();
 
     // Populate fields from state
     document.getElementById('sb-title').value=S.meta.title;
@@ -1695,8 +1702,8 @@ function renderStats(){
         {label:'TEST',value:mc.TEST,color:METHOD_COL.TEST}
     ];
     // Ohne Daten keine Karte — leere Charts werden nicht als Platzhalter gezeigt.
-    if(!total&&!scope.length){dash.classList.add('hidden');dash.innerHTML='';return}
-    dash.classList.remove('hidden');
+    // Sichtbarkeit regelt die Navigation (applyApView), nicht die Datenlage.
+    if(!total&&!scope.length){dash.innerHTML='<div class="card p-4 text-xs text-slate-500">Noch keine Kennzahlen — ein SSP mit Controls laden.</div>';return}
     dash.innerHTML=`<div class="card p-4">
         <div class="flex justify-between items-center mb-3 gap-3 flex-wrap">
             <div class="lbl mb-0">▣ Kennzahlen</div>
@@ -1740,7 +1747,7 @@ function renderControls(){
         const sorted=[...ctrls.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
         const sspN=sorted.filter(([,i])=>!i.fromDef).length,defN=sorted.filter(([,i])=>i.fromDef).length;
         nav+=`<div class="border border-slate-700 rounded overflow-hidden">
-            <button onclick="togC('${cuuid}');document.getElementById('comp-${cuuid}')?.scrollIntoView({behavior:'smooth',block:'start'})" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 hover:bg-slate-800 text-[10px] font-bold text-slate-300">
+            <button type="button" data-comp="${cuuid}" onclick="selectApComponent('${cuuid}')" class="w-full flex justify-between items-center p-1.5 bg-slate-900/60 hover:bg-slate-800 text-[10px] font-bold text-slate-300" title="Nur die Controls dieser Komponente zeigen">
                 <span class="flex items-center gap-1 truncate"><span class="sb ${tb}" style="font-size:8px;padding:1px 4px">${esc(meta.type).substring(0,4)}</span>${esc(meta.title)}</span>
                 <span class="text-slate-500 flex-shrink-0">${sspN}${defN?'+'+defN:''}</span>
             </button></div>`;
@@ -1872,19 +1879,38 @@ function renderControls(){
 
     document.getElementById('ctrl-area').innerHTML=h;
     document.getElementById('scope-n').textContent=S.allCids.size-S.excluded.size;
+    // Ohne Filter nur die gewaehlte Komponente (Vorgabe: die erste), aufgeklappt.
+    if(!apView.comp||!S.compGroups.has(apView.comp))apView.comp=S.compGroups.keys().next().value||'';
+    if(apView.comp)apOpenComp(apView.comp);
+    _fltApply();
+    applyApView();
 }
 
 window.addTask=()=>{const t=document.getElementById('task-t').value.trim();if(!t)return;S.tasks.push({uuid:crypto.randomUUID(),title:t,type:'action'});document.getElementById('task-t').value='';document.getElementById('task-list').innerHTML=tHTML()};
 function tHTML(){if(!S.tasks.length)return'';return S.tasks.map((t,i)=>`<li class="flex justify-between items-center p-1 bg-slate-900 border border-slate-700 rounded"><span class="text-white">${esc(t.title)}</span><button onclick="S.tasks.splice(${i},1);document.getElementById('task-list').innerHTML=tHTML()" class="text-red-400 text-xs px-1">✕</button></li>`).join('')}
 
-window.scrollToSec = id => {
-    const el = document.getElementById(id);
-    if(el) {
-        el.scrollIntoView({behavior: 'smooth', block: 'start'});
-        el.classList.add('ring-2', 'ring-emerald-500');
-        setTimeout(() => el.classList.remove('ring-2', 'ring-emerald-500'), 1500);
-    }
-};
+/* Die Hauptflaeche zeigt immer GENAU einen Abschnitt — Rahmenbedingungen,
+   Metadaten, Auswertung oder die Controls, dort nur die gewaehlte Komponente
+   (bei aktivem Filter alle Komponenten mit Treffern, wie im SSP-Editor). Ein
+   Klick in der Rail ersetzt den Inhalt statt zu scrollen; die Wahl ueberlebt
+   das Neuladen (localStorage). Vor dem Laden eines SSP bleibt alles verborgen. */
+const AP_SECTIONS=['sec-terms','sec-meta','stats-dash','ctrl-area'];
+const AP_VIEW_KEY='oscal_apar_view';
+const apView={section:(()=>{try{const v=localStorage.getItem(AP_VIEW_KEY);return AP_SECTIONS.includes(v)?v:'ctrl-area'}catch(e){return 'ctrl-area'}})(),ready:false,comp:''};
+function applyApView(){
+    if(!apView.ready)return;
+    AP_SECTIONS.forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('hidden',id!==apView.section)});
+    document.querySelectorAll('#sb-nav-sections [data-sec]').forEach(b=>b.classList.toggle('nav-on',b.dataset.sec===apView.section));
+    document.querySelectorAll('#sb-comp-nav [data-comp]').forEach(b=>b.classList.toggle('nav-on',apView.section==='ctrl-area'&&b.dataset.comp===apView.comp));
+}
+window.showSection=id=>{if(!AP_SECTIONS.includes(id))return;apView.section=id;try{localStorage.setItem(AP_VIEW_KEY,id)}catch(e){}applyApView();document.getElementById('main-area')?.scrollTo({top:0})};
+// Karte einer Komponente aufklappen; die Zeilen kommen beim ersten Mal aus dem Cache ins DOM.
+function apOpenComp(u){
+    const box=document.getElementById('cb-'+u);if(!box)return;
+    if(box.dataset.lazy){box.innerHTML=_groupCache[u]||'';delete box.dataset.lazy}
+    if(!box.classList.contains('open')){box.classList.add('open');document.getElementById('cc-'+u)?.classList.add('open')}
+}
+window.selectApComponent=u=>{apView.comp=u;apOpenComp(u);_fltApply();showSection('ctrl-area')};
 
 window.tog=id=>{document.getElementById(id+'-content')?.classList.toggle('open');document.getElementById('icon-'+id)?.classList.toggle('open')};
 window.togC=u=>{
@@ -1911,7 +1937,7 @@ window.setF=(c,k,v)=>{let f=S.findings.get(c);if(!f){f={status:'',observation:''
    existieren Zeilen erst nach dem Aufklappen. Komponenten mit Treffern werden
    materialisiert und aufgeklappt, trefferlose ganz ausgeblendet. */
 let _fltT=null;
-window.fltC=()=>{clearTimeout(_fltT);_fltT=setTimeout(_fltApply,150)};
+window.fltC=()=>{clearTimeout(_fltT);_fltT=setTimeout(()=>{_fltApply();if(apView.section!=='ctrl-area')showSection('ctrl-area')},150)};
 function _fltFacts(cid,info){
     const ci=catInfo(cid);const prose=ci.prose||'';
     return{title:(ci.title||'').toLowerCase(),
@@ -1941,6 +1967,8 @@ function _fltApply(){
             hit++;
         }
         if(any&&!hit){wrap.style.display='none';return}
+        // Ohne Filter zeigt die Flaeche nur die gewaehlte Komponente.
+        if(!any&&apView.comp&&cuuid!==apView.comp){wrap.style.display='none';return}
         wrap.style.display='';shown+=any?hit:ctrls.size;
         const box=document.getElementById('cb-'+cuuid);
         if(any&&box){
