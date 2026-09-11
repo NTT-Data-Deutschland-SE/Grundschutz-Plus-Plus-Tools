@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.7.0</title>
+    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.7.1</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
@@ -621,6 +621,10 @@
         .topbar-meta .meta-pill { display: none; }
     }
 
+    /* Navigation: der aktive Abschnitt (showSection) */
+    .nav-btn { border: 1px solid transparent; border-radius: 4px; }
+    .nav-btn.nav-on { color: var(--text-primary); background: color-mix(in oklab, var(--green) 16%, transparent); border-color: color-mix(in oklab, var(--green) 45%, transparent); }
+
     /* Nachweis-Dialog (Issue #41) */
     .nw-overlay { position: fixed; inset: 0; z-index: 60; background: oklch(var(--shade) / .72); display: flex; align-items: center; justify-content: center; padding: 24px; }
     .nw-overlay.hidden { display: none; }
@@ -657,7 +661,7 @@
             <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>Kein SSP geladen
         </div>
         <div id="resource-status-ind" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 items-center hidden"></div>
-        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.7.0</span></span>
+        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.7.1</span></span>
     </div>
 </header>
 
@@ -677,13 +681,17 @@
 
         <!-- Backend, Key, Modell und Unternehmenskontext liegen zentral in
              config.html (gpp:cfg:*); die Aufrufe macht seit Kern v4 gppAi. -->
-        <!-- Navigation Links -->
-        <div class="space-y-1 border-t border-slate-700 pt-2">
+        <!-- Navigation: jeder Eintrag zeigt GENAU einen Abschnitt der Hauptflaeche
+             (showSection) — wie die Zielobjekt-Liste darunter, die nur das gewaehlte
+             Asset zeichnet. Vorher scrollte ein Klick durch einen Stapel aller
+             Abschnitte. -->
+        <div class="space-y-1 border-t border-slate-700 pt-2" id="sb-nav">
             <div class="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">&#9678; Navigation</div>
-            <button onclick="scrollToSec('sec-meta')" class="w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400">&#11041; Metadaten &amp; Status</button>
-            <button onclick="scrollToSec('sec-chars')" class="w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400">&#9635; Charakteristika</button>
-            <button onclick="scrollToSec('sec-risk')" class="w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400" id="nav-risk" style="display:none">&#9708; Risikoanalyse</button>
-            <button onclick="scrollToSec('sec-xls')" class="w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400" id="nav-xls" style="display:none">&#9636; Excel-Austausch</button>
+            <button type="button" data-sec="sec-meta" onclick="showSection('sec-meta')" class="nav-btn w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400">&#11041; Metadaten &amp; Status</button>
+            <button type="button" data-sec="sec-chars" onclick="showSection('sec-chars')" class="nav-btn w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400">&#9635; Charakteristika</button>
+            <button type="button" data-sec="sec-risk" onclick="showSection('sec-risk')" class="nav-btn w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400" id="nav-risk" style="display:none">&#9708; Risikoanalyse</button>
+            <button type="button" data-sec="sec-xls" onclick="showSection('sec-xls')" class="nav-btn w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400" id="nav-xls" style="display:none">&#9636; Excel-Austausch</button>
+            <button type="button" data-sec="sec-resource" onclick="showSection('sec-resource')" class="nav-btn w-full text-left p-1.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400">&#9672; Ressourcen-Status</button>
         </div>
 
         <!-- Global Filters (Injected by JS) -->
@@ -700,7 +708,9 @@
             </div>
         </div>
 
-        <!-- Component Navigation (Injected by JS) -->
+        <!-- Component Navigation (Injected by JS): ein Klick zeigt den
+             Grundschutzcheck mit genau diesem Zielobjekt. -->
+        <div id="sb-comp-head" class="text-[9px] font-bold text-slate-500 uppercase tracking-wider mt-3 mb-1 hidden">&#9671; Grundschutzcheck &middot; Zielobjekte</div>
         <div id="sb-comp-nav" class="space-y-1 mt-1 hidden"></div>
 
         <!-- Der Excel-Austausch stand hier und ging in der Komponentenliste
@@ -766,9 +776,8 @@
                      und nicht im Abspeichern-Dock — das ist ein Hin- und Rückweg,
                      kein Download. Der Grundschutzcheck wird oft von Fachverant-
                      wortlichen ausgefüllt, die dieses Werkzeug gar nicht öffnen.
-                     Der Abschnitt steht vor dem Grundschutzcheck, weil er sonst
-                     hinter Hunderten von Control-Karten verschwindet; aufgeklappt
-                     ist er, weil scrollToSec nur das Chevron dreht. -->
+                     Seit v1.7.1 zeigt die Navigation jeden Abschnitt einzeln
+                     (showSection); die Reihenfolge hier spielt keine Rolle mehr. -->
                 <div id="sec-xls" class="border border-slate-700 rounded-lg overflow-hidden">
                     <button class="collapsible-header w-full flex justify-between items-center p-4 bg-slate-800 hover:bg-slate-700 text-left">
                         <h2 class="text-lg font-bold text-white">&#9636; Excel-Austausch</h2>
@@ -934,7 +943,7 @@
     // CONFIG & STATE
     // ============================================================
     // Build-Version der App (nicht zu verwechseln mit dem Session-Format `_v`).
-    const BUILD_VERSION = 'v1.7.0';
+    const BUILD_VERSION = 'v1.7.1';
 
     // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
     // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
@@ -1127,16 +1136,48 @@ Controls (ID · Titel · Anforderung · Stufen):
         document.getElementById('icon-' + id)?.classList.toggle('open');
     };
 
-    window.scrollToSec = id => {
-        const el = document.getElementById(id);
-        if(el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            el.nextElementSibling?.classList.add('open');
-            el.querySelector('.chevron-icon')?.classList.add('open');
-            el.parentElement.classList.add('ring-2', 'ring-emerald-500');
-            setTimeout(() => el.parentElement.classList.remove('ring-2', 'ring-emerald-500'), 1500);
-        }
+    /* Die Hauptflaeche zeigt immer GENAU einen Abschnitt: Metadaten,
+       Charakteristika, Risikoanalyse, Excel-Austausch, Ressourcen-Status oder
+       den Grundschutzcheck (impl-area, dort wiederum nur das gewaehlte
+       Zielobjekt). Ein Klick in der Navigation ersetzt den Inhalt, statt durch
+       einen Stapel zu scrollen. Die Wahl ueberlebt das Neuladen (localStorage). */
+    const EDITOR_SECTIONS = ['sec-meta', 'sec-chars', 'sec-risk', 'sec-xls', 'sec-resource', 'impl-area'];
+    const EDITOR_VIEW_KEY = 'oscal_ssp_view';
+    const editorView = { section: (() => { try { const v = localStorage.getItem(EDITOR_VIEW_KEY); return EDITOR_SECTIONS.includes(v) ? v : 'sec-meta'; } catch (e) { return 'sec-meta'; } })() };
+
+    window.showSection = id => {
+        if (!EDITOR_SECTIONS.includes(id)) id = 'sec-meta';
+        // Risikoanalyse gibt es nur mit Risikodaten — sonst zurueck auf die Metadaten.
+        if (id === 'sec-risk' && !loadedRiskData.length) id = 'sec-meta';
+        editorView.section = id;
+        try { localStorage.setItem(EDITOR_VIEW_KEY, id); } catch (e) { /* privater Modus */ }
+        EDITOR_SECTIONS.forEach(sec => {
+            const el = document.getElementById(sec);
+            if (!el) return;
+            const zeigen = sec === id;
+            el.classList.toggle('hidden', !zeigen);
+            if (zeigen && sec !== 'impl-area') {
+                // Ein gezeigter Abschnitt ist aufgeklappt — zugeklappt waere die Flaeche leer.
+                el.querySelector('.collapsible-content')?.classList.add('open');
+                el.querySelector('.chevron-icon')?.classList.add('open');
+            }
+        });
+        syncNavHighlight();
+        document.querySelector('main')?.scrollTo({ top: 0 });
     };
+
+    /* Hervorhebung in der Rail: der aktive Abschnitt, oder — im Grundschutzcheck
+       ohne Suche/Filter — das gewaehlte Zielobjekt. */
+    function syncNavHighlight() {
+        const impl = editorView.section === 'impl-area';
+        document.querySelectorAll('#sb-nav [data-sec]').forEach(b => b.classList.toggle('nav-on', !impl && b.dataset.sec === editorView.section));
+        const hatAbfrage = Boolean((implementationView.term || '').trim() || Object.values(implementationView.filters || {}).some(Boolean));
+        document.querySelectorAll('#sb-comp-nav [data-uuid]').forEach(b => {
+            const an = impl && !hatAbfrage && b.dataset.uuid === implementationView.selectedUuid;
+            ['border-emerald-600', 'bg-emerald-900/30', 'text-white'].forEach(c => b.classList.toggle(c, an));
+            ['border-transparent', 'bg-slate-900/40', 'text-slate-300'].forEach(c => b.classList.toggle(c, !an));
+        });
+    }
 
     // ============================================================
     // SESSION MANAGEMENT (AUTO SAVE)
@@ -1912,6 +1953,7 @@ Controls (ID · Titel · Anforderung · Stufen):
         }
 
         renderImplementation(ssp); // Injects directly into DOM and Sidebar
+        showSection(editorView.section);
     }
 
     function renderResourceStatus() {
@@ -2115,8 +2157,8 @@ Controls (ID · Titel · Anforderung · Stufen):
         comps.forEach((c, idx) => {
             const sNiv = c.props?.find(p => p && p.name === 'sicherheitsniveau')?.value || '';
             const sNivTag = sNiv ? ` <span class="text-[8px] opacity-60">[${sNiv}]</span>` : '';
-            const activeClass = !hasQuery && c.uuid === implementationView.selectedUuid ? 'border-emerald-600 bg-emerald-900/30 text-white' : 'border-transparent bg-slate-900/40 text-slate-300';
-            navHtml += `<button onclick="selectImplementationComponent('${gppAttrArg(c.uuid)}')" class="w-full text-left p-1.5 text-[10px] font-bold hover:bg-slate-800 rounded truncate border ${activeClass}" title="Nur Controls dieses Assets anzeigen">◇ ${implEsc(c.title)}${sNivTag}</button>`;
+            const activeClass = editorView.section === 'impl-area' && !hasQuery && c.uuid === implementationView.selectedUuid ? 'border-emerald-600 bg-emerald-900/30 text-white' : 'border-transparent bg-slate-900/40 text-slate-300';
+            navHtml += `<button type="button" data-uuid="${c.uuid}" onclick="selectImplementationComponent('${gppAttrArg(c.uuid)}')" class="w-full text-left p-1.5 text-[10px] font-bold hover:bg-slate-800 rounded truncate border ${activeClass}" title="Grundschutzcheck mit diesem Zielobjekt anzeigen">◇ ${implEsc(c.title)}${sNivTag}</button>`;
 
             const { profile: tc, sMap, dMap, sorted } = componentControlModel(c, reqs);
 
@@ -2265,6 +2307,7 @@ Controls (ID · Titel · Anforderung · Stufen):
         // Ab elf Komponenten ein Suchfeld als erster Eintrag (Kern: gppListFilter).
         if (typeof gppListFilter === 'function') gppListFilter(document.getElementById('sb-comp-nav'), { item: ':scope > button', placeholder: 'Komponenten filtern …' });
         document.getElementById('sb-comp-nav').classList.remove('hidden');
+        document.getElementById('sb-comp-head')?.classList.remove('hidden');
 
         // Build Filters mit ConfigMap Bezeichnern
         const configMap = {
@@ -2559,6 +2602,7 @@ Controls (ID · Titel · Anforderung · Stufen):
         implementationView.filters = {};
         implementationView.limit = 120;
         renderImplementation(implementationView.ssp);
+        showSection('impl-area');
     };
 
     window.showMoreImplementationControls = () => {
@@ -2587,6 +2631,8 @@ Controls (ID · Titel · Anforderung · Stufen):
             const hatteFokus = document.activeElement === suchfeld;
             const von = suchfeld?.selectionStart, bis = suchfeld?.selectionEnd;
             renderImplementation(implementationView.ssp);
+            // Wer sucht oder filtert, will die Treffer sehen — also den Grundschutzcheck.
+            if (editorView.section !== 'impl-area') showSection('impl-area');
             /* Fokus nur zurückgeben, wenn er vorher im Suchfeld lag, und mit der
                ursprünglichen Cursorposition: sonst springt der Cursor mitten im
                Wort ans Ende, oder der Fokus wird aus einem Kommentarfeld

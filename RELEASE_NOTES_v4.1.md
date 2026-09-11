@@ -32,6 +32,10 @@ Die Nachträge zu 4.0 vom 10. und 11.09. (beschrieben in `RELEASE_NOTES_v4.0.md`
 * **BSI-Komponenten sind Zielobjekte wie alle anderen** (#42, #43, #44): Name, Status, Schutzbedarf beim Anlegen; dieselbe Component Definition mehrfach als eigenes Zielobjekt; Vorlagentext nur als Referenz; Umsetzungsstatus startet mit „Offen“.
 * **UI-Feedback (#40)**: gemeinsames Stylesheet mit Design-Tokens, Scrollbalken, Artefakte-Fläche mit Schließen-Knopf, Bearbeiter aus einer Vorschlagsliste, **helles Farbschema** (Übersicht und Einstellungen), **Suchfeld in Listen ab elf Einträgen**.
 
+## Nachtrag 11.09.2026 — SSP-Editor zeigt einen Abschnitt zur Zeit
+
+Die Navigation in der linken Leiste des SSP-Editors (v1.7.1) ersetzt den Inhalt der Hauptfläche, statt durch einen Stapel aller Abschnitte zu scrollen: Metadaten, Charakteristika, Risikoanalyse, Excel-Austausch, Ressourcen-Status (neuer Eintrag) und der Grundschutzcheck, dort wie bisher nur das gewählte Zielobjekt. Der aktive Eintrag ist markiert, Suche und Filter führen in den Grundschutzcheck, die zuletzt gewählte Ansicht bleibt beim Neuladen erhalten.
+
 ## Nicht im Umfang von 4.1
 
 * Der Excel-Export des Grundschutzchecks führt die Nachweise noch nicht als Spalte.
@@ -49,7 +53,7 @@ Die Nachträge zu 4.0 vom 10. und 11.09. (beschrieben in `RELEASE_NOTES_v4.0.md`
 | SSP-Generator (G++) | V5.14.0 |
 | GS++ Explorer (GSpp-Viewer) | v9.8 |
 | BSI → G++ Profil (Baustein_2_Profile) | 0.11.0 |
-| SSP-Editor (ssp_ausfuellen) | v1.7.0 |
+| SSP-Editor (ssp_ausfuellen) | v1.7.1 |
 | Prüfung AP/AR (pruefung_ap_ar) | build 9.6.0 |
 | POA&M-Generator | v2.4 |
 
