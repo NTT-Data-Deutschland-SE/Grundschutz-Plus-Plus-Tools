@@ -1,0 +1,3834 @@
+{
+ "schemaVersion": "1.0",
+ "analysisId": "f4978c47-f296-4ce4-90b5-e71c6b31254a",
+ "generatedAt": "2026-09-13T16:14:55.378Z",
+ "model": {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash"
+ },
+ "documents": [
+  {
+   "id": "ed0c4614-c928-40a2-9c37-877574c9b04c",
+   "name": "Beschreibung_Recplast.pdf",
+   "mediaType": "application/pdf",
+   "characterCount": 135564,
+   "classification": {
+    "documentType": "IT-Grundschutz Beispielunternehmensbeschreibung",
+    "language": "de",
+    "summary": "Beschreibung des Unternehmens RECPLAST GmbH inklusive IT-Sicherheitsmanagement, Netzplan, Risikoanalyse und Realisierungsplan.",
+    "extractionFocus": [
+     "assets",
+     "processes",
+     "risks",
+     "controls",
+     "implementations",
+     "evidence"
+    ],
+    "relevantSections": [
+     "1. Einleitung",
+     "2. Beschreibung der RECPLAST GmbH",
+     "3. Geltungsbereich",
+     "4. Sicherheitsmanagement",
+     "5. Strukturanalyse",
+     "6. Schutzbedarfsfeststellung",
+     "7. Modellierung",
+     "8. IT-Grundschutz-Check",
+     "9. Risikoanalyse",
+     "10. Realisierungsplan"
+    ],
+    "chunkInstructions": "Nur aus dem Dokument extrahierbare Daten verwenden. Keine Exploits oder Schwachstellen-Codes generieren, da das Dokument ein Beispielunternehmensdokument ist und keine echten Exploit-Vektoren enthält."
+   }
+  }
+ ],
+ "summary": "Extraktion aus Chunk 1 der Beschreibung des Beispielunternehmens RECPLAST GmbH (Kapitel 1 bis 4.2). Umfasst die Erfassung von Standorten, IT-Systemen, Virtualisierungshosts, Produktions- und Netzwerkkomponenten sowie ersten organisatorischen Prozessen und Sicherheitsmaßnahmen des Sicherheitsmanagements. Chunk 2 umfasst die Sicherheitsleitlinie der RECPLAST GmbH inklusive Zielsetzungen, Sicherheitsniveau (normaler Schutzbedarf) und Rollendefinitionen (Geschäftsführung, Informationssicherheitsbeauftragter, ICS-Sicherheitsbeauftragter, IS-Management-Team, Eigentümer) sowie den ersten Teil der Strukturanalyse mit der Erhebung der Geschäftsprozesse (GP001 bis GP011) und IT-Anwendungen (A001 bis A032). Strukturanalyse und Erhebung der IT-Systeme, ICS, IoT, Netzwerkkomponenten, Kommunikationsverbindungen, Raeumlichkeiten, Dienstleister sowie Beginn der Schutzbedarfsfeststellung fuer die RECPLAST GmbH. Auszug aus der Schutzbedarfsfeststellung (Geschäftsprozesse, Anwendungen, IT-Systeme, Kommunikationsverbindungen, Räume), der IT-Grundschutz-Modellierung und dem IT-Grundschutz-Check für den Baustein ISMS.1 Sicherheitsmanagement der RECPLAST GmbH. Extraktion aus Beschreibung_Recplast.pdf (Chunk 5/6) umfassend Grundschutz-Checks für ISMS.1, APP.1.1 und SYS.2.2.3 sowie Risikoanalyse und Risikobehandlung für Zielobjekte wie den Virtualisierungsserver S007 und den Geschäftsprozess GP001. Auszug aus dem Realisierungsplan (Tabelle 31) der RECPLAST GmbH mit Maßnahmen für ausgewählte Zielobjekte bezüglich Clients, Liegenschaften und Firewall.",
+ "mappingCompletedAt": "2026-09-13T16:16:46.469Z",
+ "coverageCompletedAt": "2026-09-13T16:17:40.388Z",
+ "assets": [
+  {
+   "componentUuid": "866ce3d2-9846-4ccd-954f-4af16daa8bd0",
+   "sourceId": "client-bg-126",
+   "name": "Arbeitsplatzclients Bad Godesberg",
+   "description": "126 zentral administrierte Arbeitsplatzclients mit Windows 10, Standard-Büroanwendungen und E-Mail-Client am Standort Bad Godesberg",
+   "componentType": "IT-System",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Arbeitsplatzclients fallen unter Endgeräte ohne gesondert ausgewiesenen erhöhten Schutzbedarf."
+  },
+  {
+   "componentUuid": "9c6f2ed9-0813-46c0-8bb6-ce9f59fd49aa",
+   "sourceId": "laptop-bg-42",
+   "name": "Laptops Bad Godesberg",
+   "description": "42 Laptops für Mitarbeiter des Standorts Bad Godesberg",
+   "componentType": "IT-System",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Mobile Laptops sind Endgeräte mit standardmäßigem Schutzbedarf."
+  },
+  {
+   "componentUuid": "d18f6324-27cc-4b13-a6d3-5d7d8fb0b156",
+   "sourceId": "srv-vh-bg-1",
+   "name": "Virtualisierungshost 1 Bad Godesberg",
+   "description": "Server als Virtualisierungshost am Standort Bad Godesberg",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "hostsysteme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/hostsysteme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Physischer Virtualisierungshost zur Bereitstellung virtueller Server."
+  },
+  {
+   "componentUuid": "61d49ab7-a407-48b7-99c2-2aaa924aca50",
+   "sourceId": "srv-vh-bg-2",
+   "name": "Virtualisierungshost 2 Bad Godesberg",
+   "description": "Server als Virtualisierungshost am Standort Bad Godesberg",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "hostsysteme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/hostsysteme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Physischer Server zur Virtualisierung mit Standard-Schutzbedarf."
+  },
+  {
+   "componentUuid": "08aac412-8846-4772-b69f-1e9b842e59be",
+   "sourceId": "srv-vm-dc-bg",
+   "name": "Domänen-Controller Bad Godesberg",
+   "description": "Virtueller Server auf Virtualisierungshost 1 als Domänen-Controller",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "verzeichnisdienste",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/verzeichnisdienste_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Zentraler Verzeichnisdienst für Authentifizierung und Domänenverwaltung."
+  },
+  {
+   "componentUuid": "7d7ccee8-96f2-45a0-8f32-7755561c4dba",
+   "sourceId": "srv-vm-file-bg",
+   "name": "Dateiablage Bad Godesberg",
+   "description": "Virtueller Server auf Virtualisierungshost 1 für die Dateiablage",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "dateiserver",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/dateiserver_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Virtueller Server zur Speicherung und Bereitstellung von Dateien."
+  },
+  {
+   "componentUuid": "b0b346d8-b8f4-4c46-bf44-0c0505402787",
+   "sourceId": "srv-vm-print-bg",
+   "name": "Druckserver Bad Godesberg",
+   "description": "Virtueller Server auf Virtualisierungshost 1 als Druckserver",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Serverdienst zur Abwicklung von Druckaufträgen."
+  },
+  {
+   "componentUuid": "5005f2b3-9ccc-4b8f-945f-c025a7e14b27",
+   "sourceId": "srv-vm-wiki-bg",
+   "name": "Wiki-Server Bad Godesberg",
+   "description": "Virtueller Server auf Virtualisierungshost 2 als Wiki-Server",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "webserver",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/webserver_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Server zum Hosten der internen Wiki-Webanwendung."
+  },
+  {
+   "componentUuid": "c97ee7e4-6d8f-491d-8f27-856cfce4fbdb",
+   "sourceId": "srv-vm-ticket-bg",
+   "name": "Internes Ticketsystem Bad Godesberg",
+   "description": "Virtueller Server auf Virtualisierungshost 2 als internes Ticketsystem",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "webanwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/webanwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Webbasierte Applikation zur Vorgangsbearbeitung."
+  },
+  {
+   "componentUuid": "b1021ef5-c569-49cf-8946-1993bc8b3794",
+   "sourceId": "srv-backup-bg",
+   "name": "Backupserver Bad Godesberg",
+   "description": "Dedizierter Server als Backupserver am Standort Bad Godesberg",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Dedizierter Server für Datensicherungen im Verbund."
+  },
+  {
+   "componentUuid": "88f6ecb1-8e58-4f8d-9e62-588f0a82bb50",
+   "sourceId": "srv-vm-wsus-bg",
+   "name": "Windows-Update-Server Bad Godesberg",
+   "description": "Virtueller Server auf Virtualisierungshost 2 als Windows-Update-Server",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Server für Patch-Management der Windows-Umgebung."
+  },
+  {
+   "componentUuid": "6edae397-4a20-44c0-a05e-49e268c41a56",
+   "sourceId": "srv-vm-linux-upd-bg",
+   "name": "Linux-Update-Server Bad Godesberg",
+   "description": "Virtueller Server auf Virtualisierungshost 2 als Linux-Update-Server",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Server zur Software- und Patchverteilung für Linux-Systeme."
+  },
+  {
+   "componentUuid": "2b1fe519-d9e7-4dca-895c-993103c0f3ee",
+   "sourceId": "srv-cloud-bg",
+   "name": "Cloudserver Bad Godesberg",
+   "description": "Server als Cloudserver am Standort Bad Godesberg",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "cloud-dienste",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/cloud-dienste_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Serverbasierte Bereitstellung von Cloud-Diensten."
+  },
+  {
+   "componentUuid": "0b346c68-98a6-4c78-a2ce-05e3f836dd73",
+   "sourceId": "srv-db-hr-fin-bg",
+   "name": "Datenbankserver Personal- und Finanzdaten",
+   "description": "Server als Datenbankserver für Personal- und Finanzdaten am Standort Bad Godesberg",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Dedizierter Datenbankserver mit standardmäßig spezifiziertem Schutzbedarf."
+  },
+  {
+   "componentUuid": "b897daff-84c2-4b5d-8b3e-99ee75a166b8",
+   "sourceId": "srv-db-crm-bg",
+   "name": "Datenbankserver Kunden- und Auftragsbearbeitung",
+   "description": "Server als Datenbankserver für Kunden- und Auftragsbearbeitung am Standort Bad Godesberg",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Datenbankserver zur Verwaltung von CRM- und Auftragsdaten."
+  },
+  {
+   "componentUuid": "530469d1-5189-4ae3-9e91-ddd741fb4b6d",
+   "sourceId": "srv-db-sysmgmt-bg",
+   "name": "Datenbankserver Systemmanagement",
+   "description": "Server als Datenbankserver für das Systemmanagement am Standort Bad Godesberg",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Datenbankserver für IT-Inventar und Systemmanagementdaten."
+  },
+  {
+   "componentUuid": "0ec7bdd9-dcfe-45df-9f2f-cd08f1a2e423",
+   "sourceId": "srv-comm-bg",
+   "name": "Kommunikations-Server Bad Godesberg",
+   "description": "Server für E-Mail, Termin- und Adressverwaltung am Standort Bad Godesberg",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "e-mail",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/e-mail_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Server für E-Mail-Dienste und Adressverwaltung."
+  },
+  {
+   "componentUuid": "202b4176-8dfc-4781-b337-0743f63ff6bb",
+   "sourceId": "ics-prod-spm",
+   "name": "Speicherprogrammierbare Maschinen Beuel",
+   "description": "Zwei speicherprogrammierbare Maschinen zur Produktion am Standort Beuel",
+   "componentType": "ICS",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Industrielle Steuerungssysteme der Produktion."
+  },
+  {
+   "componentUuid": "3251b31d-f36b-44b0-96df-62e811319b41",
+   "sourceId": "srv-prod-ctrl-beuel",
+   "name": "Server zur Produktionssteuerung Beuel",
+   "description": "Server zur Kontrolle und Konfiguration der beiden speicherprogrammierbaren Maschinen in Beuel",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Steuerungsserver für Fertigungsmaschinen am Standort Beuel."
+  },
+  {
+   "componentUuid": "b65802bd-73a3-47b2-9bce-5d11e00691e5",
+   "sourceId": "ics-scada-beuel",
+   "name": "SCADA-System Beuel",
+   "description": "SCADA-System zur Überwachung der Produktionsprozesse am Standort Beuel",
+   "componentType": "ICS",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "System zur industriellen Prozessüberwachung und -steuerung."
+  },
+  {
+   "componentUuid": "e618cd64-21d8-4fbe-aaea-40c204a0700d",
+   "sourceId": "srv-vh-beuel",
+   "name": "Virtualisierungsserver Beuel",
+   "description": "Virtualisierungsserver am Standort Beuel",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "hostsysteme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/hostsysteme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Hostsystem für virtuelle Maschinen am Standort Beuel."
+  },
+  {
+   "componentUuid": "9a608864-d0d0-4160-969d-2cc1d1f3c67b",
+   "sourceId": "srv-vm-dc-beuel",
+   "name": "Virtueller Server 1.1 Domänen-Controller Beuel",
+   "description": "Virtueller Server auf Virtualisierungsserver in Beuel als Domänen-Controller",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "verzeichnisdienste",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/verzeichnisdienste_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Standortspezifischer Verzeichnisdienst für Authentifizierung."
+  },
+  {
+   "componentUuid": "7b2e37ab-b1a1-4cb1-b668-8848b359525c",
+   "sourceId": "srv-vm-file-beuel",
+   "name": "Virtueller Server 1.2 Dateiserver Beuel",
+   "description": "Virtueller Server auf Virtualisierungsserver in Beuel als Dateiserver",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "dateiserver",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/dateiserver_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Virtueller Dateiserver für die Dokumentenablage in Beuel."
+  },
+  {
+   "componentUuid": "8b7b9d8b-f396-4da3-bb4f-a6d658541d32",
+   "sourceId": "srv-vm-print-beuel",
+   "name": "Virtueller Server 1.3 Druckserver Beuel",
+   "description": "Virtueller Server auf Virtualisierungsserver in Beuel als Druckserver",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Server zur Bereitstellung lokaler Druckdienste."
+  },
+  {
+   "componentUuid": "b71d6f0e-a986-4fe3-915c-7ec9cf20eee4",
+   "sourceId": "srv-bde-beuel",
+   "name": "Server für die Betriebsdatenerfassung Beuel",
+   "description": "Server zur Betriebsdatenerfassung am Standort Beuel",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "IT-System zur Aufnahme von Betriebsdaten in der Produktion."
+  },
+  {
+   "componentUuid": "3dc1a21e-55d1-4238-889d-479d4120d2f0",
+   "sourceId": "client-beuel-80",
+   "name": "Arbeitsplatzclients Beuel",
+   "description": "80 Arbeitsplatzclients mit Windows 10 und Büro-Software, teils mit CAD/CAM-Software am Standort Beuel",
+   "componentType": "IT-System",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Clients für Büro- und Konstruktionsarbeitsplätze."
+  },
+  {
+   "componentUuid": "7b499a0e-32dc-49cf-b727-ee20cf28b8d5",
+   "sourceId": "laptop-beuel-19",
+   "name": "Laptops Beuel",
+   "description": "19 Laptops für Mitarbeiter des Standorts Beuel",
+   "componentType": "IT-System",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Mobile Arbeitsplatzrechner der Beueler Mitarbeiter."
+  },
+  {
+   "componentUuid": "2e2f6fc1-8bbe-499e-9402-50dbeaa455b8",
+   "sourceId": "net-line-bg-beuel",
+   "name": "Standleitung Bad Godesberg - Beuel",
+   "description": "Angemietete Standleitung zur Verbindung der Standorte Bad Godesberg und Beuel",
+   "componentType": "Netzwerk",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "netze",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/netze_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Dedizierte Übertragungsverbindung zwischen Standorten."
+  },
+  {
+   "componentUuid": "e5dc9f87-b18c-45c6-ba0e-f9c657cb28ba",
+   "sourceId": "net-sec-gw",
+   "name": "Internet-Zugangssicherung",
+   "description": "Firewall und Switch mit Paketfilter zur Absicherung des Internet-Zugangs über DSL",
+   "componentType": "Netzwerk",
+   "status": "operational",
+   "securityLevel": "nicht definiert",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "externe_netzanschluesse",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/externe_netzanschluesse_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Sicherheitskomponente am Übergang zum externen Internet."
+  },
+  {
+   "componentUuid": "91d2fc0a-49ac-470f-8d63-40238d099ef3",
+   "sourceId": "A001",
+   "name": "Textverarbeitung, Präsentation, Tabellenkalkulation",
+   "description": "Alle geschäftlichen Informationen werden in einem Office-Produkt verarbeitet, Geschäftsbriefe, Analysen oder Präsentationen.",
+   "componentType": "Office-Produkt",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "office-anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/office-anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Standard-Bürosoftware zur Dokumentenverarbeitung."
+  },
+  {
+   "componentUuid": "d8b35390-8b74-456e-91e2-73eb93862058",
+   "sourceId": "A002",
+   "name": "E-Mail-Client",
+   "description": "Diese Anwendung wird von allen Mitarbeitern für die Bearbeitung von Mailnachrichten, Terminen und Kontakten genutzt.",
+   "componentType": "Allgemeine Groupware",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "e-mail",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/e-mail_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Anwendung zur E-Mail- und Terminkommunikation."
+  },
+  {
+   "componentUuid": "423788dc-3012-4d50-8cff-8ce0a6ac7c6b",
+   "sourceId": "A003",
+   "name": "Web-Browser",
+   "description": "Auf jedem Client ist ein Web-Browser für die Intranetnutzung und eine Linkweiche (als Teil des ReCoBS-Clients) zum Aufruf externer Inhalte über das Remote-Controlled-Browser-System (ReCoBS) installiert.",
+   "componentType": "Web-Browser",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "webbrowser",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/webbrowser_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Browseranwendung zur Intranet- und Internetnutzung."
+  },
+  {
+   "componentUuid": "96196443-48e5-4eff-92bb-6ccfdac6d31f",
+   "sourceId": "A004",
+   "name": "Prozessleitsystem",
+   "description": "Die Anwendung dient der Steuerung der SPS-Systeme.",
+   "componentType": "ICS-System",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Spezialisierte Fachanwendung zur SPS-Steuerung."
+  },
+  {
+   "componentUuid": "62a1ce8a-024d-4d67-ade3-50ad497c5bbb",
+   "sourceId": "A005",
+   "name": "Entwicklungssystem",
+   "description": "Zur Entwicklung von SPS-Programmierungen.",
+   "componentType": "Standardsoftware",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Entwicklungsumgebung für SPS-Programmierung."
+  },
+  {
+   "componentUuid": "c8fc4843-3d01-43e2-9d24-37054b8c0656",
+   "sourceId": "A006",
+   "name": "Personaldatenverarbeitung",
+   "description": "Über die Anwendung steuert die Personalverwaltung alle Prozesse bezüglich der Mitarbeiter. Es werden Checklisten für Ein- und Austritt von Mitarbeitern, Informationen über Lohn usw. gepflegt.",
+   "componentType": "Datenbankanwendung",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Fachanwendung für Personalverwaltungsprozesse."
+  },
+  {
+   "componentUuid": "ab819d29-ac90-4b2d-948e-2578e216fce7",
+   "sourceId": "A007",
+   "name": "Reisekostenabrechnung",
+   "description": "Über die Anwendung werden die Reisekostenabrechnungen der Mitarbeiter dokumentiert und verrechnet.",
+   "componentType": "Programmierte Excel-Anwendung",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "office-anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/office-anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Excel-basierte Anwendung zur Reisekostenberechnung."
+  },
+  {
+   "componentUuid": "f4098e2e-fbb8-44e7-8e5a-2a3472ed0ffa",
+   "sourceId": "A008",
+   "name": "Finanzbuchhaltung",
+   "description": "Über diese Anwendung werden von der Finanzbuchhaltung Lastschriften eingezogen, Rechnungen verwaltet und Überweisungen getätigt.",
+   "componentType": "Datenbankanwendung",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Datenbankanwendung der Finanzbuchhaltung."
+  },
+  {
+   "componentUuid": "30c4b4ff-b288-42d8-b073-afe4d87ec68b",
+   "sourceId": "A009",
+   "name": "Auftrags- und Kundenverwaltung",
+   "description": "Die Anwendung wird genutzt, um die Kontaktdaten und Auftragsdaten der entsprechenden Kunden zentral zu verwalten.",
+   "componentType": "Datenbankanwendung",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Fachanwendung zur Kunden- und Auftragsdatenverwaltung."
+  },
+  {
+   "componentUuid": "c5b77837-b875-43fc-98de-ef4e8b8e463b",
+   "sourceId": "A010",
+   "name": "Active Directory",
+   "description": "Zu allen Benutzern der IT-Systeme werden Informationen zu Gruppenzugehörigkeit, Rechten und Authentisierungsmerkmalen verarbeitet und gespeichert. Diese Anwendung ist über beide Domain Controller verfügbar.",
+   "componentType": "Active Directory",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "verzeichnisdienste",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/verzeichnisdienste_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Zentraler Verzeichnisdienst für Rechte und Authentisierung."
+  },
+  {
+   "componentUuid": "956ee618-5c57-4d2c-a9b1-81d2db267d50",
+   "sourceId": "A011",
+   "name": "Systemmanagement",
+   "description": "Die Anwendung dient der Inventarisierung der Hardware sowie dem Fernzugriff auf die Clientsysteme.",
+   "componentType": "Datenbankanwendung",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Software für IT-Inventarisierung und Fernzugriff."
+  },
+  {
+   "componentUuid": "56abb3cf-2570-45f2-b126-eccc46dfffdd",
+   "sourceId": "A012",
+   "name": "Zentrale Dokumentenverwaltung",
+   "description": "Die zentrale Dokumentenverwaltung dient zur Ablage, Versionierung etc. von Dokumenten.",
+   "componentType": "Fileserver",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "dateiserver",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/dateiserver_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Dateiserverbasierte Lösung zur Dokumentenablage."
+  },
+  {
+   "componentUuid": "f4bd5357-27ad-44c2-a7ef-4293923976ff",
+   "sourceId": "A013",
+   "name": "Druckservice Bad Godesberg",
+   "description": "Über diesen Dienst können alle Mitarbeiter in Bad Godesberg die dortigen Drucker benutzen. Er ist auf dem Druckserver in Bad Godesberg verfügbar, kann aber bei Bedarf auch auf dem Druckserver in Beuel gestartet werden.",
+   "componentType": "Druckservice",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Softwarebasierter Druckdienst am Standort Bad Godesberg."
+  },
+  {
+   "componentUuid": "a0689571-6f5f-4620-b72a-57e0e2c38d20",
+   "sourceId": "A014",
+   "name": "Druckservice Beuel",
+   "description": "Über diesen Dienst können alle Mitarbeiter in Beuel die dortigen Drucker benutzen. Er ist auf dem Druckserver in Beuel verfügbar, kann aber bei Bedarf auch auf dem Druckserver in Bad Godesberg gestartet werden.",
+   "componentType": "Druckservice",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Softwarebasierter Druckdienst am Standort Beuel."
+  },
+  {
+   "componentUuid": "ae5c0eaa-f9f5-41f0-8ca9-54c8f3139206",
+   "sourceId": "A015",
+   "name": "Firewall",
+   "description": "Die Anwendung steuert die Kommunikation zwischen dem Firmennetz und dem Internet und ermöglicht die verschlüsselte Kommunikation der Vertriebsbüros über VPN-Tunnel.",
+   "componentType": "Firewall",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "interne_netzsegmente",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/interne_netzsegmente_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Sicherheitsnetzkomponente zur Netzsegmentierung und DMZ-Bildung."
+  },
+  {
+   "componentUuid": "aaef0df8-8567-414f-9aa6-03540948a776",
+   "sourceId": "A016",
+   "name": "Steuerung der Produktionsanlagen",
+   "description": "Die Anwendung dient zur Steuerung der Produktionsanlagen.",
+   "componentType": "ICS-System",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Anwendung zur Steuerung technischer Anlagen."
+  },
+  {
+   "componentUuid": "686e1895-52bc-4d2a-a302-eedbdf4c2f7c",
+   "sourceId": "A017",
+   "name": "Content Management System",
+   "description": "Software zur Gestaltung und Pflege der Webseite.",
+   "componentType": "Webanwendung",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "webanwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/webanwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Webanwendung zur Webseitenverwaltung."
+  },
+  {
+   "componentUuid": "4d401391-f54f-4a24-a4a2-02cb5a09b228",
+   "sourceId": "A018",
+   "name": "Backupsoftware",
+   "description": "Software, welche ein regelmäßiges Backup durchführt.",
+   "componentType": "Backupsoftware",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Anwendung zur Durchführung automatischer Datensicherungen."
+  },
+  {
+   "componentUuid": "fae5e1f6-67f7-4a55-8e83-a04a23403094",
+   "sourceId": "A019",
+   "name": "Webserver",
+   "description": "Webserver für jeweils Intranet und Webseite.",
+   "componentType": "Webserver",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "webserver",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/webserver_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Dienst zur Auslieferung interner und externer Webseiten."
+  },
+  {
+   "componentUuid": "a9812085-bc79-423d-bbff-12fd576e3313",
+   "sourceId": "A020",
+   "name": "Datenbanksystem",
+   "description": "Datenbanksystem für die entsprechenden Anwendungen. Da die Datenbanken auf jeweils eigenen Servern liegen, ist die Anwendung mehrfach vorhanden.",
+   "componentType": "Datenbankanwendung",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Datenbankmanagementsystem für Geschäftsanwendungen."
+  },
+  {
+   "componentUuid": "6e93db5a-4d98-40a0-b410-ede0f79e790d",
+   "sourceId": "A021",
+   "name": "Internes Ticketsystem",
+   "description": "Ticketsystem zur Verwaltung und Management der Geschäftsprozesse.",
+   "componentType": "Webanwendung",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "webanwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/webanwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Webbasierte Lösung zur Geschäftsprozessverwaltung."
+  },
+  {
+   "componentUuid": "9b1acd4d-39f8-4070-ad50-10294bfdcf33",
+   "sourceId": "A022",
+   "name": "Internes Wiki",
+   "description": "Das interne Wiki dient zum Informationsaustausch innerhalb der RECPLAST GmbH. Das interne Wiki ist gleichzeitig das Intranet.",
+   "componentType": "Webanwendung",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "webanwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/webanwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Webbasiertes Intranet und Wissensportal."
+  },
+  {
+   "componentUuid": "a7eb3448-f440-4b44-ad95-efcc893819b5",
+   "sourceId": "A023",
+   "name": "Virtualisierungssoftware",
+   "description": "Software, um die virtuellen Systeme bereitzustellen.",
+   "componentType": "Virtualisierung",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "virtualisierungsloesungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/virtualisierungsloesungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Softwarelösung zur Bereitstellung virtueller Maschinen."
+  },
+  {
+   "componentUuid": "91cbe78a-6e48-4416-aac0-d4bcaa2b9664",
+   "sourceId": "A024",
+   "name": "Voice over IP",
+   "description": "Die Anwendung steuert die Telekommunikation über die beiden TK-Anlagen.",
+   "componentType": "VoIP",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "tk-anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/tk-anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Telekommunikationsanwendung für Internettelefonie."
+  },
+  {
+   "componentUuid": "338e5d6e-f71a-417b-8a97-00d8ce79c4aa",
+   "sourceId": "A025",
+   "name": "Chat-Anwendung",
+   "description": "Die Chat-Anwendung soll den Kontakt zwischen den Mitarbeitern vereinfachen. Die Anwendung ist ein im Mail-Client integriertes Modul.",
+   "componentType": "Chat",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "interpersonelle_kommunikation",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/interpersonelle_kommunikation_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Echtzeitkommunikationssoftware für Mitarbeitende."
+  },
+  {
+   "componentUuid": "618431b0-2af7-4542-8974-9bfde8e6c167",
+   "sourceId": "A026",
+   "name": "Mobile Device Management",
+   "description": "Anwendung zur Verwaltung der Smartphones. Die Anwendung wird über die Fa. GetMobileDevice GmbH über eine Cloud bereitgestellt.",
+   "componentType": "Webanwendung",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "cloud-dienste",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/cloud-dienste_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Cloudbasierte Anwendung zur Endgeräteverwaltung."
+  },
+  {
+   "componentUuid": "70767460-75e1-457c-82ce-ff72f747be08",
+   "sourceId": "A027",
+   "name": "ReCoBS",
+   "description": "Auf jedem Client ist ein Remote-Controlled-Browser-Client (ReCoBS-Client/Viewer) für die freie Internetrecherche und den Aufruf externer Inhalte über das ReCoBS (sowie eine Linkweiche für die Intranetnutzung über den internen Browser) installiert.",
+   "componentType": "ReCoBS",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "webbrowser",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/webbrowser_profile.json",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": "Sicherheitskritischer Browser-Viewer mit hohem Schutzbedarf."
+  },
+  {
+   "componentUuid": "8edee545-1dbf-4732-a5a3-1fd0653b891a",
+   "sourceId": "A028",
+   "name": "Updateverwaltung Windows",
+   "description": "Die Anwendung dient zur Updateverteilung an Windows-Clients.",
+   "componentType": "Integriertes Windows-Tool",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Werkzeug für zentralisiertes Patchmanagement von Windows."
+  },
+  {
+   "componentUuid": "5e87a7c6-438b-494e-9501-4ccc6c6cf764",
+   "sourceId": "A029",
+   "name": "Updateverwaltung Linux",
+   "description": "Die Anwendung dient zur Bereitstellung der Updates für Linux-Geräte.",
+   "componentType": "Integriertes Linux-Tool",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Werkzeug zur Paket- und Updateverteilung auf Linux."
+  },
+  {
+   "componentUuid": "39e8e635-a50e-4e1a-9841-6f601837b8e2",
+   "sourceId": "A030",
+   "name": "Cloud-APP",
+   "description": "Über die APP ist der Zugriff auf die Austausch Cloud der RECPLAST GmbH möglich.",
+   "componentType": "Mobile Anwendung",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "cloud-dienste",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/cloud-dienste_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Applikation für Zugriff auf Unternehmens-Cloudspeicher."
+  },
+  {
+   "componentUuid": "6e1ae8ea-bf99-4de3-a8ea-639deee54487",
+   "sourceId": "A031",
+   "name": "Cloud-Umgebung",
+   "description": "Die Cloud-Umgebung dient zum Austausch der Daten zwischen Mobile Devices und den Arbeitsplatzrechnern, sowie zum Zugriff auf Daten mittels eines Mobile Devices.",
+   "componentType": "Webanwendung",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "cloud-dienste",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/cloud-dienste_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Cloud-Plattform zum Datenaustausch für Endgeräte."
+  },
+  {
+   "componentUuid": "3545f8f6-b86a-44cc-8768-6d698c53ab76",
+   "sourceId": "A032",
+   "name": "CAD/CAM",
+   "description": "Die Anwendung dient der Simulation und Erstellung von Konstruktionsmodellen für die CNC-Bearbeitung.",
+   "componentType": "CAD/CAM",
+   "status": "operational",
+   "securityLevel": "normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Fachanwendung zur rechnerunterstützten Konstruktion."
+  },
+  {
+   "componentUuid": "30908932-b906-4919-bdf3-3a4a5bee0257",
+   "sourceId": "C001",
+   "name": "Clients der Finanzbuchhaltung",
+   "description": "Bei den Clients handelt es sich um handesluebliche Clients. Benutzer: Buchhaltung, Anzahl: 30, Plattform: Windows 10",
+   "componentType": "Arbeitsplatzrechner (Client)",
+   "status": "operational",
+   "securityLevel": "hoch",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": "Arbeitsplatzrechner mit dokumentiert hohem Schutzbedarf."
+  },
+  {
+   "componentUuid": "513fe01a-ab85-44a9-91ef-5e3238d10af7",
+   "sourceId": "C002",
+   "name": "Clients der Geschaeftsfuehrung",
+   "description": "Bei den Clients handelt es sich um handesluebliche Clients. Benutzer: Geschaeftsfuehrung, Anzahl: 8, Plattform: Windows 10",
+   "componentType": "Arbeitsplatzrechner (Client)",
+   "status": "operational",
+   "securityLevel": "hoch",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": "Leitungs-Endgeräte mit dokumentiert hohem Schutzbedarf."
+  },
+  {
+   "componentUuid": "c9da18f5-df0d-4f15-8715-570788f98593",
+   "sourceId": "C003",
+   "name": "Clients der Personalabteilung",
+   "description": "Bei den Clients handelt es sich um handesluebliche Clients. Benutzer: Personal, Anzahl: 8, Plattform: Windows 10",
+   "componentType": "Arbeitsplatzrechner (Client)",
+   "status": "operational",
+   "securityLevel": "hoch",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": "Endgeräte für sensible Personaldaten mit hohem Schutzbedarf."
+  },
+  {
+   "componentUuid": "cdc8eb41-c42f-49a2-9f37-a437abe4e4e2",
+   "sourceId": "C004",
+   "name": "Clients der Informationstechnik",
+   "description": "Bei den Clients handelt es sich um handesluebliche Clients. Benutzer: IT-Betrieb, Anzahl: 25, Plattform: Windows 10",
+   "componentType": "Arbeitsplatzrechner (Client)",
+   "status": "operational",
+   "securityLevel": "hoch",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": "Administrationsrechner mit dokumentiert hohem Schutzbedarf."
+  },
+  {
+   "componentUuid": "e2cf8792-d03e-4c60-ba20-8a6c03825fcf",
+   "sourceId": "C005",
+   "name": "Clients des Marketings & Vertrieb",
+   "description": "Bei den Clients handelt es sich um handesluebliche Clients. Benutzer: Vertrieb, Anzahl: 35, Plattform: Windows 10",
+   "componentType": "Arbeitsplatzrechner (Client)",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Vertriebs-Endgeräte ohne ausgewiesen erhöhten Schutzbedarf."
+  },
+  {
+   "componentUuid": "22323487-51eb-4083-b170-4d7cec8e2da1",
+   "sourceId": "C006",
+   "name": "Clients der Fertigung und Lager",
+   "description": "Bei den Clients handelt es sich um handesluebliche Clients. Benutzer: Disposition, Produktion, Anzahl: 20, Plattform: Windows 10",
+   "componentType": "Arbeitsplatzrechner (Client)",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Clients für Disposition und Produktion mit Standardschutz."
+  },
+  {
+   "componentUuid": "792673cc-81be-45b3-af80-719aeafe4473",
+   "sourceId": "C007",
+   "name": "Clients der Entwicklungsabteilung",
+   "description": "Bei den Clients handelt es sich um handesluebliche Clients. Benutzer: Entwicklung, Anzahl: 60, Plattform: Windows 10",
+   "componentType": "Arbeitsplatzrechner (Client)",
+   "status": "operational",
+   "securityLevel": "hoch",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": "Entwickler-Clients mit dokumentiert hohem Schutzbedarf."
+  },
+  {
+   "componentUuid": "e5fea6e1-e9b9-4807-a24a-d527c160380c",
+   "sourceId": "C008",
+   "name": "Clients der Einkaufsabteilung",
+   "description": "Bei den Clients handelt es sich um handesluebliche Clients. Benutzer: Einkauf, Anzahl: 20, Plattform: Windows 10",
+   "componentType": "Arbeitsplatzrechner (Client)",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Standard-Endgeräte im Einkaufsbereich."
+  },
+  {
+   "componentUuid": "eb4349e4-31b6-40fd-bd38-9eb8c1beac59",
+   "sourceId": "C009",
+   "name": "Clients in den Vertriebsbeuros",
+   "description": "Bei den Clients handelt es sich um handesluebliche Clients. Benutzer: Vertrieb, Anzahl: 3, Plattform: Windows 10",
+   "componentType": "Arbeitsplatzrechner (Client)",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Endgeräte in Außenstellen mit regulärem Schutzbedarf."
+  },
+  {
+   "componentUuid": "02bbc02d-a73a-4555-944a-52d9cbd736c8",
+   "sourceId": "L001",
+   "name": "Laptops der Finanzbuchhaltung",
+   "description": "Bei den Laptops handelt es sich um handesluebliche Laptops. Benutzer: Buchhaltung, Anzahl: 2, Plattform: Windows 10",
+   "componentType": "Laptop",
+   "status": "operational",
+   "securityLevel": "hoch",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": "Mobile Endgeräte mit dokumentiert hohem Schutzbedarf."
+  },
+  {
+   "componentUuid": "4fadb623-358d-414f-8639-732c4e02e0ba",
+   "sourceId": "L002",
+   "name": "Laptops der Geschaeftsfuehrung",
+   "description": "Bei den Laptops handelt es sich um handesluebliche Laptops. Benutzer: Geschaeftsfuehrung, Anzahl: 3, Plattform: Windows 10",
+   "componentType": "Laptop",
+   "status": "operational",
+   "securityLevel": "hoch",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": "Geschäftsführungs-Laptops mit explizit hohem Schutzbedarf."
+  },
+  {
+   "componentUuid": "d46161f5-6419-46d0-b435-c4e084059236",
+   "sourceId": "L003",
+   "name": "Laptops der Personalabteilung",
+   "description": "Bei den Laptops handelt es sich um handesluebliche Laptops. Benutzer: Personal, Anzahl: 2, Plattform: Windows 10",
+   "componentType": "Laptop",
+   "status": "operational",
+   "securityLevel": "hoch",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": "Laptops mit Zugriff auf Personaldaten und hohem Schutzbedarf."
+  },
+  {
+   "componentUuid": "10b34af7-d6c7-433e-a8e6-8c265a8718a8",
+   "sourceId": "L004",
+   "name": "Laptops der Informationstechnik",
+   "description": "Bei den Laptops handelt es sich um handesluebliche Laptops. Benutzer: IT-Betrieb, Anzahl: 10, Plattform: Windows 10",
+   "componentType": "Laptop",
+   "status": "operational",
+   "securityLevel": "hoch",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": "Admin-Laptops mit ausgewiesen hohem Schutzbedarf."
+  },
+  {
+   "componentUuid": "d4cfbd0b-aa87-4c40-a950-9198e3639cf5",
+   "sourceId": "L005",
+   "name": "Laptops Marketing & Vertrieb",
+   "description": "Bei den Laptops handelt es sich um handesluebliche Laptops. Benutzer: Vertrieb, Anzahl: 20, Plattform: Windows 10",
+   "componentType": "Laptop",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Vertriebsnotebooks mit regulärem Schutzbedarf."
+  },
+  {
+   "componentUuid": "288e5856-94df-46ee-a737-a51892a974d6",
+   "sourceId": "L006",
+   "name": "Laptops von Fertigung und Lager",
+   "description": "Bei den Laptops handelt es sich um handesluebliche Laptops. Benutzer: Disposition, Produktion, Anzahl: 4, Plattform: Windows 10",
+   "componentType": "Laptop",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Mobile Rechner für Fertigung mit Standardschutz."
+  },
+  {
+   "componentUuid": "5dc74006-1f56-4064-a0e7-4edfcb5468a6",
+   "sourceId": "L007",
+   "name": "Laptops der Entwicklungsabteilung",
+   "description": "Bei den Laptops handelt es sich um handesluebliche Laptops. Benutzer: Entwicklung, Anzahl: 15, Plattform: Windows 10",
+   "componentType": "Laptop",
+   "status": "operational",
+   "securityLevel": "hoch",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": "Entwicklungs-Notebooks mit dokumentiert hohem Schutzbedarf."
+  },
+  {
+   "componentUuid": "608a230f-4044-49a0-ba69-5aa3b5c71679",
+   "sourceId": "L008",
+   "name": "Laptops der Einkaufsabteilung",
+   "description": "Bei den Laptops handelt es sich um handesluebliche Laptops. Benutzer: Einkauf, Anzahl: 5, Plattform: Windows 10",
+   "componentType": "Laptop",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Standard-Laptops der Einkaufsabteilung."
+  },
+  {
+   "componentUuid": "305d1310-8228-450f-80e9-924edd59b9de",
+   "sourceId": "L009",
+   "name": "Laptops in den Vertriebsbeuros",
+   "description": "Bei den Laptops handelt es sich um handesluebliche Laptops. Benutzer: Vertrieb, Anzahl: 9, Plattform: Windows 10",
+   "componentType": "Laptop",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Mobile Clients für Vertriebsaußenstellen."
+  },
+  {
+   "componentUuid": "9916774c-cd7f-4b98-80ed-77a60dd2ac12",
+   "sourceId": "S001",
+   "name": "Domaenen-Controller",
+   "description": "Der Domaenen-Controller regelt die Authentifizierung von Computern und Benutzern. Benutzer: Alle Mitarbeiter, Anzahl: 2, Plattform: Windows Server 2012",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "verzeichnisdienste",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/verzeichnisdienste_profile.json",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": "Zentraler Authentisierungsdienst mit ausgewiesen hohem Schutzbedarf."
+  },
+  {
+   "componentUuid": "481ef1ee-35ab-41f0-b47a-741db0fc6617",
+   "sourceId": "S002",
+   "name": "Dateiserver",
+   "description": "Der Dateiserver dient zur Dokumentenablage. Benutzer: Alle Mitarbeiter, Anzahl: 2, Plattform: Windows Server 2012",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "dateiserver",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/dateiserver_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Server für unternehmensweite Dateifreigaben."
+  },
+  {
+   "componentUuid": "02ba8a20-ddca-4230-9635-d1cec797e8c5",
+   "sourceId": "S003",
+   "name": "Druckserver",
+   "description": "Der Druckserver stellt die Prozesse und Ressourcen fuer die Druckservices zur Verfuegung. Benutzer: Alle Mitarbeiter, Anzahl: 2, Plattform: Windows Server 2012",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Server zur zentralen Bereitstellung von Druckfunktionen."
+  },
+  {
+   "componentUuid": "37767e19-2b67-4ea0-889e-d94e69a99d40",
+   "sourceId": "S004",
+   "name": "Kommunikationsserver",
+   "description": "Server fuer die interne und externe Mail-Kommunikation. Benutzer: Alle Mitarbeiter, Anzahl: 2, Plattform: Windows Server 2012",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "e-mail",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/e-mail_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Server für elektronische Mail- und Terminkommunikation."
+  },
+  {
+   "componentUuid": "705c9fef-959b-4884-961f-56b4a3e17de8",
+   "sourceId": "S005",
+   "name": "DB-Server der Kunden- und Auftragsbearbeitung",
+   "description": "Der Datenbankserver enthaelt die Datenbank mit den Informationen zu den Kunden sowie Auftraegen. Benutzer: Vertrieb, Geschaeftsfuehrung, Einkauf, Buchhaltung, Anzahl: 1, Plattform: Windows Server 2012",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Datenbankserver für CRM- und Bestelldaten."
+  },
+  {
+   "componentUuid": "96bfaa61-6408-4361-97cc-de7e7295c852",
+   "sourceId": "S006",
+   "name": "DB-Server der Finanzbuchhaltung",
+   "description": "Der Datenbankserver enthaelt die Datenbank mit den Informationen der Finanzbuchhaltung. Benutzer: Geschaeftsfuehrung, Buchhaltung, Anzahl: 1, Plattform: Windows Server 2012",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Server zur Haltung von Finanzdaten."
+  },
+  {
+   "componentUuid": "4efc7196-7f6b-4fc8-bcea-38b271521bf6",
+   "sourceId": "S007",
+   "name": "Virtualisierungsserver",
+   "description": "Bei dem Server handelt es sich um einen Virtualisierungshost. Benutzer: IT-Betrieb, Anzahl: 2, Plattform: Linux",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "hostsysteme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/hostsysteme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Hostsystem für virtuelle Maschinen."
+  },
+  {
+   "componentUuid": "1328dc9a-78fb-464b-bf28-66a8e671b593",
+   "sourceId": "S008",
+   "name": "Server fuer Produktionssteuerung",
+   "description": "Der Server dient zur Steuerung der Produktionsmaschinen. Benutzer: Produktion, Anzahl: 1, Plattform: Linux",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "IT-System zur Steuerung von Fertigungsmaschinen."
+  },
+  {
+   "componentUuid": "bc99ae52-205f-4aba-8a1e-0c64c7bd46ea",
+   "sourceId": "S009",
+   "name": "Wiki-Server",
+   "description": "Der Server fuer den Betrieb des Intranets/Wiki. Benutzer: Alle Mitarbeiter, Anzahl: 1, Plattform: Linux",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "webserver",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/webserver_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Server für Web- und Intranetinhalte."
+  },
+  {
+   "componentUuid": "da3a578a-ae90-4978-a87d-f21d3b06ee1f",
+   "sourceId": "S010",
+   "name": "Virtualisierungsserver2",
+   "description": "Virtualisierungshost. Benutzer: IT-Betrieb, Anzahl: 1, Plattform: Linux",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "hostsysteme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/hostsysteme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Zweiter Hostserver für Virtualisierungsumgebungen."
+  },
+  {
+   "componentUuid": "151f0828-b8ae-48ec-933b-a4b945ed1ddc",
+   "sourceId": "S011",
+   "name": "Ticketsystem",
+   "description": "Server, welcher das interne Ticketsystem betreibt. Benutzer: Alle Mitarbeiter, Anzahl: 1, Plattform: Linux",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "webanwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/webanwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Server zur Ausführung des Ticketverwaltungssystems."
+  },
+  {
+   "componentUuid": "2540a362-f72a-4eb2-b1dc-dfe83952ff68",
+   "sourceId": "S012",
+   "name": "Backupserver",
+   "description": "Der Backupserver fuehrt die Prozesse fuer das regelmaessige Backup aus. Benutzer: IT-Betrieb, Anzahl: 1, Plattform: Windows Server 2012",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Server zur Steuerung und Ausführung von Datensicherungen."
+  },
+  {
+   "componentUuid": "ffe2592d-f576-4107-a4b1-42f15a2aaeb1",
+   "sourceId": "S013",
+   "name": "Windows-Update-Server",
+   "description": "Der Windows-Update-Server wird fuer das Einspielen von Updates auf die Windows Clients und Server benoetigt. Benutzer: IT-Betrieb, Anzahl: 1, Plattform: Windows Server 2012",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Server für automatisiertes Windows-Patchmanagement."
+  },
+  {
+   "componentUuid": "605b2e5a-4b9d-4cee-98a0-9ddbb5404d28",
+   "sourceId": "S014",
+   "name": "Linux-Update-Server",
+   "description": "Updateserver fuer die Linux-Betriebssysteme. Benutzer: IT-Betrieb, Anzahl: 1, Plattform: Windows Server 2012",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Server zur Verteilung von Softwareaktualisierungen für Linux."
+  },
+  {
+   "componentUuid": "27de77f8-78e6-4808-a0cb-233cb72f539e",
+   "sourceId": "S015",
+   "name": "DB-Server fuers Systemmanagement",
+   "description": "Der Datenbankserver enthaelt die Datenbank mit den Informationen IT-Systeme. Benutzer: IT-Betrieb, Anzahl: 1, Plattform: Windows Server 2012",
+   "componentType": "Server",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Datenbankserver zur Erfassung der IT-Infrastrukturdaten."
+  },
+  {
+   "componentUuid": "ddb1ddb6-4b58-4e5b-b477-3ca66cbaf315",
+   "sourceId": "I001",
+   "name": "Speicherprogrammierbare Produktionsmaschinen",
+   "description": "Die speicherprogrammierbaren Produktionsmaschinen dienen zur Erstellung der Produkte. Benutzer: Produktion, Anzahl: 2, Plattform: SPS",
+   "componentType": "ICS-Systeme",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Industrielle Fertigungsgeräte mit Standardanforderungen."
+  },
+  {
+   "componentUuid": "04fa9199-f8c5-4dd5-8f50-01033c5eb717",
+   "sourceId": "I002",
+   "name": "SCADA",
+   "description": "Das SCADA dient zur Ueberwachung und Steuerung technischer Prozesse. Benutzer: Produktion, Anzahl: 1, Plattform: SCADA",
+   "componentType": "ICS-Systeme",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "System zur technischen Prozessüberwachung."
+  },
+  {
+   "componentUuid": "d519f9e9-9e93-44f9-8414-311fa813c462",
+   "sourceId": "I003",
+   "name": "Server fuer die Betriebsdatenerfassung",
+   "description": "Der Server erfasst die Betriebsdaten der Produktion. Benutzer: Produktion, Anzahl: 1, Plattform: Linux",
+   "componentType": "ICS-Systeme",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Server zur Aufzeichnung industrieller Produktionskennzahlen."
+  },
+  {
+   "componentUuid": "5b2ec3ab-ebcb-410b-add9-be7d1fc2fd8c",
+   "sourceId": "O001",
+   "name": "Video-Ueberwachung",
+   "description": "Die Videoueberwachung dient zur Ueberwachung der Eingaenge, sowie kritischer Bereiche in den Gebaeuden. Benutzer: IT-Betrieb, Geschaeftsfuehrung, Anzahl: 1, Plattform: Video-Ueberwachung",
+   "componentType": "IoT-System",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Kamerabasiertes IoT-Überwachungssystem für Liegenschaften."
+  },
+  {
+   "componentUuid": "7f7c706b-3ac9-4008-9ad5-e042d299fa72",
+   "sourceId": "O002",
+   "name": "Kuehlschrank",
+   "description": "In der IT-Abteilung ist ein Kuehlschrank, der mittels einer internen Kamera und einer App eine Inventarliste fuehrt. Benutzer: IT-Betrieb, Anzahl: 1, Plattform: IoT-System",
+   "componentType": "IoT-System",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Vernetztes IoT-Endgerät im Küchenbereich."
+  },
+  {
+   "componentUuid": "8fb76d88-5a6d-4ec0-8bc8-9495a9c0ffeb",
+   "sourceId": "O003",
+   "name": "Alarmanlage",
+   "description": "Alarmanlagen fuer Gebaeude in Bad Godesberg und Beuel. Benutzer: Alle Mitarbeiter, Anzahl: 2, Plattform: Alarmanlage",
+   "componentType": "IoT-System",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Vernetzte Gebäudealarmanlage für Standortsicherheit."
+  },
+  {
+   "componentUuid": "3763dde4-291e-4952-8311-91fea62c2ea4",
+   "sourceId": "O004",
+   "name": "Kaffeevollautomat",
+   "description": "Der Kaffeevollautomat ist ueber eine Weboberflaeche konfigurierbar. Benutzer: Alle Mitarbeiter, Anzahl: 1, Plattform: IoT-System",
+   "componentType": "IoT-System",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "IoT-Komponente mit Netzwerkschnittstelle."
+  },
+  {
+   "componentUuid": "ee118c66-6bb8-4783-a736-c14f5780b422",
+   "sourceId": "O005",
+   "name": "Sprachassistent",
+   "description": "Der Sprachassistent wird in Bad-Godesberg fuer die Lichtsteuerung in den Besprechungsraeumen genutzt. Benutzer: Alle Mitarbeiter, Anzahl: 3, Plattform: IoT-System",
+   "componentType": "IoT-System",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "it-systeme",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/it-systeme_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "IoT-Assistenzsystem zur Konferenzraumsteuerung."
+  },
+  {
+   "componentUuid": "f9e812e2-5bf2-4daf-9c36-d7f7f389c615",
+   "sourceId": "N001",
+   "name": "Router zum Internet",
+   "description": "Der Router ist der Knotenpunkt zum Internet. Benutzer: Alle Mitarbeiter, Anzahl: 1, Plattform: DSL-Router",
+   "componentType": "Netzkomponente",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "externe_netzanschluesse",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/externe_netzanschluesse_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Netzkomponente am Perimeter zum öffentlichen Netz."
+  },
+  {
+   "componentUuid": "319f49e8-1528-4eca-8347-64f735f2b1e5",
+   "sourceId": "N002",
+   "name": "Firewall",
+   "description": "Die Firewall dient zum Schutz zwischen dem Internet und dem internen Netz der RECPLAST GmbH sowie zur Verbindung von ausserhalb mittels VPN. Die Firewall bildet eine DMZ. Benutzer: Alle Mitarbeiter, Anzahl: 1, Plattform: Firewall",
+   "componentType": "Netzkomponente",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "",
+   "zielobjektProfileUrl": "",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": ""
+  },
+  {
+   "componentUuid": "926c2374-5792-48d4-ab32-dc07e2e1e516",
+   "sourceId": "N003",
+   "name": "Zentrale Switche in Bad Godesberg und Beuel",
+   "description": "Die Switche dienen zur Paketverteilung im internen Netzwerk. Benutzer: Alle Mitarbeiter, Anzahl: 2, Plattform: Switch",
+   "componentType": "Netzkomponente",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "interne_netzsegmente",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/interne_netzsegmente_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Zentrale Switch-Infrastruktur für interne Segmente."
+  },
+  {
+   "componentUuid": "b145d33e-fff5-495c-b26a-c4cc38aa3e0e",
+   "sourceId": "N004",
+   "name": "Router zur Verbindung der Standorte BG und BE",
+   "description": "Der Router verbindet die beiden Standorte ueber eine Standleitung. Benutzer: Alle Mitarbeiter, Anzahl: 2, Plattform: Router",
+   "componentType": "Netzkomponente",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "netze",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/netze_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Netzwerkrouter zur Kopplung beider Liegenschaften."
+  },
+  {
+   "componentUuid": "056893b8-5499-4f44-84a9-cbca44a8b5d5",
+   "sourceId": "N005",
+   "name": "ReCoBS",
+   "description": "Die ReCoBS-Netzkomponente dient zum Bereitstellen des Web-Browsers fuer die freie Internetrecherche. Benutzer: Alle Mitarbeiter, Anzahl: 2, Plattform: ReCoBS",
+   "componentType": "Netzkomponente",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "",
+   "zielobjektProfileUrl": "",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": ""
+  },
+  {
+   "componentUuid": "0b913dea-a8f8-4d8c-bc48-2b42a7c0f60f",
+   "sourceId": "N006",
+   "name": "Switche in den Vertriebsbeuros",
+   "description": "Die gemanagten Switche dienen zur Paketverteilung und als Layer-3-Switch auch als Paketfilter-Firewall im internen Netzwerk. Benutzer: Vertrieb, Anzahl: 3, Plattform: Switch",
+   "componentType": "Netzkomponente",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "interne_netzsegmente",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/interne_netzsegmente_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Layer-3-Netzwerkverteiler in Außenstellen."
+  },
+  {
+   "componentUuid": "2421453a-aefd-43e4-a107-c2c1b3258a78",
+   "sourceId": "N007",
+   "name": "Router zum Internet der Vertriebsbeuros",
+   "description": "Der Router ist der Knotenpunkt zum Internet in den Vertriebsbeuros. Benutzer: Vertrieb, Anzahl: 3, Plattform: Router",
+   "componentType": "Netzkomponente",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "externe_netzanschluesse",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/externe_netzanschluesse_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Internetzugangsknoten der Vertriebsaußenstellen."
+  },
+  {
+   "componentUuid": "0d9cf1f4-aa4e-46ce-b3eb-c458ce54db14",
+   "sourceId": "N008",
+   "name": "WLAN-Access-Points",
+   "description": "Die Access-Points dienen zum Verteilen des WLANs. Benutzer: Alle Mitarbeiter, Anzahl: 4",
+   "componentType": "Netzkomponente",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "wlans",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/wlans_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Funknetzkomponenten zur Bereitstellung drahtloser Netze."
+  },
+  {
+   "componentUuid": "2f1c4710-1c41-43d8-a688-41c363e1eced",
+   "sourceId": "T001",
+   "name": "Telefonanlagen Bad Godesberg und Beuel",
+   "description": "Die Telefonanlagen sind miteinander gekoppelt und verteilen die Gespraeche ueber das VoIP-Protokoll. Benutzer: Alle Mitarbeiter, Anzahl: 2, Plattform: TK-Anlagen",
+   "componentType": "Telekommunikationskomponente",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "tk-anwendungen",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/tk-anwendungen_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Telekommunikationssysteme zur Sprachvermittlung."
+  },
+  {
+   "componentUuid": "a7d522dc-fa29-43a5-af34-a2cf1bd75814",
+   "sourceId": "T002",
+   "name": "Faxgeraete",
+   "description": "4 in Bad Godesberg, jeweils 1 in Beuel und den Vertriebsbeuros. Benutzer: Einkauf, Vertrieb, Produktion, Anzahl: 8, Plattform: Fax-Geraete",
+   "componentType": "Telekommunikationskomponente",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "faxe",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/faxe_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Endgeräte zur Faxübertragung."
+  },
+  {
+   "componentUuid": "52caa325-35c5-4376-ab08-99113707ed3e",
+   "sourceId": "K001",
+   "name": "Internetanschluss BG",
+   "description": "Aussenanschluss der RECPLAST GmbH an das Internet. Gleichzeitig Teil der Verbindung zu den Vertriebsbeuros und den mobilen Clients. Benutzer: Alle Mitarbeiter",
+   "componentType": "Kommunikationsverbindung",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "externe_netzanschluesse",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/externe_netzanschluesse_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Physische Anbindung an das öffentliche Netz."
+  },
+  {
+   "componentUuid": "963c8f1c-dc37-4568-b66d-f259f988f840",
+   "sourceId": "K002",
+   "name": "Standleitung Bad Godesberg - Beuel",
+   "description": "Standleitung fuer die Verbindung der beiden Bonner Standorte. Sie fuehrt ueber oeffentliches Gelaende. Benutzer: Alle Mitarbeiter",
+   "componentType": "Kommunikationsverbindung",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "netze",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/netze_profile.json",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": "Standortverbindung mit sehr hohem Vertraulichkeitsbedarf."
+  },
+  {
+   "componentUuid": "0c33475b-73e4-4e18-82f1-5b213abef995",
+   "sourceId": "K003",
+   "name": "Verbindungen zwischen Netzkomponenten innerhalb der RECPLAST GmbH",
+   "description": "Die Netzkomponenten werden untereinander mittels Glasfaser oder Kupferkabel verbunden. Benutzer: Alle Mitarbeiter",
+   "componentType": "Kommunikationsverbindung",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "netze",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/netze_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Netzwerkkabelverbindungen für interne Übertragungswege."
+  },
+  {
+   "componentUuid": "ddd5e0ea-784e-448f-9257-ecd067c9df47",
+   "sourceId": "K004",
+   "name": "Verbindungen zwischen Switches und Servern",
+   "description": "Die Switche und Server werden mittels Kupferkabel verbunden. Benutzer: Alle Mitarbeiter",
+   "componentType": "Kommunikationsverbindung",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "netze",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/netze_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Infrastrukturverkabelung für Serverports."
+  },
+  {
+   "componentUuid": "5c8a1f06-e44d-4cfd-abae-b3abf2d2c7a9",
+   "sourceId": "K005",
+   "name": "Verbindungen zwischen Switches und Clients",
+   "description": "Die Clients und Switche werden ueber Kupferkabel verbunden. Benutzer: Alle Mitarbeiter",
+   "componentType": "Kommunikationsverbindung",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "netze",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/netze_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Netzwerkzuleitungen für Arbeitsplatzrechner."
+  },
+  {
+   "componentUuid": "afc6f892-c733-456e-becc-af9d11ecbd17",
+   "sourceId": "K006",
+   "name": "Verbindungen zwischen Switches und Produktionsmaschinen",
+   "description": "Die Produktionsmaschinen werden mittels Kupferkabel verbunden. Benutzer: IT-Betrieb, Produktion",
+   "componentType": "Kommunikationsverbindung",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "netze",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/netze_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Netzwerkzuleitungen im Fertigungsbereich."
+  },
+  {
+   "componentUuid": "d47fd9c2-7e35-4cbd-aa21-375a1e3261db",
+   "sourceId": "K007",
+   "name": "Internetanschluesse der Vertriebsbeuros",
+   "description": "Die Vertriebsbeuros werden ueber einen Router an das Internet angebunden. Benutzer: Vertrieb",
+   "componentType": "Kommunikationsverbindung",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "externe_netzanschluesse",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/externe_netzanschluesse_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Perimeteranbindungen der Vertriebsbüros an Providernetze."
+  },
+  {
+   "componentUuid": "656c2d5b-86a0-4a87-9006-e589748724f2",
+   "sourceId": "K008",
+   "name": "Mobile Internetanschluesse der Laptops",
+   "description": "Die Laptops koennen sich per WLAN in das Netzwerk einwaehlen. Benutzer: Alle Mitarbeiter",
+   "componentType": "Kommunikationsverbindung",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "wlans",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/wlans_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Drahtlose Funkverbindungen für mobile Rechner."
+  },
+  {
+   "componentUuid": "a3a80ab5-ee60-4754-b0a2-9be8c9f641a4",
+   "sourceId": "GB001",
+   "name": "Verwaltungsgebaeude Bad Godesberg",
+   "description": "Das Hauptgebaeude der RECPLAST GmbH. Benutzer: IT-Betrieb, Geschaeftsfuehrung, Einkauf, Personal, Buchhaltung, Vertrieb, Anzahl: 1",
+   "componentType": "Allgemeines Gebaeude",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "gebaeude",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/gebaeude_profile.json",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": "Verwaltungsgebäude mit sehr hohem Schutzbedarf in allen Schutzzielen."
+  },
+  {
+   "componentUuid": "d6368447-540a-445f-b9ea-30ddeab51edd",
+   "sourceId": "GB002",
+   "name": "Produktionsgebaeude Beuel",
+   "description": "Das neue Gebaeude der RECPLAST GmbH, an dem alle Produktionsrelevanten Taetigkeiten durchgefuehrt werden. Zusaetzlich befindet sich hier die Produktion. Benutzer: Entwicklung, Produktion, Disposition, Anzahl: 1",
+   "componentType": "Allgemeines Gebaeude",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "gebaeude",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/gebaeude_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Betriebsgebäude der Fertigung ohne explizit erhöhten Bedarf."
+  },
+  {
+   "componentUuid": "57dd3430-1061-403b-aa8a-24203519e866",
+   "sourceId": "R001",
+   "name": "Technikraum",
+   "description": "BG, R. 1.01. Benutzer: IT-Betrieb, Anzahl: 1",
+   "componentType": "Technikraum",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "raeume_fuer_technische_infrastruktur",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/raeume_fuer_technische_infrastruktur_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Technischer Funktionsraum für Gebäudeinfrastruktur."
+  },
+  {
+   "componentUuid": "ef75ff9b-4e03-4902-b907-fd7753aaf2d4",
+   "sourceId": "R002",
+   "name": "Serverraum",
+   "description": "BG, R. 1.02. Benutzer: IT-Betrieb, Anzahl: 1",
+   "componentType": "Serverraum",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "serverraeume",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/serverraeume_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Serverraum am Standort Beuel."
+  },
+  {
+   "componentUuid": "4d8f3638-75c4-4382-aecb-f453ee06dd71",
+   "sourceId": "R003",
+   "name": "Beuros IT-Abteilung",
+   "description": "BG, R. 1.03 - 1.06. Benutzer: IT-Betrieb, Anzahl: 4",
+   "componentType": "Bueroraum",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "raeume",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/raeume_profile.json",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": "IT-Büros mit hohem Schutzbedarf für Vertraulichkeit und Integrität."
+  },
+  {
+   "componentUuid": "5b7f5438-d471-4269-850c-0e591c1f9c1d",
+   "sourceId": "R009",
+   "name": "Serverraum",
+   "description": "Beuel R. 2.01. Benutzer: IT-Betrieb, Anzahl: 1",
+   "componentType": "Serverraum",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "",
+   "zielobjektProfileUrl": "",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": ""
+  },
+  {
+   "componentUuid": "05dbe4f2-b188-486b-8478-6da5537cb592",
+   "sourceId": "R010",
+   "name": "Technikraum",
+   "description": "Beuel, R. 2.02. Benutzer: IT-Betrieb, Anzahl: 1",
+   "componentType": "Technikraum",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "",
+   "zielobjektProfileUrl": "",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": ""
+  },
+  {
+   "componentUuid": "1dea69e1-cf2e-4a56-bfdd-35d97a1ca5c9",
+   "sourceId": "R011",
+   "name": "Beuros Fertigung/Lager",
+   "description": "Beuel, R. 2.10 - 2.13. Benutzer: Disposition, Produktion, Anzahl: 4",
+   "componentType": "Bueroraum",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "raeume",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/raeume_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Büroräume des Lager- und Produktionspersonals."
+  },
+  {
+   "componentUuid": "aea4b016-f6d6-4330-be7a-16b57ff7c4d5",
+   "sourceId": "R012",
+   "name": "Beuros Entwicklungsabteilung",
+   "description": "Beuel, R. 2.14 - 2.20. Benutzer: Entwicklung, Anzahl: 7",
+   "componentType": "Bueroraum",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "raeume",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/raeume_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Büroräume für Entwicklungsingenieure."
+  },
+  {
+   "componentUuid": "df11b7fe-bde4-4d98-b02c-11c5d296bb8e",
+   "sourceId": "R013",
+   "name": "Produktionshalle",
+   "description": "Die Halle mit der fuer die Produktion relevanten Technik. Benutzer: Produktion, Anzahl: 1",
+   "componentType": "Werkhalle",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "raeume",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/raeume_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Hallenbereich für industrielle Fertigungsprozesse."
+  },
+  {
+   "componentUuid": "dd5c4f7b-aa17-470a-a5cb-78e0f2588772",
+   "sourceId": "R014",
+   "name": "Vertriebsbeuros",
+   "description": "Vertriebsbeuros in Berlin, Paderborn und Muenchen. Benutzer: Vertrieb, Anzahl: 3",
+   "componentType": "Haeuslicher Arbeitsplatz",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "raeume",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/raeume_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Räumlichkeiten der Vertriebsrepräsentanzen."
+  },
+  {
+   "componentUuid": "4a282528-dbde-4b3f-8312-3272cbab6298",
+   "sourceId": "R018",
+   "name": "Technikraum Vertriebsbeuros",
+   "description": "Der Technikraum enthaelt die relevante Technik fuer die Vertriebsbeuros. Benutzer: IT-Betrieb, Anzahl: 1",
+   "componentType": "Technikraum",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "raeume_fuer_technische_infrastruktur",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/raeume_fuer_technische_infrastruktur_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Infrastrukturraum für Technik in den Außenstellen."
+  },
+  {
+   "componentUuid": "9080cb4c-9218-44c4-8535-08597a366991",
+   "sourceId": "R019",
+   "name": "Datentraegerarchiv",
+   "description": "In dem Raum befindet sich ein feuerfester Safe, der die Backups enthaelt. Benutzer: IT-Betrieb, Geschaeftsfuehrung, Anzahl: 1",
+   "componentType": "Datentraegerarchiv",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "datentraegerarchiv",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/datentraegerarchiv_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Archivraum für Backup-Medien mit Brandschutztresor."
+  },
+  {
+   "componentUuid": "f27bb7c1-83ac-4b12-8714-af31d5bdc7c2",
+   "sourceId": "A027",
+   "name": "ReCoBS-Client/Viewer",
+   "description": "ReCoBS-Client/Viewer Anwendung zur Recherche, verknüpft mit GP001 Produktion.",
+   "componentType": "Anwendung",
+   "status": "operational",
+   "securityLevel": "Vertraulichkeit: Hoch, Integrität: Hoch, Verfügbarkeit: Normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "",
+   "zielobjektProfileUrl": "",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": ""
+  },
+  {
+   "componentUuid": "fa0e7065-8cfa-4df2-9ca4-620668acc4d2",
+   "sourceId": "S001",
+   "name": "Domänen-Controller",
+   "description": "Domänen-Controller an beiden Standorten für Active Directory A010.",
+   "componentType": "IT-System",
+   "status": "operational",
+   "securityLevel": "Vertraulichkeit: Hoch, Integrität: Hoch, Verfügbarkeit: Normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "",
+   "zielobjektProfileUrl": "",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": ""
+  },
+  {
+   "componentUuid": "2ecf1fe2-e788-4762-991f-744247305fc5",
+   "sourceId": "K002",
+   "name": "Standleitung Bad Godesberg – Beuel",
+   "description": "Standleitung zur Verbindung beider Standorte der RECPLAST GmbH.",
+   "componentType": "Kommunikationsverbindung",
+   "status": "operational",
+   "securityLevel": "Vertraulichkeit: Sehr Hoch, Integrität: Hoch, Verfügbarkeit: Sehr Hoch",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "",
+   "zielobjektProfileUrl": "",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": ""
+  },
+  {
+   "componentUuid": "14179e3a-c45b-4db7-9995-63b54d2152cd",
+   "sourceId": "GB001",
+   "name": "Verwaltungsgebäude Bad Godesberg",
+   "description": "Verwaltungsgebäude zur Verarbeitung und Lagerung firmeninterner Dokumente.",
+   "componentType": "Räumlichkeit",
+   "status": "operational",
+   "securityLevel": "Vertraulichkeit: Sehr Hoch, Integrität: Sehr Hoch, Verfügbarkeit: Sehr Hoch",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "",
+   "zielobjektProfileUrl": "",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": ""
+  },
+  {
+   "componentUuid": "0372c84d-9d9f-456b-bdcb-b566c116fae0",
+   "sourceId": "R003",
+   "name": "Büros IT-Abteilung",
+   "description": "Büros der IT-Abteilung mit Clients der IT-Abteilung.",
+   "componentType": "Räumlichkeit",
+   "status": "operational",
+   "securityLevel": "Vertraulichkeit: Hoch, Integrität: Hoch, Verfügbarkeit: Normal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "",
+   "zielobjektProfileUrl": "",
+   "schutzbedarf": "erhöht",
+   "mappingRationale": ""
+  },
+  {
+   "componentUuid": "6f9d9bce-77f0-4228-a343-8a116ed5ce49",
+   "sourceId": "C001 - C009",
+   "name": "Clients",
+   "description": "Clients C001 bis C009",
+   "componentType": "Client",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "endgeraete",
+   "zielobjektProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/regular/endgeraete_profile.json",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": "Aggregierte Gruppe von Arbeitsplatzclients."
+  },
+  {
+   "componentUuid": "2d0c8e47-f8a8-4017-ad5e-b5ae55b33d3a",
+   "sourceId": "GB002",
+   "name": "Produktionsgebäude Beuel",
+   "description": "Produktionsgebäude Beuel",
+   "componentType": "Gebäude",
+   "status": "operational",
+   "securityLevel": "nicht angegeben",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "zielobjektkategorie": "",
+   "zielobjektProfileUrl": "",
+   "schutzbedarf": "normal-SdT",
+   "mappingRationale": ""
+  }
+ ],
+ "processes": [
+  {
+   "componentUuid": "052fa411-1e01-4e71-a815-875509d228a8",
+   "sourceId": "proc-sec-concept",
+   "name": "Projekt Sicherheitskonzept",
+   "description": "Zeitlich befristetes Projekt zur Erstellung von Vorschlägen für eine Leitlinie zur Informationssicherheit, ein Sicherheitskonzept mit Realisierungsplan, Maßnahmen zur Aufrechterhaltung und Dokumentation",
+   "status": "operational",
+   "owner": "Geschäftsführung",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "GC",
+   "praktikProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/gc_process_profile.json",
+   "mappingRationale": "Erarbeitung von Sicherheitsrichtlinien und Governance-Vorgaben."
+  },
+  {
+   "componentUuid": "c11d89e8-b88c-4b6f-b342-55ef10dd7bcb",
+   "sourceId": "proc-sec-policy-dev",
+   "name": "Entwicklung der Leitlinie zur Informationssicherheit",
+   "description": "Erarbeitung des Entwurfs für eine Leitlinie zur Informationssicherheit durch die Projektgruppe, Abstimmung mit Geschäftsführung, Abteilungsleitungen und Betriebsrat",
+   "status": "operational",
+   "owner": "IS-Management-Team / Projektgruppe",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "GC",
+   "praktikProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/gc_process_profile.json",
+   "mappingRationale": "Strategische Ausarbeitung der Sicherheitsleitlinie als Governance-Aufgabe."
+  },
+  {
+   "componentUuid": "fc0e20df-a515-46dc-afa7-73a8cfecb123",
+   "sourceId": "GP001",
+   "name": "Produktion",
+   "description": "Die Produktion der Kunststoffartikel umfasst alle Phasen von der Materialbereitstellung bis zur Einlagerung des produzierten Materials. Hierzu gehören innerhalb der Produktion die internen Transportwege, die Produktion und Fertigung der verschiedenen Komponenten und das Verpacken der Teile. Es werden alle Informationen über Aufträge, Lagerbestände und Stücklisten verarbeitet. Prozess-Art: Kerngeschäft.",
+   "status": "operational",
+   "owner": "Produktion",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "",
+   "praktikProfileUrl": "",
+   "mappingRationale": "Operativer Kernprozess ohne Zuordnung zu einer Sicherheitsmanagement-Praktik."
+  },
+  {
+   "componentUuid": "cf5ea525-48a1-4ecc-9e60-715f625ffbad",
+   "sourceId": "GP002",
+   "name": "Angebotswesen",
+   "description": "In der Angebotsabwicklung werden die Kundenanfragen für Produkte verarbeitet. Im Regelfall werden Kundenanfragen formlos per E-Mail oder Fax geschickt. Die Angebote werden elektronisch erfasst und ein schriftliches Angebot per Post oder Mail an den Kunden versendet. Im Angebotswesen werden Kundendaten, Lagerbestände, Anfragen und Angebote bearbeitet. Prozess-Art: Unterstützender Prozess.",
+   "status": "operational",
+   "owner": "Vertrieb",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "",
+   "praktikProfileUrl": "",
+   "mappingRationale": "Reiner Geschäftsprozess der Vertriebsabwicklung."
+  },
+  {
+   "componentUuid": "ed404807-0212-4ae8-8685-9133c87aa0a9",
+   "sourceId": "GP003",
+   "name": "Auftragsabwicklung",
+   "description": "Kunden schicken die Bestellungen im Regelfall per Fax oder E-Mail. Zusätzlich bietet die Webseite der RECPLAST einen Webshop an, über den Bestellungen aufgegeben werden können. Bestellungen erzeugen eine automatisch generierte Mail. Alle Belege müssen ausgedruckt und elektronisch erfasst werden. Eine Auftragsbestätigung erhält der Kunde nur, wenn er dies ausdrücklich wünscht oder der Produktionsprozess von der üblichen Produktionszeit abweicht. Die Auftragsabwicklung verwendet Kundendaten, Lagerbestände, Aufträge und Bestellungen. Prozess-Art: Kerngeschäft.",
+   "status": "operational",
+   "owner": "Vertrieb",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "",
+   "praktikProfileUrl": "",
+   "mappingRationale": "Kaufmännischer Kerngeschäftsprozess ohne Praktik-Zuordnung."
+  },
+  {
+   "componentUuid": "8c9e1953-2606-4557-aae2-84d1d8aa7e2a",
+   "sourceId": "GP004",
+   "name": "Einkauf",
+   "description": "In der Einkaufsabteilung werden alle erforderlichen Artikel bestellt, die nicht für den Produktionsprozess erforderlich sind. In dieser Abteilung werden externe Projekte verhandelt, IT-Verträge gestaltet und Verbrauchsmaterial im organisatorischen Umfeld (Papier, Toner etc.) beschafft. Die verwendeten Informationen sind Lagerbestände, Bedarfsmeldungen und Informationen über Lieferanten. Prozess-Art: Unterstützender Prozess.",
+   "status": "operational",
+   "owner": "Einkauf",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "",
+   "praktikProfileUrl": "",
+   "mappingRationale": "Beschaffungsprozess ohne unmittelbare Sicherheitsmanagement-Praktik."
+  },
+  {
+   "componentUuid": "dc6940de-006c-4e10-84e0-8b793de02c4e",
+   "sourceId": "GP005",
+   "name": "Disposition",
+   "description": "In der Disposition werden alle für die Produktion benötigten Materialien (Kunststoffe, Schrauben, Tüten, etc.) beschafft. Hierzu liegen normalerweise Rahmenverträge vor. Geplant wird in diesem Umfeld anhand von Jahresplanmengen und verschiedenen Bestellwerten. Prozess-Art: Kerngeschäft.",
+   "status": "operational",
+   "owner": "Disposition, Produktion",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "",
+   "praktikProfileUrl": "",
+   "mappingRationale": "Materialplanungs- und Dispositionsprozess des Kerngeschäfts."
+  },
+  {
+   "componentUuid": "40c8203b-0444-469d-bc08-23f047fcf892",
+   "sourceId": "GP006",
+   "name": "Personalverwaltung",
+   "description": "In dieser Abteilung werden alle Aufgaben bearbeitet, die zur administrativen Abwicklung des Personalwesens erforderlich sind. Die dazu genutzten Daten sind personenbezogen. Prozess-Art: Unterstützender Prozess.",
+   "status": "operational",
+   "owner": "Geschäftsführung, Personal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "PERS",
+   "praktikProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/pers_process_profile.json",
+   "mappingRationale": "Administrative Handhabung von Personalbelangen und Mitarbeiterdaten."
+  },
+  {
+   "componentUuid": "24b439d2-2f1c-4a96-a6e6-f541ca30cede",
+   "sourceId": "GP006a",
+   "name": "Gehaltszahlung",
+   "description": "Teilprozess von GP006. In der Personalabteilung wird insbesondere die monatliche Gehaltszahlung vorbereitet und durchgeführt. Die dazu genutzten Daten sind personenbezogen. Prozess-Art: Unterstützender Prozess.",
+   "status": "operational",
+   "owner": "Personal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "PERS",
+   "praktikProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/pers_process_profile.json",
+   "mappingRationale": "Personalspezifischer Administrations- und Entgeltprozess."
+  },
+  {
+   "componentUuid": "344e9183-c128-4720-b085-4e3585363c26",
+   "sourceId": "GP006b",
+   "name": "Neueinstellung",
+   "description": "Teilprozess von GP006. Die Abteilung ist auch an der Neueinstellung von Mitarbeitern beteiligt. Es fallen Informationen an, die dem Datenschutz unterliegen. Prozess-Art: Unterstützender Prozess.",
+   "status": "operational",
+   "owner": "Geschäftsführung, Personal",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "PERS",
+   "praktikProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/pers_process_profile.json",
+   "mappingRationale": "Mitarbeiter-Onboarding und Personalprozeduren."
+  },
+  {
+   "componentUuid": "a123516d-751f-44cb-936b-44980d06ee03",
+   "sourceId": "GP006c",
+   "name": "Entlassung Mitarbeiter",
+   "description": "Prozess der Personalabteilung zur Entlassung von Mitarbeitern. Zuordnung Standort Bad-Godesberg.",
+   "status": "operational",
+   "owner": "Personalabteilung",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "PERS",
+   "praktikProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/pers_process_profile.json",
+   "mappingRationale": "Mitarbeiter-Offboarding und personelles Ausscheiden."
+  },
+  {
+   "componentUuid": "3882d255-21f4-45f1-b351-ff1165223908",
+   "sourceId": "GP007",
+   "name": "IT-Betrieb",
+   "description": "Die IT-Abteilung sorgt für den störungsfreien Betrieb der IT-Infrastruktur der Server, Clients und Netze. Beim Betrieb der Produktions-IT wird sie von Mitarbeitern der Produktionsabteilung unterstützt. Es wird mit Konfigurationsdaten der IT-Systeme gearbeitet. Prozess-Art: Unterstützender Prozess.",
+   "status": "operational",
+   "owner": "Informationstechnik",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "KONF",
+   "praktikProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/konf_process_profile.json",
+   "mappingRationale": "Verwaltung und Sicherstellung der Systemkonfigurationen im laufenden Betrieb."
+  },
+  {
+   "componentUuid": "b6741684-d3b5-4c9f-abc2-8813b6e395b5",
+   "sourceId": "GP007a",
+   "name": "Betrieb Server",
+   "description": "Teilprozess von GP007. Dieser Prozess umfasst Beschaffung, Installation, Konfiguration und Pflege der erforderlichen Hard- und Software. Dazu wird mit Konfigurationsdaten der Systeme gearbeitet. Prozess-Art: Unterstützender Prozess.",
+   "status": "operational",
+   "owner": "Informationstechnik",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "KONF",
+   "praktikProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/konf_process_profile.json",
+   "mappingRationale": "Konfiguration, Installation und Pflege von Serverplattformen."
+  },
+  {
+   "componentUuid": "3591229b-207c-4196-8b7f-f1e86d0b6c87",
+   "sourceId": "GP007b",
+   "name": "Betrieb Clients",
+   "description": "Teilprozess von GP007. Dieser Prozess umfasst Beschaffung, Installation, Konfiguration und Pflege der erforderlichen Hard- und Software sowie die Beratung der Nutzer. Dazu wird mit Konfigurationsdaten der Systeme gearbeitet. Prozess-Art: Unterstützender Prozess.",
+   "status": "operational",
+   "owner": "IT-Betrieb",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "KONF",
+   "praktikProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/konf_process_profile.json",
+   "mappingRationale": "Konfiguration, Patching und Pflege von Client-Systemen."
+  },
+  {
+   "componentUuid": "d28370dd-8f70-4d35-8a92-fa2979e07e98",
+   "sourceId": "GP007c",
+   "name": "Betrieb Netze",
+   "description": "Teilprozess von GP007. Der Prozess umfasst Beschaffung, Installation, Konfiguration und Pflege der aktiven Komponenten sowie – gemeinsam mit der Abteilung Haustechnik – Verlegung und Wartung der Übertragungsleitungen. Dazu wird mit Konfigurationsdaten der Netzkomponenten gearbeitet. Prozess-Art: Unterstützender Prozess.",
+   "status": "operational",
+   "owner": "IT-Betrieb",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "ARCH",
+   "praktikProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/arch_process_profile.json",
+   "mappingRationale": "Betrieb, Verlegung und architektonische Strukturierung der Netzwerkkomponenten."
+  },
+  {
+   "componentUuid": "a4dd9a60-832d-44af-9160-2c84ddfb7a23",
+   "sourceId": "GP007d",
+   "name": "Betrieb Produktions-IT",
+   "description": "Teilprozess von GP007. In diesem Prozess werden Beschaffung, Installation und Betrieb der IT-Systeme durchgeführt, die für Überwachung und Steuerung der Produktion erforderlich sind. Verantwortlich ist der Leiter der Produktionsabteilung unter Mitwirkung der IT-Abteilung. Es wird mit Konfigurationsdaten der Systeme und Produktionsdaten gearbeitet. Prozess-Art: Unterstützender Prozess.",
+   "status": "operational",
+   "owner": "IT-Betrieb",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "KONF",
+   "praktikProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/konf_process_profile.json",
+   "mappingRationale": "Installation und Konfigurationsverwaltung von IT-Systemen der Fertigung."
+  },
+  {
+   "componentUuid": "6b1e3001-191d-49eb-be07-d1a69959ef06",
+   "sourceId": "GP008",
+   "name": "Betrieb der Webseite",
+   "description": "Die Webseite wird durch einen externen Dienstleister gehostet. Die Webseite enthält Neuigkeiten, Ansprechpartner, Kontaktformular und einen Shop. Prozess-Art: Unterstützender Prozess.",
+   "status": "operational",
+   "owner": "Vertrieb",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "GC",
+   "praktikProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/gc_process_profile.json",
+   "mappingRationale": "Steuerung von Drittdienstleistern und Webpräsenz-Compliance."
+  },
+  {
+   "componentUuid": "6848fd49-2718-40a4-beed-ab8743fd206a",
+   "sourceId": "GP009",
+   "name": "Betrieb des Intranets",
+   "description": "Das Intranet ist eine Wiki-Web-Anwendung. Hierüber werden Dokumente und neue interne Informationen verteilt. Prozess-Art: Unterstützender Prozess.",
+   "status": "operational",
+   "owner": "Alle Mitarbeiter",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "KONF",
+   "praktikProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/konf_process_profile.json",
+   "mappingRationale": "Verwaltung und technische Bereitstellung interner Informationsdienste."
+  },
+  {
+   "componentUuid": "cdd2f643-bbd3-4cde-a00f-291323ee246d",
+   "sourceId": "GP010",
+   "name": "Verwaltung des Mobile Device Managements",
+   "description": "Die RECPLAST GmbH nutzt zur Verwaltung der Smartphones und Tablets ein Mobile Device Management. Prozess-Art: Unterstützender Prozess.",
+   "status": "operational",
+   "owner": "Informationstechnik",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "KONF",
+   "praktikProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/konf_process_profile.json",
+   "mappingRationale": "Konfigurationsmanagement mobiler Arbeitsplatzgeräte."
+  },
+  {
+   "componentUuid": "a9ab3d0b-1228-4329-8dd3-c4b05374f31b",
+   "sourceId": "GP011",
+   "name": "Nutzung einer Cloud-Umgebung",
+   "description": "Die Cloud dient zum Datenaustausch zwischen mobilem Endgerät und den Clients bzw. Notebooks. Prozess-Art: Unterstützender Prozess.",
+   "status": "operational",
+   "owner": "Alle Mitarbeiter",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "praktik": "UMS",
+   "praktikProfileUrl": "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/ums_process_profile.json",
+   "mappingRationale": "Operative Nutzung und Umsetzung cloudbasierter Datenaustauschdienste."
+  }
+ ],
+ "risks": [
+  {
+   "uuid": "339f8284-db94-4e72-9ae4-c11838fbe398",
+   "sourceId": "R-S007-G0.8",
+   "title": "G 0.8 Ausfall oder Störung der Stromversorgung (S007)",
+   "description": "Ausfall oder Störung der Stromversorgung für den Virtualisierungsserver S007",
+   "threat": "G 0.8 Ausfall oder Störung der Stromversorgung",
+   "likelihood": "medium",
+   "impact": "medium",
+   "targetRefs": [
+    "S007"
+   ],
+   "mitigatingControlIds": [
+    "AI-Strom-Redundanz"
+   ],
+   "sourceDocument": "Beschreibung_Recplast.pdf"
+  },
+  {
+   "uuid": "6f9df6fa-e580-451b-9d09-260dfaab9d15",
+   "sourceId": "R-S007-G0.9",
+   "title": "G 0.9 Ausfall oder Störung von Kommunikationsnetzen (S007)",
+   "description": "Ausfall oder Störung von Kommunikationsnetzen für den Virtualisierungsserver S007",
+   "threat": "G 0.9 Ausfall oder Störung von Kommunikationsnetzen",
+   "likelihood": "medium",
+   "impact": "medium",
+   "targetRefs": [
+    "S007"
+   ],
+   "mitigatingControlIds": [
+    "AI-Zweiter-Provider"
+   ],
+   "sourceDocument": "Beschreibung_Recplast.pdf"
+  },
+  {
+   "uuid": "204de4e8-59d2-41c6-9b97-d4f9c508e815",
+   "sourceId": "R-S007-G0.14",
+   "title": "G 0.14 Ausspähen von Informationen (Spionage) (S007)",
+   "description": "Ausspähen von Informationen auf Virtualisierungsserver S007",
+   "threat": "G 0.14 Ausspähen von Informationen (Spionage)",
+   "likelihood": "medium",
+   "impact": "medium",
+   "targetRefs": [
+    "S007"
+   ],
+   "mitigatingControlIds": [
+    "AI-2FA"
+   ],
+   "sourceDocument": "Beschreibung_Recplast.pdf"
+  },
+  {
+   "uuid": "0e4752b7-be0a-4cc6-b3a5-eb95ab8ff1df",
+   "sourceId": "R-S007-G0.15",
+   "title": "G 0.15 Abhören (S007)",
+   "description": "Abhören von Kommunikationsverbindungen des Virtualisierungsservers S007",
+   "threat": "G 0.15 Abhören",
+   "likelihood": "medium",
+   "impact": "medium",
+   "targetRefs": [
+    "S007"
+   ],
+   "mitigatingControlIds": [
+    "AI-2FA"
+   ],
+   "sourceDocument": "Beschreibung_Recplast.pdf"
+  },
+  {
+   "uuid": "1c1183dc-8dc2-4e2d-a70c-c2d26853e2db",
+   "sourceId": "R-S007-G0.16",
+   "title": "G 0.16 Diebstahl von Geräten, Datenträgern oder Dokumenten (S007)",
+   "description": "Diebstahl von Geräten, Datenträgern oder Dokumenten",
+   "threat": "G 0.16 Diebstahl von Geräten, Datenträgern oder Dokumenten",
+   "likelihood": "medium",
+   "impact": "medium",
+   "targetRefs": [
+    "S007"
+   ],
+   "mitigatingControlIds": [],
+   "sourceDocument": "Beschreibung_Recplast.pdf"
+  },
+  {
+   "uuid": "887a9f1e-4070-43a0-8c20-b430f7ead179",
+   "sourceId": "R-S007-G0.19",
+   "title": "G 0.19 Offenlegung schützenswerter Informationen (S007)",
+   "description": "Offenlegung schützenswerter Informationen",
+   "threat": "G 0.19 Offenlegung schützenswerter Informationen",
+   "likelihood": "medium",
+   "impact": "medium",
+   "targetRefs": [
+    "S007"
+   ],
+   "mitigatingControlIds": [
+    "AI-Angriffserkennung",
+    "AI-2FA"
+   ],
+   "sourceDocument": "Beschreibung_Recplast.pdf"
+  },
+  {
+   "uuid": "f49fc418-b97d-40b4-a1fb-bab4f52a57b3",
+   "sourceId": "R-S007-G0.21",
+   "title": "G 0.21 Manipulation von Hard- oder Software (S007)",
+   "description": "Manipulation von Hard- oder Software",
+   "threat": "G 0.21 Manipulation von Hard- oder Software",
+   "likelihood": "medium",
+   "impact": "medium",
+   "targetRefs": [
+    "S007"
+   ],
+   "mitigatingControlIds": [
+    "AI-Angriffserkennung"
+   ],
+   "sourceDocument": "Beschreibung_Recplast.pdf"
+  },
+  {
+   "uuid": "d1e18ae8-9659-4305-876d-9fe65f3debbe",
+   "sourceId": "R-S007-G0.22",
+   "title": "G 0.22 Manipulation von Informationen (S007)",
+   "description": "Manipulation von Informationen",
+   "threat": "G 0.22 Manipulation von Informationen",
+   "likelihood": "medium",
+   "impact": "medium",
+   "targetRefs": [
+    "S007"
+   ],
+   "mitigatingControlIds": [
+    "AI-Angriffserkennung"
+   ],
+   "sourceDocument": "Beschreibung_Recplast.pdf"
+  },
+  {
+   "uuid": "c204fdce-90f5-40ba-ab7a-a0fa05a03404",
+   "sourceId": "R-S007-G0.23",
+   "title": "G 0.23 Unbefugtes Eindringen in IT-Systeme (S007)",
+   "description": "Unbefugtes Eindringen in IT-Systeme",
+   "threat": "G 0.23 Unbefugtes Eindringen in IT-Systeme",
+   "likelihood": "medium",
+   "impact": "medium",
+   "targetRefs": [
+    "S007"
+   ],
+   "mitigatingControlIds": [
+    "AI-Angriffserkennung",
+    "AI-2FA"
+   ],
+   "sourceDocument": "Beschreibung_Recplast.pdf"
+  },
+  {
+   "uuid": "65d64102-4519-4c21-9859-ffcbb2e04ced",
+   "sourceId": "R-S007-G0.28",
+   "title": "G 0.28 Software-Schwachstellen oder -Fehler (S007)",
+   "description": "Software-Schwachstellen oder -Fehler",
+   "threat": "G 0.28 Software-Schwachstellen oder -Fehler",
+   "likelihood": "medium",
+   "impact": "medium",
+   "targetRefs": [
+    "S007"
+   ],
+   "mitigatingControlIds": [
+    "AI-Angriffserkennung"
+   ],
+   "sourceDocument": "Beschreibung_Recplast.pdf"
+  },
+  {
+   "uuid": "78cdee8d-5cc2-4900-8843-0dc1f7878db3",
+   "sourceId": "R-S007-G0.30",
+   "title": "G 0.30 Unberechtigte Nutzung oder Administration von Geräten und Systemen (S007)",
+   "description": "Unberechtigte Nutzung oder Administration",
+   "threat": "G 0.30 Unberechtigte Nutzung oder Administration von Geräten und Systemen",
+   "likelihood": "medium",
+   "impact": "medium",
+   "targetRefs": [
+    "S007"
+   ],
+   "mitigatingControlIds": [
+    "AI-Geteilte-Kennwoerter"
+   ],
+   "sourceDocument": "Beschreibung_Recplast.pdf"
+  },
+  {
+   "uuid": "e29a339d-a3f7-40bc-ab98-89d4eb5767c1",
+   "sourceId": "R-S007-G0.39",
+   "title": "G 0.39 Schadprogramme (S007)",
+   "description": "Schadprogramme auf Virtualisierungsserver",
+   "threat": "G 0.39 Schadprogramme",
+   "likelihood": "medium",
+   "impact": "medium",
+   "targetRefs": [
+    "S007"
+   ],
+   "mitigatingControlIds": [
+    "AI-App-Whitelisting",
+    "AI-Angriffserkennung"
+   ],
+   "sourceDocument": "Beschreibung_Recplast.pdf"
+  },
+  {
+   "uuid": "9fa31344-c5bb-4b1b-aa17-966d83b697be",
+   "sourceId": "R-S007-G0.43",
+   "title": "G 0.43 Einspielen von Nachrichten (S007)",
+   "description": "Einspielen von Nachrichten",
+   "threat": "G 0.43 Einspielen von Nachrichten",
+   "likelihood": "medium",
+   "impact": "medium",
+   "targetRefs": [
+    "S007"
+   ],
+   "mitigatingControlIds": [
+    "AI-Angriffserkennung"
+   ],
+   "sourceDocument": "Beschreibung_Recplast.pdf"
+  },
+  {
+   "uuid": "5813efc6-5f81-4a8f-9c0b-7eb743525c23",
+   "sourceId": "R-S007-G0.46",
+   "title": "G 0.46 Integritätsverlust schützenswerter Informationen (S007)",
+   "description": "Integritätsverlust schützenswerter Informationen",
+   "threat": "G 0.46 Integritätsverlust schützenswerter Informationen",
+   "likelihood": "medium",
+   "impact": "medium",
+   "targetRefs": [
+    "S007"
+   ],
+   "mitigatingControlIds": [
+    "AI-Geteilte-Kennwoerter"
+   ],
+   "sourceDocument": "Beschreibung_Recplast.pdf"
+  }
+ ],
+ "controls": [
+  {
+   "controlId": "AI-IT-NUTZUNG",
+   "title": "Regelung zur Nutzung der betrieblichen Informationstechnik",
+   "description": "Die betriebliche Informationstechnik darf ausschließlich für Firmenzwecke genutzt werden. Das Einbringen von privater Hard- und Software ist untersagt.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "implemented",
+     "description": "Eine betriebliche Anweisung regelt den ausschließlichen Einsatz für Firmenzwecke und untersagt private Hard- und Software.",
+     "responsibleParty": "Geschäftsführung / IT-Abteilung",
+     "evidence": [
+      "Anweisung zum Umgang mit der betrieblichen Informationstechnik"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "AI-ISB-ERNENNUNG",
+   "title": "Ernennung von Sicherheitsbeauftragten",
+   "description": "Ernennung eines Informationssicherheitsbeauftragten (ISB) aus der IT-Abteilung mit Unterstellung unter die Geschäftsführung sowie eines ICS-Informationssicherheitsbeauftragten (ICS-ISB) für den Produktionsbereich.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "GC.9.1.1.1",
+   "coverageRationale": "Regelt die Zuweisung der ISB-Zuständigkeit unterhalb der Leitung.",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "implemented",
+     "description": "Geschäftsführung hat einen ISB und einen ICS-ISB ernannt.",
+     "responsibleParty": "Geschäftsführung",
+     "evidence": [
+      "Ernennungsschreiben / Dokumentation der Organisationsstruktur"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "AI-IS-MGMT-TEAM",
+   "title": "Etablierung eines IS-Management-Teams",
+   "description": "Bildung eines Teams zur Unterstützung von ISB und ICS-ISB bestehend aus Datenschutzbeauftragtem, Leitern von kaufmännischem Bereich und Rechtsabteilung sowie einem Vertriebsmitarbeiter.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "GC.9.1",
+   "coverageRationale": "Regelt die Festlegung der Sicherheitsorganisation inklusive Gremien.",
+   "implementations": [
+    {
+     "targetRef": "proc-sec-concept",
+     "status": "implemented",
+     "description": "IS-Management-Team ist eingerichtet und tagt zur Erstellung der Leitlinie und des Sicherheitskonzepts.",
+     "responsibleParty": "ISB / ICS-ISB / Geschäftsführung",
+     "evidence": [
+      "Projektbesetzung des IS-Management-Teams"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "AI-REMOTE-VPN",
+   "title": "Authentisierter Fernzugriff über VPN",
+   "description": "Absicherung des Remote-Zugriffs von unterwegs und aus den Vertriebsbüros auf das Unternehmensnetzwerk mittels Authentisierung und VPN.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "implemented",
+     "description": "Vertriebsbüros und mobile Mitarbeiter greifen über VPN mit Authentisierung auf das Unternehmensnetzwerk zu.",
+     "responsibleParty": "IT-Abteilung",
+     "evidence": [
+      "Konfiguration der VPN-Zugänge"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "AI-LEITLINIE",
+   "title": "Verabschiedung und Kommunikation der Leitlinie zur Informationssicherheit",
+   "description": "Die Leitlinie wird von der Geschäftsführung unterschrieben, auf einer Betriebsversammlung vorgestellt und über das interne Wiki-System verbindlich kommuniziert.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "GC.5.1.4",
+   "coverageRationale": "Regelt die Autorisierung der Sicherheitsleitlinie durch die Leitung.",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "implemented",
+     "description": "Verabschiedung durch Unterschrift der Geschäftsführung, Vorstellung auf Betriebsversammlung und Bereitstellung im internen Wiki.",
+     "responsibleParty": "Geschäftsführung",
+     "evidence": [
+      "Unterschriebene Leitlinie",
+      "Präsentation Betriebsversammlung",
+      "Internes Wiki"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "AI-SENSIBILISIERUNG",
+   "title": "Sensibilisierung und Schulung zur Informationssicherheit",
+   "description": "Mitarbeiter werden durch regelmäßige Schulungen für Gefährdungen und den sicheren Umgang mit Informationen sensibilisiert.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "SENS.1.1",
+   "coverageRationale": "SENS.1.1 fordert Regelungen zur Sensibilisierung und Schulung.",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "planned",
+     "description": "Die Geschäftsführung kündigt an, die Belegschaft künftig verstärkt zu sensibilisieren und Schulungen durchzuführen.",
+     "responsibleParty": "Geschäftsführung",
+     "evidence": [
+      "Ankündigung der Geschäftsführung"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "AI-SICHERHEITSORGANISATION",
+   "title": "Etablierung der Sicherheitsorganisation",
+   "description": "Schaffung der Stabsstelle des Informationssicherheitsbeauftragten, der Stelle des ICS-Sicherheitsbeauftragten und Bildung des IS-Management-Teams.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "GC.9.1",
+   "coverageRationale": "Regelt den Aufbau der Sicherheitsorganisation mit Rollen und Gremien.",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "implemented",
+     "description": "Benennung des Informationssicherheitsbeauftragten und des ICS-Sicherheitsbeauftragten sowie Bildung des IS-Management-Teams und Zuweisung von Eigentümerrollen für Informationen, Geschäftsprozesse und Systeme.",
+     "responsibleParty": "Geschäftsführung",
+     "evidence": [
+      "Organisationsstruktur",
+      "Stellenbeschreibungen Informationssicherheitsbeauftragter und ICS-Sicherheitsbeauftragter"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "ISMS.1.A1",
+   "title": "Übernahme der Gesamtverantwortung für Informationssicherheit durch die Leitungsebene",
+   "description": "Übernahme der Gesamtverantwortung für Informationssicherheit durch die Leitungsebene.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "GC.5.1.2",
+   "coverageRationale": "Regelt die Verpflichtung der Institutionsleitung.",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "planned",
+     "description": "Die Geschäftsführung hat die Erstellung der Leitlinie zur Informationssicherheit initiiert. Die Geschäftsführung hat die Gesamtverantwortung für die Informationssicherheit übernommen. Einmal im Monat erhält die Geschäftsführung einen Management-Report und kontrolliert den Umsetzungsstand der Maßnahme.",
+     "responsibleParty": "Geschäftsführung",
+     "evidence": [
+      "Management-Report",
+      "Leitlinie zur Informationssicherheit"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "ISMS.1.A2",
+   "title": "Festlegung der Sicherheitsziele und -strategie",
+   "description": "Festlegung der Sicherheitsziele und -strategie.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "GC.5.1.1",
+   "coverageRationale": "Regelt die Festlegung der Sicherheitsstrategie.",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "planned",
+     "description": "Die Geschäftsführung hat Ziele sowie eine Strategie für Informationssicherheit in der Leitlinie zur Informationssicherheit festgelegt und dokumentiert. Der Sicherheitsprozess ist an diesen Vorgaben ausgerichtet. Die Geschäftsführung hat außerdem veranlasst, dass Aktualität, Angemessenheit und wirksame Umsetzung der Sicherheitsziele und -strategie regelmäßig geprüft werden.",
+     "responsibleParty": "Geschäftsführung",
+     "evidence": [
+      "Leitlinie zur Informationssicherheit"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "ISMS.1.A3",
+   "title": "Erstellung einer Leitlinie zur Informationssicherheit",
+   "description": "Erstellung einer Leitlinie zur Informationssicherheit.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "GC.5.1.3",
+   "coverageRationale": "Regelt die Erstellung einer passenden Sicherheitsleitlinie.",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "planned",
+     "description": "Die Geschäftsführung hat die Leitlinie zur Informationssicherheit verabschiedet und den Mitarbeitern und anderen relevanten Stellen bekanntgegeben. In dieser wird der Geltungsbereich definiert, die Sicherheitsziele und die wichtigsten Aspekte der Sicherheitsstrategie beschrieben. Die Leitlinie wird jährlich überprüft und bei Bedarf aktualisiert.",
+     "responsibleParty": "Geschäftsführung",
+     "evidence": [
+      "Leitlinie zur Informationssicherheit"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "ISMS.1.A4",
+   "title": "Benennung eines Informationssicherheitsbeauftragten",
+   "description": "Benennung eines Informationssicherheitsbeauftragten.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "GC.9.1.1.1",
+   "coverageRationale": "Regelt die Zuweisung der ISB-Zuständigkeit.",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "planned",
+     "description": "Es wurde ein fachlich qualifizierter Informationssicherheitsbeauftragter (ISB) benannt, welcher der Geschäftsführung über alle relevanten Fragestellungen zur Informationssicherheit berichtet. Durch die Richtlinien wurde sichergestellt, dass der ISB in die Unternehmensprozesse eingebunden und frühzeitig in neue Entwicklungen und Vorhaben eingebunden wird.",
+     "responsibleParty": "Informationssicherheitsbeauftragter (ISB)",
+     "evidence": [
+      "Richtlinien"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "ISMS.1.A5",
+   "title": "Vertragsgestaltung bei Bestellung eines externen Informationssicherheitsbeauftragten",
+   "description": "Vertragsgestaltung bei Bestellung eines externen Informationssicherheitsbeauftragten.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "planned",
+     "description": "Der Informationssicherheitsbeauftragte ist ein Mitarbeiter der RECPLAST GmbH.",
+     "responsibleParty": "Informationssicherheitsbeauftragter (ISB)",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "ISMS.1.A6",
+   "title": "Aufbau einer geeigneten Organisationsstruktur für Informationssicherheit",
+   "description": "Aufbau einer geeigneten Organisationsstruktur für Informationssicherheit.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "GC.9.1",
+   "coverageRationale": "Regelt die Festlegung der Sicherheitsorganisation.",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "partial",
+     "description": "Die RECPLAST GmbH hat verschiedene Rollen für die IS-Organisation definiert. Diese sind in der Leitlinie zur Informationssicherheit dokumentiert und beschrieben. Es gibt jedoch noch keine ausreichende Vertretungsregelung für alle IS-Organisations-Rollen. Die Kommunikationswege sind definiert und den Mitarbeitern mitgeteilt worden. Eine Prüfung der Organisationsstruktur findet jährlich statt.",
+     "responsibleParty": "Informationssicherheitsbeauftragter (ISB)",
+     "evidence": [
+      "Leitlinie zur Informationssicherheit"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "ISMS.1.A7",
+   "title": "Festlegung von Sicherheitsmaßnahmen",
+   "description": "Festlegung von Sicherheitsmaßnahmen.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "planned",
+     "description": "Es wurden entsprechende Sicherheitsmaßnahmen in den einzelnen Richtlinien dokumentiert.",
+     "responsibleParty": "Informationssicherheitsbeauftragter (ISB)",
+     "evidence": [
+      "Richtlinien"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "ISMS.1.A8",
+   "title": "Integration der Mitarbeiter in den Sicherheitsprozess",
+   "description": "Integration der Mitarbeiter in den Sicherheitsprozess.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "planned",
+     "description": "Die Mitarbeiter werden regelmäßig über das interne Wiki über Neuerungen etc. der IS-Organisation sowie des ISMS informiert. Zusätzlich werden die Mitarbeiter regelmäßig geschult.",
+     "responsibleParty": "Informationssicherheitsbeauftragter (ISB)",
+     "evidence": [
+      "Internes Wiki",
+      "Schulungsnachweise"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "ISMS.1.A9",
+   "title": "Integration der Informationssicherheit in organisationsweite Abläufe und Prozesse",
+   "description": "Integration der Informationssicherheit in organisationsweite Abläufe und Prozesse.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "planned",
+     "description": "Die Informationssicherheit ist in so weit in die Geschäftsprozesse integriert, dass am ISMS-Meeting regelmäßig Abteilungsleiter der Fachabteilungen teilnehmen. Diese informieren und sensibilisieren ihre Mitarbeiter im Anschluss entsprechend.",
+     "responsibleParty": "Informationssicherheitsbeauftragter (ISB)",
+     "evidence": [
+      "ISMS-Meeting Protokolle"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "ISMS.1.A10",
+   "title": "Erstellung eines Sicherheitskonzepts",
+   "description": "Erstellung eines Sicherheitskonzepts.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "partial",
+     "description": "Der Aufbau eines Sicherheitskonzepts ist bei der RECPLAST GmbH derzeit im Aufbau. Eine vollständige Beendigung des Sicherheitskonzepts ist erst nach dem Durchführen einer Risikoanalyse erwünscht.",
+     "responsibleParty": "Informationssicherheitsbeauftragter (ISB)",
+     "evidence": [
+      "Sicherheitskonzept (im Aufbau)"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "ISMS.1.A11",
+   "title": "Aufrechterhaltung der Informationssicherheit",
+   "description": "Regelmäßige Prüfung der Richtlinien und Konzepte auf Wirksamkeit.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "GC.1.1",
+   "coverageRationale": "Regelt die Errichtung und Aufrechterhaltung des ISMS.",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "implemented",
+     "description": "Die erstellten Richtlinien und Konzepte werden regelmäßig auf Wirksamkeit geprüft. Jedes Dokument enthält eine Dokumenteneigenschaftenübersicht mit Verantwortlichkeiten und Prüfungszyklen sowie eine Dokumentenhistorie.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Dokumenteneigenschaftenübersicht",
+      "Dokumentenhistorie"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "ISMS.1.A12",
+   "title": "Management-Berichte zur Informationssicherheit",
+   "description": "Monatliche Information der Geschäftsführung über den aktuellen Stand der Informationssicherheit.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "PERF.4.2",
+   "coverageRationale": "PERF.4.2 fordert Managementberichte an die Institutionsleitung.",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "implemented",
+     "description": "Der ISB informiert die Geschäftsführung monatlich über den aktuellen Stand der Informationssicherheit anhand eines Management-Reports. Entscheidungen werden in einem Protokoll dokumentiert. Reports werden versioniert und archiviert.",
+     "responsibleParty": "ISB",
+     "evidence": [
+      "Management-Reports",
+      "Protokoll"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "ISMS.1.A13",
+   "title": "Dokumentation des Sicherheitsprozesses",
+   "description": "Dokumentation von Entscheidungen und Lenkung von Dokumenten.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "GC.11.1",
+   "coverageRationale": "Regelt die Dokumentenlenkung im ISMS-Lebenszyklus.",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "implemented",
+     "description": "Entscheidungen werden im Protokoll des ISMS-Meetings bzw. Management-Reports oder der Risikoanalyse dokumentiert. Richtlinie zur Lenkung von Dokumenten regelt Umgang und Vertraulichkeitsstufen. Bereitstellung im internen Wiki, Archivierung auf Dateiablageserver.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Protokoll des ISMS-Meetings",
+      "Protokoll des Management-Reports",
+      "Risikoanalyse",
+      "Richtlinie zur Lenkung von Dokumenten und Aufzeichnungen",
+      "internes Wiki",
+      "Dateiablageserver"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "ISMS.1.A14",
+   "title": "Sensibilisierung zur Informationssicherheit",
+   "description": "Regelmäßige Schulung der Mitarbeiter.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "SENS.1.1",
+   "coverageRationale": "SENS.1.1 regelt Verfahren zur Schulung und Sensibilisierung.",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "implemented",
+     "description": "Mitarbeiter werden regelmäßig durch den ISB bzw. die Mitglieder der IS-Organisation geschult.",
+     "responsibleParty": "ISB und IS-Organisation",
+     "evidence": [
+      "Schulungsnachweise"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "ISMS.1.A15",
+   "title": "Wirtschaftlicher Einsatz von Ressourcen für Informationssicherheit",
+   "description": "Bereitstellung von Ressourcen und Wirtschaftlichkeitsbetrachtung von Sicherheitsmaßnahmen.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "GC.8.1",
+   "coverageRationale": "Regelt die wirtschaftliche Ressourcenplanung für das ISMS.",
+   "implementations": [
+    {
+     "targetRef": "global",
+     "status": "implemented",
+     "description": "Der ISB hat jederzeit Möglichkeit zur Berichterstattung an die Geschäftsführung, welche für Bereitstellung der Ressourcen sorgt. Einsatz von Sicherheitsmaßnahmen wird unter dem Gesichtspunkt des wirtschaftlichen Nutzens untersucht.",
+     "responsibleParty": "ISB und Geschäftsführung",
+     "evidence": [
+      "Berichte an Geschäftsführung"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "APP.1.1.A1",
+   "title": "Sicherstellen der Integrität von Office-Produkten",
+   "description": "Installation offizieller Produkte und Bezug aus sicheren Quellen.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "A001",
+     "status": "implemented",
+     "description": "Es werden nur offizielle Office-Produkte installiert. Updates stammen aus sicheren Quellen. Falls vorhanden, werden digitale Signaturen oder Prüfsummen genutzt.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Digitale Signaturen",
+      "Prüfsummen"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "APP.1.1.A2",
+   "title": "Einschränken von Aktiven Inhalten",
+   "description": "Standardmäßiges Deaktivieren aktiver Inhalte.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "KONF.12.1.11",
+   "coverageRationale": "Deaktiviert aktive Inhalte in Office-Dateien.",
+   "implementations": [
+    {
+     "targetRef": "A001",
+     "status": "implemented",
+     "description": "Das automatische Ausführen von aktiven Inhalten ist standardmäßig deaktiviert. Mitarbeiter werden regelmäßig auf Gefahren aktiver Inhalte hingewiesen.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Konfigurationseinstellungen",
+      "Mitarbeiterunterweisungen"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "APP.1.1.A3",
+   "title": "öffnen von Dokumenten aus externen Quellen",
+   "description": "Prüfung eingehender Dokumente auf Schadsoftware.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "KONF.7.1",
+   "coverageRationale": "KONF.7.1 verlangt automatische Prüfung auf Schadcode beim Öffnen von Dateien.",
+   "implementations": [
+    {
+     "targetRef": "A001",
+     "status": "implemented",
+     "description": "Per Mail eingehende Dokumente werden vom Virenscanner auf Schadsoftware geprüft. Alte oder unbenötigte Dateiformate werden direkt abgefangen.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Virenscanner-Logs"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "APP.1.1.A4",
+   "title": "Absichern des laufenden Betriebs von Office-Produkten",
+   "description": "Schwachstelleninformation und Update-Einspielung.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "KONF.8.2",
+   "coverageRationale": "KONF.8.2 regelt automatische Sicherheitsupdates für Anwendungen.",
+   "implementations": [
+    {
+     "targetRef": "A001",
+     "status": "implemented",
+     "description": "IT und ISB informieren sich regelmäßig über Schwachstellen. Updates werden über Updateverwaltung eingespielt. Security Policy definiert Vorgaben.",
+     "responsibleParty": "Informationstechnik und ISB",
+     "evidence": [
+      "Security Policy",
+      "Updateverwaltung"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "APP.1.1.A5",
+   "title": "Auswahl geeigneter Office-Produkte",
+   "description": "Auswahl der Office-Produkte anhand Anforderungskatalog.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "A001",
+     "status": "planned",
+     "description": "Die Office-Produkte wurden anhand eines Anforderungskatalogs beschafft.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Anforderungskatalog"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "APP.1.1.A6",
+   "title": "Testen neuer Versionen von Office-Produkten",
+   "description": "Testen neuer Versionen vor breiter Freigabe.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "TEST.1.1",
+   "coverageRationale": "TEST.1.1 regelt Verfahren zum Testen von Änderungen und Neueinführungen.",
+   "implementations": [
+    {
+     "targetRef": "A001",
+     "status": "planned",
+     "description": "Neue Versionen werden zuerst nur für bestimmte Mitarbeiter installiert, die Funktionalität im Hinblick auf Dokumentenvorlagen und Formulare testen.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Testprotokolle"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "APP.1.1.A7",
+   "title": "Installation und Konfiguration von Office-Produkten",
+   "description": "Dokumentation der Konfiguration im Systemmanagement.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "KONF.10.1",
+   "coverageRationale": "Regelt die Dokumentation einer Grundkonfiguration für Anwendungen.",
+   "implementations": [
+    {
+     "targetRef": "A001",
+     "status": "implemented",
+     "description": "Die Konfiguration der Office-Produkte sind im Systemmanagement dokumentiert.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Systemmanagement-Dokumentation"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "APP.1.1.A8",
+   "title": "Versionskontrolle von Office-Produkten",
+   "description": "Regelmäßiger Versionsabgleich und Erfassung.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "A001",
+     "status": "implemented",
+     "description": "Die Updateverwaltung führt regelmäßig Abgleich durch. Im Systemmanagement wird nachvollzogen, auf welchem Client die Software installiert und wie sie konfiguriert ist.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Updateverwaltung",
+      "Systemmanagement"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "APP.1.1.A9",
+   "title": "Beseitigung von Restinformationen vor Weitergabe von Dokumenten",
+   "description": "Vorgaben zur Bereinigung und PDF-Versand gemäß Klassifizierung.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "A001",
+     "status": "implemented",
+     "description": "Dokumente sind klassifiziert; vor Weitergabe sind Tätigkeiten je nach Klassifizierung durchzuführen. Dokumente sind immer im PDF-Dateiformat zu versenden.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Klassifizierungsrichtlinie"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "APP.1.1.A10",
+   "title": "Regelung der Software- Entwicklung durch Endbenutzer",
+   "description": "Verbot von Eigenentwicklungen durch Mitarbeiter.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "A001",
+     "status": "planned",
+     "description": "Eigenentwicklungen durch die Mitarbeiter sind nicht erlaubt.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Organisatorische Vorgabe"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "APP.1.1.A11",
+   "title": "Geregelter Einsatz von Erweiterungen für Office-Produkte",
+   "description": "Einsatz von Erweiterungen für Office-Produkte.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "A001",
+     "status": "planned",
+     "description": "Es werden keine Erweiterungen für Office-Produkte eingesetzt.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "APP.1.1.A12",
+   "title": "Verzicht auf Cloud- Speicherung",
+   "description": "Deaktivierung der Cloud-Funktionen der Office-Produkte.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "A001",
+     "status": "implemented",
+     "description": "Cloud-Funktionen der Office-Produkte sind institutionsweit deaktiviert. Speicherung erfolgt auf Dateiserver; Versand via Mail unter Einhaltung von Klassifizierungsvorgaben.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Systemkonfiguration",
+      "Dateiserver"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "APP.1.1.A13",
+   "title": "Verwendung von Viewer-Funktionen",
+   "description": "Schutz vor Ausführung nicht vertrauenswürdiger Dokumente.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "A001",
+     "status": "implemented",
+     "description": "Bei nicht vertrauenswürdigen Dokumenten ist Bearbeitung standardmäßig deaktiviert und lässt sich durch Benutzer aktivieren. Mitarbeiter werden geschult.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Viewer-Konfiguration",
+      "Schulungsunterlagen"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "APP.1.1.A14",
+   "title": "Schutz gegen nachträgliche Veränderungen von Informationen",
+   "description": "Schutz von Dateien vor Manipulationen.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "A001",
+     "status": "implemented",
+     "description": "Mitarbeiter werden über Möglichkeiten des Schutzes von Dateien vor nachträglichen Änderungen geschult. Anleitungen befinden sich im internen Wiki.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "internes Wiki"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A1",
+   "title": "Planung des Einsatzes von Cloud-Diensten",
+   "description": "Regelung zur Nutzung von Cloud-Diensten.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "Es wird kein Cloud-Dienst eingesetzt.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A2",
+   "title": "Geeignete Auswahl einer Windows 10-Version und Beschaffung",
+   "description": "Prüfung und Auswahl des Betriebssystems.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "Auswahl des Betriebssystems wurde umfangreich geprüft, auch unter Berücksichtigung der Vorgängerversion.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Auswahldokumentation"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A3",
+   "title": "Geeignetes Patch- und Änderungsmanagement",
+   "description": "Etablierung eines Patchmanagements.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "Patchmanagement ist etabliert.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Patchmanagement-System"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A4",
+   "title": "Telemetrie und Datenschutzeinstellungen",
+   "description": "Einschränkung automatischer Benachrichtigungen und Telemetrie.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "planned",
+     "description": "Funktionsumfang für Microsofts automatische Benachrichtigungen ist eingeschränkt, befindet sich aber noch in Prüfung.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Prüfbericht"
+     ]
+    },
+    {
+     "targetRef": "C001 - C009",
+     "status": "planned",
+     "description": "Nach erfolgreicher Prüfung wird über das Deaktivieren der Einstellungen entschieden.",
+     "responsibleParty": "nicht angegeben",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A5",
+   "title": "Schutz vor Schadsoftware",
+   "description": "Installation eines Virenschutzes auf Clients.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "KONF.7.1",
+   "coverageRationale": "KONF.7.1 deckt Schadsoftwareprüfungen auf IT-Systemen ab.",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "Auf den Clients ist ein Virenschutzclient installiert.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Virenschutz-Client"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A6",
+   "title": "Integration von Online- Konten in das Betriebssystem",
+   "description": "Beschränkung der Benutzeranmeldung auf Organisationskonten.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "Anmeldung ist nur mit RECPLAST-Konten möglich.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Authentifizierungskonfiguration"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A7",
+   "title": "Lokale Sicherheitsrichtlinien",
+   "description": "Definition und Prüfung von Client-Profilen.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "KONF.2.1",
+   "coverageRationale": "Regelt die Grundkonfiguration für IT-Systeme.",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "Es gibt ein Client-Profil, das getestet, freigegeben und regelmäßig gecheckt wird.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Client-Profil",
+      "Freigabenachweis"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A8",
+   "title": "Zentrale Verwaltung der Sicherheitsrichtlinien von Clients",
+   "description": "Zentrale Durchsetzung des Client-Profils.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "KONF.2.6",
+   "coverageRationale": "Regelt die Endgeräteverwaltung über Mobile Device Management.",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "Es gibt ein zentrales Client-Profil, welches getestet und freigegeben wird. Regelmäßiger Check des Profils findet statt.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Client-Profil",
+      "Prüfprotokolle"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A9",
+   "title": "Sichere zentrale Authentisierung der Windows- Clients",
+   "description": "Zentrale Authentisierung per Kerberos.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "KONF.4.1",
+   "coverageRationale": "Regelt die Anbindung an Verzeichnisdienste zur Authentisierung.",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "Kerberos wird eingesetzt.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Kerberos-Konfiguration"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A10",
+   "title": "Konfiguration zum Schutz von Anwendungen in Windows 10",
+   "description": "Aktivierung der Datenausführungsverhinderung.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "KONF.7.16.1",
+   "coverageRationale": "KONF.7.16.1 regelt den Speicherschutz vor Exploit-Ausnutzung.",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "Datenausführungsverhinderung für alle Programme und Dienste (Opt-Out Modus) ist aktiviert.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Betriebssystem-Konfiguration"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A11",
+   "title": "Schutz der Anmeldeinformationen in Windows 10",
+   "description": "Verwendung spezifischer Enterprise-Schutzfunktionen.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "planned",
+     "description": "Windows 10 Enterprise wird nicht eingesetzt.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A12",
+   "title": "Datei- und Freigabeberechtigungen",
+   "description": "Regelung und Inventur von Berechtigungen.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "Berechtigungsvergabe ist geregelt. Berechtigungen werden autorisiert. Jährlich findet eine Inventur der Berechtigungen statt.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Berechtigungskonzept",
+      "Inventurprotokoll"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A13",
+   "title": "Einsatz der SmartScreen-Funktionen",
+   "description": "Konfiguration von Microsoft SmartScreen.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "Microsoft SmartScreen ist deaktiviert.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Richtlinieneinstellung"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A14",
+   "title": "Einsatz des Sprachassistenten Cortana",
+   "description": "Konfiguration des Sprachassistenten.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "KONF.2.4",
+   "coverageRationale": "Deaktiviert nicht benötigte Systemfunktionen.",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "Microsoft Cortana ist deaktiviert.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Richtlinieneinstellung"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A15",
+   "title": "Einsatz der Synchronisationsmechanismen in Windows 10",
+   "description": "Verhinderung der Cloud-Synchronisation.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "KONF.2.4.2",
+   "coverageRationale": "Deaktiviert nicht benötigte Cloud-Anbindungen auf Systemebene.",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "Synchronisation mit MS Cloud ist deaktiviert.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Richtlinieneinstellung"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A16",
+   "title": "Anbindung von Windows 10 an den Microsoft-Store",
+   "description": "Einschränkung des Zugriffs auf den App Store.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "KONF.7.9",
+   "coverageRationale": "KONF.7.9 regelt die Einschränkung der Installation von Anwendungen.",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "MS Store ist deaktiviert.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Richtlinieneinstellung"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A17",
+   "title": "Verwendung der automatischen Anmeldung",
+   "description": "Deaktivierung automatischer Anmeldungen.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "Automatische Anmeldung ist - soweit möglich - deaktiviert. Ferner Hinweis an Benutzer.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Richtlinieneinstellung",
+      "Benutzerhinweis"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A18",
+   "title": "Einsatz der Windows- Remoteunterstützung",
+   "description": "Konforme Umsetzung der Remoteunterstützung.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "KONF.4.4",
+   "coverageRationale": "Schränkt Fernwartungsfunktionen für IT-Systeme ein.",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "Die Anforderungen wurden umgesetzt.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Konfigurationsdokumentation"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A19",
+   "title": "Verwendung des Fernzugriffs über RDP",
+   "description": "Konforme Umsetzung des Fernzugriffs.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "KONF.4.3",
+   "coverageRationale": "Fordert Authentifizierung von Fernwartungsfunktionen.",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "Die Anforderungen wurden umgesetzt.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Konfigurationsdokumentation"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.2.3.A20",
+   "title": "Einsatz der Benutzerkontensteuerung für privilegierte Konten",
+   "description": "Berechtigungssteuerung und regelmäßige Inventur.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "KONF.6.4",
+   "coverageRationale": "KONF.6.4 verlangt die Einschränkung privilegierter Systemfunktionen.",
+   "implementations": [
+    {
+     "targetRef": "C001",
+     "status": "implemented",
+     "description": "Berechtigungsvergabe ist geregelt. Berechtigungen werden autorisiert. Jährlich findet Inventur der Berechtigungen statt.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": [
+      "Berechtigungskonzept",
+      "Inventurprotokoll"
+     ]
+    }
+   ]
+  },
+  {
+   "controlId": "AI-Strom-Redundanz",
+   "title": "Schaffung einer redundanten Stromversorgung",
+   "description": "Maßnahme zur Risikoreduktion bezüglich Ausfall oder Störung der Stromversorgung am Virtualisierungsserver.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "GEB.9.1.3",
+   "coverageRationale": "Installiert eine redundante Stromversorgung.",
+   "implementations": [
+    {
+     "targetRef": "S007",
+     "status": "planned",
+     "description": "Es soll eine redundante Stromversorgung geschaffen werden.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "AI-Zweiter-Provider",
+   "title": "Beauftragung eines zweiten Internetproviders",
+   "description": "Maßnahme zur Risikoreduktion bei Ausfall oder Störung von Kommunikationsnetzen.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "ARCH.8.2",
+   "coverageRationale": "ARCH.8.2 fordert redundante TK-Anbindungen für externe Netzanschlüsse.",
+   "implementations": [
+    {
+     "targetRef": "S007",
+     "status": "planned",
+     "description": "Es soll ein zweiter Internetprovider beauftragt werden.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "AI-2FA",
+   "title": "Einrichtung einer Zwei-Faktor-Authentifizierung",
+   "description": "Maßnahme zur Risikoreduktion gegen Spionage, Abhören, Offenlegung von Informationen und unbefugtes Eindringen.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "S007",
+     "status": "planned",
+     "description": "Es soll eine Zwei-Faktor-Authentifizierung eingerichtet werden.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "AI-Angriffserkennung",
+   "title": "Einrichtung einer Angriffserkennung",
+   "description": "Maßnahme zur Risikoreduktion gegen Software-Manipulation, Informationsmanipulation, unbefugtes Eindringen, Schwachstellen und Schadprogramme.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "DET.4.2",
+   "coverageRationale": "DET.4.2 fordert die automatische Erkennung von Angriffen auf IT-Systemen.",
+   "implementations": [
+    {
+     "targetRef": "S007",
+     "status": "planned",
+     "description": "Es soll eine Angriffserkennung eingerichtet werden.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "AI-Geteilte-Kennwoerter",
+   "title": "Einrichtung geteilter Kennwörter zur Administration",
+   "description": "Maßnahme zur Risikoreduktion gegen unberechtigte Nutzung oder Administration und Integritätsverlust.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "S007",
+     "status": "planned",
+     "description": "Es sollen geteilte Kennwörter zur Administration von kritischen Vorgängen eingerichtet werden.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "AI-App-Whitelisting",
+   "title": "Einsatz von Application Whitelisting",
+   "description": "Maßnahme zur Risikoreduktion gegen Schadprogramme.",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "ASST.2.3.1",
+   "coverageRationale": "ASST.2.3.1 fordert die Autorisierung der Anwendungsnutzung auf IT-Systemen.",
+   "implementations": [
+    {
+     "targetRef": "S007",
+     "status": "planned",
+     "description": "Es soll Application Whitelisting eingesetzt werden.",
+     "responsibleParty": "nicht spezifiziert",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.1.A12",
+   "title": "Kompatibilitätsprüfung von Software",
+   "description": "SYS.2.1.A12 Kompatibilitätsprüfung von Software",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "C001 - C009",
+     "status": "planned",
+     "description": "Der Beschaffungsprozess wird von der Einkaufsabteilung überarbeitet und vervollständigt.",
+     "responsibleParty": "Einkaufsabteilung",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.1.A17",
+   "title": "Einsatzfreigabe",
+   "description": "SYS.2.1.A17 Einsatzfreigabe",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "C001 - C009",
+     "status": "planned",
+     "description": "Es wird ein Freigabeprozess definiert und eingesetzt.",
+     "responsibleParty": "nicht angegeben",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.1.A21",
+   "title": "Verhinderung der unautorisierten Nutzung von Rechnermikrofonen und Kameras",
+   "description": "SYS.2.1.A21 Verhinderung der unautorisierten Nutzung von Rechnermikrofonen und Kameras",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "KONF.3.7",
+   "coverageRationale": "Ermöglicht die Einschränkung angeschlossener Peripherie.",
+   "implementations": [
+    {
+     "targetRef": "C001 - C009",
+     "status": "planned",
+     "description": "Aufgrund der Vielzahl an Videokonferenzen der Mitarbeiter des Vertriebs wird die Funktion für alle Mitarbeiter des Vertriebs aktiviert.",
+     "responsibleParty": "nicht angegeben",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "SYS.2.1.A37",
+   "title": "Schutz vor unbefugten Anmeldungen",
+   "description": "SYS.2.1.A37 Schutz vor unbefugten Anmeldungen",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "KONF.5.1",
+   "coverageRationale": "KONF.5.1 schützt vor unbefugtem Zugriff mittels Authentifizierung.",
+   "implementations": [
+    {
+     "targetRef": "C001 - C009",
+     "status": "planned",
+     "description": "Es wird eine Zwei-Faktor-Authentisierung angeschafft.",
+     "responsibleParty": "nicht angegeben",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "INF.4.A5",
+   "title": "Abnahme der IT-Verkabelung",
+   "description": "INF.4.A5 Abnahme der IT-Verkabelung",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "GEB.9.5",
+   "coverageRationale": "Regelt die bedarfs- und normgerechte Datenverkabelung.",
+   "implementations": [
+    {
+     "targetRef": "GB001",
+     "status": "planned",
+     "description": "Es wird bezüglich der Nutzung des Protokolls sensibilisiert.",
+     "responsibleParty": "nicht angegeben",
+     "evidence": []
+    },
+    {
+     "targetRef": "GB002",
+     "status": "planned",
+     "description": "Es wird bezüglich der Nutzung des Protokolls sensibilisiert.",
+     "responsibleParty": "nicht angegeben",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "INF.4.A7",
+   "title": "Entfernen und Deaktivieren nicht mehr benötigter IT-Verkabelung",
+   "description": "INF.4.A7 Entfernen und Deaktivieren nicht mehr benötigter IT-Verkabelung",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "GB001",
+     "status": "planned",
+     "description": "Die IT-Verkabelungen werden auf nicht mehr benötigte Kabel überprüft.",
+     "responsibleParty": "nicht angegeben",
+     "evidence": []
+    },
+    {
+     "targetRef": "GB002",
+     "status": "planned",
+     "description": "Die IT-Verkabelungen werden auf nicht mehr benötigte Kabel überprüft.",
+     "responsibleParty": "nicht angegeben",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "NET.3.2.A16",
+   "title": "Aufbau einer „P-A-P“- Struktur",
+   "description": "NET.3.2.A16 Aufbau einer „P-A-P“- Struktur",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "ARCH.5.1.11",
+   "coverageRationale": "ARCH.5.1.11 fordert eine P-A-P-Struktur für externe Netzanschlüsse.",
+   "implementations": [
+    {
+     "targetRef": "N002",
+     "status": "planned",
+     "description": "Es wird eine P-A-P-Netzstruktur aufgebaut.",
+     "responsibleParty": "nicht angegeben",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "NET.3.2.A26",
+   "title": "Auslagerung von funktionalen Erweiterungen auf dedizierte Hardware",
+   "description": "NET.3.2.A26 Auslagerung von funktionalen Erweiterungen auf dedizierte Hardware",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "N002",
+     "status": "planned",
+     "description": "Beim Erreichen des End of Life-Cycles wird eine neue dedizierte Firewall angeschafft.",
+     "responsibleParty": "nicht angegeben",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "controlId": "NET.3.2.A29",
+   "title": "Einsatz von Hochverfügbarkeitslösungen",
+   "description": "NET.3.2.A29 Einsatz von Hochverfügbarkeitslösungen",
+   "sourceDocument": "Beschreibung_Recplast.pdf",
+   "coveredBy": "",
+   "coverageRationale": "",
+   "implementations": [
+    {
+     "targetRef": "N002",
+     "status": "planned",
+     "description": "Es soll eine weitere Firewall beschafft werden.",
+     "responsibleParty": "nicht angegeben",
+     "evidence": []
+    }
+   ]
+  }
+ ]
+}
