@@ -1,6 +1,6 @@
 # Plan: Genauigkeit der KI-Dokumentanalyse im SSP-Generator
 
-Stand 2026-09-14, Fassung 2 nach Klärung der offenen Fragen. Anlass: Vier Läufe des SSP-Generators (V5.14.1)
+Stand 2026-09-14, Fassung 3: Stufe 0 und Stufe 1 umgesetzt (Branch `feat/generator-genauigkeit`, SSP-Generator V5.15.0, `QS/`). Stufe 2 bis 4 offen. Anlass: Vier Läufe des SSP-Generators (V5.14.1)
 über `Beschreibung_Recplast.pdf` mit vier Modellen (qwen3.5 9B lokal, gemini-3.8-flash,
 gpt-6-astra, claude-fable-5.1) und das Vergleichsgutachten v1.2 vom 2026-09-13 dazu.
 Kriterium laut Auftrag: Genauigkeit. Tokens und Laufzeit sind kein Kriterium.

@@ -41,6 +41,25 @@ Die Navigation in der linken Leiste ersetzt den Inhalt der Hauptfläche, statt d
 * **Prüfung AP/AR (build 9.7.0)**: Rahmenbedingungen, Metadaten, Auswertung (neuer Eintrag) und die Controls — dort nur die in der Komponentenliste gewählte Komponente, aufgeklappt; ein aktiver Filter zeigt alle Komponenten mit Treffern.
 * **POA&M-Generator (v2.5)**: Metadaten, POA&M-Items mit dem gewählten Asset und Auswertung (neuer Eintrag); Asset-Wahl, Suche und Filter führen zu den Items.
 
+## Nachtrag 14.09.2026 — Genauigkeit der KI-Dokumentanalyse (SSP-Generator V5.15.0)
+
+Vier Läufe des Generators über das BSI-Beispiel RECPLAST mit vier Modellen und ein Vergleichsgutachten dazu haben gezeigt: Die Streuung kam aus dem Werkzeug, nicht aus den Modellen. Der erste Chunk gewann beim Zusammenführen, unbekannte Werte wurden still zu `normal-SdT`, `planned` und `medium`, Assets ohne Kategorie gingen verloren, die Abdeckungsprüfung sah 160 Zeichen Statement. Befund, Katalogbezug und Plan stehen in `Dokumentation/plan-ssp-generator-genauigkeit.md`; dieser Nachtrag setzt die Stufen 0 und 1 um.
+
+**Deterministisch, ohne neuen Modellaufruf:**
+
+- **Zusammenführen je Kennung.** Trägt das Dokument eigene Kennungen, ist die Kennung der Schlüssel; spätere Chunks tragen Felder nach, leere Felder verlieren, Namensgleiche ohne Kennung wandern zu einem eindeutigen Eintrag mit Kennung. Das Extraktions-Prompt verlangt Nachträge ausdrücklich.
+- **Schutzbedarf dreiwertig** mit Herkunft-Prop `sicherheitsniveau-herkunft` (explizit, vererbt, manuell, unbestimmt). Unbestimmt bekommt keinen Wert; die Vererbung vom Geschäftsprozess auf seine Assets und weiter auf benötigte Assets folgt dem Maximumprinzip aus BSI 200-2 und ist als Auslegung gekennzeichnet, denn der Katalog regelt sie nicht (GC.7.1.2 stuft Geschäftsprozesse ein). Die System-Prop `schutzbedarf-system` trägt jetzt Namespace-Werte.
+- **Feste Statustabelle.** Ja, Nein, Teilweise, Entbehrlich und die Wörter des Schemas werden abgebildet, das Quellwort steht als Prop `source-status`; ohne Aussage entfällt `implementation-status`. Das OSCAL-Vokabular mit `partial` bleibt in allen Werkzeugen erhalten, das binäre Modell aus der Guidance zu UMS.1.1 wird bewusst nicht angewendet.
+- **Risikoskalen.** Die vierstufigen Skalen aus 200-3 werden abgebildet, Quellskala und Risikokategorie bleiben wörtlich, `unbewertet` ist ein gültiger Wert; Gefährdungsübersichten werden als unbewertet übernommen und so gekennzeichnet.
+- **Assets ohne Zielobjektkategorie** bleiben als Komponente ohne Controls im SSP und erscheinen mit „unbestimmt"-Badge; vorher fehlten Firewall und Serverraum ohne Meldung.
+- **Geschäftsprozesse** sind vom Sicherheitsprozess getrennt (`kind`), tragen Schutzbedarf und Verweise auf ihre Assets (Links `requires`), bekommen nie eine Praktik. Praktiken gibt es nur für Prozesse, die die Tätigkeit der Praktik selbst beschreiben; „keine Praktik" ist die Vorgabe.
+- **Kompendiums-IDs** werden über `hilfsdateien/ed23_gpp_index.json` (aus dem GS++/ED23-Mapping, Status draft, Skript `Gpp-ai-tool/scripts/build_ed23_index.py`) vor dem Modell aufgelöst, mit Relation und Herkunft am Control. Der Rest geht mit vollem Statement an das Modell, 60 Kandidaten je Aufruf.
+- **Schema mit Enums** für Komponententyp, Schutzbedarf, Status und Skalen; AI-IDs vergibt das Werkzeug fortlaufend; Systemprompt erzwingt Deutsch mit Umlauten und verbietet Meta-Kommentare in Feldern. Chunk-Cache-Version 4: alte Extraktionen werden neu abgerufen.
+- **Chunks an Kapitelgrenzen**, Tabellenblöcke bleiben mit Kopfzeile zusammen, PDF-Seiten tragen Seitenmarken, Entitäten nennen die Seite.
+- **Chunk-Cache exportieren** (Abschnitt 2) und Provenienz im Analyse-Payload (Generator-Version, Prompt-Hashes, Chunkgröße).
+
+**Messen:** Der Ordner `QS/` (nur Entwicklung, nicht im ZIP) enthält die Ground Truth zu RECPLAST, `score_ssp.py` für Exporte und die Analyse-Payloads der vier Läufe als Fixtures. Die Prompts für Extraktion, Zuordnung, Abdeckung und System-Instruktion haben neue Standardtexte; wer sie in `config.html` angepasst hatte, sieht dort weiter den eigenen Text und kann zurücksetzen.
+
 ## Nicht im Umfang von 4.1
 
 * Der Excel-Export des Grundschutzchecks führt die Nachweise noch nicht als Spalte.
@@ -55,7 +74,7 @@ Die Navigation in der linken Leiste ersetzt den Inhalt der Hauptfläche, statt d
 | gemeinsames Stylesheet (gpp-core.css) | 2 · Cache-Buster v4.1 |
 | Übersicht (index.html) | 1.7 |
 | OSCAL Schema Validator | 1.11.2 |
-| SSP-Generator (G++) | V5.14.1 |
+| SSP-Generator (G++) | V5.15.0 |
 | GS++ Explorer (GSpp-Viewer) | v9.8 |
 | BSI → G++ Profil (Baustein_2_Profile) | 0.11.0 |
 | SSP-Editor (ssp_ausfuellen) | v1.7.1 |
