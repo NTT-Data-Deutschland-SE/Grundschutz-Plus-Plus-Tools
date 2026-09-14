@@ -53,10 +53,12 @@ Vier Läufe des Generators über das BSI-Beispiel RECPLAST mit vier Modellen und
 - **Risikoskalen.** Die vierstufigen Skalen aus 200-3 werden abgebildet, Quellskala und Risikokategorie bleiben wörtlich, `unbewertet` ist ein gültiger Wert; Gefährdungsübersichten werden als unbewertet übernommen und so gekennzeichnet.
 - **Assets ohne Zielobjektkategorie** bleiben als Komponente ohne Controls im SSP und erscheinen mit „unbestimmt"-Badge; vorher fehlten Firewall und Serverraum ohne Meldung.
 - **Geschäftsprozesse** sind vom Sicherheitsprozess getrennt (`kind`), tragen Schutzbedarf und Verweise auf ihre Assets (Links `requires`), bekommen nie eine Praktik. Praktiken gibt es nur für Prozesse, die die Tätigkeit der Praktik selbst beschreiben; „keine Praktik" ist die Vorgabe.
-- **Kompendiums-IDs** werden über `hilfsdateien/ed23_gpp_index.json` (aus dem GS++/ED23-Mapping, Status draft, Skript `Gpp-ai-tool/scripts/build_ed23_index.py`) vor dem Modell aufgelöst, mit Relation und Herkunft am Control. Der Rest geht mit vollem Statement an das Modell, 60 Kandidaten je Aufruf.
+- **Kompendiums-IDs** werden über das amtliche BSI-GSMap ITGS→GS++ vor dem Modell aufgelöst: gepinnt auf den Katalog-Commit `4e11779`, SHA-256 beim Laden geprüft, Ziel-IDs über `oscal_uuid` und das `alt-identifier`-Prop des Katalogs aufgelöst statt über den String (130 Ziele tragen im Mapping noch alte IDs). Relation, Teilanforderung, Commit und Hash stehen als Prop `coverage-source` am by-component, das Mapping als Resource mit `rlink` und Hash in der Back-Matter. Ohne aufloesbare UUID wird nichts behauptet. Der Rest geht mit vollem Statement an das Modell, 60 Kandidaten je Aufruf. (V5.15.0 hatte kurz das eigene GS++/ED23-Mapping der Sammlung genutzt; das war als BSI-Mapping missverständlich und in Einzelfällen falsch, siehe QS-Nachtrag.)
 - **Schema mit Enums** für Komponententyp, Schutzbedarf, Status und Skalen; AI-IDs vergibt das Werkzeug fortlaufend; Systemprompt erzwingt Deutsch mit Umlauten und verbietet Meta-Kommentare in Feldern. Chunk-Cache-Version 4: alte Extraktionen werden neu abgerufen.
 - **Chunks an Kapitelgrenzen**, Tabellenblöcke bleiben mit Kopfzeile zusammen, PDF-Seiten tragen Seitenmarken, Entitäten nennen die Seite.
 - **Chunk-Cache exportieren** (Abschnitt 2) und Provenienz im Analyse-Payload (Generator-Version, Prompt-Hashes, Chunkgröße).
+
+**Nachtrag V5.15.1 nach dem ersten Messlauf (gemini-3.8-flash gegen die Baseline):** Schutzbedarf-Treffer 10 auf 16, Status 35 auf 48, Risikoskalen 0 auf 45, Seitenangaben 0 auf 61, Prozessprofil-Platzhalter 25 auf 0. Danach behoben: Mapping-Quelle (siehe oben); namensgleiche Objekte mit anderer Kennung (zwei Serverräume, Firewall als Anwendung und Netzkomponente) bleiben erhalten und tragen die Kennung im Namen; Vererbung läuft auch von der Anwendung auf das IT-System (`supports`, Tabellen „S001 nötig für A002") und löst Gruppen-Kennungen wie „C001 – C009" auf ihre Mitglieder auf; Risikobehandlungen (Risikoreduktion) werden Maßnahmen und an die Risiken gehängt, dedupliziert nach Text; dieselbe Gefährdung für IT-System und Geschäftsprozess bleibt zwei Risiken; Teilprozess-Kennungen behalten ihre Schreibweise (GP006a); Seitenangaben einheitlich „Seite n". Chunk-Cache-Version 5.
 
 **Messen:** Der Ordner `QS/` (nur Entwicklung, nicht im ZIP) enthält die Ground Truth zu RECPLAST, `score_ssp.py` für Exporte und die Analyse-Payloads der vier Läufe als Fixtures. Die Prompts für Extraktion, Zuordnung, Abdeckung und System-Instruktion haben neue Standardtexte; wer sie in `config.html` angepasst hatte, sieht dort weiter den eigenen Text und kann zurücksetzen.
 
@@ -74,7 +76,7 @@ Vier Läufe des Generators über das BSI-Beispiel RECPLAST mit vier Modellen und
 | gemeinsames Stylesheet (gpp-core.css) | 2 · Cache-Buster v4.1 |
 | Übersicht (index.html) | 1.7 |
 | OSCAL Schema Validator | 1.11.2 |
-| SSP-Generator (G++) | V5.15.0 |
+| SSP-Generator (G++) | V5.15.1 |
 | GS++ Explorer (GSpp-Viewer) | v9.8 |
 | BSI → G++ Profil (Baustein_2_Profile) | 0.11.0 |
 | SSP-Editor (ssp_ausfuellen) | v1.7.1 |

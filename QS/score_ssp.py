@@ -85,7 +85,7 @@ def score(path, gold):
     out["Sprache: Felder englisch / ae-oe-ue"] = f"{sum(1 for t in texts if ENGLISH.search(t))} · {sum(1 for t in texts if AEOEUE.search(t))}"
     ai_ids = [c["controlId"] for c in ctrls if str(c.get("controlId", "")).upper().startswith("AI-")]
     out["AI-IDs (Muster)"] = f"{len(ai_ids)} · {len({re.sub(r'[0-9]+', '#', x) for x in ai_ids})} Muster"
-    out["Zuordnung deterministisch (ED23-Mapping)"] = sum(1 for c in ctrls if c.get("coverageSource") == "ed23-mapping")
+    out["Zuordnung deterministisch (BSI-Mapping)"] = sum(1 for c in ctrls if c.get("coverageSource") == "bsi-itgs-mapping")
     out["Schutzbedarf-Herkunft vererbt"] = sum(1 for c in comps if props(c).get("sicherheitsniveau-herkunft", "").startswith("vererbt"))
 
     # --- RECPLAST-Ground-Truth ------------------------------------------------

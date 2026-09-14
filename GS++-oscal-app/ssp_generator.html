@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.15.0</title>
+    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.15.1</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -628,7 +628,7 @@
 
         <div class="topbar-actions">
             <div id="catalog-status" class="pill"><span class="dot animate-pulse"></span>Lade Basis-Katalog…</div>
-            <div class="pill pill-quiet">BUILD V5.15.0</div>
+            <div class="pill pill-quiet">BUILD V5.15.1</div>
         </div>
 
         <div class="progress-track"><div id="ai-doc-progress-bar" class="progress-fill"></div></div>
@@ -685,7 +685,7 @@
             </div>
         </div>
 
-        <div class="rail-foot">BUILD V5.15.0</div>
+        <div class="rail-foot">BUILD V5.15.1</div>
     </aside>
 
     <div id="rail-splitter" class="splitter" title="Rail-Breite ziehen"></div>
@@ -903,9 +903,6 @@
         window.addEventListener('storage', e => {
             if (e.key === 'gpp:cfg:artefacts:touch' && typeof refreshSetSourceOptions === 'function') refreshSetSourceOptions();
         });
-        // Kompakter Index ED23-Anforderung → GS++-Controls aus hilfsdateien/gpp_ed23_anforderungen.json
-        // (Skript Gpp-ai-tool/scripts/build_ed23_index.py). Pin: Commit, in dem der Index liegt.
-        const ED23_INDEX_DEFAULT_URL = 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/f0b1fc9fdfa50fc5b8b832a13ae1c9f3049d68bc/hilfsdateien/ed23_gpp_index.json';
         /* Quellen für die Pin-Übersicht in config.html anmelden (Grundregel 8);
            die Update-Prüfung sitzt dort. */
         gppRegisterSources(GPP_TOOL_ID, [
@@ -921,8 +918,6 @@
             { id: 'ed23-anforderungen', label: 'G++/ED23 Anforderungen (Hilfsdatei)', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
               path: 'hilfsdateien/gpp_ed23_anforderungen.json',
               default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/hilfsdateien/gpp_ed23_anforderungen.json' },
-            { id: 'ed23-index', label: 'ED23 → G++ Index (Abdeckungsprüfung)', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
-              path: 'hilfsdateien/ed23_gpp_index.json', default: ED23_INDEX_DEFAULT_URL },
         ]);
 
         // --- CONFIG & STATE ---
@@ -1116,9 +1111,9 @@
         // Claude-Direktpfad → OpenRouter; alte Einträge wären sonst nicht zuzuordnen.
         // '4': Schema mit Enums, Geschaeftsprozess/Sicherheitsprozess, Quellskalen,
         // Seitenmarken und Nachtraegen je Quell-ID (Plan Stufe 1).
-        const AI_EXTRACTION_CACHE_VERSION = '4';
+        const AI_EXTRACTION_CACHE_VERSION = '5';
         const AI_MAX_CHUNKS = 50;
-        const GENERATOR_VERSION = 'V5.15.0';
+        const GENERATOR_VERSION = 'V5.15.1';
         // Laufzeit-Einstellungen (in der UI änderbar, Persistenz in localStorage)
         const AI_RUN_DEFAULTS = { concurrency: 4, chunkSize: 28000, retries: 2, thinkingLevel: 'medium' };
         const AI_RUN_SETTINGS_KEY = 'ssp-generator-ai-run-settings';
@@ -1169,10 +1164,11 @@
                             securityLevelNote: { type: 'string' },
                             processRefs: { type: 'array', items: { type: 'string' } },
                             dependsOn: { type: 'array', items: { type: 'string' } },
+                            supports: { type: 'array', items: { type: 'string' } },
                             page: { type: 'string' },
                             sourceDocument: { type: 'string' }
                         },
-                        required: ['sourceId', 'name', 'description', 'componentType', 'componentTypeOriginal', 'status', 'securityLevel', 'securityLevelNote', 'processRefs', 'dependsOn', 'page', 'sourceDocument']
+                        required: ['sourceId', 'name', 'description', 'componentType', 'componentTypeOriginal', 'status', 'securityLevel', 'securityLevelNote', 'processRefs', 'dependsOn', 'supports', 'page', 'sourceDocument']
                     }
                 },
                 processes: {
@@ -1374,12 +1370,13 @@ Kennungen: Trägt das Dokument eigene Kennungen (z. B. S007, A010, GP001, R009),
 Nachträge: Erscheint ein Objekt in diesem Abschnitt mit einer Kennung und neuen Angaben (Schutzbedarf, Status, Verantwortlicher, Abhängigkeiten), gib es erneut aus, auch wenn nur Kennung und diese Angabe bekannt sind. Frühere Abschnitte werden damit ergänzt.
 Schutzbedarf (securityLevel): nur der im Dokument genannte Wert je Objekt, höchster Grundwert zählt; sonst "nicht angegeben". securityLevelNote nennt Grundwerte und Begründung wörtlich.
 Prozesse: kind ist "geschaeftsprozess" für Geschäfts- und Fachprozesse (Produktion, Einkauf, Personalverwaltung) und "sicherheitsprozess" für Prozesse des Sicherheitsmanagements (Risikoanalyse, Berechtigungsvergabe, Patchmanagement). assetRefs sind die Kennungen der Anwendungen und Systeme, die der Prozess laut Dokument benötigt.
-Abhängigkeiten (dependsOn): Kennungen der Assets, die dieses Asset benötigt (z. B. Anwendung benötigt Server).
+Abhängigkeiten: dependsOn sind die Kennungen der Assets, die dieses Asset zum Betrieb braucht (Anwendung → IT-System, IT-System → Raum oder Netz). supports sind die Kennungen der Assets und Prozesse, die dieses Asset benötigen (Tabellen wie „S001 nötig für A002" ergeben supports: ["A002"] bei S001). Nie ein IT-System als abhängig von einer Anwendung. Gruppen wie „C001 – C009" als Kennung „C001-C009" ausgeben.
 Komponententyp (componentType) aus dem festen Vokabular; die Bezeichnung des Dokuments wörtlich in componentTypeOriginal.
 Maßnahmen: Nutze vorhandene Control-IDs exakt (z. B. ISMS.1.A5). Ohne ID bleibt controlId leer, das Werkzeug vergibt die lokale ID.
 Umsetzungsstatus (status): Wort des Dokuments auf das Vokabular abbilden (Ja → umgesetzt, Teilweise → teilweise, Nein → nicht umgesetzt, Entbehrlich → entbehrlich); das Originalwort in statusSource. Ohne Aussage: "unbekannt".
-Risiken: Nur Risiken, die das Dokument selbst nennt. Skalenwerte des Dokuments wörtlich in likelihoodSource, impactSource und riskLevelSource; likelihood und impact nur dann auf low/medium/high/very-high abbilden, wenn das Dokument eine vierstufige Skala definiert (selten → low, mittel → medium, häufig → high, sehr häufig → very-high; vernachlässigbar → low, begrenzt → medium, beträchtlich → high, existenzbedrohend → very-high), sonst "unbewertet". evaluated ist true, wenn das Dokument das Risiko bewertet, false bei bloßen Gefährdungsübersichten. treatment ist die beschlossene Behandlung, falls genannt.
-Seite (page): die Seitenmarke "[Seite n]", in deren Bereich die Angabe steht, sonst leer.
+Verantwortliche (responsibleParty): nur Rollen, die das Dokument nennt. Gilt laut Dokument eine allgemeine Zuständigkeit für einen Baustein oder Abschnitt (z. B. „grundsätzlich ist der ISB zuständig"), trägt jede Umsetzungsaussage dieses Abschnitts sie.
+Risiken: Nur Risiken, die das Dokument selbst nennt. Skalenwerte des Dokuments wörtlich in likelihoodSource, impactSource und riskLevelSource; likelihood und impact nur dann auf low/medium/high/very-high abbilden, wenn das Dokument eine vierstufige Skala definiert (selten → low, mittel → medium, häufig → high, sehr häufig → very-high; vernachlässigbar → low, begrenzt → medium, beträchtlich → high, existenzbedrohend → very-high), sonst "unbewertet". evaluated ist true, wenn das Dokument das Risiko bewertet, false bei bloßen Gefährdungsübersichten. Bewertet das Dokument dieselbe Gefährdung für zwei Objekte (z. B. ein IT-System in einer Tabelle und einen Geschäftsprozess in einer anderen), sind das zwei Risiken mit je eigenem targetRef. treatment nennt Option und Maßnahme der Risikobehandlung wörtlich (z. B. „Risikoreduktion: Es soll eine redundante Stromversorgung geschaffen werden."). Beschlossene Maßnahmen (Risikoreduktion) sind zusätzlich Maßnahmen: als controls mit status "geplant" und statusSource „Risikobehandlung" ausgeben und in mitigatingControlIds referenzieren; dieselbe Maßnahme für mehrere Risiken nur einmal anlegen.
+Seite (page): die Zahl der Seitenmarke "[Seite n]", in deren Bereich die Angabe steht (nur die Zahl, z. B. "58"), sonst leer.
 targetRef muss sourceId oder Name eines extrahierten Assets/Prozesses sein; nutze "global" für systemweite Aussagen.
 Leere Kategorien bleiben leere Arrays.
 
@@ -1616,7 +1613,11 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         // BSI-GSMap (ED23-UA -> GS++) als zweite, gekennzeichnete Quelle; für die Anzeige je
         // GS++-Control invertiert, subset-of/superset-of auf die Leserichtung GS++ -> ED23 gespiegelt.
         let BSI_ITGS_MAP = {};
-        const BSI_ITGS_MAP_URL = "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/8f0bcd1fbb4f47a7bec911fc20118ce6e8ef4dad/control_layer/Mappings/IT-GS2023-zu-GSpp/ITGS-to-GS%2B%2B-mapping_collection.json";
+        // Pin des BSI-GSMap ITGS→GS++ auf denselben Commit wie der Katalog; der SHA-256
+        // wird beim Laden geprueft (Grundregel 8, gilt auch fuers Mapping).
+        const BSI_ITGS_MAP_PIN_COMMIT = '4e11779438c34a5db36902be67b74a6bf83bf10d';
+        const BSI_ITGS_MAP_PIN_SHA256 = 'df7ea11261ace956a3ebb440f60928851a4815f5545775ac9b24e4d3d22f267f';
+        const BSI_ITGS_MAP_URL = `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${BSI_ITGS_MAP_PIN_COMMIT}/control_layer/Mappings/IT-GS2023-zu-GSpp/ITGS-to-GS%2B%2B-mapping_collection.json`;
         function buildBsiItgsMapFromOscal(doc) {
             const mirror = { "subset-of": "superset-of", "superset-of": "subset-of" };
             const out = {}, mc = doc && doc["mapping-collection"];
@@ -2910,7 +2911,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 const schutzbedarf = asset.schutzbedarf ? normalizeSchutzbedarf(asset.schutzbedarf) : normalizeSchutzbedarf(securityLevel);
                 return {
                     componentUuid: isUuid(asset.componentUuid) ? asset.componentUuid : crypto.randomUUID(),
-                    sourceId: sourceId || cleanAIString(asset.sourceId) || `asset-${index + 1}`,
+                    sourceId: sourceId ? cleanAIString(asset.sourceId).replace(/\s+/g, '') : (cleanAIString(asset.sourceId) || `asset-${index + 1}`),
                     name: name || sourceId,
                     description: cleanAIString(asset.description) || '',
                     componentType: cleanAIString(asset.componentType) || '',
@@ -2920,7 +2921,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     securityLevelNote: cleanAIString(asset.securityLevelNote),
                     processRefs: stringArray(asset.processRefs).map(aiRealId).filter(Boolean),
                     dependsOn: stringArray(asset.dependsOn).map(aiRealId).filter(Boolean),
-                    page: cleanAIString(asset.page),
+                    supports: stringArray(asset.supports).map(aiRealId).filter(Boolean),
+                    page: aiPage(asset.page),
                     sourceDocument: cleanAIString(asset.sourceDocument),
                     zielobjektkategorie: cleanAIString(asset.zielobjektkategorie),
                     zielobjektProfileUrl: cleanAIString(asset.zielobjektProfileUrl),
@@ -2945,7 +2947,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 const kind = cleanAIString(process.kind).toLowerCase();
                 return {
                     componentUuid: isUuid(process.componentUuid) ? process.componentUuid : crypto.randomUUID(),
-                    sourceId: sourceId || cleanAIString(process.sourceId) || `process-${index + 1}`,
+                    sourceId: sourceId ? cleanAIString(process.sourceId).replace(/\s+/g, '') : (cleanAIString(process.sourceId) || `process-${index + 1}`),
                     name: name || sourceId,
                     description: cleanAIString(process.description) || '',
                     kind: AI_PROCESS_KIND_ENUM.includes(kind) ? kind : '',
@@ -2954,7 +2956,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     securityLevel,
                     securityLevelNote: cleanAIString(process.securityLevelNote),
                     assetRefs: stringArray(process.assetRefs).map(aiRealId).filter(Boolean),
-                    page: cleanAIString(process.page),
+                    page: aiPage(process.page),
                     sourceDocument: cleanAIString(process.sourceDocument),
                     praktik: cleanAIString(process.praktik),
                     praktikProfileUrl: cleanAIString(process.praktikProfileUrl),
@@ -2999,7 +3001,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     description: cleanAIString(implementation.description) || cleanAIString(control.description) || 'Implementierung aus Dokumentanalyse.',
                     responsibleParty: cleanAIString(implementation.responsibleParty),
                     evidence: stringArray(implementation.evidence),
-                    page: cleanAIString(implementation.page)
+                    page: aiPage(implementation.page)
                 }));
                 if (!controlMap.has(controlId)) {
                     controlMap.set(controlId, {
@@ -3040,7 +3042,9 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 const targetRefs = stringArray(risk.targetRefs).length ? stringArray(risk.targetRefs) : ['global'];
                 return {
                     uuid: isUuid(risk.uuid) ? risk.uuid : crypto.randomUUID(),
-                    sourceId: cleanAIString(risk.sourceId) || (g ? `G0.${g[1]}@${targetRefs[0]}` : `risk-${index + 1}`),
+                    sourceId: g
+                        ? `G0.${g[1]}@${aiRealId(targetRefs[0]) || targetRefs[0]}${risk.likelihoodSource || risk.impactSource ? `@${cleanAIString(risk.likelihoodSource)}/${cleanAIString(risk.impactSource)}` : ''}`
+                        : (cleanAIString(risk.sourceId) || `risk-${index + 1}`),
                     name: title,
                     title,
                     description: cleanAIString(risk.description),
@@ -3054,19 +3058,58 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     treatment: cleanAIString(risk.treatment),
                     targetRefs,
                     mitigatingControlIds: stringArray(risk.mitigatingControlIds).map((id, controlIndex) => remapControlId(normalizeControlId(id, controlIndex + 1))),
-                    page: cleanAIString(risk.page),
+                    page: aiPage(risk.page),
                     sourceDocument: cleanAIString(risk.sourceDocument),
                     aliases: stringArray(risk.aliases)
                 };
             });
             result.risks = Array.from(riskMap.values()).map(risk => { delete risk.name; return risk; });
             result.controls.forEach(control => { if (control.coveredBy) control.coveredBy = remapControlId(control.coveredBy); });
+            // Beschlossene Massnahmen der Risikobehandlung (Risikoreduktion) sind Massnahmen:
+            // fehlt die Verknuepfung, legt das Werkzeug sie an und dedupliziert nach Text
+            // (Gutachten-Nachtrag Punkt 4: 2FA dreimal, Angriffserkennung sechsmal).
+            const treatKey = new Map();
+            result.controls.forEach(c => { if (/^AI-\d{3,}$/.test(c.controlId)) treatKey.set(aiNameKey(c.title), c.controlId); });
+            result.risks.forEach(risk => {
+                if (risk.mitigatingControlIds.length) return;
+                const m = /risikoreduktion\s*:?\s*(.+)$/i.exec(risk.treatment || '');
+                if (!m) return;
+                const measure = m[1].replace(/^\s*es\s+(soll|sollen|wird|werden)\s+/i, '').replace(/^(eine?|einen|einem|einer|der|die|das|den|dem)\s+/i, '').replace(/\s+(geschaffen|eingerichtet|eingesetzt|beauftragt|angeschafft|umgesetzt)\s+werden\.?$/i, '').replace(/\.$/, '').trim();
+                if (measure.length < 6) return;
+                const key = aiNameKey(measure);
+                let controlId = treatKey.get(key);
+                if (!controlId) {
+                    controlId = `AI-${String(++aiCounter).padStart(3, '0')}`;
+                    treatKey.set(key, controlId);
+                    result.controls.push({
+                        controlId, localIdSource: '', title: measure.charAt(0).toUpperCase() + measure.slice(1),
+                        description: `Maßnahme aus der Risikobehandlung: ${risk.treatment}`, sourceDocument: risk.sourceDocument,
+                        coveredBy: '', coverageRationale: '', coverageSource: '',
+                        implementations: [{ targetRef: risk.targetRefs[0] || 'global', status: 'planned', statusSource: 'Risikobehandlung: Risikoreduktion', description: risk.treatment, responsibleParty: '', evidence: [], page: risk.page }]
+                    });
+                }
+                risk.mitigatingControlIds.push(controlId);
+            });
 
             aiInheritSecurityLevels(result);
             return result;
         }
 
         const AI_FALLBACK_ID = /^(asset|process|risk)-\d+$/i;
+        /* Seitenmarke als Zahl: "[Seite 58]", "Seite 58", "S. 58", "58" → "58". */
+        function aiPage(value) {
+            const m = /(\d{1,4})/.exec(cleanAIString(value));
+            return m ? m[1] : '';
+        }
+        /* Gruppen-Kennung "C001 – C009", "C001-C009", "C001 bis C009" → Einzelkennungen. */
+        function aiExpandRange(ref) {
+            const text = cleanAIString(ref).replace(/\s+/g, ' ');
+            const m = /([A-Z]{1,3})(\d{2,4})\s*(?:–|—|-|bis)\s*(?:[A-Z]{1,3})?(\d{2,4})/i.exec(text);
+            if (!m) return [ref];
+            const a = parseInt(m[2], 10), b = parseInt(m[3], 10);
+            if (b < a || b - a > 60) return [ref];
+            return Array.from({ length: b - a + 1 }, (_, i) => m[1].toUpperCase() + String(a + i).padStart(m[2].length, '0'));
+        }
         /* Kennung des Dokuments in Vergleichsform; Werkzeug-Fallbacks (asset-3) zaehlen nicht. */
         function aiRealId(value) {
             const id = cleanAIString(value);
@@ -3159,27 +3202,53 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             const assetsById = new Map();
             result.assets.forEach(a => { const id = aiRealId(a.sourceId); if (id) assetsById.set(id, a); });
             const assetsByName = new Map(result.assets.map(a => [aiNameKey(a.name), a]));
-            const find = ref => assetsById.get(aiRealId(ref)) || assetsByName.get(aiNameKey(ref));
-            const queue = [];
-            const setErhoeht = (asset, from) => {
-                if (!asset || asset.schutzbedarf) return;
-                asset.schutzbedarf = 'erhöht';
-                asset.schutzbedarfHerkunft = `vererbt von ${from} (Maximumprinzip, Auslegung 200-2)`;
-                queue.push(asset);
+            const processesById = new Map();
+            result.processes.forEach(p => { const id = aiRealId(p.sourceId); if (id) processesById.set(id, p); });
+            const findAssets = ref => {
+                const out = [];
+                aiExpandRange(ref).forEach(r => {
+                    const a = assetsById.get(aiRealId(r)) || assetsByName.get(aiNameKey(r));
+                    if (a && !out.includes(a)) out.push(a);
+                });
+                return out;
             };
+            const findAny = ref => findAssets(ref).concat(aiExpandRange(ref).map(r => processesById.get(aiRealId(r))).filter(Boolean));
+            const setErhoeht = (asset, herkunft) => {
+                if (!asset || asset.schutzbedarf) return false;
+                asset.schutzbedarf = 'erhöht';
+                asset.schutzbedarfHerkunft = herkunft;
+                return true;
+            };
+            // 1. Gruppen-Kennungen: "Clients C001 – C009" explizit erhöht → jedes Mitglied explizit fuer die Gruppe.
+            result.assets.forEach(g => {
+                if (g.schutzbedarf !== 'erhöht') return;
+                const members = aiExpandRange(g.sourceId).length > 1 ? aiExpandRange(g.sourceId) : aiExpandRange(g.name);
+                if (members.length < 2 || members[0] === g.name) return;
+                members.forEach(id => { const a = assetsById.get(aiRealId(id)); if (a && a !== g) setErhoeht(a, `explizit für Gruppe ${cleanAIString(g.sourceId) || g.name}`); });
+            });
+            // 2. Geschaeftsprozess → Assets (assetRefs des Prozesses, processRefs der Assets).
             result.processes.forEach(p => {
                 if (p.schutzbedarf !== 'erhöht') return;
                 const pid = aiRealId(p.sourceId) || p.name;
-                (p.assetRefs || []).forEach(ref => setErhoeht(find(ref), pid));
-                result.assets.forEach(a => { if ((a.processRefs || []).some(r => aiRealId(r) === aiRealId(p.sourceId) && aiRealId(r))) setErhoeht(a, pid); });
+                const label = `vererbt von ${pid} (Maximumprinzip, Auslegung 200-2)`;
+                (p.assetRefs || []).forEach(ref => findAssets(ref).forEach(a => setErhoeht(a, label)));
+                result.assets.forEach(a => { if ((a.processRefs || []).some(r => aiExpandRange(r).some(x => aiRealId(x) === aiRealId(p.sourceId) && aiRealId(x)))) setErhoeht(a, label); });
             });
-            result.assets.forEach(a => { if (a.schutzbedarf === 'erhöht') queue.push(a); });
-            const seen = new Set();
-            while (queue.length) {
-                const a = queue.shift();
-                if (seen.has(a)) continue;
-                seen.add(a);
-                (a.dependsOn || []).forEach(ref => setErhoeht(find(ref), aiRealId(a.sourceId) || a.name));
+            // 3. Asset → Assets, die es braucht (dependsOn), und Asset ← Assets/Prozesse, die es brauchen (supports);
+            //    iterativ, bis nichts mehr kippt. Richtung immer vom Nutzer zum Genutzten.
+            for (let pass = 0; pass < 8; pass++) {
+                let changed = false;
+                result.assets.forEach(a => {
+                    if (a.schutzbedarf !== 'erhöht') return;
+                    const from = aiRealId(a.sourceId) || a.name;
+                    (a.dependsOn || []).forEach(ref => findAssets(ref).forEach(t => { if (setErhoeht(t, `vererbt von ${from} (Maximumprinzip, Auslegung 200-2)`)) changed = true; }));
+                });
+                result.assets.forEach(a => {
+                    if (a.schutzbedarf) return;
+                    const source = (a.supports || []).flatMap(findAny).find(x => x.schutzbedarf === 'erhöht');
+                    if (source && setErhoeht(a, `vererbt von ${aiRealId(source.sourceId) || source.name} (Maximumprinzip, Auslegung 200-2)`)) changed = true;
+                });
+                if (!changed) break;
             }
         }
 
@@ -3504,14 +3573,22 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             for (const asset of analysis.assets) {
                 const profile = kategorieByName.get(cleanAIString(asset.zielobjektkategorie).toLowerCase());
                 const url = profile?.url || asset.zielobjektProfileUrl;
-                const existing = bpState.components.find(component => component.name.toLowerCase() === asset.name.toLowerCase());
+                // Bestand zuerst über die Kennung, dann über den Namen; ein namensgleiches
+                // Objekt mit anderer Kennung (zwei Serverräume, Firewall als Anwendung und
+                // als Netzkomponente) ist ein eigenes Zielobjekt und bekommt die Kennung im Namen.
+                const assetId = aiRealId(asset.sourceId);
+                const existing = bpState.components.find(component => assetId
+                    ? aiRealId(component.sourceId) === assetId
+                    : (!aiRealId(component.sourceId) && component.name.toLowerCase() === asset.name.toLowerCase()));
                 if (existing) continue;
+                const assetName = bpState.components.some(component => component.name.toLowerCase() === asset.name.toLowerCase())
+                    ? `${asset.name} (${asset.sourceId})` : asset.name;
                 if (!url) {
                     // Keine Zielobjektkategorie (Plan S1.6): das Asset bleibt als Komponente
                     // ohne Controls im SSP und wird als offener Punkt gezählt — vorher ging
                     // es ohne Meldung verloren (Firewall N002, Serverraum R009).
                     bpState.components.push({
-                        id: asset.componentUuid, name: asset.name, source: '', kategorie: '', state: asset.status || 'operational',
+                        id: asset.componentUuid, name: assetName, source: '', kategorie: '', state: asset.status || 'operational',
                         schutzbedarf: asset.schutzbedarf || '', schutzbedarfHerkunft: asset.schutzbedarfHerkunft || '',
                         description: cleanAIString(asset.description) || '', sourceId: asset.sourceId || '',
                         aiComponentType: asset.componentType || '', controls: new Set(), aiGenerated: true, ohneKategorie: true
@@ -3524,7 +3601,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     const controls = await loadProfileControls(url);
                     bpState.components.push({
                         id: asset.componentUuid,
-                        name: asset.name,
+                        name: assetName,
                         source: url,
                         state: asset.status || 'operational',
                         // Unbestimmt bleibt unbestimmt (Plan S1.2) — kein normal-SdT als Default.
@@ -3634,45 +3711,70 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             if (typeof refreshRiskUI === 'function') refreshRiskUI();
         }
 
-        // Kompendiums-IDs (ISMS.1.A5, SYS.2.2.3.A10 …) deterministisch ueber das
-        // GS++/ED23-Mapping des Repos aufloesen (Plan S1.10), bevor das Modell
-        // gefragt wird. Rangfolge der Relationen: equal-to, equivalent-to, subset-of,
-        // superset-of, intersects-with. Das Mapping hat Status draft; die Herkunft
-        // steht an jeder Aufloesung.
+        // Kompendiums-IDs (ISMS.1.A5, SYS.2.2.3.A9 …) deterministisch ueber das
+        // amtliche BSI-GSMap ITGS→GS++ aufloesen, bevor das Modell gefragt wird
+        // (Plan S1.10, Gutachten-Nachtrag Punkt 1). Quelle: gepinnter Commit mit
+        // SHA-256-Pruefung; die Ziel-IDs werden ueber die oscal_uuid der Maps und das
+        // alt-identifier-Prop des Katalogs aufgeloest, nicht ueber den String
+        // (79 von 1013 Zielen tragen im Mapping noch alte IDs). Rangfolge der
+        // Relationen: equal-to, equivalent-to, subset-of, superset-of, intersects-with.
+        // Ohne aufloesbare UUID wird nichts behauptet.
         const ED23_ID_RE = /^[A-Z]{2,5}(\.\d+)+\.A\d+$/i;
         const ED23_REL_ORDER = ['equal-to', 'equivalent-to', 'subset-of', 'superset-of', 'intersects-with'];
-        let ed23IndexPromise = null;
-        function loadEd23Index() {
-            if (!ed23IndexPromise) {
-                ed23IndexPromise = (async () => {
-                    const url = gppSource('ed23-index', ED23_INDEX_DEFAULT_URL);
-                    const res = await fetch(url);
+        let bsiItgsIndexPromise = null;
+        function loadBsiItgsIndex() {
+            if (!bsiItgsIndexPromise) {
+                bsiItgsIndexPromise = (async () => {
+                    const res = await fetch(BSI_ITGS_MAP_URL);
                     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                    return await res.json();
-                })().catch(e => { ed23IndexPromise = null; throw e; });
+                    const buf = await res.arrayBuffer();
+                    const digest = await sha256Hex(buf);
+                    if (digest !== BSI_ITGS_MAP_PIN_SHA256) throw new Error(`SHA-256 des BSI-Mappings weicht vom Pin ab (${digest.slice(0, 12)}…)`);
+                    const doc = JSON.parse(new TextDecoder().decode(buf));
+                    const index = new Map();   // ED23-Anforderung (ohne -UA.n) → [{ id, idref, rel, ua, resolved, uuid }]
+                    let maps = 0;
+                    ((doc['mapping-collection'] || {}).mappings || []).forEach(mp => (mp.maps || []).forEach(m => {
+                        maps++;
+                        (m.sources || []).forEach(src => {
+                            const idref = String(src['id-ref'] || '');
+                            const base = idref.replace(/-UA\.\d+$/i, '').toUpperCase();
+                            if (!base) return;
+                            const ua = (/-UA\.(\d+)$/i.exec(idref) || [])[1] || '';
+                            (m.targets || []).forEach(t => {
+                                const uuid = String(((t.props || []).find(p => p.name === 'oscal_uuid') || {}).value || '').toLowerCase();
+                                const resolved = uuid ? bpState.altIdIndex.get(uuid) : '';
+                                if (!index.has(base)) index.set(base, []);
+                                index.get(base).push({ id: resolved || String(t['id-ref'] || ''), idref: String(t['id-ref'] || ''), rel: m.relationship || '', ua, resolved: Boolean(resolved), uuid });
+                            });
+                        });
+                    }));
+                    return { index, maps, commit: BSI_ITGS_MAP_PIN_COMMIT, sha256: digest, url: BSI_ITGS_MAP_URL };
+                })().catch(e => { bsiItgsIndexPromise = null; throw e; });
             }
-            return ed23IndexPromise;
+            return bsiItgsIndexPromise;
         }
         async function aiResolveEd23Coverage(analysis, covered) {
             const candidates = analysis.controls.filter(c => !c.coveredBy && ED23_ID_RE.test(c.controlId));
             if (candidates.length === 0) return;
-            let index;
-            try { index = await loadEd23Index(); }
-            catch (e) { aiLog('warn', `ED23-Mapping nicht ladbar (${e.message}) — Kompendiums-IDs gehen an das Modell`); return; }
+            if (bpState.altIdIndex.size === 0) { aiLog('warn', 'BSI-Mapping: Katalog ohne alt-identifier geladen — Kompendiums-IDs gehen an das Modell'); return; }
+            let mapping;
+            try { mapping = await loadBsiItgsIndex(); }
+            catch (e) { aiLog('warn', `BSI-Mapping ITGS→GS++ nicht nutzbar (${e.message}) — Kompendiums-IDs gehen an das Modell`); return; }
             let hits = 0;
+            const herkunft = `BSI-GSMap ITGS→GS++, Commit ${mapping.commit.slice(0, 7)}, SHA-256 ${mapping.sha256.slice(0, 8)}…`;
             candidates.forEach(control => {
-                const entries = (index.index || {})[control.controlId.toUpperCase()] || [];
+                const entries = (mapping.index.get(control.controlId.toUpperCase()) || []).filter(e => e.resolved && bpState.controlsIndex.has(e.id));
+                if (entries.length === 0) return;
                 const sorted = entries.slice().sort((a, b) => ED23_REL_ORDER.indexOf(a.rel) - ED23_REL_ORDER.indexOf(b.rel));
-                const best = sorted.find(e => covered.has(e.id)) || sorted.find(e => bpState.controlsIndex.has(e.id));
-                if (!best) return;
+                const best = sorted.find(e => covered.has(e.id)) || sorted[0];
                 if (!covered.has(best.id)) { bpState.manualControls.add(best.id); covered.add(best.id); }
                 control.coveredBy = best.id;
-                control.coverageSource = 'ed23-mapping';
-                const others = sorted.filter(e => e.id !== best.id).slice(0, 3).map(e => `${e.id} (${e.rel})`);
-                control.coverageRationale = `${best.rel} laut GS++/ED23-Mapping (Status draft)${others.length ? `; weitere: ${others.join(', ')}` : ''}`;
+                control.coverageSource = 'bsi-itgs-mapping';
+                const others = sorted.filter(e => e.id !== best.id).slice(0, 4).map(e => `${e.id} (${e.rel}${e.ua ? `, UA.${e.ua}` : ''})`);
+                control.coverageRationale = `${best.rel} laut ${herkunft}${best.ua ? `, Teilanforderung UA.${best.ua}` : ''}; Ziel per alt-identifier ${best.idref && best.idref !== best.id ? `aufgelöst (im Mapping noch ${best.idref})` : 'bestätigt'}${others.length ? `; weitere: ${others.join(', ')}` : ''}`;
                 hits++;
             });
-            aiLog(hits ? 'ok' : 'info', `Abdeckung: ${hits}/${candidates.length} Kompendiums-Anforderungen deterministisch über das ED23-Mapping aufgelöst`);
+            aiLog(hits ? 'ok' : 'info', `Abdeckung: ${hits}/${candidates.length} Kompendiums-Anforderungen über das BSI-Mapping aufgelöst (${mapping.maps} Maps, Commit ${mapping.commit.slice(0, 7)})`);
         }
 
         // Abdeckungsprüfung: exakte ID-Treffer lokal, semantische Abdeckung per KI-Aufruf.
@@ -6590,6 +6692,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             });
             const aiTargetMap = new Map();
             const aiAnalysisResourceUuid = aiAnalysis ? crypto.randomUUID() : null;
+            const bsiMapUsed = (aiAnalysis?.controls || []).some(c => c.coverageSource === 'bsi-itgs-mapping');
+            const bsiMapResourceUuid = bsiMapUsed ? crypto.randomUUID() : null;
 
             const registerAITarget = (reference, componentUuid) => {
                 const cleanReference = cleanAIString(reference);
@@ -6793,7 +6897,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     // neben 'normal-SdT'/'erhöht' stehen zu lassen.
                     props.push(...sicherheitsniveauProps(item.schutzbedarf || normalizeSchutzbedarf(item.securityLevel), item.schutzbedarfHerkunft,
                         item.securityLevel ? `Originalangabe: ${item.securityLevel}${item.securityLevelNote ? ` — ${item.securityLevelNote}` : ''}.` : ''));
-                    if (item.page) props.push({ name: 'source-page', ns: OSCAL_NAMESPACES.aiDocumentAnalysis, value: item.page });
+                    if (item.page) props.push({ name: 'source-page', ns: OSCAL_NAMESPACES.aiDocumentAnalysis, value: `Seite ${aiPage(item.page) || item.page}` });
                     const roleId = resolveRoleId(item.owner);
                     if (item.owner) props.push({
                         name: 'owner',
@@ -7007,6 +7111,10 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 if (aiControl) {
                     (aiControl.implementations || []).forEach(implementation => {
                         const props = [];
+                        if (aiControl.coverageSource === 'bsi-itgs-mapping' && aiControl.controlId !== cid) props.push({
+                            name: 'coverage-source', ns: OSCAL_NAMESPACES.aiDocumentAnalysis,
+                            value: `${aiControl.controlId} → ${cid}`, remarks: aiControl.coverageRationale || undefined
+                        });
                         // Issue #29: Verantwortlichkeit als auflösbare responsible-role
                         // führen, wenn sie sich einer der metadata/roles zuordnen lässt.
                         // Der Freitext bleibt nur als Beleg (bzw. als Fallback) erhalten;
@@ -7031,12 +7139,12 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                             value: implementation.statusSource || 'nicht belegt',
                             remarks: state ? 'Wortlaut des Dokuments.' : 'Kein Umsetzungsstatus im Dokument belegt; im Review festzulegen.'
                         });
-                        if (implementation.page) props.push({ name: 'source-page', ns: OSCAL_NAMESPACES.aiDocumentAnalysis, value: implementation.page });
+                        if (implementation.page) props.push({ name: 'source-page', ns: OSCAL_NAMESPACES.aiDocumentAnalysis, value: `Seite ${aiPage(implementation.page) || implementation.page}` });
                         addByComp(resolveAITarget(implementation.targetRef, sysUuid), implementation.description, {
                             ...(state ? { 'implementation-status': { state } } : {}),
                             props: props.length ? props : undefined,
                             ...(roleId ? { 'responsible-roles': [{ 'role-id': roleId, remarks: `Verantwortlich laut Dokumentanalyse: ${partyText}.` }] } : {}),
-                            links: aiAnalysisResourceUuid ? [{ href: `#${aiAnalysisResourceUuid}`, rel: 'source' }] : undefined
+                            links: [...(aiAnalysisResourceUuid ? [{ href: `#${aiAnalysisResourceUuid}`, rel: 'source' }] : []), ...(bsiMapResourceUuid && aiControl.coverageSource === 'bsi-itgs-mapping' ? [{ href: `#${bsiMapResourceUuid}`, rel: 'mapping' }] : [])]
                         });
                     });
                     // Nur KI-eigene (nicht abgedeckte) Maßnahmen ohne Implementierungsdetails
@@ -7255,6 +7363,15 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 backMatterResources.push({
                     uuid: riskUuid, title: "Detaillierte Risikoanalyse", description: "Vollständiges Risk-Log",
                     base64: { filename: "risk-analysis.json", "media-type": "application/json", value: base64EncodeUnicode(JSON.stringify({ risks: bpState.riskData })) }
+                });
+            }
+            if (bsiMapResourceUuid) {
+                backMatterResources.push({
+                    uuid: bsiMapResourceUuid,
+                    title: 'BSI-GSMap ITGS→GS++ (Mapping Collection)',
+                    description: 'Amtliches Mapping der Kompendiums-Anforderungen (Edition 2023) auf GS++-Controls; Grundlage der deterministischen Abdeckung von Kompendiums-IDs. Ziel-IDs per alt-identifier auf den gepinnten Katalog aufgelöst.',
+                    props: [{ name: 'source-type', ns: OSCAL_NAMESPACES.aiDocumentAnalysis, value: 'mapping' }],
+                    rlinks: [{ href: BSI_ITGS_MAP_URL, 'media-type': 'application/json', hashes: [{ algorithm: 'SHA-256', value: BSI_ITGS_MAP_PIN_SHA256 }] }]
                 });
             }
             if (aiAnalysis && aiAnalysisResourceUuid) {
