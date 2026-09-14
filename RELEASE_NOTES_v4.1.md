@@ -41,6 +41,27 @@ Die Navigation in der linken Leiste ersetzt den Inhalt der Hauptfläche, statt d
 * **Prüfung AP/AR (build 9.7.0)**: Rahmenbedingungen, Metadaten, Auswertung (neuer Eintrag) und die Controls — dort nur die in der Komponentenliste gewählte Komponente, aufgeklappt; ein aktiver Filter zeigt alle Komponenten mit Treffern.
 * **POA&M-Generator (v2.5)**: Metadaten, POA&M-Items mit dem gewählten Asset und Auswertung (neuer Eintrag); Asset-Wahl, Suche und Filter führen zu den Items.
 
+## Nachtrag 14.09.2026 — Genauigkeit der KI-Dokumentanalyse (SSP-Generator V5.15.0)
+
+Vier Läufe des Generators über das BSI-Beispiel RECPLAST mit vier Modellen und ein Vergleichsgutachten dazu haben gezeigt: Die Streuung kam aus dem Werkzeug, nicht aus den Modellen. Der erste Chunk gewann beim Zusammenführen, unbekannte Werte wurden still zu `normal-SdT`, `planned` und `medium`, Assets ohne Kategorie gingen verloren, die Abdeckungsprüfung sah 160 Zeichen Statement. Befund, Katalogbezug und Plan stehen in `Dokumentation/plan-ssp-generator-genauigkeit.md`; dieser Nachtrag setzt die Stufen 0 und 1 um.
+
+**Deterministisch, ohne neuen Modellaufruf:**
+
+- **Zusammenführen je Kennung.** Trägt das Dokument eigene Kennungen, ist die Kennung der Schlüssel; spätere Chunks tragen Felder nach, leere Felder verlieren, Namensgleiche ohne Kennung wandern zu einem eindeutigen Eintrag mit Kennung. Das Extraktions-Prompt verlangt Nachträge ausdrücklich.
+- **Schutzbedarf dreiwertig** mit Herkunft-Prop `sicherheitsniveau-herkunft` (explizit, vererbt, manuell, unbestimmt). Unbestimmt bekommt keinen Wert; die Vererbung vom Geschäftsprozess auf seine Assets und weiter auf benötigte Assets folgt dem Maximumprinzip aus BSI 200-2 und ist als Auslegung gekennzeichnet, denn der Katalog regelt sie nicht (GC.7.1.2 stuft Geschäftsprozesse ein). Die System-Prop `schutzbedarf-system` trägt jetzt Namespace-Werte.
+- **Feste Statustabelle.** Ja, Nein, Teilweise, Entbehrlich und die Wörter des Schemas werden abgebildet, das Quellwort steht als Prop `source-status`; ohne Aussage entfällt `implementation-status`. Das OSCAL-Vokabular mit `partial` bleibt in allen Werkzeugen erhalten, das binäre Modell aus der Guidance zu UMS.1.1 wird bewusst nicht angewendet.
+- **Risikoskalen.** Die vierstufigen Skalen aus 200-3 werden abgebildet, Quellskala und Risikokategorie bleiben wörtlich, `unbewertet` ist ein gültiger Wert; Gefährdungsübersichten werden als unbewertet übernommen und so gekennzeichnet.
+- **Assets ohne Zielobjektkategorie** bleiben als Komponente ohne Controls im SSP und erscheinen mit „unbestimmt"-Badge; vorher fehlten Firewall und Serverraum ohne Meldung.
+- **Geschäftsprozesse** sind vom Sicherheitsprozess getrennt (`kind`), tragen Schutzbedarf und Verweise auf ihre Assets (Links `requires`), bekommen nie eine Praktik. Praktiken gibt es nur für Prozesse, die die Tätigkeit der Praktik selbst beschreiben; „keine Praktik" ist die Vorgabe.
+- **Kompendiums-IDs** werden über das amtliche BSI-GSMap ITGS→GS++ vor dem Modell aufgelöst: gepinnt auf den Katalog-Commit `4e11779`, SHA-256 beim Laden geprüft, Ziel-IDs über `oscal_uuid` und das `alt-identifier`-Prop des Katalogs aufgelöst statt über den String (130 Ziele tragen im Mapping noch alte IDs). Relation, Teilanforderung, Commit und Hash stehen als Prop `coverage-source` am by-component, das Mapping als Resource mit `rlink` und Hash in der Back-Matter. Ohne aufloesbare UUID wird nichts behauptet. Der Rest geht mit vollem Statement an das Modell, 60 Kandidaten je Aufruf. (V5.15.0 hatte kurz das eigene GS++/ED23-Mapping der Sammlung genutzt; das war als BSI-Mapping missverständlich und in Einzelfällen falsch, siehe QS-Nachtrag.)
+- **Schema mit Enums** für Komponententyp, Schutzbedarf, Status und Skalen; AI-IDs vergibt das Werkzeug fortlaufend; Systemprompt erzwingt Deutsch mit Umlauten und verbietet Meta-Kommentare in Feldern. Chunk-Cache-Version 4: alte Extraktionen werden neu abgerufen.
+- **Chunks an Kapitelgrenzen**, Tabellenblöcke bleiben mit Kopfzeile zusammen, PDF-Seiten tragen Seitenmarken, Entitäten nennen die Seite.
+- **Chunk-Cache exportieren** (Abschnitt 2) und Provenienz im Analyse-Payload (Generator-Version, Prompt-Hashes, Chunkgröße).
+
+**Nachtrag V5.15.1 nach dem ersten Messlauf (gemini-3.8-flash gegen die Baseline):** Schutzbedarf-Treffer 10 auf 16, Status 35 auf 48, Risikoskalen 0 auf 45, Seitenangaben 0 auf 61, Prozessprofil-Platzhalter 25 auf 0. Danach behoben: Mapping-Quelle (siehe oben); namensgleiche Objekte mit anderer Kennung (zwei Serverräume, Firewall als Anwendung und Netzkomponente) bleiben erhalten und tragen die Kennung im Namen; Vererbung läuft auch von der Anwendung auf das IT-System (`supports`, Tabellen „S001 nötig für A002") und löst Gruppen-Kennungen wie „C001 – C009" auf ihre Mitglieder auf; Risikobehandlungen (Risikoreduktion) werden Maßnahmen und an die Risiken gehängt, dedupliziert nach Text; dieselbe Gefährdung für IT-System und Geschäftsprozess bleibt zwei Risiken; Teilprozess-Kennungen behalten ihre Schreibweise (GP006a); Seitenangaben einheitlich „Seite n". Chunk-Cache-Version 5.
+
+**Messen:** Der Ordner `QS/` (nur Entwicklung, nicht im ZIP) enthält die Ground Truth zu RECPLAST, `score_ssp.py` für Exporte und die Analyse-Payloads der vier Läufe als Fixtures. Die Prompts für Extraktion, Zuordnung, Abdeckung und System-Instruktion haben neue Standardtexte; wer sie in `config.html` angepasst hatte, sieht dort weiter den eigenen Text und kann zurücksetzen.
+
 ## Nicht im Umfang von 4.1
 
 * Der Excel-Export des Grundschutzchecks führt die Nachweise noch nicht als Spalte.
@@ -55,7 +76,7 @@ Die Navigation in der linken Leiste ersetzt den Inhalt der Hauptfläche, statt d
 | gemeinsames Stylesheet (gpp-core.css) | 2 · Cache-Buster v4.1 |
 | Übersicht (index.html) | 1.7 |
 | OSCAL Schema Validator | 1.11.2 |
-| SSP-Generator (G++) | V5.14.1 |
+| SSP-Generator (G++) | V5.15.1 |
 | GS++ Explorer (GSpp-Viewer) | v9.8 |
 | BSI → G++ Profil (Baustein_2_Profile) | 0.11.0 |
 | SSP-Editor (ssp_ausfuellen) | v1.7.1 |
