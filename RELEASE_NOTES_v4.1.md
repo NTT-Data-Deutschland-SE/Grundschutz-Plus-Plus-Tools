@@ -62,28 +62,6 @@ Vier Läufe des Generators über das BSI-Beispiel RECPLAST mit vier Modellen und
 
 **Messen:** Der Ordner `QS/` (nur Entwicklung, nicht im ZIP) enthält die Ground Truth zu RECPLAST, `score_ssp.py` für Exporte und die Analyse-Payloads der vier Läufe als Fixtures. Die Prompts für Extraktion, Zuordnung, Abdeckung und System-Instruktion haben neue Standardtexte; wer sie in `config.html` angepasst hatte, sieht dort weiter den eigenen Text und kann zurücksetzen.
 
-## Nachtrag Oktober 2026: Stand-der-Technik-Bibliothek a128311
-
-Das BSI hat am 01.10.2026 (PR #112) drei Zielobjektkategorien umbenannt und den Namespace `target_object_categories.csv` überarbeitet. Controls, Statement-IDs, Props, Modalverben und Parameter sind unverändert (1000 Controls, +0/−0); 20 `target_object_categories`-Werte und die zugehörige Prosa tragen die neuen Namen.
-
-| bisher | neu | UUID (unverändert) |
-|---|---|---|
-| Endgeräte | Mobile Endgeräte | `837781a4…` |
-| Faxe | Faxanwendungen | `05df1662…` |
-| Datenträgerarchiv | Archiv | `dfd8e05b…` |
-
-**Pin.** Katalog, Kernel-, Methodik- und Risiko-Katalog sowie die Namespaces kommen jetzt von `a12831136f41` (SHA-256 des Anwenderkatalogs `27a9d500…`, Resource-UUID `afe1c75e-8725-5df2-a57b-235d7d5236f4`) — synchron in den Werkzeugen, `constants.py` und allen 229 Profilen, byte-genaue Token-Ersetzung wie beim letzten Repin; `hilfsdateien/` bleibt als Provenienz unberührt. `check_pins.py`: alle Pins aktuell. `stage_gpp` gegen den neuen Stand neu gerechnet: alle 56 Control-Pools identisch mit `hilfsdateien/zielobjekt_controls.json`.
-
-**Profile umbenannt.** `endgeraete_*` → `mobile_endgeraete_*`, `faxe_*` → `faxanwendungen_*`, `datentraegerarchiv_*` → `archiv_*` (3 Kategorie-Profile, 22 ED23-Profile). Titel tragen den neuen Namen; die ED23-Profile bekommen die UUID, die die Pipeline für den neuen Namen deterministisch vergibt, die Kategorie-Profile behalten ihre UUID. Die KI-erzeugten Reifegrad-Texte der `_enhanced`-Profile sind bewusst nicht nachgezogen (alter Wortlaut wie „Konfiguration für Faxe …“).
-
-**SSP-Generator / Editor V5.16.0.** Alte Slugs aus gespeicherten Arbeitsständen, Analysen und Profil-URLs werden auf die neuen abgebildet. OSCAL-Typ: Faxanwendungen jetzt `software` (BSI-Typ „Anwendungen“), Institutionsleitung `service` statt bisher fälschlich `network`; die Kategorie im ED23-Profilnamen wird über den längsten passenden Präfix erkannt. Die KI-Zuordnung sieht zusätzlich die neue Spalte **Beispiel** (die Beispiele stehen nicht mehr in der Definition) und für Mobile Endgeräte den Hinweis, dass auch stationäre Clients dazugehören — die ED23-Client-Bausteine SYS.2.x hängen über die unveränderte UUID weiter an dieser Kategorie. Wer den Zuordnungs-Prompt in `config.html` angepasst hat, bekommt Beispiele und Hinweis trotzdem, denn sie stehen in den Kategoriezeilen.
-
-**BSI → G++ Profil 0.12.0** gibt dem Modell ebenfalls die Beispiele und löst alte Kategorienamen aus Modellantworten auf. **Pipeline:** Die Namespace-CSV kommt vom Katalog-Commit statt von `main` (vorher hätte ein Lauf die drei Pools still geleert), `stage_match_bausteine` übergibt die Beispiele, `zielobjekte_stats.sh` liest die UUID aus der letzten Spalte.
-
-**Umbenannte Werkzeuge (nur Oberfläche).** „SSP-Generator“ heißt **SSP-Generator / Editor**, denn dort wird der SSP erstellt und geändert; der bisherige „SSP-Editor“ heißt **SSP ausfüllen / Grundschutzcheck**. Dateinamen, Tool-IDs und Speicher-Schlüssel bleiben, Sets laden unverändert. Die Übersicht zeigt NTT DATA in der Kopfzeile.
-
-**Messen.** Ein QS-Lauf gegen die RECPLAST-Baseline (`QS/score_ssp.py`) steht für V5.16.0 noch aus.
-
 ## Nicht im Umfang von 4.1
 
 * Der Excel-Export des Grundschutzchecks führt die Nachweise noch nicht als Spalte.
@@ -96,12 +74,12 @@ Das BSI hat am 01.10.2026 (PR #112) drei Zielobjektkategorien umbenannt und den 
 |---|---|
 | gemeinsamer Kern (gpp-core.js) | 4 · Cache-Buster v4.1 |
 | gemeinsames Stylesheet (gpp-core.css) | 2 · Cache-Buster v4.1 |
-| Übersicht (index.html) | 1.8 |
+| Übersicht (index.html) | 1.7 |
 | OSCAL Schema Validator | 1.11.2 |
-| SSP-Generator / Editor (G++) | V5.16.0 |
+| SSP-Generator (G++) | V5.15.1 |
 | GS++ Explorer (GSpp-Viewer) | v9.8 |
-| BSI → G++ Profil (Baustein_2_Profile) | 0.12.0 |
-| SSP ausfüllen / Grundschutzcheck (ssp_ausfuellen) | v1.7.2 |
+| BSI → G++ Profil (Baustein_2_Profile) | 0.11.0 |
+| SSP-Editor (ssp_ausfuellen) | v1.7.1 |
 | Prüfung AP/AR (pruefung_ap_ar) | build 9.7.0 |
 | POA&M-Generator | v2.5 |
 
@@ -109,7 +87,7 @@ Einzelwerkzeuge in `one-page-apps/` — eigenständig, ohne `gpp-core.js`, von d
 
 | Anwendung | Version |
 |---|---|
-| SSP-Generator Edition 2023 | ED23 V1.6 |
+| SSP-Generator Edition 2023 | ED23 V1.5 |
 | C5 → OSCAL Konverter | v1.1 |
 
 ## Hinweise zum Umstieg
