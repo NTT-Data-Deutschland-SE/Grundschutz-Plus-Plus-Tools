@@ -626,7 +626,7 @@ const GPP_TOOL_ID = "Baustein_2_Profile";
    Konstante; keine handgepflegten Versionsstrings mehr im File.
    ════════════════════════════════════════════════════════════════════════ */
 
-const APP_VERSION  = "0.11.0";
+const APP_VERSION  = "0.12.0";
 const APP_NAME     = "Baustein_2_Profile";
 
 // Fallback, wenn zentral kein Gemini-Modell gesetzt ist (config.html).
@@ -779,7 +779,7 @@ const DEFAULTS = {
 // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
 // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
 // Katalog-Update = bewusster Pin-Wechsel an allen Stellen zugleich.
-const GPP_CATALOG_PIN_COMMIT = "4e11779438c34a5db36902be67b74a6bf83bf10d";
+const GPP_CATALOG_PIN_COMMIT = "a12831136f4122a4c43854622180a24f2576a41e";
 // Pin des eigenen Repos für die Hilfsdateien (zielobjekt_controls.json).
 const GPP_TOOLS_PIN_COMMIT = "26b9200d6c446660c876dc1c67d5800309293fcf";
 
@@ -842,11 +842,11 @@ function loadEd23Map() {
   }
   return _ed23MapPromise;
 }
-const GPP_CATALOG_PIN_SHA256 = "691e8ca0af378718a9e4b5876f3e194a449f3214dceab6d86bec3e2388a969df";
+const GPP_CATALOG_PIN_SHA256 = "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645";
 const GPP_CATALOG_PINNED_URL = `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json`;
 // uuid5(NAMESPACE_URL, GPP_CATALOG_PINNED_URL) — identisch zu den vom Pin-Skript
 // migrierten Profilen, damit Browser- und Pipeline-Artefakte ununterscheidbar sind.
-const GPP_CATALOG_RESOURCE_UUID = "67618563-db97-5ee9-a47f-a8c8ca2b24ee";
+const GPP_CATALOG_RESOURCE_UUID = "afe1c75e-8725-5df2-a57b-235d7d5236f4";
 
 async function sha256Hex(buf) {
   const d = await crypto.subtle.digest("SHA-256", buf);
@@ -1396,7 +1396,8 @@ function setCatalog(json, src) {
 
 /* ════════════════════════════════════════════════════════════════════════
    Zielobjektkategorien (CSV) + Control-Pools — all via raw URLs.
-   CSV columns: Zielobjektkategorie,Definition,Typ,Kategorie,Synonyme,ChildOfUUID,UUID
+   CSV columns (SdT a128311): Zielobjekt,Definition,Beispiel,Typ,Kategorie,Synonyme,ChildOfUUID,UUID
+   — Zugriff nur über den Spaltennamen, das BSI fügt Spalten ein.
    ════════════════════════════════════════════════════════════════════════ */
 
 // Minimal RFC-4180-ish CSV parser: handles quoted fields with commas + newlines.
@@ -1428,7 +1429,7 @@ function setCategories(csvText, src) {
   const ci = {
     // Upstream heißt die Spalte "Zielobjekt"; "Zielobjektkategorie" bleibt als
     // Alternative stehen, falls die Bibliothek wieder umbenennt.
-    name: col("Zielobjekt", "Zielobjektkategorie"), def: col("Definition"), typ: col("Typ"),
+    name: col("Zielobjekt", "Zielobjektkategorie"), def: col("Definition"), bsp: col("Beispiel"), typ: col("Typ"),
     kat: col("Kategorie"), syn: col("Synonyme"), child: col("ChildOfUUID"), uuid: col("UUID"),
   };
   if (ci.name < 0 || ci.uuid < 0) {
@@ -1437,6 +1438,7 @@ function setCategories(csvText, src) {
   const cats = rows.map(r => ({
     name: (r[ci.name] || "").trim(),
     definition: (r[ci.def] || "").trim(),
+    beispiel: ci.bsp >= 0 ? (r[ci.bsp] || "").trim() : "",
     typ: (r[ci.typ] || "").trim(),
     kategorie: (r[ci.kat] || "").trim(),
     synonyme: (r[ci.syn] || "").trim(),
@@ -1501,11 +1503,15 @@ async function loadPools() {
   }
 }
 
+// Umbenennungen der SdT-Bibliothek (a128311, UUIDs unverändert): Modelle nennen oft
+// noch die alten Namen.
+const LEGACY_CATEGORY_NAMES = { "endgeräte": "mobile endgeräte", "faxe": "faxanwendungen", "datenträgerarchiv": "archiv" };
+
 // Resolve a Zielobjektkategorie name (as returned by the LLM) to a category object.
 function resolveCategory(name) {
   if (!name || !state.categoriesByName) return null;
   const lc = name.trim().toLowerCase();
-  let hit = state.categoriesByName.get(lc);
+  let hit = state.categoriesByName.get(lc) || state.categoriesByName.get(LEGACY_CATEGORY_NAMES[lc] || "");
   if (hit) return hit;
   // fuzzy: contains / synonym match
   for (const c of state.categories) {
@@ -1864,11 +1870,13 @@ async function runStage1Classify() {
 
   const b = state.baustein;
 
-  // Build the category list as context (name — definition — synonyme)
+  // Build the category list as context (name — definition — Beispiele — synonyme).
+  // Seit SdT a128311 stehen die Beispiele in einer eigenen Spalte statt in der Definition.
   const catBlock = state.categories.map(c => {
     const def = (c.definition || "").replace(/\s+/g, " ").trim().slice(0, 320);
+    const bsp = c.beispiel ? ` — Beispiele: ${c.beispiel}` : "";
     const syn = c.synonyme ? ` — Synonyme: ${c.synonyme}` : "";
-    return `- ${c.name}: ${def}${syn}`;
+    return `- ${c.name}: ${def}${bsp}${syn}`;
   }).join("\n");
   if (!state.categories.length) {
     l.warn("keine Zielobjektkategorien geladen — Klassifikation läuft ohne Kategorie-Liste (nur zielobjekt/prozess möglich)");

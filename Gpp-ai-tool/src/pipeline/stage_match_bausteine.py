@@ -42,6 +42,7 @@ async def match_baustein_to_zielobjekt(
     zielobjekte_choices = "\n".join(
         [
             f"* {data.get('Zielobjekt', '')}: {data.get('Definition', '')}"
+            + (f" Beispiele: {data['Beispiel']}" if data.get("Beispiel") else "")
             for data in zielobjekte_map.values()
         ]
     )
@@ -120,6 +121,8 @@ async def run_stage_match_bausteine() -> None:
         z["UUID"]: {
             "Zielobjekt": zielobjekt_row_name(z),
             "Definition": z.get("Definition", ""),
+            # Since SdT a128311 the examples live in their own column, not in the definition.
+            "Beispiel": (z.get("Beispiel") or "").strip(),
         }
         for z in zielobjekte_data
         if "UUID" in z and zielobjekt_row_name(z)

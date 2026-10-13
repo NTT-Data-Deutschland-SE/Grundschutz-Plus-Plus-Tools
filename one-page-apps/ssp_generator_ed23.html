@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL SSP Generator — BSI IT-Grundschutz Edition 2023 V1.5</title>
+    <title>OSCAL SSP Generator — BSI IT-Grundschutz Edition 2023 V1.6</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -766,7 +766,7 @@
         <div class="topbar-brand">
             <span class="brand-mark">◈</span>
             <span class="brand-name">OSCAL SSP Generator</span>
-            <span class="brand-sub">Edition 2023 · Build V1.5</span>
+            <span class="brand-sub">Edition 2023 · Build V1.6</span>
         </div>
         <div class="topbar-spacer"></div>
         <div id="catalog-status" class="meta-pill">
@@ -875,7 +875,7 @@
                     class="glyph">⋯</span>Chunk-Cache leeren</button>
         </div>
 
-        <div class="rail-foot">Build ED23 V1.5</div>
+        <div class="rail-foot">Build ED23 V1.6</div>
     </aside>
     <div id="rail-splitter" class="rail-splitter" title="Breite der Rail ziehen"></div>
 
@@ -1164,19 +1164,32 @@
         // Kategorien (Personengruppen, Informationen, Dienstleistungen) bleiben
         // bewusst 'service' — dafür hat OSCAL kein passendes Vokabular.
         const ZIELOBJEKT_COMPONENT_TYPES = {
-            endgeraete: 'hardware', hostsysteme: 'hardware', 'it-systeme': 'hardware',
+            mobile_endgeraete: 'hardware', hostsysteme: 'hardware', 'it-systeme': 'hardware',
             dateiserver: 'hardware', 'dns-server': 'hardware', webserver: 'hardware',
-            faxe: 'hardware', 'it-produkte': 'hardware',
+            'it-produkte': 'hardware',
             anwendungen: 'software', 'office-anwendungen': 'software', webbrowser: 'software',
             webanwendungen: 'software', verzeichnisdienste: 'software', 'vk-anwendungen': 'software',
             'tk-anwendungen': 'software', virtualisierungsloesungen: 'software',
+            faxanwendungen: 'software',   // BSI-Typ "Anwendungen" seit SdT a128311
             netze: 'network', 'interne_netzsegmente': 'network', 'externe_netzanschluesse': 'network',
             wlans: 'network',
             gebaeude: 'physical', raeume: 'physical', serverraeume: 'physical',
             'raeume_fuer_technische_infrastruktur': 'physical', standorte: 'physical',
-            datentraegerarchiv: 'physical',
+            archiv: 'physical',
             'cloud-dienste': 'service', outsourcing: 'service', dienstleistungen: 'service',
+            // explizit, sonst greift das Schlüsselwort "leitung" (Standleitung) → network
+            institutionsleitung: 'service',
         };
+        // Umbenennungen der SdT-Bibliothek (a128311, 2026-10-01; UUIDs unverändert). Ältere
+        // Arbeitsstände, Analysen und Profil-URLs tragen noch die alten Slugs.
+        const LEGACY_KATEGORIE_SLUGS = { endgeraete: 'mobile_endgeraete', faxe: 'faxanwendungen', datentraegerarchiv: 'archiv' };
+        function normKategorieSlug(slug) {
+            const s = String(slug || '').toLowerCase();
+            for (const [alt, neu] of Object.entries(LEGACY_KATEGORIE_SLUGS)) {
+                if (s === alt || s.startsWith(alt + '_')) return neu + s.slice(alt.length);
+            }
+            return s;
+        }
         // Schlüsselwörter für KI-Freitexttypen ("Raum/Gebäude", "Netzkomponente (Firewall)", …)
         const COMPONENT_TYPE_KEYWORDS = [
             [/geb(ä|ae)ude|raum|r(ä|ae)ume|standort|archiv|gel(ä|ae)nde/i, 'physical'],
@@ -1190,7 +1203,7 @@
         function zielobjektKategorieFromSource(source) {
             if (!source) return '';
             const file = String(source).split('/').pop() || '';
-            return file.replace(/\.json$/i, '').replace(/_profile$/i, '').toLowerCase();
+            return normKategorieSlug(file.replace(/\.json$/i, '').replace(/_profile$/i, ''));
         }
         // Baustein-Schicht → OSCAL-Typ, wenn die Komponente über Ed2023-Bausteine
         // statt über ein Zielobjekt-Profil modelliert wurde.
@@ -1202,10 +1215,12 @@
                 return 'process-procedure';   // OPS/ORP/CON/DER/ISMS sind Prozess-Schichten
             }
             const kat = zielobjektKategorieFromSource(source);
-            // ED23-Profilnamen tragen die Kategorie im ersten Segment: endgeraete_SYS.3.1_laptops
-            const head = kat.split('_')[0];
-            if (ZIELOBJEKT_COMPONENT_TYPES[kat]) return ZIELOBJEKT_COMPONENT_TYPES[kat];
-            if (ZIELOBJEKT_COMPONENT_TYPES[head]) return ZIELOBJEKT_COMPONENT_TYPES[head];
+            // ED23-Profilnamen beginnen mit der Kategorie: mobile_endgeraete_SYS.3.1_laptops.
+            // Längster passender Präfix, denn Slugs enthalten selbst Unterstriche.
+            const head = Object.keys(ZIELOBJEKT_COMPONENT_TYPES)
+                .filter(k => kat === k || kat.startsWith(k + '_'))
+                .sort((a, b) => b.length - a.length)[0];
+            if (head) return ZIELOBJEKT_COMPONENT_TYPES[head];
             const hit = COMPONENT_TYPE_KEYWORDS.find(([re]) => re.test(kat));
             return hit ? hit[1] : 'service';
         }

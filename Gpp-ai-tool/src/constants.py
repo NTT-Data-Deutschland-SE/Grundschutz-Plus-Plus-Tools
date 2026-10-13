@@ -35,11 +35,11 @@ BSI_2023_JSON_PATH = "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benu
 # these two values together (or override both via env), re-run the pin script over the
 # profile directories, and commit the result as one change.
 GPP_CATALOG_PIN_COMMIT = os.environ.get(
-    "GPP_CATALOG_PIN_COMMIT", "4e11779438c34a5db36902be67b74a6bf83bf10d"
+    "GPP_CATALOG_PIN_COMMIT", "a12831136f4122a4c43854622180a24f2576a41e"
 )
 GPP_CATALOG_PIN_SHA256 = os.environ.get(
     "GPP_CATALOG_PIN_SHA256",
-    "691e8ca0af378718a9e4b5876f3e194a449f3214dceab6d86bec3e2388a969df",
+    "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645",
 )
 GPP_KOMPENDIUM_JSON_PATH = (
     "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/"
