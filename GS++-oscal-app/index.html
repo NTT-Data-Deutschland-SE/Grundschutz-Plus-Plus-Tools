@@ -49,6 +49,11 @@
     }
     header .brand { font-weight: 600; font-size: 0.95rem; white-space: nowrap; }
     header .brand span { color: var(--accent); }
+    header .brand-ntt {
+      font-family: var(--mono); font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.18em; color: var(--text-primary); white-space: nowrap;
+    }
+    header .brand-sep { width: 1px; height: 22px; background: var(--border-2); flex-shrink: 0; }
     header .spacer { flex: 1; }
     .build-pill {
       font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em;
@@ -204,6 +209,8 @@
   <div class="noise"></div>
 
   <header>
+    <div class="brand-ntt" aria-label="NTT DATA">NTT DATA</div>
+    <div class="brand-sep"></div>
     <div class="brand">◈ Grundschutz<span>++</span> OSCAL Tools</div>
     <span class="build-pill" id="build-pill"></span>
     <div class="spacer"></div>
@@ -213,7 +220,7 @@
     <button class="btn" id="btn-theme" title="Farbschema wechseln: Dunkel → Hell → System (gilt für alle Werkzeuge, auch in den Einstellungen)">◐ DUNKEL</button>
     <a class="btn" href="config.html" title="Zentrale Einstellungen: KI-Zugang, Prompts, Quellen-Pins, Farbschema">⚙ EINSTELLUNGEN</a>
     <a class="btn" id="open-standalone" href="#" target="_blank" rel="noopener" title="Aktuelle App in neuem Tab öffnen">↗ STANDALONE</a>
-    <a class="btn" href="../one-page-apps/readme.md" target="_blank" rel="noopener" title="Einzelwerkzeuge außerhalb des Arbeitsablaufs: SSP-Generator Edition 2023, YAML→OSCAL">↗ EINZELWERKZEUGE</a>
+    <a class="btn" href="../one-page-apps/readme.md" target="_blank" rel="noopener" title="Einzelwerkzeuge außerhalb des Arbeitsablaufs: SSP-Generator / Editor Edition 2023, YAML→OSCAL">↗ EINZELWERKZEUGE</a>
     <a class="btn" href="https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools" target="_blank" rel="noopener">GitHub</a>
   </header>
 
@@ -281,13 +288,13 @@
     // Workflow order: Explorer → Katalog/Profil-Erstellung → Modellierung → Umsetzung → Prüfung → Abarbeiten → Validierung.
     // `stage` und `tool` verbinden die Kachel mit den Artefakten, die das Tool ablegt.
     // `kinds` sind die Dokumentsorten, an denen das Werkzeug arbeitet — danach wird
-    // der Zähler gebildet, damit der SSP-Editor aufleuchtet, sobald ein SSP im Set
+    // der Zähler gebildet, damit „SSP ausfüllen / Grundschutzcheck“ aufleuchtet, sobald ein SSP im Set
     // liegt, gleich welches Werkzeug ihn erzeugt hat.
     const APPS = [
       { id: "explorer",  icon: "⌕", label: "Explorer",         file: "GSpp-Viewer.html",               stage: "explore",   tool: "GSpp-Viewer",              kinds: ["catalog"],            desc: "BSI Grundschutz++ Katalog-Explorer" },
       { id: "bsi2gpp",   icon: "◈", label: "BSI → G++ Profil",  file: "Baustein_2_Profile.html",        stage: "author",    tool: "Baustein_2_Profile",       kinds: ["profile"],            desc: "BSI-Baustein (PDF) → OSCAL G++ Profil" },
-      { id: "sspgen",    icon: "▣", label: "SSP-Generator",     file: "ssp_generator.html",             stage: "model",     tool: "ssp_generator",            kinds: ["ssp"],                desc: "OSCAL Blaupausen & Risk Generator (G++)" },
-      { id: "sspedit",   icon: "✎", label: "SSP-Editor",        file: "ssp_ausfuellen.html",            stage: "implement", tool: "ssp_ausfuellen",           kinds: ["ssp"],                desc: "OSCAL SSP ausfüllen / Workspace" },
+      { id: "sspgen",    icon: "▣", label: "SSP-Generator / Editor", file: "ssp_generator.html",         stage: "model",     tool: "ssp_generator",            kinds: ["ssp"],                desc: "SSP erstellen und ändern: Blaupausen, Zielobjekte, Risikoanalyse (G++)" },
+      { id: "sspedit",   icon: "✎", label: "SSP ausfüllen / Grundschutzcheck", file: "ssp_ausfuellen.html", stage: "implement", tool: "ssp_ausfuellen",       kinds: ["ssp"],                desc: "Umsetzung je Control dokumentieren (Grundschutzcheck), Excel-Austausch, Nachweise" },
       { id: "pruefung",  icon: "◉", label: "Prüfung (AP/AR)",   file: "pruefung_ap_ar.html",            stage: "assess",    tool: "pruefung_ap_ar",           kinds: ["ap", "ar"],           desc: "Assessment Plan & Results Generator" },
       { id: "poam",      icon: "◬", label: "POA&M",             file: "abarbeiten_POAM_generator.html", stage: "remediate", tool: "abarbeiten_POAM_generator", kinds: ["poam"],               desc: "POA&M Generator – Feststellungen abarbeiten" },
       { id: "validator", icon: "◐", label: "OSCAL-Validator",   file: "oscal-schema-validator.html",    stage: "validate",  tool: "oscal-schema-validator",   kinds: ["report"],             desc: "OSCAL-Artefakte gegen Schema & Regeln prüfen" },
@@ -299,7 +306,7 @@
     const CORE_OK = typeof gppArtefacts !== "undefined"
       && typeof GPP_CORE_VERSION !== "undefined" && Number(GPP_CORE_VERSION) >= 2;
 
-    const APP_VERSION = "1.7";
+    const APP_VERSION = "1.8";
     document.getElementById("build-pill").textContent = `build ${APP_VERSION}`;
     /* Kein schwebendes Speichermenü in der Übersicht: Sie bettet die Werkzeuge
        als iframe ein, und ein Dock im Elterndokument liegt pixelgenau über dem

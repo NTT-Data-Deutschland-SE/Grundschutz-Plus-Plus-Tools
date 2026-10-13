@@ -111,7 +111,7 @@ Beide Generatoren schreiben seit V5.8 bzw. ED23 V1.3 einen SSP, der sich ohne Na
 
 Der Prozess folgt einer klaren Kette von der Modellierung über die Umsetzung bis hin zur finalen Prüfung.
 
-### 1. Modellierung mit dem [SSP-Generator](./ssp_generator.html)
+### 1. Modellierung mit dem [SSP-Generator / Editor](./ssp_generator.html)
 In dieser Phase legen Sie das Fundament für Ihren Informationsverbund.
 * **Profil-Erstellung**: Das Tool generiert ein OSCAL-Profil auf Basis des gewählten ISMS-Typs.
 * **KI-Dokumentanalyse**: Vorhandene Dokumente (Strukturanalysen, Sicherheitskonzepte, Netzpläne — PDF, DOCX, TXT, Markdown, CSV, JSON, XML, HTML) werden per Drag & Drop eingelesen und in einer mehrstufigen Pipeline ausgewertet: Die KI **klassifiziert** jedes Dokument (Dokumenttyp und Extraktionsplan, ein Aufruf je Dokument), **extrahiert** anschließend chunk-weise Assets, Prozesse, Risiken, Maßnahmen und Implementierungsaussagen — nur Belegtes, nichts Erfundenes —, **ordnet** die Funde den G++-Zielobjektkategorien und Praktiken zu und prüft per **Abdeckungsprüfung**, welche extrahierten Maßnahmen bereits durch Katalog-Controls abgedeckt sind (exakte ID-Treffer werden vorher lokal aufgelöst, die KI sieht nur den Rest). So entsteht die Strukturanalyse aus dem, was die Organisation schon dokumentiert hat, statt bei null zu beginnen.
@@ -125,7 +125,7 @@ In dieser Phase legen Sie das Fundament für Ihren Informationsverbund.
 * **Transparenz & Kontrolle**: Alle sechs KI-Prompts (System-Instruktion, Klassifikation, Extraktion, Zuordnung, Abdeckungsprüfung, Beschreibung/Risikoanalyse) sind über [config.html](./config.html) editierbar; Dokumentinhalte gehen erst nach ausdrücklicher Einwilligung an den KI-Provider, und eine Token-Anzeige zeigt den Verbrauch der Sitzung.
 * **Export**: Sie erhalten die Blaupause als Profil und einen darauf basierenden Muster-SSP.
 
-### 2. Grundschutzcheck mit [SSP-Ausfüllen](./ssp_ausfuellen.html)
+### 2. Grundschutzcheck mit [SSP ausfüllen / Grundschutzcheck](./ssp_ausfuellen.html)
 Hier dokumentieren Sie die tatsächliche Umsetzung der Maßnahmen im Betrieb.
 * **Ein Abschnitt zur Zeit**: Die Navigation in der linken Leiste zeigt immer genau einen Abschnitt — Metadaten, Charakteristika, Risikoanalyse, Excel-Austausch, Ressourcen-Status oder den Grundschutzcheck mit dem gewählten Zielobjekt. Suche und Filter führen in den Grundschutzcheck; die zuletzt gewählte Ansicht bleibt beim Neuladen erhalten.
 * **Umsetzungsstatus**: Sie erfassen den Status (z. B. "umgesetzt", "geplant") sowie Verantwortliche und Termine für jedes Control.
@@ -181,7 +181,7 @@ Das Tool überführt ungelöste Mängel in einen verbindlichen Maßnahmenplan, d
 * Aktiviere optional das Häkchen für den Muster-SSP (System Security Plan).
 * Klicke auf "Paket generieren", um die resultierenden JSON-Dateien für Profil und SSP herunterzuladen.
 
-# Kurzanleitung: Anforderungen Ausfüllen (Basissicherheitscheck - OSCAL SSP Editor & Workspace)
+# Kurzanleitung: Anforderungen Ausfüllen (Basissicherheitscheck - SSP ausfüllen / Grundschutzcheck)
 
 Dieses Tool dient der detaillierten Bearbeitung von **System Security Plans (SSP)**. Es ermöglicht die Dokumentation der Umsetzung von Sicherheitsmaßnahmen (Controls) für spezifische Komponenten.
 

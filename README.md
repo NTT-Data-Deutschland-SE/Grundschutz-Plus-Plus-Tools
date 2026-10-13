@@ -148,8 +148,8 @@ Dieses Verzeichnis enthält browserbasierte Anwendungen als eigenständige HTML/
 
 #### Inhalt von `GS++-oscal-app`
 
-##### `blaupausen_generator.html`
-Werkzeug zur Modellierung und Erstellung einer Blaupause.
+##### `ssp_generator.html` — SSP-Generator / Editor
+Werkzeug zur Modellierung, Erstellung und Änderung des SSP (Blaupause).
 
 Die Anwendung unterstützt insbesondere:
 
@@ -163,8 +163,8 @@ Die Anwendung unterstützt insbesondere:
 
 Diese App ist der typische Einstiegspunkt für neue Vorhaben.
 
-##### `ssp_ausfuellen.html`
-Werkzeug zur detaillierten Bearbeitung eines System Security Plans.
+##### `ssp_ausfuellen.html` — SSP ausfüllen / Grundschutzcheck
+Werkzeug zum Ausfüllen der Umsetzung je Control (Grundschutzcheck) in einem bestehenden System Security Plan.
 
 Es dient dazu,
 
@@ -206,8 +206,8 @@ Dieses Unterverzeichnis enthält historische oder abgelöste Varianten einzelner
 
 #### Typischer Workflow mit den GS++-oscal-app
 
-1. Mit `blaupausen_generator.html` ein Profil und optional einen Muster-SSP erzeugen.
-2. Mit `ssp_ausfuellen.html` die reale Umsetzung dokumentieren und anreichern.
+1. Mit `ssp_generator.html` (SSP-Generator / Editor) den SSP erzeugen und ändern.
+2. Mit `ssp_ausfuellen.html` (SSP ausfüllen / Grundschutzcheck) die reale Umsetzung dokumentieren und anreichern.
 3. Mit `pruefung_ap_ar.html` die Prüfung planen, durchführen und dokumentieren.
 4. Mit `abarbeiten_POAM_generator.html` offene Feststellungen in einen Maßnahmenplan überführen.
 5. Mit `GSpp-Viewer.html` Inhalte sichten, erläutern oder für Reviews nutzen.

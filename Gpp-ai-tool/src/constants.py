@@ -26,7 +26,6 @@ ANFORDERUNG_ID_PATTERN = re.compile(r"^.*$")
 # Input data is fetched directly from the upstream GitHub repositories (raw
 # content) rather than from local submodule checkouts. The loaders in
 # utils/data_loader.py and utils/file_utils.py transparently download these.
-ZIELOBJEKTKATEGORIEN_CSV_PATH = "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/refs/heads/main/documentation/namespaces/target_object_categories.csv"
 BSI_2023_JSON_PATH = "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/refs/heads/main/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json"
 
 # --- G++ Catalog Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
@@ -45,6 +44,14 @@ GPP_CATALOG_PIN_SHA256 = os.environ.get(
 GPP_KOMPENDIUM_JSON_PATH = (
     "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/"
     f"{GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json"
+)
+# The Zielobjekt namespace CSV must come from the SAME commit as the catalog: stage_gpp
+# joins the CSV names against the catalog's target_object_categories values, and the BSI
+# renames categories in both places at once (e.g. Endgeräte → Mobile Endgeräte, a128311).
+# Reading the CSV from main while the catalog is pinned silently empties renamed pools.
+ZIELOBJEKTKATEGORIEN_CSV_PATH = (
+    "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/"
+    f"{GPP_CATALOG_PIN_COMMIT}/documentation/namespaces/target_object_categories.csv"
 )
 
 # --- Filtering ---
