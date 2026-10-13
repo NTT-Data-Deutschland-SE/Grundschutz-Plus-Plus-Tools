@@ -591,11 +591,11 @@ const BUILD='v2.5';
 const P={arFilename:'',sspHref:'',sysName:'',catalog:new Map(),findings:[],observations:[],risks:[],items:[],meta:{title:'',version:'1.0.0',desc:''},responsible:{name:'',role:'system-owner',email:''}};
 // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
 // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
-const GPP_CATALOG_PIN_COMMIT='4e11779438c34a5db36902be67b74a6bf83bf10d';
-const GPP_CATALOG_PIN_SHA256='691e8ca0af378718a9e4b5876f3e194a449f3214dceab6d86bec3e2388a969df';
+const GPP_CATALOG_PIN_COMMIT='a12831136f4122a4c43854622180a24f2576a41e';
+const GPP_CATALOG_PIN_SHA256='27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645';
 const CATALOG_URL=`https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json`;
 // uuid5(NAMESPACE_URL, CATALOG_URL) — identisch zu den gepinnten Repo-Profilen.
-const GPP_CATALOG_RESOURCE_UUID='67618563-db97-5ee9-a47f-a8c8ca2b24ee';
+const GPP_CATALOG_RESOURCE_UUID='afe1c75e-8725-5df2-a57b-235d7d5236f4';
 async function sha256Hex(buf){const d=await crypto.subtle.digest('SHA-256',buf);return Array.from(new Uint8Array(d)).map(b=>b.toString(16).padStart(2,'0')).join('')}
 // Back-matter-Resource für den gepinnten Katalog — feldidentisch zur Ausgabe von scripts/pin_profile_imports.py.
 function pinnedCatalogResource(){return{uuid:GPP_CATALOG_RESOURCE_UUID,title:`Grundschutz++-resolved_catalog.json @ ${GPP_CATALOG_PIN_COMMIT.slice(0,12)}`,rlinks:[{href:CATALOG_URL,hashes:[{algorithm:'SHA-256',value:GPP_CATALOG_PIN_SHA256}]}]}}

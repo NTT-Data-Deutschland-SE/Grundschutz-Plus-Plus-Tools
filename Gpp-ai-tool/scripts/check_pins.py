@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""check_pins.py -- v1.0.0
+"""check_pins.py -- v1.0.1
 
 Prueft die Quellen-Pins der Werkzeugsammlung gegen Upstream
 (Handbuch Kapitel 3.13/3.14, Repin-Verfahren):
@@ -58,7 +58,9 @@ SELF_REPO = "NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools"
 # hilfsdateien/ = Provenienz der Generierung (bewusst alte SHAs),
 # .claude/ = Worktrees paralleler Sessions, ZIP = Auslieferungsarchiv
 # (wird aus dem Ordner gebaut, traegt dieselben Pins).
-SKIP_DIRS = {".git", ".claude", "hilfsdateien", "node_modules", "__pycache__"}
+# hilfsdateien/ und QS/fixtures/ sind Provenienz: sie halten fest, gegen welchen Stand sie
+# entstanden sind (QS-Fixtures: Analyse-Payloads der Messlaeufe), und werden nie umgepinnt.
+SKIP_DIRS = {".git", ".claude", "hilfsdateien", "fixtures", "node_modules", "__pycache__"}
 SKIP_SUFFIXES = {".zip", ".png", ".jpg", ".pdf", ".pyc", ".docx", ".xlsx"}
 SKIP_NAMES = {"RELEASE_NOTES_v3.0.md", "RELEASE_NOTES_v4.0.md"}
 

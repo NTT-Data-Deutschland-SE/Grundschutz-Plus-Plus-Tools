@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL Blaupausen &amp; Risk Generator with multi catalog option V5.15.1</title>
+    <title>SSP-Generator / Editor – OSCAL Blaupausen &amp; Risikoanalyse V5.16.0</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -614,8 +614,8 @@
                 src="https://mc-8afc6902-e56c-432c-8c3f-3991-cdn-endpoint.azureedge.net/-/media/project/emea/shared/global-logo/globallogo_nttdata_white_resized.png?extension=webp&amp;hash=82AED889DCD1D6C0BA76C56A5F81B4C6"
                 alt="NTT DATA">
             <div class="min-w-0">
-                <div class="brand-title">OSCAL Blaupausen Generator</div>
-                <div class="brand-sub">Methodik-GS++ · Profile · SSP · Risikoanalyse</div>
+                <div class="brand-title">SSP-Generator / Editor</div>
+                <div class="brand-sub">SSP erstellen &amp; ändern · Methodik-GS++ · Profile · Risikoanalyse</div>
             </div>
         </div>
 
@@ -628,7 +628,7 @@
 
         <div class="topbar-actions">
             <div id="catalog-status" class="pill"><span class="dot animate-pulse"></span>Lade Basis-Katalog…</div>
-            <div class="pill pill-quiet">BUILD V5.15.1</div>
+            <div class="pill pill-quiet">BUILD V5.16.0</div>
         </div>
 
         <div class="progress-track"><div id="ai-doc-progress-bar" class="progress-fill"></div></div>
@@ -685,7 +685,7 @@
             </div>
         </div>
 
-        <div class="rail-foot">BUILD V5.15.1</div>
+        <div class="rail-foot">BUILD V5.16.0</div>
     </aside>
 
     <div id="rail-splitter" class="splitter" title="Rail-Breite ziehen"></div>
@@ -908,16 +908,16 @@
         gppRegisterSources(GPP_TOOL_ID, [
             { id: 'c5-katalog', label: 'BSI C5:2026 Katalog', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
               path: 'kataloge/c5-2026-oscal-catalog.json',
-              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/kataloge/c5-2026-oscal-catalog.json' },
+              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/kataloge/c5-2026-oscal-catalog.json' },
             { id: 'c3a-katalog', label: 'C3A Katalog', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
               path: 'kataloge/c3a_oscal_catalog.json',
-              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/kataloge/c3a_oscal_catalog.json' },
+              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/kataloge/c3a_oscal_catalog.json' },
             { id: 'methodik-profil', label: 'Methodik-Prozessprofil', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
               path: 'Zielobjektkategorien/profile/process/methodik_process_profile.json',
-              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/methodik_process_profile.json' },
+              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/Zielobjektkategorien/profile/process/methodik_process_profile.json' },
             { id: 'ed23-anforderungen', label: 'G++/ED23 Anforderungen (Hilfsdatei)', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
               path: 'hilfsdateien/gpp_ed23_anforderungen.json',
-              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/hilfsdateien/gpp_ed23_anforderungen.json' },
+              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/hilfsdateien/gpp_ed23_anforderungen.json' },
         ]);
 
         // --- CONFIG & STATE ---
@@ -927,11 +927,11 @@
         // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
         // Bewusst NICHT über gppSource umleitbar: SHA-256 und resource-uuid (uuid5 der
         // URL) sind hier fest verdrahtet — ein Repin würde Hash und Inhalt auseinanderziehen.
-        const GPP_CATALOG_PIN_COMMIT = '4e11779438c34a5db36902be67b74a6bf83bf10d';
-        const GPP_CATALOG_PIN_SHA256 = '691e8ca0af378718a9e4b5876f3e194a449f3214dceab6d86bec3e2388a969df';
+        const GPP_CATALOG_PIN_COMMIT = 'a12831136f4122a4c43854622180a24f2576a41e';
+        const GPP_CATALOG_PIN_SHA256 = '27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645';
         const CATALOG_URL_BASE = `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json`;
         // uuid5(NAMESPACE_URL, CATALOG_URL_BASE) — identisch zu den gepinnten Repo-Profilen.
-        const GPP_CATALOG_RESOURCE_UUID = '67618563-db97-5ee9-a47f-a8c8ca2b24ee';
+        const GPP_CATALOG_RESOURCE_UUID = 'afe1c75e-8725-5df2-a57b-235d7d5236f4';
 
         async function sha256Hex(buf) {
             const d = await crypto.subtle.digest('SHA-256', buf);
@@ -941,11 +941,11 @@
            Repo mit 24-h-Cache statt einer contents-Anfrage je Verzeichnis. */
         const GPP_REPO_OWNER = 'NTT-Data-Deutschland-SE';
         const GPP_REPO_NAME = 'Grundschutz-Plus-Plus-Tools';
-        const GPP_TOOLS_PIN_COMMIT = '26b9200d6c446660c876dc1c67d5800309293fcf';
+        const GPP_TOOLS_PIN_COMMIT = '9c2e444e8ec48675776ecc5f280862d51434abcc';
         const SDT_REPO_OWNER = 'BSI-Bund';
         const SDT_REPO_NAME = 'Stand-der-Technik-Bibliothek';
         // BSI implementation_layer: fertige Component-Definitions (Keycloak, Netzarchitektur, ...)
-        const SDT_PIN_COMMIT = '4e11779438c34a5db36902be67b74a6bf83bf10d';
+        const SDT_PIN_COMMIT = 'a12831136f4122a4c43854622180a24f2576a41e';
         const PRAKTIKEN_FILE_SUFFIX = '_process_profile.json';
 
         // Praktik-Kürzel → Begriff. Fallback für die Anzeige, falls der Basis-Katalog (mit
@@ -963,8 +963,8 @@
 
         /* Pin-Override aus config.html (gppSource) gilt für das registrierte
            Standard-Profil; das Enhanced-Profil folgt demselben Commit. */
-        const METHODIK_URL_STANDARD_DEFAULT = 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/methodik_process_profile.json';
-        const METHODIK_URL_ENHANCED_DEFAULT = 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/Zielobjektkategorien/profile/process/methodik_process_profile_enhanced.json';
+        const METHODIK_URL_STANDARD_DEFAULT = 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/Zielobjektkategorien/profile/process/methodik_process_profile.json';
+        const METHODIK_URL_ENHANCED_DEFAULT = 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/Zielobjektkategorien/profile/process/methodik_process_profile_enhanced.json';
         const METHODIK_URL_STANDARD = gppSource('methodik-profil', METHODIK_URL_STANDARD_DEFAULT);
         const METHODIK_URLS = {
             standard: METHODIK_URL_STANDARD,
@@ -985,12 +985,12 @@
             {
                 name: 'C5:2026 OSCAL Katalog',
                 sourceId: 'c5-katalog',
-                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/kataloge/c5-2026-oscal-catalog.json'
+                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/kataloge/c5-2026-oscal-catalog.json'
             },
             {
                 name: ' C3A - Criteria enabling Cloud Computing Autonomy',
                 sourceId: 'c3a-katalog',
-                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/kataloge/c3a_oscal_catalog.json'
+                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/kataloge/c3a_oscal_catalog.json'
             }
         ];
 
@@ -1019,19 +1019,32 @@
         // Kategorien (Personengruppen, Informationen, Dienstleistungen) bleiben
         // bewusst 'service' — dafür hat OSCAL kein passendes Vokabular.
         const ZIELOBJEKT_COMPONENT_TYPES = {
-            endgeraete: 'hardware', hostsysteme: 'hardware', 'it-systeme': 'hardware',
+            mobile_endgeraete: 'hardware', hostsysteme: 'hardware', 'it-systeme': 'hardware',
             dateiserver: 'hardware', 'dns-server': 'hardware', webserver: 'hardware',
-            faxe: 'hardware', 'it-produkte': 'hardware',
+            'it-produkte': 'hardware',
             anwendungen: 'software', 'office-anwendungen': 'software', webbrowser: 'software',
             webanwendungen: 'software', verzeichnisdienste: 'software', 'vk-anwendungen': 'software',
             'tk-anwendungen': 'software', virtualisierungsloesungen: 'software',
+            faxanwendungen: 'software',   // BSI-Typ "Anwendungen" seit SdT a128311
             netze: 'network', 'interne_netzsegmente': 'network', 'externe_netzanschluesse': 'network',
             wlans: 'network',
             gebaeude: 'physical', raeume: 'physical', serverraeume: 'physical',
             'raeume_fuer_technische_infrastruktur': 'physical', standorte: 'physical',
-            datentraegerarchiv: 'physical',
+            archiv: 'physical',
             'cloud-dienste': 'service', outsourcing: 'service', dienstleistungen: 'service',
+            // explizit, sonst greift das Schlüsselwort "leitung" (Standleitung) → network
+            institutionsleitung: 'service',
         };
+        // Umbenennungen der SdT-Bibliothek (a128311, 2026-10-01; UUIDs unverändert). Ältere
+        // Arbeitsstände, Analysen und Profil-URLs tragen noch die alten Slugs.
+        const LEGACY_KATEGORIE_SLUGS = { endgeraete: 'mobile_endgeraete', faxe: 'faxanwendungen', datentraegerarchiv: 'archiv' };
+        function normKategorieSlug(slug) {
+            const s = String(slug || '').toLowerCase();
+            for (const [alt, neu] of Object.entries(LEGACY_KATEGORIE_SLUGS)) {
+                if (s === alt || s.startsWith(alt + '_')) return neu + s.slice(alt.length);
+            }
+            return s;
+        }
         // Schlüsselwörter für KI-Freitexttypen ("Raum/Gebäude", "Netzkomponente (Firewall)", …)
         const COMPONENT_TYPE_KEYWORDS = [
             [/geb(ä|ae)ude|raum|r(ä|ae)ume|standort|archiv|gel(ä|ae)nde/i, 'physical'],
@@ -1045,7 +1058,7 @@
         function zielobjektKategorieFromSource(source) {
             if (!source) return '';
             const file = String(source).split('/').pop() || '';
-            return file.replace(/\.json$/i, '').replace(/_profile$/i, '').toLowerCase();
+            return normKategorieSlug(file.replace(/\.json$/i, '').replace(/_profile$/i, ''));
         }
         // Baustein-Schicht → OSCAL-Typ, wenn die Komponente über Ed2023-Bausteine
         // statt über ein Zielobjekt-Profil modelliert wurde.
@@ -1057,10 +1070,12 @@
                 return 'process-procedure';   // OPS/ORP/CON/DER/ISMS sind Prozess-Schichten
             }
             const kat = zielobjektKategorieFromSource(source);
-            // ED23-Profilnamen tragen die Kategorie im ersten Segment: endgeraete_SYS.3.1_laptops
-            const head = kat.split('_')[0];
-            if (ZIELOBJEKT_COMPONENT_TYPES[kat]) return ZIELOBJEKT_COMPONENT_TYPES[kat];
-            if (ZIELOBJEKT_COMPONENT_TYPES[head]) return ZIELOBJEKT_COMPONENT_TYPES[head];
+            // ED23-Profilnamen beginnen mit der Kategorie: mobile_endgeraete_SYS.3.1_laptops.
+            // Längster passender Präfix, denn Slugs enthalten selbst Unterstriche.
+            const head = Object.keys(ZIELOBJEKT_COMPONENT_TYPES)
+                .filter(k => kat === k || kat.startsWith(k + '_'))
+                .sort((a, b) => b.length - a.length)[0];
+            if (head) return ZIELOBJEKT_COMPONENT_TYPES[head];
             const hit = COMPONENT_TYPE_KEYWORDS.find(([re]) => re.test(kat));
             return hit ? hit[1] : 'service';
         }
@@ -1113,7 +1128,7 @@
         // Seitenmarken und Nachtraegen je Quell-ID (Plan Stufe 1).
         const AI_EXTRACTION_CACHE_VERSION = '5';
         const AI_MAX_CHUNKS = 50;
-        const GENERATOR_VERSION = 'V5.15.1';
+        const GENERATOR_VERSION = 'V5.16.0';
         // Laufzeit-Einstellungen (in der UI änderbar, Persistenz in localStorage)
         const AI_RUN_DEFAULTS = { concurrency: 4, chunkSize: 28000, retries: 2, thinkingLevel: 'medium' };
         const AI_RUN_SETTINGS_KEY = 'ssp-generator-ai-run-settings';
@@ -1400,7 +1415,7 @@ Wähle je Asset genau eine Zielobjektkategorie aus der Kandidatenliste (exakter 
 Wähle je Prozess ein Praktik-Kürzel nur dann, wenn der Prozess die Tätigkeit dieser Praktik selbst beschreibt (z. B. Berechtigungsvergabe → BER, Patchmanagement → TEST). Eine Einzelmaßnahme, ein Werkzeug oder ein Geschäftsprozess ist keine Praktik: dann leerer String. Der leere String ist die Vorgabe.
 Halte rationale extrem knapp (höchstens ein kurzer Satz).
 
-Zielobjektkategorien (Wert: Bezeichnung — Definition; Synonyme; übergeordnet):
+Zielobjektkategorien (Wert: Bezeichnung — Definition; Beispiele; Synonyme; übergeordnet; Hinweis):
 {kategorien}
 
 Praktiken (Kürzel: Bezeichnung — Definition):
@@ -1592,7 +1607,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         // --- BSI ED2023 Anforderungen (vorberechnet von Gpp-ai-tool, ohne Laufzeit-KI) ---
         let ED23_MAP = {};
         // Pin-Override aus config.html (gppSource); nur Anzeigedaten, kein Export-Pin.
-        const ED23_MAP_URL = gppSource('ed23-anforderungen', "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/hilfsdateien/gpp_ed23_anforderungen.json");
+        const ED23_MAP_URL = gppSource('ed23-anforderungen', "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/hilfsdateien/gpp_ed23_anforderungen.json");
         // Flatten an OSCAL 1.2.2 mapping-collection (or the legacy bespoke map) into
         // { controlId: [{id, name, begruendung}] } for the ED23 panel.
         function buildEd23MapFromOscal(doc) {
@@ -1615,7 +1630,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         let BSI_ITGS_MAP = {};
         // Pin des BSI-GSMap ITGS→GS++ auf denselben Commit wie der Katalog; der SHA-256
         // wird beim Laden geprueft (Grundregel 8, gilt auch fuers Mapping).
-        const BSI_ITGS_MAP_PIN_COMMIT = '4e11779438c34a5db36902be67b74a6bf83bf10d';
+        const BSI_ITGS_MAP_PIN_COMMIT = 'a12831136f4122a4c43854622180a24f2576a41e';
         const BSI_ITGS_MAP_PIN_SHA256 = 'df7ea11261ace956a3ebb440f60928851a4815f5545775ac9b24e4d3d22f267f';
         const BSI_ITGS_MAP_URL = `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${BSI_ITGS_MAP_PIN_COMMIT}/control_layer/Mappings/IT-GS2023-zu-GSpp/ITGS-to-GS%2B%2B-mapping_collection.json`;
         function buildBsiItgsMapFromOscal(doc) {
@@ -3465,6 +3480,12 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             return rows.filter(r => r.some(v => v.trim())).map(r => Object.fromEntries(header.map((h, i) => [h, (r[i] || '').trim()])));
         }
         // Zielobjekt-Name → Slug der Profildatei (raeume_fuer_technische_infrastruktur, it-systeme …)
+        // Projektseitige Zuordnungshinweise je Kategorie-Slug, ergänzend zur BSI-Definition.
+        // Mobile Endgeräte: Die Definition (SdT a128311) nennt nur mobile Geräte, die ED23-
+        // Client-Bausteine SYS.2.x hängen über die unveränderte UUID aber weiter hier.
+        const KATEGORIE_ZUORDNUNGSHINWEISE = {
+            mobile_endgeraete: 'umfasst auch stationäre Clients (Arbeitsplatz-PC, Desktop, Thin Client); Server gehören zu Hostsysteme',
+        };
         function slugKategorie(name) {
             return String(name || '').toLowerCase().replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
                 .replace(/\s+/g, '_').replace(/[^a-z0-9_-]/g, '');
@@ -3481,7 +3502,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     const [kat, prak] = await Promise.all([load('target_object_categories.csv'), load('practices.csv')]);
                     const byUuid = new Map(kat.map(r => [r.UUID, r.Zielobjekt]));
                     return {
-                        kategorien: kat.map(r => ({ slug: slugKategorie(r.Zielobjekt), name: r.Zielobjekt, definition: r.Definition, synonyme: r.Synonyme, parent: byUuid.get(r.ChildOfUUID) || '' })),
+                        kategorien: kat.map(r => ({ slug: slugKategorie(r.Zielobjekt), name: r.Zielobjekt, definition: r.Definition, beispiel: r.Beispiel || '', synonyme: r.Synonyme, parent: byUuid.get(r.ChildOfUUID) || '' })),
                         praktiken: prak.map(r => ({ kuerzel: r['Kürzel'] || r.Kuerzel || '', name: r.Begriff, definition: r.Definition }))
                     };
                 })().catch(e => { aiNamespacePromise = null; throw e; });
@@ -3508,9 +3529,12 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             try { namespaces = await ensureAINamespaces(); }
             catch (e) { aiLog('warn', `Namespace-Definitionen nicht ladbar (${e.message}) — Zuordnung nur mit Kategorienamen`); }
             const trunc = (t, n) => { const x = cleanAIString(t).replace(/\s+/g, ' '); return x.length > n ? `${x.slice(0, n - 1)}…` : x; };
+            // Seit SdT a128311 stehen die Beispiele nicht mehr in der Definition, sondern in der
+            // Spalte "Beispiel" — ohne sie fehlen dem Modell Signalwörter wie Server/Firewall.
             const kategorieLines = kategorien.map(k => {
-                const d = namespaces?.kategorien.find(x => x.slug === k);
-                return d ? `${k}: ${d.name} — ${trunc(d.definition, 220)}${d.synonyme ? `; Synonyme: ${d.synonyme}` : ''}${d.parent ? `; übergeordnet: ${d.parent}` : ''}` : k;
+                const d = namespaces?.kategorien.find(x => x.slug === normKategorieSlug(k));
+                const hinweis = KATEGORIE_ZUORDNUNGSHINWEISE[normKategorieSlug(k)];
+                return d ? `${k}: ${d.name} — ${trunc(d.definition, 220)}${d.beispiel ? `; Beispiele: ${trunc(d.beispiel, 120)}` : ''}${d.synonyme ? `; Synonyme: ${d.synonyme}` : ''}${d.parent ? `; übergeordnet: ${d.parent}` : ''}${hinweis ? `; Hinweis: ${hinweis}` : ''}` : k;
             });
             const praktikLines = praktiken.map(p => {
                 const d = namespaces?.praktiken.find(x => x.kuerzel === p.kuerzel);
@@ -3525,7 +3549,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 prozesse: JSON.stringify(sicherheitsprozesse.map(p => ({ sourceId: p.sourceId, name: p.name, description: p.description })), null, 1)
             });
             const mapping = await callAIDocumentModel(getAISystemInstruction(), prompt, AI_MAPPING_SCHEMA, 'Zielobjekt-/Praktik-Zuordnung');
-            const kategorieByName = new Map(bpState.zielobjektProfiles.map(p => [p.kategorie.toLowerCase(), p]));
+            const kategorieByName = new Map(bpState.zielobjektProfiles.map(p => [normKategorieSlug(p.kategorie), p]));
             const praktikByKuerzel = new Map(praktiken.map(p => [p.kuerzel.toUpperCase(), p]));
             const findEntry = (list, mapped) => list.find(entry =>
                 (cleanAIString(mapped.sourceId) && entry.sourceId.toLowerCase() === cleanAIString(mapped.sourceId).toLowerCase()) ||
@@ -3534,7 +3558,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             (mapping.assets || []).forEach(mapped => {
                 const asset = findEntry(analysis.assets, mapped);
                 if (!asset) return;
-                const profile = kategorieByName.get(cleanAIString(mapped.zielobjektkategorie).toLowerCase());
+                const profile = kategorieByName.get(normKategorieSlug(cleanAIString(mapped.zielobjektkategorie)));
                 asset.zielobjektkategorie = profile?.kategorie || '';
                 asset.zielobjektProfileUrl = profile?.url || '';
                 asset.mappingRationale = cleanAIString(mapped.rationale);
@@ -3557,7 +3581,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         async function applyAIMappingsToWorkspace(analysis) {
             if (!analysis) return;
             await ensureAIMappingCandidates();
-            const kategorieByName = new Map(bpState.zielobjektProfiles.map(p => [p.kategorie.toLowerCase(), p]));
+            const kategorieByName = new Map(bpState.zielobjektProfiles.map(p => [normKategorieSlug(p.kategorie), p]));
             const praktikByKuerzel = new Map(bpState.processProfiles.map(p => [p.kuerzel.toUpperCase(), p]));
             const loadProfileControls = async url => {
                 const res = await fetch(url);
@@ -3571,7 +3595,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             };
 
             for (const asset of analysis.assets) {
-                const profile = kategorieByName.get(cleanAIString(asset.zielobjektkategorie).toLowerCase());
+                const profile = kategorieByName.get(normKategorieSlug(cleanAIString(asset.zielobjektkategorie)));
                 const url = profile?.url || asset.zielobjektProfileUrl;
                 // Bestand zuerst über die Kennung, dann über den Namen; ein namensgleiches
                 // Objekt mit anderer Kennung (zwei Serverräume, Firewall als Anwendung und

@@ -62,18 +62,17 @@ cat "$CSV_FILE" | tr -d '\r' | sed 's/"[^"]*"//g' > "$CLEAN_CSV"
 while read -r uuid count; do
   
   # Suche den Namen mit 'awk' in der BEREINIGTEN CSV-Datei.
-  # Diese Logik prüft jetzt exakt Spalte 7 (robust gegen leere Spalte 6)
-  # und wird nicht mehr durch \r-Zeichen gestört.
+  # Die UUID steht in der letzten Spalte ($NF): das BSI fügt Spalten ein
+  # (2026-10-01: "Beispiel" als Spalte 3), eine feste Spaltennummer verrutscht dann.
   name=$(awk -F, -v id="$uuid" '
     NR > 1 {
-      # Spalte 7 holen
-      col7 = $7;
+      uuid_col = $NF;
       
       # Nur noch verbleibende Leerzeichen am Anfang/Ende entfernen
-      sub(/^[[:space:]]+/, "", col7);
-      sub(/[[:space:]]+$/, "", col7);
+      sub(/^[[:space:]]+/, "", uuid_col);
+      sub(/[[:space:]]+$/, "", uuid_col);
       
-      if (col7 == id) {
+      if (uuid_col == id) {
         print $1
       }
     }' "$CLEAN_CSV") # Lese von der bereinigten Temp-Datei

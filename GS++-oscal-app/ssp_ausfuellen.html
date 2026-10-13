@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCAL SSP Editor + Workspace (Enhanced Multi-AI) v1.7.1</title>
+    <title>SSP ausfüllen / Grundschutzcheck v1.7.2</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
@@ -654,14 +654,14 @@
         <span class="brand-mark">&#9672;</span>
         <span class="brand-name">NTT DATA</span>
         <span class="brand-sep">/</span>
-        <span class="brand-app">OSCAL SSP Editor</span>
+        <span class="brand-app">SSP ausfüllen / Grundschutzcheck</span>
     </div>
     <div class="topbar-meta">
         <div id="ssp-status-ind" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 flex items-center">
             <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>Kein SSP geladen
         </div>
         <div id="resource-status-ind" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-700 text-slate-400 border border-slate-600 items-center hidden"></div>
-        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.7.1</span></span>
+        <span class="meta-pill">Build <span id="build-version" class="font-mono">v1.7.2</span></span>
     </div>
 </header>
 
@@ -731,7 +731,7 @@
         <div class="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
 
             <div id="welcome-msg" class="text-center py-12">
-                <h2 class="text-2xl font-bold text-slate-300 mb-4">Willkommen im OSCAL SSP Editor</h2>
+                <h2 class="text-2xl font-bold text-slate-300 mb-4">Willkommen bei „SSP ausfüllen / Grundschutzcheck“</h2>
                 <p class="text-slate-400 mb-6 max-w-lg mx-auto">Der Editor arbeitet auf dem aktiven Arbeitsstand (Set): sobald dort ein SSP liegt, wird es hier automatisch &uuml;bernommen. Sets verwalten Sie in <code>index.html</code>.</p>
             </div>
 
@@ -832,7 +832,7 @@
     /* Quelle für die Pin-Übersicht in config.html anmelden (Grundregel 8). */
     gppRegisterSources(GPP_TOOL_ID, [{ id: 'ed23-anforderungen', label: 'G++/ED23 Anforderungen (Hilfsdatei)',
         repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools', path: 'hilfsdateien/gpp_ed23_anforderungen.json',
-        default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/hilfsdateien/gpp_ed23_anforderungen.json' }]);
+        default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/hilfsdateien/gpp_ed23_anforderungen.json' }]);
 
     // ============================================================
     // LOG-KONSOLE (fünf Level, Millisekunden-Timestamps, Autoscroll, Clear)
@@ -943,12 +943,12 @@
     // CONFIG & STATE
     // ============================================================
     // Build-Version der App (nicht zu verwechseln mit dem Session-Format `_v`).
-    const BUILD_VERSION = 'v1.7.1';
+    const BUILD_VERSION = 'v1.7.2';
 
     // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
     // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
-    const GPP_CATALOG_PIN_COMMIT = '4e11779438c34a5db36902be67b74a6bf83bf10d';
-    const GPP_CATALOG_PIN_SHA256 = '691e8ca0af378718a9e4b5876f3e194a449f3214dceab6d86bec3e2388a969df';
+    const GPP_CATALOG_PIN_COMMIT = 'a12831136f4122a4c43854622180a24f2576a41e';
+    const GPP_CATALOG_PIN_SHA256 = '27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645';
     const GS_PLUS_CATALOG_URL = `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json`;
 
     async function sha256Hex(buf) {
@@ -1082,7 +1082,7 @@ Controls (ID · Titel · Anforderung · Stufen):
         // Log-Konsole verdrahten
         document.getElementById('log-clear')?.addEventListener('click', () => { clearLog(); L.debug('Log geleert.'); });
         document.getElementById('log-autoscroll')?.addEventListener('change', e => L.debug(`Autoscroll ${e.target.checked ? 'an' : 'aus'}`));
-        L.info(`OSCAL SSP Editor ${BUILD_VERSION} gestartet.`);
+        L.info(`SSP ausfüllen / Grundschutzcheck ${BUILD_VERSION} gestartet.`);
         L.debug(`G++-Katalog-Pin: commit ${GPP_CATALOG_PIN_COMMIT.slice(0, 12)}… · SHA-256 ${GPP_CATALOG_PIN_SHA256.slice(0, 12)}…`);
         if (location.protocol === 'file:') L.warn('Läuft unter file:// — bei CORS-Fehlern den Ordner mit "python -m http.server" servieren und über http://localhost:8000/ öffnen. Gemini und OpenRouter erlauben Browser-Aufrufe ausdrücklich; ein eigener OpenAI-kompatibler Endpoint braucht passende CORS-Header.');
 
@@ -1319,7 +1319,7 @@ Controls (ID · Titel · Anforderung · Stufen):
             }
 
             if (!ssp['control-implementation']) ssp['control-implementation'] = {};
-            if (!ssp['control-implementation'].description) ssp['control-implementation'].description = "Umsetzung der Controls je Komponente, erfasst mit dem OSCAL SSP Editor.";
+            if (!ssp['control-implementation'].description) ssp['control-implementation'].description = "Umsetzung der Controls je Komponente, erfasst mit „SSP ausfüllen / Grundschutzcheck“.";
 
             // Params
             const paramInputs = document.querySelectorAll('.param-input');
@@ -1397,7 +1397,7 @@ Controls (ID · Titel · Anforderung · Stufen):
     function autoSave() {
         if(!sspData || typeof gppArtefacts === 'undefined') return;
         gppArtefacts.save({
-            stage: 'implement', kind: 'workspace', title: 'SSP-Editor Arbeitsstand',
+            stage: 'implement', kind: 'workspace', title: 'Grundschutzcheck Arbeitsstand',
             filename: 'ssp-editor-workspace.json', tool: GPP_TOOL_ID, data: JSON.parse(ser())
         }).then(r => L.debug(`Arbeitsstand im Set „${gppArtefacts.activeSet()}" gesichert (${(r.size/1024).toFixed(1)} kB).`))
           .catch(e => L.warn(`Arbeitsstand nicht gesichert: ${e.message}`));
@@ -1456,7 +1456,7 @@ Controls (ID · Titel · Anforderung · Stufen):
             } else if (ssp) {
                 L.warn(`SSP „${ssp.title}" im Set „${set}" hat keine metadata und wurde nicht geladen.`);
             } else {
-                L.info(`Set „${set}" enthält noch keinen SSP — im SSP-Generator erzeugen, er erscheint hier automatisch.`);
+                L.info(`Set „${set}" enthält noch keinen SSP — im SSP-Generator / Editor erzeugen, er erscheint hier automatisch.`);
             }
         } catch (e) { L.err(`Set-Übernahme fehlgeschlagen: ${e.message}`); }
     }
@@ -1469,7 +1469,7 @@ Controls (ID · Titel · Anforderung · Stufen):
             const d = JSON.parse(s);
             if (d && d._v >= 2 && d.sspData) {
                 await gppArtefacts.save({
-                    stage: 'implement', kind: 'workspace', title: 'SSP-Editor Arbeitsstand (übernommen)',
+                    stage: 'implement', kind: 'workspace', title: 'Grundschutzcheck Arbeitsstand (übernommen)',
                     filename: 'ssp-editor-workspace.json', tool: GPP_TOOL_ID, data: d });
                 L.info('Früherer Autosave in das Set übernommen.');
             }
@@ -2503,7 +2503,7 @@ Controls (ID · Titel · Anforderung · Stufen):
 
     // --- BSI ED2023 Anforderungen (vorberechnet von Gpp-ai-tool, ohne Laufzeit-KI) ---
     let ED23_MAP = {};
-    const ED23_MAP_URL = "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/26b9200d6c446660c876dc1c67d5800309293fcf/hilfsdateien/gpp_ed23_anforderungen.json";
+    const ED23_MAP_URL = "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/hilfsdateien/gpp_ed23_anforderungen.json";
     // Flatten an OSCAL 1.2.2 mapping-collection (or the legacy bespoke map) into
     // { controlId: [{id, name, begruendung}] } for the ED23 panel.
     function buildEd23MapFromOscal(doc) {
@@ -3070,7 +3070,7 @@ Controls (ID · Titel · Anforderung · Stufen):
                 ? hinweis('6.', 'Reifegrad: einen der Werte aus der Spalte "Reifegrad-Optionen" derselben Zeile eintragen. Leer bedeutet "manuell, kein Level gewählt".')
                 : hinweis('6.', 'Reifegrade sind in diesem SSP nicht hinterlegt (kein Komponenten-Profil mit Reifegrad-Statements).'),
             hinweis('7.', 'Eine Zeile mit einem unzulässigen Wert wird komplett übersprungen und in der Log-Konsole namentlich genannt — es wird nie halb übernommen.'),
-            hinweis('8.', 'Zurücklesen im OSCAL SSP Editor (ssp_ausfuellen.html) über „Excel-Austausch → Ausgefüllte Excel laden".'),
+            hinweis('8.', 'Zurücklesen in „SSP ausfüllen / Grundschutzcheck“ (ssp_ausfuellen.html) über „Excel-Austausch → Ausgefüllte Excel laden".'),
             ['', ''].map(v => ({ v, s: XLS_STYLE.NORM })),
             [{ v: 'Statuswerte', s: XLS_STYLE.HEAD }, { v: 'Bedeutung im OSCAL-SSP', s: XLS_STYLE.HEAD }],
             hinweis('Offen', 'noch nicht bearbeitet (kein implementation-status)'),
@@ -3085,7 +3085,7 @@ Controls (ID · Titel · Anforderung · Stufen):
             hinweis('SSP', ssp.metadata?.title || '(ohne Titel)'),
             hinweis('Datei', sspFileName),
             hinweis('Exportiert am', new Date().toLocaleString('de-DE')),
-            hinweis('Werkzeug', 'OSCAL SSP Editor ' + BUILD_VERSION),
+            hinweis('Werkzeug', 'SSP ausfüllen / Grundschutzcheck ' + BUILD_VERSION),
             hinweis('Zeilen', zeilen.length + ' Control-Zuordnung(en) über ' + comps.length + ' Komponente(n)')
         ];
 
@@ -3713,7 +3713,7 @@ Controls (ID · Titel · Anforderung · Stufen):
         r = {
             uuid: crypto.randomUUID(),
             title: `Nachweis: ${file.name}`,
-            description: `Nachweisdokument, im SSP-Editor per KI-Abgleich gegen die Controls geprüft; die Vorschläge wurden vor der Übernahme vom Bearbeiter gesichtet. Die Datei selbst liegt beim Anwender — Identität über den SHA-256.`,
+            description: `Nachweisdokument, im Grundschutzcheck per KI-Abgleich gegen die Controls geprüft; die Vorschläge wurden vor der Übernahme vom Bearbeiter gesichtet. Die Datei selbst liegt beim Anwender — Identität über den SHA-256.`,
             props: [
                 { name: 'source-type', ns: NACHWEIS_NS, value: 'evidence' },
                 { name: 'size', ns: NACHWEIS_NS, value: String(file.size) },
