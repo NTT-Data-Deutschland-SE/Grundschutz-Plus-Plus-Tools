@@ -1,0 +1,1899 @@
+{
+  "profile": {
+    "uuid": "4c186169-f2a7-4f57-bf76-8a43c9111a6a",
+    "metadata": {
+      "title": "Mindeststandard des BSI zur Verwendung von Transport Layer Security (TLS) (Version 2.4) – OSCAL-Profil auf dem Anwenderkatalog Grundschutz++",
+      "last-modified": "2026-10-16T16:40:08.589Z",
+      "version": "2.4",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "mindeststandard",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+          "value": "TLS"
+        },
+        {
+          "name": "mindeststandard-version",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+          "value": "2.4"
+        },
+        {
+          "name": "mindeststandard-stand",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+          "value": "05/2023"
+        },
+        {
+          "name": "rechtsgrundlage",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+          "value": "§ 44 Abs. 1 Satz 1 BSIG"
+        },
+        {
+          "name": "referenztabelle-kompendium-edition",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+          "value": "2023"
+        },
+        {
+          "name": "keywords",
+          "value": "Mindeststandard, BSI, Grundschutz++, TLS"
+        }
+      ],
+      "links": [
+        {
+          "href": "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Mindeststandards/Mindeststandard_BSI_TLS_Version_2_4.pdf?__blob=publicationFile&v=4",
+          "rel": "source",
+          "text": "Mindeststandard des BSI zur Verwendung von Transport Layer Security (TLS) (PDF, BSI)"
+        },
+        {
+          "href": "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Mindeststandards/Referenztabelle_Mindeststandard_TLS_V2_4-Grundschutz2023.xlsx?__blob=publicationFile&v=3",
+          "rel": "reference",
+          "text": "IT-Grundschutz-Referenztabelle (BSI)"
+        },
+        {
+          "href": "https://www.bsi.bund.de/DE/Themen/Oeffentliche-Verwaltung/Mindeststandards/Mindeststandards_node.html",
+          "rel": "reference",
+          "text": "Mindeststandards des BSI nach § 44 Abs. 1 Satz 1 BSIG"
+        }
+      ],
+      "roles": [
+        {
+          "id": "creator",
+          "title": "Ersteller des Profils"
+        },
+        {
+          "id": "source-publisher",
+          "title": "Herausgeber des Mindeststandards"
+        }
+      ],
+      "parties": [
+        {
+          "uuid": "f3f5a4ff-6f1e-5b5d-9f3e-0d2a6a1c0b51",
+          "type": "organization",
+          "name": "Bundesamt für Sicherheit in der Informationstechnik",
+          "short-name": "BSI",
+          "email-addresses": [
+            "service-center@bsi.bund.de"
+          ]
+        }
+      ],
+      "responsible-parties": [
+        {
+          "role-id": "source-publisher",
+          "party-uuids": [
+            "f3f5a4ff-6f1e-5b5d-9f3e-0d2a6a1c0b51"
+          ]
+        }
+      ],
+      "remarks": "Erzeugt mit mindeststandard-oscal.html (build 1.2.1). Die Anforderungen des Mindeststandards sind Gruppen mit dem Originaltext als Part „overview“; die Controls stammen unverändert aus dem Anwenderkatalog Grundschutz++ und werden nur über modify (set-parameters, alters) angepasst. Zuordnungen mit Herkunft „BSI-GSMap“ folgen der Referenztabelle des BSI und dem amtlichen Mapping ITGS 2023 → Grundschutz++ (Status draft), alle anderen sind fachliche Auslegung des Erstellers."
+    },
+    "imports": [
+      {
+        "href": "#67618563-db97-5ee9-a47f-a8c8ca2b24ee",
+        "include-controls": [
+          {
+            "with-ids": [
+              "BER.5.4",
+              "BES.2.1.4",
+              "BES.4.3",
+              "KONF.10.2",
+              "KONF.11.1.2",
+              "KONF.14.1",
+              "KONF.14.1.1",
+              "KONF.2.2",
+              "RISK.1.10",
+              "STM.4.1",
+              "UMS.1.1",
+              "UMS.1.2",
+              "UMS.2.1",
+              "UMS.2.2",
+              "UMS.4.1",
+              "UMS.5.1",
+              "UMS.5.2"
+            ]
+          }
+        ]
+      }
+    ],
+    "merge": {
+      "custom": {
+        "groups": [
+          {
+            "id": "TLS.2.0",
+            "class": "mindeststandard-abschnitt",
+            "title": "Abschnitt 2.0",
+            "props": [
+              {
+                "name": "label",
+                "value": "TLS.2.0"
+              }
+            ],
+            "groups": [
+              {
+                "id": "TLS.2.0.01-a",
+                "class": "mindeststandard-anforderung",
+                "title": "TLS.2.0.01 a Verwendung von TLS-Protokoll-Versionen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "TLS.2.0.01 a"
+                  },
+                  {
+                    "name": "mindeststandard-nr",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "TLS.2.0.01"
+                  },
+                  {
+                    "name": "mindeststandard-absatz",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "a"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "TLS.2.0.01-a_anforderung",
+                    "name": "overview",
+                    "prose": "Die Einrichtung MUSS TLS in der Version TLS 1.2 und/oder TLS 1.3 einsetzen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.14.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "TLS.2.0.01-b",
+                "class": "mindeststandard-anforderung",
+                "title": "TLS.2.0.01 b Verwendung von TLS-Protokoll-Versionen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "TLS.2.0.01 b"
+                  },
+                  {
+                    "name": "mindeststandard-nr",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "TLS.2.0.01"
+                  },
+                  {
+                    "name": "mindeststandard-absatz",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "b"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "TLS.2.0.01-b_anforderung",
+                    "name": "overview",
+                    "prose": "TLS-Versionen, die nicht TLS.2.0.01 a) entsprechen, MÜSSEN deaktiviert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.14.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "TLS.2.0.01-c",
+                "class": "mindeststandard-anforderung",
+                "title": "TLS.2.0.01 c Verwendung von TLS-Protokoll-Versionen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "TLS.2.0.01 c"
+                  },
+                  {
+                    "name": "mindeststandard-nr",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "TLS.2.0.01"
+                  },
+                  {
+                    "name": "mindeststandard-absatz",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "c"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "TLS.2.0.01-c_anforderung",
+                    "name": "overview",
+                    "prose": "Bei Neubeschaffungen, die für einen produktiven Einsatz gedacht sind, MUSS auf Kompatibilität mit TLS 1.3 geachtet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BES.2.1.4",
+                          "BES.4.3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "TLS.2.0.02-a",
+                "class": "mindeststandard-anforderung",
+                "title": "TLS.2.0.02 a Verwendung von kryptografischen Verfahren",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "TLS.2.0.02 a"
+                  },
+                  {
+                    "name": "mindeststandard-nr",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "TLS.2.0.02"
+                  },
+                  {
+                    "name": "mindeststandard-absatz",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "a"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "TLS.2.0.02-a_anforderung",
+                    "name": "overview",
+                    "prose": "Die Einrichtung MUSS TLS mit kryptografischen Verfahren einsetzen, die in der jeweils aktuellen Technischen Richtlinie TR-02102-2 empfohlen werden und die Eigenschaft „Perfect Forward Secrecy“ (PFS) erfüllen."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.14.1",
+                    "rel": "related",
+                    "text": "KONF.14.1 steht unter TLS.2.0.01 a"
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.10.2",
+                          "KONF.2.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "TLS.2.0.03-a",
+                "class": "mindeststandard-anforderung",
+                "title": "TLS.2.0.03 a Abweichungen und Risikomanagement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "TLS.2.0.03 a"
+                  },
+                  {
+                    "name": "mindeststandard-nr",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "TLS.2.0.03"
+                  },
+                  {
+                    "name": "mindeststandard-absatz",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "a"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "DARF NUR"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "ausnahme",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "TLS.2.0.03-a_anforderung",
+                    "name": "overview",
+                    "prose": "Der Einsatz nicht konformer Versionen und/oder nicht konformer kryptografischer Verfahren DARF NUR in sachlich begründeten Ausnahmefällen und nach Rücksprache mit dem BSI erfolgen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "UMS.5.1",
+                          "UMS.5.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "TLS.2.0.03-b",
+                "class": "mindeststandard-anforderung",
+                "title": "TLS.2.0.03 b Abweichungen und Risikomanagement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "TLS.2.0.03 b"
+                  },
+                  {
+                    "name": "mindeststandard-nr",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "TLS.2.0.03"
+                  },
+                  {
+                    "name": "mindeststandard-absatz",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "b"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "TLS.2.0.03-b_anforderung",
+                    "name": "overview",
+                    "prose": "Die Einrichtung MUSS den Einsatz nicht konformer Versionen und/oder nicht konformer kryptografischer Verfahren identifizieren und im Rahmen des eigenen Risikomanagements behandeln."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "UMS.1.1",
+                          "STM.4.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "TLS.2.0.03-c",
+                "class": "mindeststandard-anforderung",
+                "title": "TLS.2.0.03 c Abweichungen und Risikomanagement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "TLS.2.0.03 c"
+                  },
+                  {
+                    "name": "mindeststandard-nr",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "TLS.2.0.03"
+                  },
+                  {
+                    "name": "mindeststandard-absatz",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "c"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "TLS.2.0.03-c_anforderung",
+                    "name": "overview",
+                    "prose": "Die Einrichtung MUSS die sich durch den Einsatz nicht konformer Versionen und/oder nicht konformer kryptografischer Verfahren ergebenden Risiken bewerten und dokumentieren."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#STM.4.1",
+                    "rel": "related",
+                    "text": "STM.4.1 steht unter TLS.2.0.03 b"
+                  }
+                ]
+              },
+              {
+                "id": "TLS.2.0.03-d",
+                "class": "mindeststandard-anforderung",
+                "title": "TLS.2.0.03 d Abweichungen und Risikomanagement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "TLS.2.0.03 d"
+                  },
+                  {
+                    "name": "mindeststandard-nr",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "TLS.2.0.03"
+                  },
+                  {
+                    "name": "mindeststandard-absatz",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "d"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "TLS.2.0.03-d_anforderung",
+                    "name": "overview",
+                    "prose": "Die Einrichtung MUSS die zur Risikobehandlung zu ergreifenden Maßnahmen identifizieren, umsetzen und dokumentieren."
+                  }
+                ]
+              },
+              {
+                "id": "TLS.2.0.03-e",
+                "class": "mindeststandard-anforderung",
+                "title": "TLS.2.0.03 e Abweichungen und Risikomanagement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "TLS.2.0.03 e"
+                  },
+                  {
+                    "name": "mindeststandard-nr",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "TLS.2.0.03"
+                  },
+                  {
+                    "name": "mindeststandard-absatz",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "e"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "TLS.2.0.03-e_anforderung",
+                    "name": "overview",
+                    "prose": "Die Einrichtung MUSS das nach der Umsetzung mitigierender Maßnahmen verbleibende Restrisiko dokumentieren."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "UMS.1.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "TLS.2.0.03-f",
+                "class": "mindeststandard-anforderung",
+                "title": "TLS.2.0.03 f Abweichungen und Risikomanagement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "TLS.2.0.03 f"
+                  },
+                  {
+                    "name": "mindeststandard-nr",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "TLS.2.0.03"
+                  },
+                  {
+                    "name": "mindeststandard-absatz",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "f"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "TLS.2.0.03-f_anforderung",
+                    "name": "overview",
+                    "prose": "Die Einrichtung MUSS  einen dem Risiko angemessenen Zeit- und Maßnahmenplan zur Ablösung der nicht konformen Versionen und/oder der nicht konformen kryptografischen Verfahren erstellen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "UMS.2.1",
+                          "UMS.2.2",
+                          "UMS.4.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "TLS.2.0.03-g",
+                "class": "mindeststandard-anforderung",
+                "title": "TLS.2.0.03 g Abweichungen und Risikomanagement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "TLS.2.0.03 g"
+                  },
+                  {
+                    "name": "mindeststandard-nr",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "TLS.2.0.03"
+                  },
+                  {
+                    "name": "mindeststandard-absatz",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "g"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "TLS.2.0.03-g_anforderung",
+                    "name": "overview",
+                    "prose": "Die Dokumentation des Restrisikos und der  Zeit- und Maßnahmenplan zur Ablösung der nicht konformen Versionen und/oder der nicht konformen kryptografischen Verfahren MÜSSEN der jeweiligen Leitung der Einrichtung zur Zustimmung vorgelegt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#UMS.5.1",
+                    "rel": "related",
+                    "text": "UMS.5.1 steht unter TLS.2.0.03 a"
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "RISK.1.10"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "TLS.2.0.04-a",
+                "class": "mindeststandard-anforderung",
+                "title": "TLS.2.0.04 a TLS für Webserver",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "TLS.2.0.04 a"
+                  },
+                  {
+                    "name": "mindeststandard-nr",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "TLS.2.0.04"
+                  },
+                  {
+                    "name": "mindeststandard-absatz",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "a"
+                  },
+                  {
+                    "name": "kompendium-referenz",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "APP.3.2.A11",
+                    "remarks": "IT-Grundschutz-Kompendium Edition 2023 laut Referenztabelle des BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "hinweis",
+                    "remarks": "Einordnung durch das Modell: Der Absatz definiert lediglich den Begriff der veralteten Verfahren im Kontext des Mindeststandards und enthält keine eigene Umsetzungsanforderung."
+                  },
+                  {
+                    "name": "ohne-control",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "hinweis",
+                    "remarks": "Der Absatz definiert lediglich den Begriff der veralteten Verfahren im Kontext des Mindeststandards und enthält keine eigene Umsetzungsanforderung. (ki)"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "TLS.2.0.04-a_anforderung",
+                    "name": "overview",
+                    "prose": "Im Kontext dieses Mindeststandards sind veraltete Verfahren als Versionen und Verfahren zu verstehen, die nicht die Anforderungen von TLS.2.0.01 und TLS.2.0.02 erfüllen."
+                  }
+                ]
+              },
+              {
+                "id": "TLS.2.0.04-b",
+                "class": "mindeststandard-anforderung",
+                "title": "TLS.2.0.04 b TLS für Webserver",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "TLS.2.0.04 b"
+                  },
+                  {
+                    "name": "mindeststandard-nr",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "TLS.2.0.04"
+                  },
+                  {
+                    "name": "mindeststandard-absatz",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "b"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "kompendium-referenz",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "APP.3.2.A11",
+                    "remarks": "IT-Grundschutz-Kompendium Edition 2023 laut Referenztabelle des BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "ausnahme",
+                    "remarks": "Einordnung durch das Modell: Der Absatz regelt den Umgang mit Abweichungen von TLS.2.0.01 und TLS.2.0.02 ausschließlich durch einen Verweis auf das in TLS.2.0.03 festgelegte Ausnahmeverfahren und begründet keine eigenständige Maßnahme."
+                  },
+                  {
+                    "name": "ohne-control",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "ausnahme",
+                    "remarks": "Der Absatz regelt den Umgang mit Abweichungen von TLS.2.0.01 und TLS.2.0.02 ausschließlich durch einen Verweis auf das in TLS.2.0.03 festgelegte Ausnahmeverfahren und begründet keine eigenständige Maßnahme. (ki)"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "TLS.2.0.04-b_anforderung",
+                    "name": "overview",
+                    "prose": "Werden Abweichungen von TLS.2.0.01 oder von TLS.2.0.02 umgesetzt, MUSS die Einrichtung diese nach TLS.2.0.03 behandeln."
+                  }
+                ]
+              },
+              {
+                "id": "TLS.2.0.05-a",
+                "class": "mindeststandard-anforderung",
+                "title": "TLS.2.0.05 a Sicherheitsanforderungen für Projekte des Bundes",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "TLS.2.0.05 a"
+                  },
+                  {
+                    "name": "mindeststandard-nr",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "TLS.2.0.05"
+                  },
+                  {
+                    "name": "mindeststandard-absatz",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "a"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                    "value": "verweis",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "TLS.2.0.05-a_anforderung",
+                    "name": "overview",
+                    "prose": "Die Vorgaben der jeweils aktuellen TR-03116-4 bezüglich der Authentisierung MÜSSEN eingehalten werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.10.2",
+                    "rel": "related",
+                    "text": "KONF.10.2 steht unter TLS.2.0.02 a"
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.5.4",
+                          "KONF.11.1.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "modify": {
+      "set-parameters": [
+        {
+          "param-id": "ber.5.4-prm1",
+          "values": [
+            "der jeweils aktuellen BSI TR-03116-4"
+          ]
+        },
+        {
+          "param-id": "konf.10.2-prm1",
+          "values": [
+            "der jeweils aktuellen Technischen Richtlinie TR-02102-2 des BSI"
+          ]
+        },
+        {
+          "param-id": "konf.14.1-prm1",
+          "values": [
+            "TLS in der Version TLS 1.2 und/oder TLS 1.3 gemäß BSI TR-02102-2"
+          ]
+        },
+        {
+          "param-id": "konf.2.2-prm1",
+          "values": [
+            "der jeweils aktuellen Technischen Richtlinie TR-02102-2 des BSI"
+          ]
+        },
+        {
+          "param-id": "ums.5.1-prm1",
+          "values": [
+            "die Leitung der Einrichtung"
+          ]
+        }
+      ],
+      "alters": [
+        {
+          "control-id": "BER.5.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.05 a",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (subset-of, Konfidenz hoch, Checker fraglich): Das Control verlangt bei kryptografischen Authentifizierungsmitteln die Verwendung etablierter Verfahren nach anerkannten Standards; der Absatz konkretisiert dies für TLS auf die Vorgaben der TR-03116-4 bezüglich der Authentisierung."
+                },
+                {
+                  "name": "modal_verb_profil",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "MUSS",
+                  "remarks": "Modalverb des Anwenderkatalogs: SOLLTE; der Mindeststandard verlangt MUSS"
+                }
+              ]
+            },
+            {
+              "position": "starting",
+              "parts": [
+                {
+                  "id": "BER.5.4_stm",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "documentation",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/documentation_guidelines.csv",
+                      "value": "IT-Betriebskonzept"
+                    },
+                    {
+                      "name": "result",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/result.csv",
+                      "value": "bei kryptografischen Authentifizierungsmitteln die ausschließliche Verwendung etablierter kryptografischer Algorithmen"
+                    },
+                    {
+                      "name": "result_specification",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/result.csv",
+                      "value": "nach {{einem oder mehreren anerkannten Standards}}"
+                    },
+                    {
+                      "name": "action_word",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/action_words.csv",
+                      "value": "verankern"
+                    },
+                    {
+                      "name": "modal_verb",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                      "value": "MUSS"
+                    }
+                  ],
+                  "prose": "Berechtigung MUSS bei kryptografischen Authentifizierungsmitteln die ausschließliche Verwendung etablierter kryptografischer Algorithmen nach {{ insert: param, ber.5.4-prm1 }} verankern."
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "parts": [
+                {
+                  "id": "BER.5.4_mst",
+                  "name": "mindeststandard",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "prose": "Beim Einsatz von TLS MÜSSEN die Vorgaben der jeweils aktuellen BSI TR-03116-4 bezüglich der Authentisierung eingehalten werden.",
+                  "props": [
+                    {
+                      "name": "label",
+                      "value": "Ergänzung TLS 2.4"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "removes": [
+            {
+              "by-id": "BER.5.4_stm"
+            }
+          ]
+        },
+        {
+          "control-id": "BES.2.1.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.01 c",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (subset-of, Konfidenz mittel, Checker fraglich): BES.2.1.4 fordert die Berücksichtigung des Bedarfs an Kompatibilität bei Einkäufen; Absatz c verlangt bei Neubeschaffungen für den produktiven Einsatz konkret die Kompatibilität mit TLS 1.3."
+                },
+                {
+                  "name": "modal_verb_profil",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "MUSS",
+                  "remarks": "Modalverb des Anwenderkatalogs: SOLLTE; der Mindeststandard verlangt MUSS"
+                }
+              ]
+            },
+            {
+              "position": "starting",
+              "parts": [
+                {
+                  "id": "BES.2.1.4_stm",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "target_object_categories",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/target_object_categories.csv",
+                      "value": "Einkäufe"
+                    },
+                    {
+                      "name": "documentation",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/documentation_guidelines.csv",
+                      "value": "Beschaffungskriterien"
+                    },
+                    {
+                      "name": "result",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/result.csv",
+                      "value": "den Bedarf für die Kompatibilität mit der bestehenden Infrastruktur"
+                    },
+                    {
+                      "name": "action_word",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/action_words.csv",
+                      "value": "dokumentieren"
+                    },
+                    {
+                      "name": "modal_verb",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                      "value": "MUSS"
+                    }
+                  ],
+                  "prose": "Beschaffungsmanagement für Einkäufe MUSS den Bedarf für die Kompatibilität mit der bestehenden Infrastruktur dokumentieren."
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "parts": [
+                {
+                  "id": "BES.2.1.4_mst",
+                  "name": "mindeststandard",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "prose": "Bei Neubeschaffungen, die für einen produktiven Einsatz gedacht sind, MUSS auf Kompatibilität mit TLS 1.3 geachtet werden.",
+                  "props": [
+                    {
+                      "name": "label",
+                      "value": "Ergänzung TLS 2.4"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "removes": [
+            {
+              "by-id": "BES.2.1.4_stm"
+            }
+          ]
+        },
+        {
+          "control-id": "BES.4.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.01 c",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (subset-of, Konfidenz mittel, Checker bestaetigt): BES.4.3 verlangt die Beschaffung anhand festgelegter Kriterien; Absatz c gibt als verbindliches Beschaffungskriterium für den produktiven Einsatz die Kompatibilität mit TLS 1.3 vor."
+                },
+                {
+                  "name": "modal_verb_profil",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "MUSS",
+                  "remarks": "Modalverb des Anwenderkatalogs: SOLLTE; der Mindeststandard verlangt MUSS"
+                }
+              ]
+            },
+            {
+              "position": "starting",
+              "parts": [
+                {
+                  "id": "BES.4.3_stm",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "target_object_categories",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/target_object_categories.csv",
+                      "value": "Einkäufe"
+                    },
+                    {
+                      "name": "documentation",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/documentation_guidelines.csv",
+                      "value": "Prozess Beschaffung"
+                    },
+                    {
+                      "name": "result",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/result.csv",
+                      "value": "die Beschaffung"
+                    },
+                    {
+                      "name": "result_specification",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/result.csv",
+                      "value": "anhand der festgelegten Kriterien"
+                    },
+                    {
+                      "name": "action_word",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/action_words.csv",
+                      "value": "verankern"
+                    },
+                    {
+                      "name": "modal_verb",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                      "value": "MUSS"
+                    }
+                  ],
+                  "prose": "Beschaffungsmanagement für Einkäufe MUSS die Beschaffung anhand der festgelegten Kriterien verankern."
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "parts": [
+                {
+                  "id": "BES.4.3_mst",
+                  "name": "mindeststandard",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "prose": "Bei Neubeschaffungen für einen produktiven Einsatz MUSS die Kompatibilität mit TLS 1.3 als Kriterium beachtet werden.",
+                  "props": [
+                    {
+                      "name": "label",
+                      "value": "Ergänzung TLS 2.4"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "removes": [
+            {
+              "by-id": "BES.4.3_stm"
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.10.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.02 a",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (subset-of, Konfidenz mittel, Checker bestaetigt): Das Control fordert allgemein die Aktivierung kryptographischer Verfahren in Anwendungen nach anerkannten Standards, was den im Absatz geforderten Einsatz von kryptografischen Verfahren gemäß TR-02102-2 für TLS umfasst."
+                },
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.05 a",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (subset-of, Konfidenz mittel, Checker bestaetigt): Das Control fordert die Aktivierung kryptografischer Verfahren in Anwendungen nach anerkannten Standards im Einklang mit dem Berechtigungsmanagement, worunter die TLS-Authentisierung nach TR-03116-4 fällt."
+                },
+                {
+                  "name": "modal_verb_profil",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "MUSS",
+                  "remarks": "Modalverb des Anwenderkatalogs: SOLLTE; der Mindeststandard verlangt MUSS"
+                }
+              ]
+            },
+            {
+              "position": "starting",
+              "parts": [
+                {
+                  "id": "KONF.10.2_stm",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "target_object_categories",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/target_object_categories.csv",
+                      "value": "Anwendungen"
+                    },
+                    {
+                      "name": "documentation",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/documentation_guidelines.csv",
+                      "value": "Konfigurationshistorie"
+                    },
+                    {
+                      "name": "result",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/result.csv",
+                      "value": "kryptographische Verfahren"
+                    },
+                    {
+                      "name": "result_specification",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/result.csv",
+                      "value": "nach {{anerkannten Standards}} im Einklang mit den zugehörigen Anforderungen zum Identitäts- und Berechtigungsmanagement"
+                    },
+                    {
+                      "name": "action_word",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/action_words.csv",
+                      "value": "aktivieren"
+                    },
+                    {
+                      "name": "modal_verb",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                      "value": "MUSS"
+                    }
+                  ],
+                  "prose": "Konfiguration für Anwendungen MUSS kryptographische Verfahren nach {{ insert: param, konf.10.2-prm1 }} im Einklang mit den zugehörigen Anforderungen zum Identitäts- und Berechtigungsmanagement aktivieren."
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "parts": [
+                {
+                  "id": "KONF.10.2_mst",
+                  "name": "mindeststandard",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "prose": "Beim Einsatz von TLS MÜSSEN kryptografische Verfahren verwendet werden, die in der jeweils aktuellen Technischen Richtlinie TR-02102-2 empfohlen werden und die Eigenschaft „Perfect Forward Secrecy“ (PFS) erfüllen.\nDie Vorgaben der jeweils aktuellen BSI TR-03116-4 bezüglich der Authentisierung MÜSSEN eingehalten werden.",
+                  "props": [
+                    {
+                      "name": "label",
+                      "value": "Ergänzung TLS 2.4"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "removes": [
+            {
+              "by-id": "KONF.10.2_stm"
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.11.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.05 a",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (intersects-with, Konfidenz mittel, Checker bestaetigt): Das Control adressiert die Authentifizierung der Gegenstelle bei Netzverbindungen vor dem Datenaustausch; der Absatz schreibt hierfür die Vorgaben der TR-03116-4 vor."
+                },
+                {
+                  "name": "modal_verb_profil",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "MUSS",
+                  "remarks": "Modalverb des Anwenderkatalogs: SOLLTE; der Mindeststandard verlangt MUSS"
+                }
+              ]
+            },
+            {
+              "position": "starting",
+              "parts": [
+                {
+                  "id": "KONF.11.1.2_stm",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "target_object_categories",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/target_object_categories.csv",
+                      "value": "Anwendungen"
+                    },
+                    {
+                      "name": "documentation",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/documentation_guidelines.csv",
+                      "value": "Konfigurationshistorie"
+                    },
+                    {
+                      "name": "result",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/result.csv",
+                      "value": "die Gegenstelle vor dem Datenaustausch"
+                    },
+                    {
+                      "name": "result_specification",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/result.csv",
+                      "value": "im Einklang mit den zugehörigen Anforderungen zum Identitäts- und Berechtigungsmanagement"
+                    },
+                    {
+                      "name": "action_word",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/action_words.csv",
+                      "value": "authentifizieren"
+                    },
+                    {
+                      "name": "modal_verb",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                      "value": "MUSS"
+                    }
+                  ],
+                  "prose": "Konfiguration für Anwendungen MUSS die Gegenstelle vor dem Datenaustausch im Einklang mit den zugehörigen Anforderungen zum Identitäts- und Berechtigungsmanagement authentifizieren."
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "parts": [
+                {
+                  "id": "KONF.11.1.2_mst",
+                  "name": "mindeststandard",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "prose": "Die Vorgaben der jeweils aktuellen BSI TR-03116-4 bezüglich der Authentisierung MÜSSEN eingehalten werden.",
+                  "props": [
+                    {
+                      "name": "label",
+                      "value": "Ergänzung TLS 2.4"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "removes": [
+            {
+              "by-id": "KONF.11.1.2_stm"
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.14.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.01 a",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (subset-of, Konfidenz hoch, Checker fraglich): Das Control verlangt die Transportverschlüsselung über Netze nach einem anerkannten Standard; Absatz a konkretisiert dies für TLS auf die einzusetzenden Protokollversionen TLS 1.2 und/oder TLS 1.3."
+                },
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.02 a",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (subset-of, Konfidenz hoch, Checker bestaetigt): Das Control verlangt die Verschlüsselung der Kommunikation beim Transport über Netze nach einem anerkannten Standard. Der Absatz konkretisiert dies für den Einsatz von TLS mit Verweis auf die TR-02102-2 und die Anforderung von Perfect Forward Secrecy (PFS)."
+                },
+                {
+                  "name": "modal_verb_profil",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "MUSS",
+                  "remarks": "Modalverb des Anwenderkatalogs: SOLLTE; der Mindeststandard verlangt MUSS"
+                }
+              ]
+            },
+            {
+              "position": "starting",
+              "parts": [
+                {
+                  "id": "KONF.14.1_stm",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "target_object_categories",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/target_object_categories.csv",
+                      "value": "Anwendungen"
+                    },
+                    {
+                      "name": "documentation",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/documentation_guidelines.csv",
+                      "value": "Konfigurationshistorie"
+                    },
+                    {
+                      "name": "result",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/result.csv",
+                      "value": "Kommunikation beim Transport"
+                    },
+                    {
+                      "name": "result_specification",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/result.csv",
+                      "value": "über Netze nach {{einem anerkannten Standard}}"
+                    },
+                    {
+                      "name": "action_word",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/action_words.csv",
+                      "value": "verschlüsseln"
+                    },
+                    {
+                      "name": "modal_verb",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                      "value": "MUSS"
+                    }
+                  ],
+                  "prose": "Konfiguration für Anwendungen MUSS Kommunikation beim Transport über Netze nach {{ insert: param, konf.14.1-prm1 }} verschlüsseln."
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "parts": [
+                {
+                  "id": "KONF.14.1_mst",
+                  "name": "mindeststandard",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "prose": "Es MUSS TLS in der Version TLS 1.2 und/oder TLS 1.3 eingesetzt werden.\nEs MÜSSEN TLS und kryptografische Verfahren eingesetzt werden, die in der jeweils aktuellen Technischen Richtlinie TR-02102-2 empfohlen werden und die Eigenschaft „Perfect Forward Secrecy“ (PFS) erfüllen.",
+                  "props": [
+                    {
+                      "name": "label",
+                      "value": "Ergänzung TLS 2.4"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "removes": [
+            {
+              "by-id": "KONF.14.1_stm"
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.14.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.01 b",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (subset-of, Konfidenz hoch, Checker bestaetigt): KONF.14.1.1 verlangt die Deaktivierung unverschlüsselter und anfälliger Verbindungen über Netze; die Deaktivierung anderer TLS-Versionen als TLS 1.2 und TLS 1.3 setzt dies konkret für TLS um."
+                },
+                {
+                  "name": "modal_verb_profil",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "MUSS",
+                  "remarks": "Modalverb des Anwenderkatalogs: SOLLTE; der Mindeststandard verlangt MUSS"
+                }
+              ]
+            },
+            {
+              "position": "starting",
+              "parts": [
+                {
+                  "id": "KONF.14.1.1_stm",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "target_object_categories",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/target_object_categories.csv",
+                      "value": "Anwendungen"
+                    },
+                    {
+                      "name": "documentation",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/documentation_guidelines.csv",
+                      "value": "Konfigurationshistorie"
+                    },
+                    {
+                      "name": "result",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/result.csv",
+                      "value": "unverschlüsselte und anfällige Verbindungen"
+                    },
+                    {
+                      "name": "result_specification",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/result.csv",
+                      "value": "über Netze"
+                    },
+                    {
+                      "name": "action_word",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/action_words.csv",
+                      "value": "deaktivieren"
+                    },
+                    {
+                      "name": "modal_verb",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                      "value": "MUSS"
+                    }
+                  ],
+                  "prose": "Konfiguration für Anwendungen MUSS unverschlüsselte und anfällige Verbindungen über Netze deaktivieren."
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "parts": [
+                {
+                  "id": "KONF.14.1.1_mst",
+                  "name": "mindeststandard",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "prose": "TLS-Versionen, die nicht TLS 1.2 oder TLS 1.3 entsprechen, MÜSSEN deaktiviert werden.",
+                  "props": [
+                    {
+                      "name": "label",
+                      "value": "Ergänzung TLS 2.4"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "removes": [
+            {
+              "by-id": "KONF.14.1.1_stm"
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.02 a",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (subset-of, Konfidenz mittel, Checker bestaetigt): Sofern TLS auf Ebene des IT-Systems terminiert oder genutzt wird, greift die Anforderung zur Aktivierung kryptographischer Verfahren in IT-Systemen nach anerkannten Standards."
+                },
+                {
+                  "name": "modal_verb_profil",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "MUSS",
+                  "remarks": "Modalverb des Anwenderkatalogs: SOLLTE; der Mindeststandard verlangt MUSS"
+                }
+              ]
+            },
+            {
+              "position": "starting",
+              "parts": [
+                {
+                  "id": "KONF.2.2_stm",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "target_object_categories",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/target_object_categories.csv",
+                      "value": "IT-Systeme"
+                    },
+                    {
+                      "name": "documentation",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/documentation_guidelines.csv",
+                      "value": "Konfigurationshistorie"
+                    },
+                    {
+                      "name": "result",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/result.csv",
+                      "value": "kryptographische Verfahren"
+                    },
+                    {
+                      "name": "result_specification",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/result.csv",
+                      "value": "nach {{anerkannten Standards}} im Einklang mit den zugehörigen Anforderungen zum Identitäts- und Berechtigungsmanagement"
+                    },
+                    {
+                      "name": "action_word",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/action_words.csv",
+                      "value": "aktivieren"
+                    },
+                    {
+                      "name": "modal_verb",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                      "value": "MUSS"
+                    }
+                  ],
+                  "prose": "Konfiguration für IT-Systeme MUSS kryptographische Verfahren nach {{ insert: param, konf.2.2-prm1 }} im Einklang mit den zugehörigen Anforderungen zum Identitäts- und Berechtigungsmanagement aktivieren."
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "parts": [
+                {
+                  "id": "KONF.2.2_mst",
+                  "name": "mindeststandard",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "prose": "Beim Einsatz von TLS MÜSSEN kryptografische Verfahren verwendet werden, die in der jeweils aktuellen Technischen Richtlinie TR-02102-2 empfohlen werden und die Eigenschaft „Perfect Forward Secrecy“ (PFS) erfüllen.",
+                  "props": [
+                    {
+                      "name": "label",
+                      "value": "Ergänzung TLS 2.4"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "removes": [
+            {
+              "by-id": "KONF.2.2_stm"
+            }
+          ]
+        },
+        {
+          "control-id": "RISK.1.10",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.03 g",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (intersects-with, Konfidenz mittel, Checker bestaetigt): RISK.1.10 verlangt die Autorisierung der Umsetzungsplanung durch die Risikoeigentümer; Absatz g verlangt die Zustimmung der Leitung der Einrichtung zum Zeit- und Maßnahmenplan sowie zur Restrisikodokumentation."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "STM.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.03 b",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (intersects-with, Konfidenz mittel, Checker bestaetigt): STM.4.1 verlangt die Durchführung einer Risikobetrachtung bei Notwendigkeit. Absatz b konkretisiert dies für Abweichungen bei TLS-Versionen und kryptografischen Verfahren."
+                },
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.03 c",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (intersects-with, Konfidenz mittel, Checker fraglich): STM.4.1 regelt die Durchführung der Risikobetrachtung. Die Bewertung und Dokumentation der Risiken aus nicht konformen TLS-Versionen oder Verfahren ist Teil dieser Risikobetrachtung."
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "parts": [
+                {
+                  "id": "STM.4.1_mst",
+                  "name": "mindeststandard",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "prose": "Der identifizierte Einsatz nicht konformer Versionen und/oder nicht konformer kryptografischer Verfahren MUSS im Rahmen des eigenen Risikomanagements behandelt werden.\nDie Einrichtung MUSS die sich durch den Einsatz nicht konformer Versionen und/oder nicht konformer kryptografischer Verfahren ergebenden Risiken bewerten und dokumentieren.",
+                  "props": [
+                    {
+                      "name": "label",
+                      "value": "Ergänzung TLS 2.4"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.03 b",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (subset-of, Konfidenz mittel, Checker bestaetigt): Die Identifikation nicht konformer Versionen und kryptografischer Verfahren ist Teil der Ermittlung des Umsetzungsstatus der Anforderungen (UMS.1.1)."
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "parts": [
+                {
+                  "id": "UMS.1.1_mst",
+                  "name": "mindeststandard",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "prose": "Die Einrichtung MUSS den Einsatz nicht konformer Versionen und/oder nicht konformer kryptografischer Verfahren identifizieren.",
+                  "props": [
+                    {
+                      "name": "label",
+                      "value": "Ergänzung TLS 2.4"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.03 e",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (equivalent-to, Konfidenz hoch, Checker fraglich): UMS.1.2 betrifft die Festlegung/Bewertung des bestehenden Restrisikos durch nicht umgesetzte Anforderungen. Absatz e fordert die Dokumentation des nach Umsetzung mitigierender Maßnahmen verbleibenden Restrisikos."
+                },
+                {
+                  "name": "modal_verb_profil",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "MUSS",
+                  "remarks": "Modalverb des Anwenderkatalogs: SOLLTE; der Mindeststandard verlangt MUSS"
+                }
+              ]
+            },
+            {
+              "position": "starting",
+              "parts": [
+                {
+                  "id": "UMS.1.2_stm",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "result",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/result.csv",
+                      "value": "das bestehende Restrisiko durch die nicht umgesetzten Anforderungen"
+                    },
+                    {
+                      "name": "action_word",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/action_words.csv",
+                      "value": "festlegen"
+                    },
+                    {
+                      "name": "modal_verb",
+                      "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                      "value": "MUSS"
+                    }
+                  ],
+                  "prose": "Umsetzung MUSS das bestehende Restrisiko durch die nicht umgesetzten Anforderungen festlegen."
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "parts": [
+                {
+                  "id": "UMS.1.2_mst",
+                  "name": "mindeststandard",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "prose": "Die Einrichtung MUSS das nach der Umsetzung mitigierender Maßnahmen verbleibende Restrisiko beim Einsatz nicht konformer Versionen und/oder nicht konformer kryptografischer Verfahren dokumentieren.",
+                  "props": [
+                    {
+                      "name": "label",
+                      "value": "Ergänzung TLS 2.4"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "removes": [
+            {
+              "by-id": "UMS.1.2_stm"
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.03 f",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (subset-of, Konfidenz hoch, Checker bestaetigt): UMS.2.1 verlangt die Festlegung von Maßnahmen für bisher nicht umgesetzte Anforderungen. Der Maßnahmenplan zur Ablösung nicht konformer Versionen/Verfahren setzt dies konkret für TLS um."
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "parts": [
+                {
+                  "id": "UMS.2.1_mst",
+                  "name": "mindeststandard",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "prose": "Die Einrichtung MUSS einen dem Risiko angemessenen Zeit- und Maßnahmenplan zur Ablösung der nicht konformen Versionen und/oder der nicht konformen kryptografischen Verfahren erstellen.",
+                  "props": [
+                    {
+                      "name": "label",
+                      "value": "Ergänzung TLS 2.4"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.2.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.03 f",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (subset-of, Konfidenz mittel, Checker bestaetigt): UMS.2.2 verlangt die Priorisierung auf Basis der Risikobewertung, was der Forderung nach einem dem Risiko angemessenen Plan entspricht."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.03 f",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (subset-of, Konfidenz hoch, Checker bestaetigt): UMS.4.1 verlangt die Festlegung eines realistischen Zieldatums für die Umsetzung nicht erfüllter Anforderungen (Zeitplan zur Ablösung)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.5.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.03 a",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (intersects-with, Konfidenz mittel, Checker bestaetigt): UMS.5.1 regelt die Autorisierung von Ausnahmegenehmigungen für Verpflichtungen. Absatz a schränkt Ausnahmen vom Einsatz konformer Versionen und kryptografischer Verfahren auf sachlich begründete Ausnahmefälle nach Rücksprache mit dem BSI ein."
+                },
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.03 g",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (subset-of, Konfidenz hoch, Checker bestaetigt): UMS.5.1 fordert die Autorisierung von Ausnahmegenehmigungen durch eine zuständige Person oder Rolle. Absatz g legt hierfür die Leitung der Einrichtung sowie die Vorlage der Restrisikodokumentation und des Ablöseplans fest."
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "parts": [
+                {
+                  "id": "UMS.5.1_mst",
+                  "name": "mindeststandard",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "prose": "Der Einsatz nicht konformer Versionen und/oder nicht konformer kryptografischer Verfahren DARF NUR in sachlich begründeten Ausnahmefällen und nach Rücksprache mit dem BSI erfolgen.\nDie Dokumentation des Restrisikos und der Zeit- und Maßnahmenplan zur Ablösung der nicht konformen Versionen und/oder der nicht konformen kryptografischen Verfahren MÜSSEN der jeweiligen Leitung der Einrichtung zur Zustimmung vorgelegt werden.",
+                  "props": [
+                    {
+                      "name": "label",
+                      "value": "Ergänzung TLS 2.4"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.5.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "mindeststandard-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard",
+                  "value": "TLS.2.0.03 a",
+                  "remarks": "Herkunft: KI-Vorschlag, vom Bearbeiter übernommen (intersects-with, Konfidenz mittel, Checker bestaetigt): UMS.5.2 fordert die Dokumentation von Ausnahmegenehmigungen mit Begründung, was der Forderung nach sachlich begründeten Ausnahmefällen entspricht."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "back-matter": {
+      "resources": [
+        {
+          "uuid": "67618563-db97-5ee9-a47f-a8c8ca2b24ee",
+          "title": "Grundschutz++-resolved_catalog.json @ 4e11779438c3",
+          "description": "Anwenderkatalog Grundschutz++, Version 2026-09-10T07:17:45.558103+00:00",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/4e11779438c34a5db36902be67b74a6bf83bf10d/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "691e8ca0af378718a9e4b5876f3e194a449f3214dceab6d86bec3e2388a969df"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "943ba9c9-aba2-52b3-b18b-fd1523130460",
+          "title": "IT-Grundschutz-Referenztabelle TLS 2.4",
+          "description": "Quelle der Anforderungstexte und Kompendium-Referenzen (Blatt „MST-TLS 2.4“, 14750 Byte)",
+          "rlinks": [
+            {
+              "href": "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Mindeststandards/Referenztabelle_Mindeststandard_TLS_V2_4-Grundschutz2023.xlsx?__blob=publicationFile&v=3",
+              "media-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "6ba4eff16b037b3b60c6b5f1c522b7710e0168fcdbd015078a12c87cc0454047"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "cc06337f-1c2a-59af-9023-37920e9b588d",
+          "title": "Mindeststandard des BSI zur Verwendung von Transport Layer Security (TLS)",
+          "rlinks": [
+            {
+              "href": "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Mindeststandards/Mindeststandard_BSI_TLS_Version_2_4.pdf?__blob=publicationFile&v=4",
+              "media-type": "application/pdf"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
