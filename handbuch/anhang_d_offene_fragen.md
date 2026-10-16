@@ -30,6 +30,7 @@ Konsolidierung aller in den Kapiteln markierten offenen Fragen und Katalogfunde.
 | D34 | **MD5 als Hash-Algorithmus bibliotheksweit:** Alle Back-Matter-Hashes der Profile (Grundschutz++, Lieferkettensicherheit) nutzen MD5. Das OSCAL-Metaschema enumeriert nur SHA-2/SHA-3 und lässt andere Werte nur aus W3C-Register bzw. RFC 6931 zu; zudem Widerspruch zur BSI TR-02102. SHA-256 in der Pipeline wäre aufwandsneutral. | 3.13 |
 | D35 | **Hash auf lebende Webseite:** Resource „BSI IT-Grundschutz Edition 2023" im Anwenderkatalog-Profil trägt einen MD5-Wert über eine CMS-Seite auf bsi.bund.de; konstruktionsbedingt veraltet, suggeriert nicht vorhandene Prüfbarkeit. Für Zitat-Resources Hash weglassen. | 3.13 |
 | D36 | **Resolved Catalogs ohne Resolution-Provenienz:** Weder Link `rel="source-profile"` noch `resolution-tool`-Prop in den aufgelösten Katalogen; Zusammenhang Profil→Produkt nur über Dateinamen und geteilte `document-id` rekonstruierbar. Ergänzung in der Build-Pipeline ist eine Zeile je Artefakt. | 3.14 |
+| D37 | **JSON-Schema 1.2.2 ohne `merge/combine/@method`:** Das generierte OSCAL-JSON-Schema 1.2.2 (Profil- und Complete-Schema) lässt an `combine` keine Properties zu, das Metaschema 1.2.2 definiert das Flag `method` (`use-first`, `keep`, `merge` veraltet) weiter. Profile mit `combine.method` sind korrekt und fallen trotzdem bei Validatoren mit JSON-Schema 1.2.2 durch; weglassen hilft nicht, weil ohne Angabe `keep` gilt. Fund gegen usnistgov/OSCAL, nicht gegen das BSI. | 3.15 |
 
 ## Teil 2: Redaktionelle Katalog- und Namespace-Funde
 

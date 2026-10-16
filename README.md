@@ -23,7 +23,9 @@ Das Repository umfasst insbesondere folgende Bereiche:
 
 - [`Gpp-ai-tool`](./Gpp-ai-tool) – Python-basiertes KI-Werkzeug zur automatisierten Erstellung und Anreicherung von OSCAL-Profilen (Baustein- und Zielobjektkategorie-Profile)
 - [`GS++-oscal-app`](./GS++-oscal-app) – browserbasierte HTML/JS-Werkzeuge für Modellierung, SSP-Bearbeitung, Audit und Maßnahmenplanung
+- [`one-page-apps`](./one-page-apps) – eigenständige Einzelwerkzeuge in je einer HTML-Datei (SSP-Generator Edition 2023, C5 → OSCAL, Mindeststandard → OSCAL)
 - [`kataloge`](./kataloge) – produktive OSCAL-Kataloge zu anderen Themen
+- [`mindeststandards`](./mindeststandards) – die Mindeststandards des BSI als OSCAL-Profil, Ergänzungskatalog und aufgelöster Katalog auf dem Anwenderkatalog Grundschutz++, mit Prüfskript
 - [`ED23-Baustein-profile`](./ED23-Baustein-profile) – OSCAL-Profile je Baustein des IT-Grundschutz Edition 2023
 - [`Zielobjektkategorien`](./Zielobjektkategorien) – OSCAL-Profile je Zielobjektkategorie, getrennt nach Prozessen und regulären Zielobjekten
 - [`hilfsdateien`](./hilfsdateien) – Mapping-, Referenz- und Arbeitsdateien zur Unterstützung der Werkzeuge und Inhalte
