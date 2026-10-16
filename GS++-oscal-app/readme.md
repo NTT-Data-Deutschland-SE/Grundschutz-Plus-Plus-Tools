@@ -166,6 +166,7 @@ Das Tool überführt ungelöste Mängel in einen verbindlichen Maßnahmenplan, d
 
 ### 3. ISMS & Assets wählen
 * Wähle ein Basis-ISMS (Standard oder Enhanced), um die Pflicht-Controls zu laden.
+* **Mindeststandards des BSI (Block 2b):** Wähle im Dropdown die Mindeststandards, denen der Informationsverbund unterliegt (gepinnte Profile aus `mindeststandards/`, Commit plus SHA-256 je Datei), oder gib eine Profil-URL ein; aktive Mindeststandards stehen als Chips darunter und lassen sich dort wieder entfernen. Ein aktivierter Mindeststandard legt sich vor der Modellierung über den Katalog: Parameterwerte, angehobene Modalverben, geänderte Statements und Ergänzungen gelten für alle Zielobjekte, neue Controls aus seinem Ergänzungskatalog kommen in den Pool, und alle seine Controls landen im Profil und im SSP (Komponente „Mindeststandard: …“). Im Profil steht er vor dem Anwenderkatalog mit `merge.combine use-first`; bei mehreren gilt die Reihenfolge der Aktivierung, Konflikte meldet der Block.
 * Importiere Muster-Assets aus der GitHub-Bibliothek, wodurch die App deren Anforderungen automatisch extrahiert.
 
 ### 4. Tailoring (Anpassung)

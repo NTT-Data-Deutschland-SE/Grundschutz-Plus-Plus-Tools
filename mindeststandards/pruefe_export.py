@@ -9,6 +9,7 @@ Aufruf:
 Ohne jsonschema/regex läuft die Prüfung ohne Schemateil weiter und sagt das.
 Exit 0 = alles ok, 1 = Befunde, 2 = Aufruffehler.
 """
+import copy
 import hashlib
 import json
 import pathlib
@@ -67,7 +68,14 @@ def check_stem(folder, stem, js):
     cat = json.loads(cat_p.read_text(encoding='utf-8'))
     erg = json.loads(erg_p.read_text(encoding='utf-8')) if erg_p.exists() else None
 
-    for kind, doc in (('profile', prof), ('catalog', cat)) + ((('catalog', erg),) if erg else ()):
+    # Bekannte Lücke im generierten JSON-Schema 1.2.2: merge/combine hat dort kein Attribut
+    # method mehr, das Metaschema 1.2.2 (oscal_profile_metaschema.xml) kennt es weiter
+    # (use-first | keep). Für die Schemaprüfung wird method deshalb ausgeblendet.
+    prof_v = copy.deepcopy(prof)
+    comb = prof_v.get('profile', {}).get('merge', {}).get('combine')
+    if isinstance(comb, dict) and comb.get('method') in ('use-first', 'keep'):
+        del comb['method']
+    for kind, doc in (('profile', prof_v), ('catalog', cat)) + ((('catalog', erg),) if erg else ()):
         for e in schema_errors(js, kind, doc)[:10]:
             findings.append(f'{stem}: Schema {kind}: {e}')
 
@@ -95,9 +103,23 @@ def check_stem(folder, stem, js):
     if dups:
         findings.append(f'{stem}: Controls mehrfach im Katalog: {", ".join(dups[:8])}')
     idset = set(ids)
-    for href in walk_links(cat['catalog'], []):
-        if href.startswith('#') and href[1:] not in idset:
-            findings.append(f'{stem}: Link {href} zeigt auf kein Control des Katalogs')
+    # Fragment-Links: an Controls des Ergänzungskatalogs (class mindeststandard-ergaenzung) und an
+    # allem, was das Werkzeug selbst setzt, müssen sie treffen. Links, die die Controls aus dem
+    # Anwenderkatalog mitbringen (rel related/required auf nicht ausgewählte Controls), bleiben
+    # bei der Profilauflösung stehen; sie zählen nur als Hinweis.
+    quelle = 0
+    for c in controls:
+        eigen = c.get('class') == 'mindeststandard-ergaenzung'
+        for lnk in c.get('links', []):
+            href = lnk.get('href', '')
+            if not href.startswith('#') or href[1:] in idset:
+                continue
+            if eigen:
+                findings.append(f'{stem}: Link {href} an {c["id"]} zeigt auf kein Control des Katalogs')
+            else:
+                quelle += 1
+    if quelle:
+        print(f'  {stem}: Hinweis: {quelle} Links aus dem Anwenderkatalog zeigen auf nicht ausgewählte Controls')
     imported = {i for imp in p.get('imports', []) for ic in imp.get('include-controls', []) for i in ic.get('with-ids', [])}
     missing = sorted(imported - idset)
     if missing:

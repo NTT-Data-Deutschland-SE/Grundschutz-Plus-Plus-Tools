@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSP-Generator / Editor – OSCAL Blaupausen &amp; Risikoanalyse V5.16.0</title>
+    <title>SSP-Generator / Editor – OSCAL Blaupausen &amp; Risikoanalyse V5.17.1</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -628,7 +628,7 @@
 
         <div class="topbar-actions">
             <div id="catalog-status" class="pill"><span class="dot animate-pulse"></span>Lade Basis-Katalog…</div>
-            <div class="pill pill-quiet">BUILD V5.16.0</div>
+            <div class="pill pill-quiet">BUILD V5.17.1</div>
         </div>
 
         <div class="progress-track"><div id="ai-doc-progress-bar" class="progress-fill"></div></div>
@@ -685,7 +685,7 @@
             </div>
         </div>
 
-        <div class="rail-foot">BUILD V5.16.0</div>
+        <div class="rail-foot">BUILD V5.17.1</div>
     </aside>
 
     <div id="rail-splitter" class="splitter" title="Rail-Breite ziehen"></div>
@@ -908,16 +908,16 @@
         gppRegisterSources(GPP_TOOL_ID, [
             { id: 'c5-katalog', label: 'BSI C5:2026 Katalog', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
               path: 'kataloge/c5-2026-oscal-catalog.json',
-              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/kataloge/c5-2026-oscal-catalog.json' },
+              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2d17c83071c067b3acdb9a13f851d4a0104a83ab/kataloge/c5-2026-oscal-catalog.json' },
             { id: 'c3a-katalog', label: 'C3A Katalog', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
               path: 'kataloge/c3a_oscal_catalog.json',
-              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/kataloge/c3a_oscal_catalog.json' },
+              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2d17c83071c067b3acdb9a13f851d4a0104a83ab/kataloge/c3a_oscal_catalog.json' },
             { id: 'methodik-profil', label: 'Methodik-Prozessprofil', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
               path: 'Zielobjektkategorien/profile/process/methodik_process_profile.json',
-              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/Zielobjektkategorien/profile/process/methodik_process_profile.json' },
+              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2d17c83071c067b3acdb9a13f851d4a0104a83ab/Zielobjektkategorien/profile/process/methodik_process_profile.json' },
             { id: 'ed23-anforderungen', label: 'G++/ED23 Anforderungen (Hilfsdatei)', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
               path: 'hilfsdateien/gpp_ed23_anforderungen.json',
-              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/hilfsdateien/gpp_ed23_anforderungen.json' },
+              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2d17c83071c067b3acdb9a13f851d4a0104a83ab/hilfsdateien/gpp_ed23_anforderungen.json' },
         ]);
 
         // --- CONFIG & STATE ---
@@ -941,7 +941,7 @@
            Repo mit 24-h-Cache statt einer contents-Anfrage je Verzeichnis. */
         const GPP_REPO_OWNER = 'NTT-Data-Deutschland-SE';
         const GPP_REPO_NAME = 'Grundschutz-Plus-Plus-Tools';
-        const GPP_TOOLS_PIN_COMMIT = '9c2e444e8ec48675776ecc5f280862d51434abcc';
+        const GPP_TOOLS_PIN_COMMIT = '2d17c83071c067b3acdb9a13f851d4a0104a83ab';
         const SDT_REPO_OWNER = 'BSI-Bund';
         const SDT_REPO_NAME = 'Stand-der-Technik-Bibliothek';
         // BSI implementation_layer: fertige Component-Definitions (Keycloak, Netzarchitektur, ...)
@@ -963,8 +963,8 @@
 
         /* Pin-Override aus config.html (gppSource) gilt für das registrierte
            Standard-Profil; das Enhanced-Profil folgt demselben Commit. */
-        const METHODIK_URL_STANDARD_DEFAULT = 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/Zielobjektkategorien/profile/process/methodik_process_profile.json';
-        const METHODIK_URL_ENHANCED_DEFAULT = 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/Zielobjektkategorien/profile/process/methodik_process_profile_enhanced.json';
+        const METHODIK_URL_STANDARD_DEFAULT = 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2d17c83071c067b3acdb9a13f851d4a0104a83ab/Zielobjektkategorien/profile/process/methodik_process_profile.json';
+        const METHODIK_URL_ENHANCED_DEFAULT = 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2d17c83071c067b3acdb9a13f851d4a0104a83ab/Zielobjektkategorien/profile/process/methodik_process_profile_enhanced.json';
         const METHODIK_URL_STANDARD = gppSource('methodik-profil', METHODIK_URL_STANDARD_DEFAULT);
         const METHODIK_URLS = {
             standard: METHODIK_URL_STANDARD,
@@ -985,13 +985,36 @@
             {
                 name: 'C5:2026 OSCAL Katalog',
                 sourceId: 'c5-katalog',
-                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/kataloge/c5-2026-oscal-catalog.json'
+                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2d17c83071c067b3acdb9a13f851d4a0104a83ab/kataloge/c5-2026-oscal-catalog.json'
             },
             {
                 name: ' C3A - Criteria enabling Cloud Computing Autonomy',
                 sourceId: 'c3a-katalog',
-                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/kataloge/c3a_oscal_catalog.json'
+                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2d17c83071c067b3acdb9a13f851d4a0104a83ab/kataloge/c3a_oscal_catalog.json'
             }
+        ];
+
+        /* Mindeststandards des BSI (Exporte von one-page-apps/mindeststandard-oscal.html):
+           OSCAL-Profile auf dem Anwenderkatalog, die Controls über modify verändern und
+           neue Controls über einen Ergänzungskatalog mitbringen. Sie liegen als Overlay
+           VOR der Modellierung auf dem Control-Pool und stehen im erzeugten Profil vor
+           dem Anwenderkatalog (merge.combine use-first): in der Auflösung bleibt jedes
+           Control genau einmal übrig, in der Fassung des Mindeststandards. */
+        const MST_REPO_DIR = 'mindeststandards';
+        const MST_NS = 'https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard';
+        /* Gepinnte Mindeststandard-Profile (Ordner mindeststandards/, erzeugt mit „Mindeststandard → OSCAL“):
+           Commit + SHA-256 je Profil, nie Branch. Die Datei kommt vom Pin-Commit und muss den Hash treffen,
+           sonst wird nichts übernommen. Neue Exporte: Commit und Hashes hier nachziehen (check_pins.py prüft SHA-256-Konstanten). */
+        const MST_PIN_COMMIT = '2d17c83071c067b3acdb9a13f851d4a0104a83ab'; // Release 4.3, Commit 1 (umgepinnte Staende), 16.10.2026
+        const MST_PINNED = [
+            { file: 'mindeststandard-hv-2.0.profile.json', kurz: 'HV', version: '2.0', stand: '11/2023', title: "Mindeststandard des BSI zum HV-Benchmark kompakt 5.0 (Version 2.0)", sha256: 'c33832867686d71be5c19f7eeb0aba65dfdbcad52699b4e16745304d5f9e189a' },
+            { file: 'mindeststandard-isms_itkb-1.0a.profile.json', kurz: 'ISMS ITKB', version: '1.0a', stand: '07/2025', title: "Regelungsdokument für das Informationssicherheitsmanagementsystem in der IT-Konsolidierung Bund (Mindeststandard ISMS ITKB) (Version 1.0a)", sha256: '792ff6bca79d346e3f671088a8891449fe415106c0461578a5c539477be6981a' },
+            { file: 'mindeststandard-mdm-2.0.profile.json', kurz: 'MDM', version: '2.0', stand: '09/2022', title: "Mindeststandard des BSI für Mobile Device Management (Version 2.0)", sha256: 'e1e1076fb5a16434fe4e763df6164c33401bebc3f9db4fd834840dc0bfdf0288' },
+            { file: 'mindeststandard-ncd-2.1.profile.json', kurz: 'NCD', version: '2.1', stand: '12/2022', title: "Mindeststandard des BSI zur Nutzung externer Cloud-Dienste (Version 2.1)", sha256: 'a5ccf050363246c3a7e246a60365c920aca943ad6107ae2aa380e46f25ca10e4' },
+            { file: 'mindeststandard-pd-2.1.profile.json', kurz: 'PD', version: '2.1', stand: '11/2024', title: "Mindeststandard des BSI zur Protokollierung und Detektion von Cyber-Angriffen (Version 2.1)", sha256: '114b6bf5cc86e81a4c80db18e879cbe11c0fd91844242b3315d761c02c120eb8' },
+            { file: 'mindeststandard-tls-2.4.profile.json', kurz: 'TLS', version: '2.4', stand: '05/2023', title: "Mindeststandard des BSI zur Verwendung von Transport Layer Security (TLS) (Version 2.4)", sha256: '320e47a07854d088fdd8d9ff858c640b7751b10a6a38840918710d6ce3cf996f' },
+            { file: 'mindeststandard-vk-1.0.profile.json', kurz: 'VK', version: '1.0', stand: '10/2021', title: "Mindeststandard des BSI für Videokonferenzdienste (Version 1.0)", sha256: '1cc6c789d87bc44b31fca80c0f2e43dd00811107fd7d78650d9fb127dd30f87d' },
+            { file: 'mindeststandard-wb-3.0.profile.json', kurz: 'WB', version: '3.0', stand: '02/2024', title: "Mindeststandard des BSI für Webbrowser (Version 3.0)", sha256: '675826e54a9fa6307e24d1ebe2d3031e372bf7bc316d4ee57f65c3a1b9b10fe3' }
         ];
 
         const OSCAL_NAMESPACES = {
@@ -1128,7 +1151,7 @@
         // Seitenmarken und Nachtraegen je Quell-ID (Plan Stufe 1).
         const AI_EXTRACTION_CACHE_VERSION = '5';
         const AI_MAX_CHUNKS = 50;
-        const GENERATOR_VERSION = 'V5.16.0';
+        const GENERATOR_VERSION = 'V5.17.1';
         // Laufzeit-Einstellungen (in der UI änderbar, Persistenz in localStorage)
         const AI_RUN_DEFAULTS = { concurrency: 4, chunkSize: 28000, retries: 2, thinkingLevel: 'medium' };
         const AI_RUN_SETTINGS_KEY = 'ssp-generator-ai-run-settings';
@@ -1521,7 +1544,10 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             aiImportedComponentIds: new Set(),
             aiImportedPraktikUrls: new Set(),
             zielobjektProfiles: [], // Kandidaten {kategorie, url} für die KI-Zuordnung von Assets
-            processProfiles: []     // Kandidaten {kuerzel, label, url} für die KI-Zuordnung von Prozessen
+            processProfiles: [],    // Kandidaten {kuerzel, label, url} für die KI-Zuordnung von Prozessen
+            mstProfiles: [],        // gepinnte Mindeststandard-Profile (MST_PINNED mit url)
+            mstConflicts: [],       // zwei Mindeststandards ändern dasselbe am selben Control
+            controlsOriginal: new Map() // Katalogstand je Control vor dem Mindeststandard-Overlay
         };
 
         let currentActiveControlId = null;
@@ -1556,6 +1582,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             renderCatalogsList();
             fetchGitHubComponents();
             fetchSdtComponents();
+            fetchMindeststandardProfiles();
             // Prozess-Liste wird über switchMethodik('standard') unten passend zur Methodik geladen.
             setupSearchListeners();
             setupRiskTabListeners();
@@ -1607,7 +1634,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         // --- BSI ED2023 Anforderungen (vorberechnet von Gpp-ai-tool, ohne Laufzeit-KI) ---
         let ED23_MAP = {};
         // Pin-Override aus config.html (gppSource); nur Anzeigedaten, kein Export-Pin.
-        const ED23_MAP_URL = gppSource('ed23-anforderungen', "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/9c2e444e8ec48675776ecc5f280862d51434abcc/hilfsdateien/gpp_ed23_anforderungen.json");
+        const ED23_MAP_URL = gppSource('ed23-anforderungen', "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2d17c83071c067b3acdb9a13f851d4a0104a83ab/hilfsdateien/gpp_ed23_anforderungen.json");
         // Flatten an OSCAL 1.2.2 mapping-collection (or the legacy bespoke map) into
         // { controlId: [{id, name, begruendung}] } for the ED23 panel.
         function buildEd23MapFromOscal(doc) {
@@ -4396,6 +4423,196 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             }
         };
 
+        // --- Mindeststandards des BSI als Overlay über den Control-Pool ---
+        function mstEntries() { return bpState.catalogs.filter(c => c.kind === 'mindeststandard'); }
+        function mstProp(doc, name) { return ((doc?.metadata?.props) || []).find(p => p.name === name && (!p.ns || p.ns === MST_NS))?.value || ''; }
+
+        function mstPinnedUrl(file) { return `https://raw.githubusercontent.com/${GPP_REPO_OWNER}/${GPP_REPO_NAME}/${MST_PIN_COMMIT}/${MST_REPO_DIR}/${file}`; }
+        function mstPinnedFor(url) { return MST_PINNED.find(p => mstPinnedUrl(p.file) === url) || null; }
+        function fetchMindeststandardProfiles() {
+            bpState.mstProfiles = MST_PINNED.map(p => ({ ...p, name: `${p.kurz} ${p.version}`, url: mstPinnedUrl(p.file) }));
+            const sel = document.getElementById('mst-select'); if (!sel) return;
+            sel.innerHTML = '<option value="">Gepinnten Mindeststandard wählen …</option>' + bpState.mstProfiles.map(p =>
+                `<option value="${escapeHTML(p.url)}">${escapeHTML(p.name)} · ${escapeHTML(p.title)}${p.stand ? ` (Stand ${escapeHTML(p.stand)})` : ''}</option>`).join('');
+            renderMindeststandardList();
+        }
+        function renderMindeststandardList() {
+            const box = document.getElementById('mst-active'); if (!box) return;
+            const active = bpState.catalogs.filter(c => c.kind === 'mindeststandard');
+            const sel = document.getElementById('mst-select');
+            if (sel) [...sel.options].forEach(o => { if (o.value) o.disabled = active.some(c => c.href === o.value); });
+            if (!active.length) {
+                box.innerHTML = `<span class="text-xs text-slate-500 italic">Kein Mindeststandard aktiv · gepinnter Repo-Stand ${MST_PIN_COMMIT.slice(0, 7)} mit ${MST_PINNED.length} Profilen</span>`;
+                return;
+            }
+            box.innerHTML = active.map(c => {
+                const pin = mstPinnedFor(c.href);
+                return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-amber-900/50 border border-amber-700 text-amber-200" title="${escapeHTML(c.title || c.name)}">
+                    <span class="font-semibold">§ ${escapeHTML(c.name)}</span>
+                    <span class="text-amber-400/80">${c.controls.size} Controls${c.erg ? ` · ${c.controlEntries.size} neu` : ''} · ${pin ? 'gepinnt' : 'URL'}${c.baseHashOk ? '' : ' · anderer Katalog-Stand'}</span>
+                    <button onclick="removeMindeststandard(decodeURIComponent('${gppAttrArg(c.href)}'))" class="text-amber-300 hover:text-white" title="Mindeststandard entfernen">✕</button></span>`;
+            }).join('');
+        }
+        window.addPinnedMindeststandard = async function () {
+            const sel = document.getElementById('mst-select'); const url = sel?.value;
+            if (!url) return alert('Bitte einen gepinnten Mindeststandard wählen.');
+            if (await addMindeststandard(url)) sel.value = '';
+        };
+        window.removeMindeststandard = function (url) {
+            const idx = bpState.catalogs.findIndex(c => c.kind === 'mindeststandard' && c.href === url);
+            if (idx > 0) removeCatalog(idx);
+        };
+        window.addMindeststandardFromInput = async function () {
+            const input = document.getElementById('mst-url-input');
+            const url = normalizeGitHubCatalogUrl(input.value.trim());
+            if (!url) return alert('Bitte die URL eines Mindeststandard-Profils (…profile.json) eingeben.');
+            if (await addMindeststandard(url)) input.value = '';
+        };
+        async function addMindeststandard(url, { reuseUuid } = {}) {
+            if (catalogAlreadyPresent(url)) { alert('Dieser Mindeststandard ist bereits aktiv.'); return false; }
+            toggleLoader(true, 'Lade Mindeststandard-Profil …');
+            try {
+                const entry = await loadMindeststandardProfile(url);
+                const pin = mstPinnedFor(url);
+                if (pin && entry.sha256 !== pin.sha256) throw new Error(`${pin.file} weicht vom gepinnten SHA-256 ab (${entry.sha256.slice(0, 12)}… statt ${pin.sha256.slice(0, 12)}…) — nichts übernommen`);
+                if (reuseUuid) entry.id = reuseUuid;
+                mergeControlsIntoIndex(entry.controlEntries);
+                bpState.catalogs.push(entry);
+                rebuildMindeststandardOverlays();
+                renderCatalogsList(); renderMindeststandardList();
+                renderTailoredList(document.getElementById('tailoring-search-input')?.value || '');
+                refreshRiskUI();
+                aiLog('ok', `Mindeststandard ${entry.name} aktiv: ${entry.controls.size} Controls (${entry.controlEntries.size} neue aus dem Ergänzungskatalog), ${entry.alterCount} Control-Anpassungen, ${entry.paramCount} Parameterwerte${entry.baseHashOk ? '' : ' — Achtung: Profil wurde gegen einen anderen Katalogstand gebaut'}`);
+                return true;
+            } catch (e) {
+                alert('Mindeststandard konnte nicht geladen werden: ' + e.message);
+                aiLog('err', `Mindeststandard ${url}: ${e.message}`);
+                return false;
+            } finally { toggleLoader(false); }
+        }
+        /* Profil laden und die Importe über die Back-Matter auflösen (Pin-Muster): der
+           Anwenderkatalog muss dem eigenen Pin entsprechen (sonst Warnung), der
+           Ergänzungskatalog wird relativ zur Profil-URL geholt und per SHA-256 gegen die
+           Resource geprüft — weicht er ab, wird nichts übernommen. */
+        async function loadMindeststandardProfile(url) {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const buf = await res.arrayBuffer();
+            const sha256 = await sha256Hex(buf);
+            const doc = JSON.parse(new TextDecoder().decode(buf).replace(/^﻿/, ''));
+            const profile = doc.profile;
+            if (!profile) throw new Error('Datei ist kein OSCAL-Profil');
+            const kurz = mstProp(profile, 'mindeststandard');
+            if (!kurz) throw new Error('Profil trägt kein Prop „mindeststandard“ — kein Export des Mindeststandard-Werkzeugs');
+            const version = mstProp(profile, 'mindeststandard-version');
+            const name = `${kurz} ${version}`.trim();
+            const resources = profile['back-matter']?.resources || [];
+            const controls = new Set(); const controlEntries = new Map();
+            let erg = null, baseHashOk = false, baseSeen = false;
+            for (const imp of profile.imports || []) {
+                const ids = (imp['include-controls'] || []).flatMap(ic => ic['with-ids'] || []);
+                const resource = imp.href?.startsWith('#') ? resources.find(r => r.uuid === imp.href.slice(1)) : null;
+                const rl = resource?.rlinks?.[0];
+                const hash = (rl?.hashes || []).find(h => /sha-?256/i.test(h.algorithm || ''))?.value || '';
+                if (!rl) { aiLog('warn', `Mindeststandard ${name}: Import ${imp.href} ohne Back-Matter-Resource — übersprungen`); continue; }
+                if (/ergaenzungskatalog\.json(\?|$)/i.test(rl.href)) {
+                    const ergUrl = new URL(rl.href, url).href;
+                    const r2 = await fetch(ergUrl);
+                    if (!r2.ok) throw new Error(`Ergänzungskatalog ${ergUrl}: HTTP ${r2.status}`);
+                    const b2 = await r2.arrayBuffer(); const h2 = await sha256Hex(b2);
+                    if (hash && h2 !== hash) throw new Error(`Ergänzungskatalog weicht vom im Profil hinterlegten SHA-256 ab (${h2.slice(0, 12)}… statt ${hash.slice(0, 12)}…)`);
+                    const ergDoc = JSON.parse(new TextDecoder().decode(b2).replace(/^﻿/, ''));
+                    if (!ergDoc.catalog) throw new Error('Ergänzungskatalog ist kein OSCAL-Katalog');
+                    const entries = extractCatalogControls(ergDoc, { href: ergUrl, name: `${name} Ergänzungskatalog` });
+                    // extractCatalogControls indexiert auch Gruppen (sie tragen IDs); nur die
+                    // im Profil importierten Control-IDs sind Controls des Ergänzungskatalogs.
+                    const idSet = new Set(ids);
+                    entries.forEach((e, id) => { if (idSet.has(id)) { e.mstNew = name; controlEntries.set(id, e); } });
+                    erg = { href: ergUrl, sha256: h2, uuid: resource.uuid, controls: new Set(controlEntries.keys()) };
+                    ids.forEach(id => controls.add(id));
+                } else {
+                    baseSeen = true;
+                    baseHashOk = hash === GPP_CATALOG_PIN_SHA256 || rl.href === CATALOG_URL_BASE;
+                    if (!baseHashOk) aiLog('warn', `Mindeststandard ${name}: Profil wurde gegen einen anderen Anwenderkatalog-Stand gebaut (${(hash || '?').slice(0, 12)}…, Pin ${GPP_CATALOG_PIN_SHA256.slice(0, 12)}…) — Control-IDs werden übernommen, Abweichungen sind möglich`);
+                    ids.forEach(id => controls.add(id));
+                }
+            }
+            if (!baseSeen) aiLog('warn', `Mindeststandard ${name}: kein Import des Anwenderkatalogs gefunden`);
+            return {
+                id: crypto.randomUUID(), href: url, originalHref: url, name, title: profile.metadata?.title || name, kurz, version,
+                kind: 'mindeststandard', imported: true, uuid: profile.uuid || crypto.randomUUID(),
+                controls, controlEntries, sha256, profile, erg, baseHashOk,
+                alterCount: (profile.modify?.alters || []).length, paramCount: (profile.modify?.['set-parameters'] || []).length,
+            };
+        }
+        function snapshotControl(cid) {
+            if (bpState.controlsOriginal.has(cid)) return;
+            const e = bpState.controlsIndex.get(cid); if (!e) return;
+            bpState.controlsOriginal.set(cid, { text: e.text, modalverb: e.modalverb, params: e.params ? JSON.parse(JSON.stringify(e.params)) : undefined });
+        }
+        /* Overlay neu aufbauen: Originale zurück, dann die aktiven Mindeststandards in
+           Aktivierungsreihenfolge anwenden — dieselbe Reihenfolge wie die Importe im
+           erzeugten Profil (use-first). Ändern zwei Standards dasselbe am selben Control,
+           gewinnt der erste; der zweite wird gemeldet. Ergänzungen sind additiv. */
+        function rebuildMindeststandardOverlays() {
+            bpState.controlsOriginal.forEach((orig, cid) => {
+                const e = bpState.controlsIndex.get(cid); if (!e) return;
+                e.text = orig.text; e.modalverb = orig.modalverb;
+                if (orig.params) e.params = JSON.parse(JSON.stringify(orig.params)); else delete e.params;
+                ['mst', 'mstStatementBy', 'mstParam', 'mstErgaenzungen', 'mstProps', 'mstAnforderungen', 'mstGuidanceRemoved'].forEach(k => delete e[k]);
+            });
+            bpState.mstConflicts = [];
+            const paramOwner = new Map();
+            bpState.controlsIndex.forEach((e, cid) => (e.params || []).forEach(p => paramOwner.set(p.id, cid)));
+            mstEntries().forEach(mst => applyMindeststandardOverlay(mst, paramOwner));
+            renderMstConflicts();
+        }
+        function applyMindeststandardOverlay(mst, paramOwner) {
+            const modify = mst.profile?.modify || {}; const by = mst.name;
+            const conflict = (cid, feld, erste, a, b) => {
+                bpState.mstConflicts.push({ cid, feld, erste, zweite: by, a, b });
+                aiLog('warn', `Konflikt an ${cid}: ${erste} und ${by} ändern „${feld}“ unterschiedlich — ${erste} gewinnt (Reihenfolge der Aktivierung, use-first)`);
+            };
+            (modify['set-parameters'] || []).forEach(sp => {
+                const pid = sp['param-id']; const cid = paramOwner.get(pid); const e = cid && bpState.controlsIndex.get(cid); if (!e) return;
+                snapshotControl(cid);
+                const p = (e.params || []).find(x => x.id === pid); if (!p) return;
+                const prev = e.mstParam?.[pid];
+                if (prev && JSON.stringify(prev.values) !== JSON.stringify(sp.values || [])) { conflict(cid, `Parameter ${pid}`, prev.by, prev.values.join(' · '), (sp.values || []).join(' · ')); return; }
+                p.values = sp.values || []; p.mstValue = by;
+                (e.mstParam = e.mstParam || {})[pid] = { by, values: sp.values || [] };
+                (e.mst = e.mst || new Set()).add(by);
+            });
+            (modify.alters || []).forEach(a => {
+                const cid = a['control-id']; const e = bpState.controlsIndex.get(cid); if (!e) return;
+                snapshotControl(cid); (e.mst = e.mst || new Set()).add(by);
+                (a.removes || []).forEach(r => { if (r['by-id'] && /_gdn$/.test(r['by-id'])) e.mstGuidanceRemoved = true; });
+                (a.adds || []).forEach(add => {
+                    (add.props || []).forEach(p => {
+                        if (p.name === 'mindeststandard-anforderung') (e.mstAnforderungen = e.mstAnforderungen || []).push({ by, value: p.value });
+                        else if (p.name === 'modal_verb_profil') { if (!e.mstStatementBy && p.value) e.modalverb = p.value; }
+                        else (e.mstProps = e.mstProps || []).push({ by, name: p.name, value: p.value });
+                    });
+                    (add.parts || []).forEach(part => {
+                        if (part.name === 'statement' && part.prose) {
+                            const mv = (part.props || []).find(p => p.name === 'modal_verb')?.value || '';
+                            if (e.mstStatementBy && e.text !== part.prose) { conflict(cid, 'Statement', e.mstStatementBy, e.text, part.prose); return; }
+                            e.text = part.prose; if (mv) e.modalverb = mv; e.mstStatementBy = by;
+                        } else if (part.name === 'mindeststandard' && part.prose) {
+                            (e.mstErgaenzungen = e.mstErgaenzungen || []).push({ by, prose: part.prose });
+                        }
+                    });
+                });
+            });
+        }
+        function renderMstConflicts() {
+            const box = document.getElementById('mst-conflicts'); if (!box) return;
+            if (!bpState.mstConflicts.length) { box.innerHTML = ''; box.classList.add('hidden'); return; }
+            box.classList.remove('hidden');
+            box.innerHTML = `<div class="text-xs font-bold text-amber-300 mb-1">▲ ${bpState.mstConflicts.length} Konflikt${bpState.mstConflicts.length === 1 ? '' : 'e'} zwischen Mindeststandards — es gilt die Reihenfolge der Aktivierung (use-first)</div>` +
+                bpState.mstConflicts.map(k => `<div class="text-[11px] text-slate-300 mb-1"><span class="font-mono text-white">${escapeHTML(k.cid)}</span> · ${escapeHTML(k.feld)}: <span class="text-emerald-300">${escapeHTML(k.erste)}</span> „${escapeHTML(String(k.a).slice(0, 160))}“ gewinnt gegen <span class="text-amber-300">${escapeHTML(k.zweite)}</span> „${escapeHTML(String(k.b).slice(0, 160))}“</div>`).join('');
+        }
+
         function renderCatalogsList() {
             const list = document.getElementById('catalogs-list');
             if (!list) return;
@@ -4407,7 +4624,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                         <div class="min-w-0">
                             <div class="flex items-center gap-2 flex-wrap">
                                 <span class="font-bold text-slate-200 text-sm">▣ ${catalog.name || 'OSCAL Katalog'}</span>
-                                ${isBase ? '<span class="px-2 py-0.5 rounded text-[10px] uppercase bg-emerald-900 text-emerald-300 border border-emerald-700">Basis</span>' : '<span class="px-2 py-0.5 rounded text-[10px] uppercase bg-cyan-900 text-cyan-300 border border-cyan-700">Zusätzlich</span>'}
+                                ${isBase ? '<span class="px-2 py-0.5 rounded text-[10px] uppercase bg-emerald-900 text-emerald-300 border border-emerald-700">Basis</span>' : catalog.kind === 'mindeststandard' ? `<span class="px-2 py-0.5 rounded text-[10px] uppercase bg-amber-900 text-amber-300 border border-amber-700">Mindeststandard · Overlay${catalog.baseHashOk ? '' : ' · anderer Katalogstand'}</span>` : '<span class="px-2 py-0.5 rounded text-[10px] uppercase bg-cyan-900 text-cyan-300 border border-cyan-700">Zusätzlich</span>'}
                             </div>
                             <div class="text-xs text-cyan-400 mt-1 break-all">${catalog.href}</div>
                         </div>
@@ -4475,6 +4692,17 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             bpState.modifications.forEach((_, key) => {
                 if (key.startsWith(`${removed.id}||`)) bpState.modifications.delete(key);
             });
+            if (removed.kind === 'mindeststandard') {
+                // Controls aus seinem Ergänzungskatalog verlassen den Pool, das Overlay wird
+                // aus den verbliebenen Mindeststandards neu aufgebaut.
+                (removed.erg?.controls || new Set()).forEach(cid => {
+                    const e = bpState.controlsIndex.get(cid);
+                    if (e && e.catalogHref === removed.erg.href) { bpState.controlsIndex.delete(cid); bpState.controlsOriginal.delete(cid); }
+                });
+                rebuildMindeststandardOverlays();
+                renderMindeststandardList();
+                aiLog('info', `Mindeststandard ${removed.name} deaktiviert — Katalogstand wiederhergestellt.`);
+            }
             renderCatalogsList();
             renderTailoredList(document.getElementById('tailoring-search-input')?.value || '');
             refreshRiskUI();
@@ -4523,6 +4751,23 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                         <button onclick="addCatalogFromSet()" class="px-5 py-2 bg-slate-700 text-cyan-300 border border-cyan-700 rounded-lg hover:bg-slate-600 transition-colors text-sm font-semibold">Aus Set übernehmen</button>
                     </div>
                     <ul id="catalogs-list" class="space-y-2"></ul>
+                </div>
+
+                <div class="mb-6 p-5 bg-slate-900/80 border border-amber-700/60 rounded-xl shadow-inner">
+                    <h3 class="text-sm font-bold text-amber-400 uppercase mb-2">2b. Mindeststandards des BSI (Optional)</h3>
+                    <p class="text-xs text-slate-400 mb-4">Mindeststandards nach § 44 Abs. 1 Satz 1 BSIG als OSCAL-Profile auf dem Anwenderkatalog (Ordner <code>mindeststandards/</code>, erzeugt mit „Mindeststandard → OSCAL“). Ein aktivierter Mindeststandard legt sich <strong>vor der Modellierung</strong> über den Katalog: Parameterwerte, angehobene Modalverben, geänderte Statements und Ergänzungen gelten für alle Zielobjekte, neue Controls aus seinem Ergänzungskatalog kommen in den Pool, und alle seine Controls landen im Profil und im SSP. Im Profil steht er vor dem Anwenderkatalog (<code>merge.combine use-first</code>); bei mehreren gilt die Reihenfolge der Aktivierung, Konflikte werden hier gemeldet.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 mb-3">
+                        <select id="mst-select" class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-amber-500 outline-none" title="Gepinnte Profile aus dem Ordner mindeststandards/ (Commit + SHA-256)">
+                            <option value="">Gepinnte Mindeststandard-Profile werden geladen …</option>
+                        </select>
+                        <button onclick="addPinnedMindeststandard()" class="px-5 py-2 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-500 transition-colors text-sm shadow-md">Mindeststandard aktivieren</button>
+                    </div>
+                    <div id="mst-active" class="flex flex-wrap gap-2 mb-3"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 mb-3">
+                        <input type="url" id="mst-url-input" class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-amber-500 outline-none" placeholder="URL eines Mindeststandard-Profils (…profile.json; der Ergänzungskatalog muss daneben liegen)">
+                        <button onclick="addMindeststandardFromInput()" class="px-5 py-2 bg-slate-700 text-white font-medium rounded-lg hover:bg-slate-600 transition-colors text-sm shadow-md">Profil-URL aktivieren</button>
+                    </div>
+                    <div id="mst-conflicts" class="hidden p-3 bg-amber-950/40 border border-amber-800 rounded-lg"></div>
                 </div>
 
                 <div class="mb-6 p-5 bg-slate-900/80 border border-blue-700/60 rounded-xl shadow-inner">
@@ -5269,7 +5514,9 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             add(bpState.methodik.uuid || 'methodik', 'Zwingende Basis Methodik', 'Basis', '<span class="px-2 py-0.5 rounded bg-emerald-900 text-emerald-300 text-[10px] font-bold">◼ BASE</span>', bpState.methodik.controls);
             bpState.praktiken.forEach(p => add(p.id, `Prozess: ${p.name}${p.aiGenerated ? ' ◉' : ''}`, 'Praktik', '<span class="px-2 py-0.5 rounded bg-blue-900 text-blue-300 text-[10px] font-bold">◐ PRAKTIK</span>', p.controls));
             bpState.components.forEach(c => add(c.id, `Asset: ${c.name}${c.aiGenerated ? ' ◉' : ''}`, 'Asset', '<span class="px-2 py-0.5 rounded bg-indigo-900 text-indigo-300 text-[10px] font-bold">▣ ASSET</span>', c.controls, true));
-            bpState.catalogs.slice(1).forEach(catalog => add(catalog.id, `Katalog: ${catalog.name}`, 'Katalog', '<span class="px-2 py-0.5 rounded bg-cyan-900 text-cyan-300 text-[10px] font-bold">▣ KATALOG</span>', catalog.controls));
+            bpState.catalogs.slice(1).forEach(catalog => catalog.kind === 'mindeststandard'
+                ? add(catalog.id, `Mindeststandard: ${catalog.name}`, 'Mindeststandard', '<span class="px-2 py-0.5 rounded bg-amber-900 text-amber-300 text-[10px] font-bold">§ MST</span>', catalog.controls)
+                : add(catalog.id, `Katalog: ${catalog.name}`, 'Katalog', '<span class="px-2 py-0.5 rounded bg-cyan-900 text-cyan-300 text-[10px] font-bold">▣ KATALOG</span>', catalog.controls));
             add('manual', 'Manuell im Profil (Global)', 'Manuell', '<span class="px-2 py-0.5 rounded bg-slate-700 text-slate-300 text-[10px] font-bold">✎ MANUELL</span>', bpState.manualControls, true);
             return sources;
         }
@@ -5360,6 +5607,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     const isMuss = info?.modalverb?.toUpperCase() === 'MUSS';
 
                     let badges = mods.length > 0 ? `<span class="bg-blue-900/50 text-blue-300 border border-blue-700 text-[10px] px-2 py-0.5 rounded font-bold ml-2">${mods.length} Anpassungen</span>` : '';
+                    if (info?.mst?.size) badges += `<span class="bg-amber-900/50 text-amber-300 border border-amber-700 text-[10px] px-2 py-0.5 rounded font-bold ml-1" title="durch Mindeststandard verändert: ${escapeHTML([...info.mst].join(', '))}">§ ${escapeHTML([...info.mst].join(', '))}</span>`;
+                    if (info?.mstNew) badges += `<span class="bg-amber-900/50 text-amber-200 border border-amber-700 text-[10px] px-2 py-0.5 rounded font-bold ml-1">neu aus ${escapeHTML(info.mstNew)}</span>`;
                     if (isMuss) badges += `<span class="bg-red-900/50 text-red-300 border border-red-700 text-[10px] px-2 py-0.5 rounded font-bold ml-1">MUSS</span>`;
 
                     // Hier wurde die Änderung vorgenommen: Hinzufügen des info.text (Statement) unter dem Titel
@@ -5382,6 +5631,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                                 </div>
                                 <div class="text-xs font-semibold text-slate-300 truncate">${escapeHTML(info?.title || 'Titel nicht im Basis-Katalog')}</div>
                                 ${info?.text ? `<div class="text-[11px] text-slate-400 mt-1 line-clamp-2 leading-relaxed" title="${safeTextForTitle}">${escapeHTML(info.text)}</div>` : ''}
+                                ${info?.mstErgaenzungen?.length ? `<div class="text-[11px] text-amber-200/80 mt-1 leading-relaxed">${info.mstErgaenzungen.map(x => `<span class="font-bold">${escapeHTML(x.by)}:</span> ${escapeHTML(x.prose)}`).join('<br>')}</div>` : ''}
                             </div>
                             <div class="flex items-center gap-2 flex-shrink-0 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button onclick="showED23('${argCid}', '${rk}')" class="px-3 py-1.5 bg-slate-700 text-blue-300 hover:bg-slate-600 rounded text-xs font-bold transition-colors">◇ ED23</button>
@@ -5465,7 +5715,9 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
             const info = bpState.controlsIndex.get(cid);
             document.getElementById('m-catalog-title').textContent = info?.title || "Details unbekannt";
-            document.getElementById('m-catalog-prose').textContent = info?.text || "Kein Text verfügbar.";
+            document.getElementById('m-catalog-prose').textContent = (info?.text || "Kein Text verfügbar.")
+                + (info?.mst?.size ? `\n\n[verändert durch Mindeststandard ${[...info.mst].join(', ')}]` : '')
+                + (info?.mstErgaenzungen || []).map(x => `\n\nErgänzung ${x.by}: ${x.prose}`).join('');
             /* Parameter gibt es nur, wenn der Katalog welche am Control führt —
                dann werden GENAU die angeboten (echte IDs wie gc.1.1-prm1). Ohne
                Parameter verschwindet der Reiter; das frühere freie ID-Feld
@@ -6053,6 +6305,9 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     const name = c.title.replace('Katalog-Umsetzung:', '').trim();
                     catalogComponentByName.set(name, c.uuid);
                 }
+                if (c.title && c.title.startsWith('Mindeststandard:')) {
+                    catalogComponentByName.set(c.title.replace('Mindeststandard:', '').trim(), c.uuid);
+                }
                 // Also try match by link href
                 if (c.links) {
                     const catLink = c.links.find(l => l.rel === 'catalog');
@@ -6062,6 +6317,17 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
             for (const href of additionalHrefs) {
                 try {
+                    // Mindeststandard-Profile (Export des Mindeststandard-Werkzeugs) hängen am
+                    // Dateinamen; sie werden als Overlay wiederhergestellt, nicht als Katalog.
+                    if (/\.profile\.json(\?|$)/i.test(href)) {
+                        if (catalogAlreadyPresent(href)) continue;
+                        const entry = await loadMindeststandardProfile(href);
+                        const reuseUuid = catalogComponentByName.get(entry.name) || catalogComponentByName.get(href);
+                        if (reuseUuid) entry.id = reuseUuid;
+                        mergeControlsIntoIndex(entry.controlEntries);
+                        bpState.catalogs.push(entry);
+                        continue;
+                    }
                     const catalog = await validateCatalogUrl(href);
                     if (catalogAlreadyPresent(catalog.href)) continue;
                     // Try to reuse SSP component uuid so implemented-requirements still line up
@@ -6071,8 +6337,10 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     bpState.catalogs.push(catalog);
                 } catch (e) {
                     console.warn('Zusätzlicher Katalog konnte nicht geladen werden:', href, e);
+                    aiLog('warn', `Zusätzliche Quelle nicht wiederhergestellt: ${href} (${e.message})`);
                 }
             }
+            if (bpState.catalogs.some(c => c.kind === 'mindeststandard')) { rebuildMindeststandardOverlays(); renderMindeststandardList(); }
 
             // --- Methodik, Praktiken, Assets (from SSP components) ---
             // BSI-Komponenten (Link rel="component-definition") werden hier nur
@@ -6084,7 +6352,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     if (!c.title) continue;
                     if (c.type === 'this-system') continue;
                     if (c.title === 'Risikoanalyse Controls') { riskCompUuid = c.uuid; continue; }
-                    if (c.title.startsWith('Katalog-Umsetzung:')) continue;
+                    if (c.title.startsWith('Katalog-Umsetzung:') || c.title.startsWith('Mindeststandard:')) continue;
 
                     // Vor den übrigen Zweigen abfangen: ein CDef-Bauteil ist weder
                     // Methodik noch Prozess noch Zielobjekt (sein Link ist ein Fragment
@@ -6554,13 +6822,22 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             // geladenen Stands. Der Basis-Katalog nutzt die kanonische Resource
             // (identisch zu scripts/pin_profile_imports.py), Zusatzkataloge bekommen
             // eine Resource mit dem beim Laden berechneten Hash.
-            const catalogResources = bpState.catalogs.map(catalog => {
+            /* Import-Reihenfolge: Mindeststandard-Profile ZUERST, dann der Anwenderkatalog,
+               dann die übrigen Zusatzkataloge. Mit merge.combine use-first bleibt ein
+               Control, das ein Mindeststandard verändert, in der Auflösung genau einmal
+               übrig — in der Fassung des Mindeststandards. Die Reihenfolge der
+               Mindeststandards untereinander ist die ihrer Aktivierung (siehe Overlay). */
+            const mstCatalogs = bpState.catalogs.filter(c => c.kind === 'mindeststandard');
+            const orderedCatalogs = [...mstCatalogs, bpState.catalogs[0], ...bpState.catalogs.slice(1).filter(c => c.kind !== 'mindeststandard')];
+            const catalogResources = orderedCatalogs.map(catalog => {
                 if (!catalog.resourceUuid) catalog.resourceUuid = crypto.randomUUID();
                 let title = decodeURIComponent((catalog.href || '').split('/').pop() || '') || catalog.name || 'OSCAL Katalog';
                 if (catalog.href === CATALOG_URL_BASE) title += ` @ ${GPP_CATALOG_PIN_COMMIT.slice(0, 12)}`;
+                if (catalog.kind === 'mindeststandard') title = `${catalog.title || catalog.name} (Mindeststandard-Profil)`;
                 return {
                     uuid: catalog.resourceUuid,
                     title,
+                    ...(catalog.kind === 'mindeststandard' ? { description: `Mindeststandard ${catalog.name} des BSI als OSCAL-Profil auf dem Anwenderkatalog; importiert dessen Controls verändert und seinen Ergänzungskatalog.` } : {}),
                     rlinks: [{
                         href: catalog.href,
                         ...(catalog.sha256 ? { hashes: [{ algorithm: 'SHA-256', value: catalog.sha256 }] } : {})
@@ -6575,27 +6852,30 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                         version: bpState.metadata.version, "last-modified": ts, "oscal-version": "1.2.2",
                         remarks: bpState.metadata.description
                     },
-                    imports: bpState.catalogs.map(catalog => ({ href: `#${catalog.resourceUuid}` })),
+                    imports: orderedCatalogs.map(catalog => ({ href: `#${catalog.resourceUuid}` })),
+                    ...(mstCatalogs.length ? { merge: { combine: { method: 'use-first' } } } : {}),
                     "back-matter": { resources: [...catalogResources] }
                 }
             };
 
             // Custom Controls gehören nicht in den Basis-Import (sie existieren nicht im
             // G++-Katalog) — sie bekommen unten einen eigenen Import auf den eingebetteten Katalog.
+            // Controls aus Ergänzungskatalogen der Mindeststandards ebenso wenig: die kommen
+            // über das Mindeststandard-Profil.
+            const mstNewIds = new Set(mstCatalogs.flatMap(c => [...(c.erg?.controls || [])]));
             const baseImportReqIds = new Set([
-                ...[...bpState.manualControls].filter(cid => !bpState.customControls.has(cid)),
+                ...[...bpState.manualControls].filter(cid => !bpState.customControls.has(cid) && !mstNewIds.has(cid)),
                 ...bpState.methodik.controls
             ]);
             bpState.praktiken.forEach(p => p.controls.forEach(cid => baseImportReqIds.add(cid)));
-            bpState.components.forEach(c => c.controls.forEach(cid => baseImportReqIds.add(cid)));
+            bpState.components.forEach(c => c.controls.forEach(cid => { if (!mstNewIds.has(cid)) baseImportReqIds.add(cid); }));
 
-            if (baseImportReqIds.size > 0 && profile.profile.imports.length > 0) {
-                profile.profile.imports[0]["include-controls"] = [{ "with-ids": Array.from(baseImportReqIds).sort() }];
-            }
-
-            bpState.catalogs.slice(1).forEach((catalog, index) => {
-                if (catalog.controls && catalog.controls.size > 0 && profile.profile.imports[index + 1]) {
-                    profile.profile.imports[index + 1]["include-controls"] = [{ "with-ids": Array.from(catalog.controls).sort() }];
+            orderedCatalogs.forEach((catalog, index) => {
+                const imp = profile.profile.imports[index];
+                if (catalog === bpState.catalogs[0]) {
+                    if (baseImportReqIds.size > 0) imp["include-controls"] = [{ "with-ids": Array.from(baseImportReqIds).sort() }];
+                } else if (catalog.controls && catalog.controls.size > 0) {
+                    imp["include-controls"] = [{ "with-ids": Array.from(catalog.controls).sort() }];
                 }
             });
 
@@ -6643,6 +6923,13 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             }
 
             bpState.catalogs.slice(1).forEach(catalog => {
+                if (catalog.kind === 'mindeststandard') {
+                    profileMetadataProps.push({
+                        name: 'mindeststandard', ns: MST_NS, value: catalog.name,
+                        remarks: `Mindeststandard des BSI nach § 44 Abs. 1 Satz 1 BSIG, als Profil importiert (${catalog.href}); seine Fassung der Controls gilt (merge.combine use-first).`
+                    });
+                    return;
+                }
                 profileMetadataProps.push({
                     name: 'imported-catalog',
                     ns: OSCAL_NAMESPACES.importedCatalog,
@@ -6857,6 +7144,24 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             additionalCatalogs.forEach(catalog => {
                 const resUuid = crypto.randomUUID();
                 catalogResourceUuids.set(catalog.id, resUuid);
+                if (catalog.kind === 'mindeststandard') {
+                    // Der Mindeststandard ist eine eigene Umsetzungs-Komponente: alle seine
+                    // Controls hängen daran, der Link zeigt auf die gepinnte Profil-Resource.
+                    sspComponents.push({
+                        uuid: catalog.id,
+                        type: "standard",
+                        title: `Mindeststandard: ${catalog.name}`,
+                        description: `Umsetzung des Mindeststandards ${catalog.title || catalog.name} des BSI (§ 44 Abs. 1 Satz 1 BSIG) in diesem Informationsverbund. Das Profil des Mindeststandards verändert die Controls des Anwenderkatalogs (Parameter, Modalverben, Ergänzungen) und bringt neue Controls aus seinem Ergänzungskatalog mit.`,
+                        status: { state: "operational" },
+                        props: [
+                            { name: "mindeststandard", ns: MST_NS, value: catalog.kurz || catalog.name },
+                            ...(catalog.version ? [{ name: "mindeststandard-version", ns: MST_NS, value: catalog.version }] : []),
+                            { name: "catalog-role", ns: OSCAL_NAMESPACES.sourceCatalog, value: "mindeststandard", remarks: `Diese Komponente bündelt die Umsetzung der Anforderungen des Mindeststandards ${catalog.name}.` }
+                        ],
+                        links: [{ href: `#${resUuid}`, rel: "profile" }]
+                    });
+                    return;
+                }
                 sspComponents.push({
                     uuid: catalog.id,
                     type: "standard",
@@ -7125,6 +7430,15 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 if (catalogControlTargets.has(cid)) {
                     catalogControlTargets.get(cid).forEach(catalogUuid => {
                         const catalog = additionalCatalogs.find(entry => entry.id === catalogUuid);
+                        if (catalog?.kind === 'mindeststandard') {
+                            const info = bpState.controlsIndex.get(cid);
+                            const absaetze = (info?.mstAnforderungen || []).filter(x => x.by === catalog.name).map(x => x.value);
+                            addByComp(catalogUuid, `Anforderung des Mindeststandards ${catalog.name}${absaetze.length ? ` (${absaetze.join(', ')})` : ''}${info?.mstNew ? ' — neues Control aus dem Ergänzungskatalog' : ''}. Umsetzung noch nicht beschrieben.`, {
+                                'implementation-status': OFFEN,
+                                props: absaetze.map(v => ({ name: 'mindeststandard-anforderung', ns: MST_NS, value: v }))
+                            });
+                            return;
+                        }
                         addByComp(catalogUuid, `Control aus zusätzlichem Katalog${catalog?.name ? ` ${catalog.name}` : ''}. Umsetzung noch nicht beschrieben.`, {
                             'implementation-status': OFFEN
                         });
@@ -7305,7 +7619,11 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 name: 'referenced-catalog',
                 ns: OSCAL_NAMESPACES.sourceCatalog,
                 value: catalog.href,
-                remarks: catalog.name || 'Zusätzlicher OSCAL Katalog'
+                remarks: catalog.kind === 'mindeststandard' ? `Mindeststandard ${catalog.name} (OSCAL-Profil des Mindeststandards)` : (catalog.name || 'Zusätzlicher OSCAL Katalog')
+            }));
+            bpState.catalogs.filter(c => c.kind === 'mindeststandard').forEach(catalog => characteristicProps.push({
+                name: 'mindeststandard', ns: MST_NS, value: catalog.name,
+                remarks: `Der Informationsverbund unterliegt dem Mindeststandard ${catalog.title || catalog.name} des BSI (§ 44 Abs. 1 Satz 1 BSIG).`
             }));
             characteristicProps.push({
                 name: 'schutzbedarf-system',
@@ -7349,13 +7667,16 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 if (!catalog.href) return;
                 const resUuid = index === 0 ? crypto.randomUUID() : catalogResourceUuids.get(catalog.id);
                 if (!resUuid) return;
+                const istMst = catalog.kind === 'mindeststandard';
                 backMatterResources.push({
                     uuid: resUuid,
-                    title: `OSCAL-Katalog: ${catalog.name || 'Katalog'}${index === 0 ? ' (Basis)' : ''}`,
+                    title: istMst ? `Mindeststandard-Profil: ${catalog.title || catalog.name}` : `OSCAL-Katalog: ${catalog.name || 'Katalog'}${index === 0 ? ' (Basis)' : ''}`,
                     description: index === 0
                         ? 'Basis-Katalog dieser Blaupause. Alle Controls ohne eigenen Katalogbezug stammen hieraus.'
-                        : `Zusätzlich importierter Katalog. Die daraus übernommenen Controls sind über die Komponente "Katalog-Umsetzung: ${catalog.name}" zugeordnet.`,
-                    props: [{ name: 'catalog-role', ns: OSCAL_NAMESPACES.sourceCatalog, value: index === 0 ? 'base-catalog' : 'additional-catalog' }],
+                        : istMst
+                            ? `OSCAL-Profil des Mindeststandards ${catalog.name} des BSI auf dem Anwenderkatalog Grundschutz++. Seine Controls sind über die Komponente "Mindeststandard: ${catalog.name}" zugeordnet; das Profil importiert den Anwenderkatalog und seinen Ergänzungskatalog und verändert Controls über modify.`
+                            : `Zusätzlich importierter Katalog. Die daraus übernommenen Controls sind über die Komponente "Katalog-Umsetzung: ${catalog.name}" zugeordnet.`,
+                    props: [{ name: 'catalog-role', ns: OSCAL_NAMESPACES.sourceCatalog, value: index === 0 ? 'base-catalog' : istMst ? 'mindeststandard' : 'additional-catalog' }],
                     rlinks: [{
                         href: catalog.href,
                         ...(catalog.sha256 ? { hashes: [{ algorithm: 'SHA-256', value: catalog.sha256 }] } : {})
