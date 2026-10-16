@@ -11,7 +11,7 @@ Prüfen, Zuordnen und Anpassen macht das Modell (Gemini oder OpenRouter), ein Au
 
 ## SSP-Generator / Editor V5.17.1: Mindeststandards als Overlay
 
-Im Abschnitt „Methodik & Assets“ gibt es den Block **2b. Mindeststandards des BSI**: ein Dropdown mit den gepinnten Profilen aus `mindeststandards/` (Commit `22ed7b6` plus SHA-256 je Datei in `MST_PINNED`; weicht die geladene Datei vom Hash ab, wird nichts übernommen), dazu ein Feld für eine beliebige Profil-URL. Aktive Mindeststandards stehen als Chips mit Controlzahl, Herkunft (gepinnt oder URL) und Entfernen-Knopf darunter. Ein aktivierter Mindeststandard legt sich **vor der Modellierung** über den Control-Pool: `set-parameters` setzen die Parameterwerte, `alters` ersetzen Statements, heben Modalverben an (ein so entstandenes MUSS lässt sich im Tailoring nicht mehr entfernen) und hängen die Ergänzungen des Mindeststandards an; die Controls seines Ergänzungskatalogs kommen in den Pool. Danach läuft die Modellierung wie bisher, und alle Controls des Mindeststandards landen im Profil und im SSP, gebündelt in einer Komponente „Mindeststandard: PD 2.1“ mit Link auf die gepinnte Profil-Resource und den Absätzen je Control.
+Im Abschnitt „Methodik & Assets“ gibt es den Block **2b. Mindeststandards des BSI**: ein Dropdown mit den gepinnten Profilen aus `mindeststandards/` (Commit `2d17c83` plus SHA-256 je Datei in `MST_PINNED`; weicht die geladene Datei vom Hash ab, wird nichts übernommen), dazu ein Feld für eine beliebige Profil-URL. Aktive Mindeststandards stehen als Chips mit Controlzahl, Herkunft (gepinnt oder URL) und Entfernen-Knopf darunter. Ein aktivierter Mindeststandard legt sich **vor der Modellierung** über den Control-Pool: `set-parameters` setzen die Parameterwerte, `alters` ersetzen Statements, heben Modalverben an (ein so entstandenes MUSS lässt sich im Tailoring nicht mehr entfernen) und hängen die Ergänzungen des Mindeststandards an; die Controls seines Ergänzungskatalogs kommen in den Pool. Danach läuft die Modellierung wie bisher, und alle Controls des Mindeststandards landen im Profil und im SSP, gebündelt in einer Komponente „Mindeststandard: PD 2.1“ mit Link auf die gepinnte Profil-Resource und den Absätzen je Control.
 
 Im erzeugten Profil stehen die Mindeststandard-Profile **vor** dem Anwenderkatalog, mit `merge.combine.method = use-first`: In der Auflösung bleibt jedes Control genau einmal übrig, in der Fassung des Mindeststandards. Die eigenen Anpassungen des Generators (Tailoring) kommen wie bisher als `alters` obendrauf. Mehrere Mindeststandards gelten in der Reihenfolge ihrer Aktivierung; ändern zwei denselben Parameter oder dasselbe Statement unterschiedlich, gewinnt der erste, und der Generator meldet den Konflikt im Block und im Log. Ergänzungen sind additiv. Geltungsbereich ist der ganze Informationsverbund; Varianten je Zielobjekt lassen sich in einem OSCAL-Profil nicht ausdrücken, weil `alters` je Control-ID gelten.
 
@@ -32,23 +32,23 @@ Der Skill **gs-plusplus-katalogarbeit** (`skills/gs-plusplus-katalogarbeit.skill
 | Übersicht (index.html) | 1.8 |
 | OSCAL Schema Validator | 1.11.2 |
 | SSP-Generator / Editor (ssp_generator) | V5.17.1 |
-| GS++ Explorer (GSpp-Viewer) | v9.8 |
-| BSI → G++ Profil (Baustein_2_Profile) | 0.12.0 |
-| SSP ausfüllen / Grundschutzcheck (ssp_ausfuellen) | v1.7.2 |
-| Prüfung AP/AR (pruefung_ap_ar) | build 9.7.0 |
+| GS++ Explorer (GSpp-Viewer) | v9.8 · nur Selbst-Pin |
+| BSI → G++ Profil (Baustein_2_Profile) | 0.12.0 · nur Selbst-Pin |
+| SSP ausfüllen / Grundschutzcheck (ssp_ausfuellen) | v1.7.2 · nur Selbst-Pin |
+| Prüfung AP/AR (pruefung_ap_ar) | build 9.7.0 · nur Selbst-Pin |
 | POA&M-Generator | v2.5 |
 
-Einzelwerkzeuge in `one-page-apps/` — eigenständig, ohne `gpp-core.js`, von der Datenbank unberührt:
+Einzelwerkzeuge in `one-page-apps/`: eigenständig, ohne `gpp-core.js`, von der Datenbank unberührt:
 
 | Anwendung | Version |
 |---|---|
-| SSP-Generator Edition 2023 | ED23 V1.6 |
+| SSP-Generator Edition 2023 | ED23 V1.6 · nur Selbst-Pin |
 | C5 → OSCAL Konverter | v1.1 |
 | Mindeststandard → OSCAL | build 1.4.1 |
 
 ## Hinweise zum Umstieg
 
 - **Einmal mit Strg+F5 laden.** Kern und Stylesheet sind unverändert.
-- Die Mindeststandard-Profile lädt der Generator vom Pin `MST_PIN_COMMIT` (22ed7b6) mit SHA-256 je Datei. Neue Exporte heißen: Commit und Hashes im Generator nachziehen, sonst weist er die Datei ab.
+- Die Mindeststandard-Profile lädt der Generator vom Pin `MST_PIN_COMMIT` (2d17c83) mit SHA-256 je Datei. Der Selbst-Pin `GPP_TOOLS_PIN_COMMIT` aller Werkzeuge zeigt ebenfalls auf 2d17c83; die dort gepinnten Profile sind seit 9c2e444 unverändert. Neue Exporte heißen: Commit und Hashes im Generator nachziehen, sonst weist er die Datei ab.
 - Sieben der acht Stände wurden mit build 1.2.1 gegen den Anwenderkatalog 4e117794 erarbeitet und mit `mindeststandards/repin.py` mechanisch auf a128311 umgestellt (Import, Back-Matter, Querverweise, Kategorienwerte; Katalog neu aufgelöst). Das Skript prüft vorher, dass sich die verwendeten Controls nur in den drei umbenannten Zielobjektkategorien unterscheiden; siehe `mindeststandards/README.md`, Abschnitt Stand.
 - Die Auslieferung bleibt `GS++-oscal-app.zip` (zwölf Dateien); eine einzelne HTML-Datei allein läuft nicht.
