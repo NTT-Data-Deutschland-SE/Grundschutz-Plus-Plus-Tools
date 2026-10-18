@@ -10,15 +10,16 @@ Die Liste der Bausteine: die 78 System-Bausteine wie bisher, dazu die 12 NG-Baus
 
 **NG = Nutzergenerierte Inhalte.** Profile der NG-Bausteine heißen `NG_<kategorie>_<ID>_<titel>.json` mit Titel `NG …`; jedes Profil und der Katalog tragen die Metadata-Prop `herkunft` (`BSI` | `NG`) im neuen Namespace `…/ns/ed23-baustein` (`Dokumentation/namespaces/ed23_baustein_props.md`: Props, Klassen, ID-Schema, Herkunft-Grammatik, Neuableitung der NG-Liste). Das Prüfskript `ED23-Baustein-profile/pruefe_export.py` kontrolliert Schema, Importe, NG-Hash, Control-nur-einmal, Dateiname ⇔ Titel ⇔ `herkunft`.
 
-## Gpp-ai-tool 5.0.0: Gemini 4 Argon, Abgleich-Stage, NG-Katalog, Reifegrad-Cache
+## Gpp-ai-tool 5.0.1: Gemini 4 Argon, Abgleich-Stage, NG-Katalog, Reifegrad-Cache
 
 - **Ein Modell.** `GEMINI_MODEL=gemini-4-argon`; die früheren Rollen (Maker, Verifier, Pro) sind Thinking-Levels (`MAKER_THINKING_LEVEL` medium, `CHECKER_THINKING_LEVEL` high). Kein explizites Context-Caching mehr (auf Argon HTTP 400): der Korpus ist der stabile Prompt-Prefix, implizit gecacht. Keine Sampling-Parameter, 20-Minuten-Timeout, Retries nur bei transienten Fehlern und Schema-Verstößen (Kappe 5), Nutzungs-Log je Call. Typed Settings (`pydantic-settings`, `.env.example`, README-Tabelle), `uv`/`pyproject.toml`/`justfile`, Dockerfile auf Python 3.12, `LOG_LEVEL`-Hebel, `--version`, `--fresh`.
 - **Pins.** Der ED23-Katalog (NTT DATA DACH, Commit `62f0803`) ist jetzt auch in der Pipeline gepinnt, mit SHA-256 beider Dateien; die NG-Menge ist die Differenz der Baustein-IDs. `scripts/check_pins.py` kennt die ED23- und GSMap-Quellen.
+- **Review-Fixes (5.0.1).** Resume von `stage_ed23_baustein_abgleich` baut den vollständigen KI-Block aus der veröffentlichten Ausgabe zurück (vorher gingen neue Controls beim zweiten Lauf ohne `--fresh` verloren) und prüft nur noch offene Kandidaten des Checkpoints nach; `stage_match_bausteine` schreibt die bereinigte Map auch, wenn nichts nachzufragen ist; ein `MAX_TOKENS`-Abbruch wird nicht mehr fünfmal identisch wiederholt (`OutputTruncatedError`); `LOG_LEVEL` aus `.env` wirkt; Pins sind in `.env.example` als Prozessumgebung-only dokumentiert.
 - **Neue Stages.** `stage_ed23_baustein_abgleich` (deterministische Quellen zuerst, Maker-Checker nur für Anforderungen ohne Träger, resumierbar) und `stage_ng_katalog` (deterministisch, schreibt nur bei Änderung). `stage_match_bausteine` fragt nur fehlende Bausteine nach. `stage_ED23_profiles_enhanced` baut die Profile neu und holt Reifegrad-Texte aus `hilfsdateien/ed23_maturity_cache.json` (aus den bisherigen Profilen geerntet, 6.958 Blöcke); das Modell wird nur für Controls ohne Eintrag gerufen.
 
-## SSP-Generator / Editor V5.18.0: NG-Bausteine und NG-Ergänzungskatalog
+## SSP-Generator / Editor V5.18.1: NG-Bausteine und NG-Ergänzungskatalog
 
-Das Dropdown der ED23-Baustein-Profile (bisher „Nutzergeneriert“, jetzt „ED23-Bausteine (Baustein-Profile)“) markiert NG-Profile mit `NG ·`. Ein Profil mit NG-Controls lädt den NG-Ergänzungskatalog relativ zur Profil-URL und prüft seinen SHA-256 aus der Back-Matter; weicht er ab, entsteht kein Zielobjekt. Die NG-Controls hängen am Zielobjekt (Badge „NG“ im Tailoring, Hinweis „NG-Ergänzung zu <Anforderung>“), der Katalog erscheint einmal in der Katalogliste und verschwindet mit dem letzten Zielobjekt, das NG-Controls trägt. Im erzeugten Profil folgt der NG-Katalog auf den Anwenderkatalog (Mindeststandard-Profile davor, `use-first`), NG-IDs stehen nie im Basis-Import; Profil-Metadaten, SSP-Komponenten und implemented-requirements tragen `herkunft=NG`, die Back-Matter-Resource `catalog-role: ng-ergaenzung`. Props-only-`adds` der neuen Profile sind keine Tailoring-Anpassungen; das `NG_`-Präfix gehört nicht zur Zielobjektkategorie.
+Das Dropdown der ED23-Baustein-Profile (bisher „Nutzergeneriert“, jetzt „ED23-Bausteine (Baustein-Profile)“) markiert NG-Profile mit `NG ·`. Ein Profil mit NG-Controls lädt den NG-Ergänzungskatalog relativ zur Profil-URL und prüft seinen SHA-256 aus der Back-Matter; weicht er ab, entsteht kein Zielobjekt. Die NG-Controls hängen am Zielobjekt (Badge „NG“ im Tailoring, Hinweis „NG-Ergänzung zu <Anforderung>“), der Katalog erscheint einmal in der Katalogliste und verschwindet erst, wenn keine NG-ID mehr referenziert ist (weder an einem Zielobjekt noch global noch in einer Anpassung). Im erzeugten Profil folgt der NG-Katalog auf den Anwenderkatalog (Mindeststandard-Profile davor, `use-first`), NG-IDs stehen nie im Basis-Import; Profil-Metadaten, SSP-Komponenten und implemented-requirements tragen `herkunft=NG`, die Back-Matter-Resource `catalog-role: ng-ergaenzung`. Props-only-`adds` der neuen Profile sind keine Tailoring-Anpassungen; das `NG_`-Präfix gehört nicht zur Zielobjektkategorie.
 
 ## SSP-Generator Edition 2023 V1.7: NG-Bausteine markiert
 
@@ -40,7 +41,7 @@ Kapitel 3 (v0.15) bekommt **3.16 „Nutzergenerierte Inhalte kennzeichnen: die E
 | gemeinsames Stylesheet (gpp-core.css) | 2 · Cache-Buster v4.1 |
 | Übersicht (index.html) | 1.8 |
 | OSCAL Schema Validator | 1.11.2 |
-| SSP-Generator / Editor (ssp_generator) | V5.18.0 |
+| SSP-Generator / Editor (ssp_generator) | V5.18.1 |
 | GS++ Explorer (GSpp-Viewer) | v9.9 |
 | BSI → G++ Profil (Baustein_2_Profile) | 0.12.0 · nur Selbst-Pin |
 | SSP ausfüllen / Grundschutzcheck (ssp_ausfuellen) | v1.7.2 · nur Selbst-Pin |

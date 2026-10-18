@@ -22,6 +22,7 @@ from utils.data_loader import load_json_file
 from utils.file_utils import read_csv_file, read_json_file, write_json_file
 from utils.ed23_baustein import anforderung_sort_key, baustein_sort_key, iter_bausteine, load_ed23_catalogs, ng_title
 from utils.oscal_utils import (
+    make_prop as _prop,
     extract_all_gpp_controls,
     json_equal_ignoring,
     pinned_catalog_resource,
@@ -65,16 +66,6 @@ def sec_level_for(level_num: Optional[str], hoch_token: Optional[str]) -> str:
     if level_num == "5" and hoch_token:
         return hoch_token
     return SEC_LEVEL_NORMAL
-
-
-def _prop(name: str, value: str, ns: Optional[str] = None, remarks: Optional[str] = None) -> Dict[str, Any]:
-    p: Dict[str, Any] = {"name": name}
-    if ns:
-        p["ns"] = ns
-    p["value"] = value
-    if remarks:
-        p["remarks"] = remarks
-    return p
 
 
 def build_ng_control(anf_id: str, rec: Dict[str, Any], gpp_titles: Dict[str, str], hoch_token: Optional[str]) -> Dict[str, Any]:

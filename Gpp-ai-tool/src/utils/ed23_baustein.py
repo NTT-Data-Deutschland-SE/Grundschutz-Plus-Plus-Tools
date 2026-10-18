@@ -155,10 +155,6 @@ def modal_weaker(new: Optional[str], reference: Optional[str]) -> bool:
     return MODAL_RANK.get(new, 0) < MODAL_RANK.get(reference, 0)
 
 
-def _id_parts(ident: str) -> List:
-    return [int(p) if p.isdigit() else p for p in re.split(r"[.]", ident.replace(".A", ".A."))]
-
-
 def anforderung_sort_key(anf_id: str) -> Tuple:
     """Numeric-aware ordering: SYS.1.1.A2 < SYS.1.1.A10, Bausteine by their numeric parts."""
     baustein, _, num = anf_id.rpartition(".A")

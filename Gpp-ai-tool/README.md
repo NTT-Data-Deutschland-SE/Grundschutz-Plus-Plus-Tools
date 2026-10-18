@@ -46,9 +46,9 @@ The tool is configured via environment variables, read by the typed `Settings` c
 | `TEST` | `true`: a few items per stage, no credentials needed | `false` |
 | `OVERWRITE_TEMP_FILES` | `true`: regenerate existing outputs (CLI alias `--fresh`) | `false` |
 | `LOG_LEVEL` | `DEBUG` shows every backend call (httpx/httpcore, urllib3); read at process start | `INFO` |
-| `URL_FETCH_TIMEOUT_SECONDS` / `URL_FETCH_RETRIES` | Remote source downloads | `30` / `3` |
-| `GPP_CATALOG_PIN_COMMIT` / `GPP_CATALOG_PIN_SHA256` | Pinned G++ catalog commit and its SHA-256 (defaults in `src/constants.py`; change both together) | see constants |
-| `ED23_CATALOG_PIN_COMMIT` / `ED23_BD_CATALOG_PIN_SHA256` / `ED23_PLAIN_CATALOG_PIN_SHA256` | Pinned ED23 catalog commit (NTT DATA DACH edition) and the SHA-256 of its two files | see constants |
+| `URL_FETCH_TIMEOUT_SECONDS` / `URL_FETCH_RETRIES` | Remote source downloads (process environment only, not `.env`) | `30` / `3` |
+| `GPP_CATALOG_PIN_COMMIT` / `GPP_CATALOG_PIN_SHA256` | Pinned G++ catalog commit and its SHA-256 (defaults in `src/constants.py`; change both together; process environment only, not `.env`) | see constants |
+| `ED23_CATALOG_PIN_COMMIT` / `ED23_BD_CATALOG_PIN_SHA256` / `ED23_PLAIN_CATALOG_PIN_SHA256` | Pinned ED23 catalog commit (NTT DATA DACH edition) and the SHA-256 of its two files (process environment only, not `.env`) | see constants |
 | `ED23_BAUSTEIN_ABGLEICH_BATCH_SIZE` | Anforderungen per maker call in `stage_ed23_baustein_abgleich` | `5` |
 | `ED23_MATURITY_REUSE_ACROSS_BAUSTEINE` / `ED23_MATURITY_REGENERATE` | Reuse harvested maturity texts of another Baustein / force regeneration | `true` / `false` |
 | `OUTPUT_ROOT` | Root directory for generated artifacts | repository root |

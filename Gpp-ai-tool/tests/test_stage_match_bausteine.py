@@ -51,3 +51,10 @@ async def test_only_missing_bausteine_are_queried_and_stale_entries_dropped():
             fake.calls.clear()
             await st.run_stage_match_bausteine()
             assert fake.calls == []
+            # a stale entry with nothing pending is still pruned from the file
+            with open(out, "w", encoding="utf-8") as f:
+                json.dump({"baustein_zielobjekt_map": {"SYS.1.1": "u1", "SYS.1.2": "u2", "SYS.1.3": "u2", "OLD.9": "u1"}}, f)
+            await st.run_stage_match_bausteine()
+            assert fake.calls == []
+            with open(out, encoding="utf-8") as f:
+                assert json.load(f)["baustein_zielobjekt_map"] == {"SYS.1.1": "u1", "SYS.1.2": "u2", "SYS.1.3": "u2"}

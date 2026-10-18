@@ -24,10 +24,3 @@ def configure_logging(level: str | None = None) -> None:
         # Below DEBUG the transport libraries only add noise.
         for name in ("google.auth", "urllib3", "httpx", "httpcore"):
             logging.getLogger(name).setLevel(logging.WARNING)
-
-
-def setup_logging() -> None:
-    """Backwards-compatible name used by main.py; reads the level from the settings."""
-    from config import app_config
-
-    configure_logging(app_config.log_level)

@@ -67,6 +67,10 @@ def error_detail(exc: BaseException, action: str) -> str:
     return f"{prefix}: {message}" if message else prefix
 
 
+class OutputTruncatedError(RuntimeError):
+    """The model hit MAX_OUTPUT_TOKENS; the output is unusable and a retry cannot fix it."""
+
+
 class AiClient:
     """Structured-output calls against one Gemini model with per-call thinking level."""
 
@@ -232,8 +236,16 @@ class AiClient:
                 response = await client.aio.models.generate_content(
                     model=self.model, contents=[prompt], config=gen_config,
                 )
-                self._log_usage(response, request_context_log)
+                fr_name = self._log_usage(response, request_context_log)
                 raw = self._response_text(response)
+                if fr_name == "MAX_TOKENS":
+                    # Deterministic: the same prompt overruns the same budget again. Retrying
+                    # would re-bill the full prompt plus the whole output budget per attempt.
+                    logger.error(f"[{request_context_log}] Output truncated at MAX_OUTPUT_TOKENS="
+                                 f"{max_output_tokens}; not retried. Raise MAX_OUTPUT_TOKENS or shrink the batch.")
+                    raise OutputTruncatedError(
+                        f"finish_reason=MAX_TOKENS at max_output_tokens={max_output_tokens}"
+                    )
                 try:
                     response_json = json.loads(raw)
                 except json.JSONDecodeError as e:
@@ -242,8 +254,10 @@ class AiClient:
                 validate(instance=response_json, schema=json_schema)
                 logger.info(f"[{request_context_log}] JSON generated and validated on attempt {attempt + 1}.")
                 return response_json
+            except OutputTruncatedError:
+                raise
             except (ValueError, ValidationError) as e:
-                # Bad output (truncated, no text, schema violation): ask again, within the cap.
+                # Bad output (no text, broken JSON, schema violation): ask again, within the cap.
                 reason = e.message.split("\n")[0] if isinstance(e, ValidationError) else str(e)
                 if attempt >= retries:
                     logger.error(f"[{request_context_log}] Giving up after {attempt + 1} attempts: {reason}")

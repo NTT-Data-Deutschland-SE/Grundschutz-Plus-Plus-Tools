@@ -83,6 +83,13 @@ async def test_gives_up_after_cap(monkeypatch):
     assert len(fake.calls) == 3  # 1 attempt + 2 retries
 
 
+async def test_max_tokens_truncation_is_not_retried(monkeypatch):
+    client, fake = _client(monkeypatch, [_response('{"a": 1', finish="MAX_TOKENS"), _response('{"a": 1}')])
+    with pytest.raises(mod.OutputTruncatedError):
+        await client.generate_validated_json_response("p", SCHEMA, "t")
+    assert len(fake.calls) == 1
+
+
 async def test_permanent_error_is_not_retried(monkeypatch):
     err = RuntimeError("403 PERMISSION_DENIED: Vertex AI is forbidden")
     err.code = 403

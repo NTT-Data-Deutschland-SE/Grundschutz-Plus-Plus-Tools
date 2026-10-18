@@ -401,6 +401,24 @@ def _load_checkpoint(path: str) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         return {}, {}
 
 
+def _ki_from_record(rec: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Rebuilds the full ki block from a published record (the inverse of `_serialize`).
+
+    `_serialize` keeps the provenance under `ki` and spreads the model results over the
+    record's top level (zuordnungen with quelle 'ki', neues_control, pruefung, ohne_control).
+    Reusing only `rec['ki']` would drop every model result on the next run.
+    """
+    prov = rec.get("ki")
+    if not prov:
+        return None
+    ki = dict(prov)
+    ki["zuordnungen"] = [z for z in rec.get("zuordnungen") or [] if z.get("quelle") == "ki"]
+    ki["neues_control"] = rec.get("neues_control")
+    ki["pruefung"] = rec.get("pruefung")
+    ki["ohne_control"] = rec.get("ohne_control")
+    return ki
+
+
 def _load_published_ki(path: str) -> Dict[str, Any]:
     """`ki` blocks of a previously published output (reused unless --fresh)."""
     if not os.path.exists(path):
@@ -409,7 +427,12 @@ def _load_published_ki(path: str) -> Dict[str, Any]:
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
         anf = (data.get(OUTPUT_KEY) or {}).get("anforderungen") or {}
-        return {aid: rec["ki"] for aid, rec in anf.items() if rec.get("ki")}
+        out = {}
+        for aid, rec in anf.items():
+            ki = _ki_from_record(rec)
+            if ki:
+                out[aid] = ki
+        return out
     except Exception as e:  # noqa: BLE001
         logger.warning(f"Could not read existing output '{path}' ({e}); ignoring it.")
         return {}
@@ -606,7 +629,12 @@ async def run_stage_ed23_baustein_abgleich() -> None:
                                "ohne_control": {"art": "unbeantwortet", "begruendung": f"kein Maker-Ergebnis in {MAX_ROUNDS} Runden"},
                                "offen": "", "verworfen": []}
 
-        await asyncio.gather(*(check_and_store(aid) for aid in list(kandidaten) if aid in records))
+        # Only pending work goes to the checker: kandidaten already reused from the published
+        # output (or no longer in the selection) are dropped from the checkpoint instead.
+        todo_set = set(todo)
+        for aid in [a for a in kandidaten if a not in todo_set]:
+            kandidaten.pop(aid, None)
+        await asyncio.gather(*(check_and_store(aid) for aid in list(kandidaten)))
         async with lock:
             save_checkpoint(force=True)
         ai_client.log_usage_summary("stage_ed23_baustein_abgleich")

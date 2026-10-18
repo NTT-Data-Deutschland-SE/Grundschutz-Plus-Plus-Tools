@@ -141,6 +141,11 @@ async def run_stage_match_bausteine() -> None:
         f"{', '.join(b['id'] for b in missing if b['id'] in ng_bausteine) or 'none'})."
     )
     if not missing:
+        if stale:
+            from utils.ed23_baustein import baustein_sort_key
+            pruned = {k: existing[k] for k in sorted(existing, key=baustein_sort_key)}
+            save_json_file({"baustein_zielobjekt_map": pruned}, BAUSTEIN_ZIELOBJEKT_JSON_PATH)
+            logger.info(f"Wrote the pruned map ({len(existing)} Bausteine) to '{BAUSTEIN_ZIELOBJEKT_JSON_PATH}'.")
         logger.info("All Bausteine mapped; nothing to query.")
         return
 

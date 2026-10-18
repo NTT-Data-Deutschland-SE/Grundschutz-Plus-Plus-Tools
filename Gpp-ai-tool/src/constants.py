@@ -23,7 +23,7 @@ OUTPUT_ROOT = os.path.abspath(os.environ.get("OUTPUT_ROOT", REPO_ROOT))
 ANFORDERUNG_ID_PATTERN = re.compile(r"^.*$")
 
 # --- Build ---
-BUILD_VERSION = "5.0.0"
+BUILD_VERSION = "5.0.1"
 
 # --- Data Source URLs ---
 # Input data is fetched directly from the upstream GitHub repositories (raw content), always

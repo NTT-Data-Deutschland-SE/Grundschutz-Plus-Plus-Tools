@@ -48,6 +48,8 @@ async def main() -> None:
         os.environ["OVERWRITE_TEMP_FILES"] = "true"
     # Imported after the CLI parse so `--version`/`--help` need no settings and no network.
     from config import app_config
+    # LOG_LEVEL may come from .env (pydantic-settings), which never reaches os.environ.
+    configure_logging(app_config.log_level)
     from pipeline import (
         stage_ED23_profiles_enhanced, stage_base_process_enhanced, stage_gpp, stage_match_bausteine,
         stage_profiles, stage_ed23_anforderungen, stage_ed23_relationen, stage_ed23_satz_abdeckung,

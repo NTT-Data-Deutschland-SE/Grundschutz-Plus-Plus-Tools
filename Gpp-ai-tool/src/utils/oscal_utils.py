@@ -10,6 +10,7 @@ import hashlib
 import logging
 import re
 import uuid
+from typing import Any, Dict, Optional
 from urllib.parse import unquote
 
 from jsonschema import validate, ValidationError
@@ -147,6 +148,17 @@ def json_equal_ignoring(a, b, ignore=("last-modified",)) -> bool:
 
 
 _TOKEN_RE = re.compile(r"^[^\W\d_][\w.\-]*$", re.UNICODE)
+
+
+def make_prop(name: str, value: str, ns: Optional[str] = None, remarks: Optional[str] = None) -> Dict[str, Any]:
+    """Builds an OSCAL prop (`name`, optional `ns`, `value`, optional `remarks`) in that key order."""
+    p: Dict[str, Any] = {"name": name}
+    if ns:
+        p["ns"] = ns
+    p["value"] = value
+    if remarks:
+        p["remarks"] = remarks
+    return p
 
 
 def _prop(obj: dict, name: str, ns: str = None):

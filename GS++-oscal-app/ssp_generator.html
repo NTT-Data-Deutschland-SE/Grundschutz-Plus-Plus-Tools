@@ -685,7 +685,7 @@
             </div>
         </div>
 
-        <div class="rail-foot">BUILD V5.18.0</div>
+        <div class="rail-foot">BUILD V5.18.1</div>
     </aside>
 
     <div id="rail-splitter" class="splitter" title="Rail-Breite ziehen"></div>
@@ -4619,9 +4619,21 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             renderCatalogsList();
             return cat;
         }
+        /* Der NG-Katalog bleibt, solange irgendwo eine NG-ID referenziert ist: an einer Komponente
+           (ngControls), global (manualControls) oder in einer Zielobjekt-Anpassung (modifications).
+           Sonst verlören diese IDs beim Export ihren Import, stünden aber weiter im SSP. */
+        function ngCatalogStillReferenced() {
+            if (bpState.components.some(c => c.ngControls?.size)) return true;
+            if ([...bpState.manualControls].some(isNgControlId)) return true;
+            if (bpState.components.some(c => [...c.controls].some(isNgControlId))) return true;
+            for (const key of bpState.modifications.keys()) {
+                if (isNgControlId(key.split('||')[1])) return true;
+            }
+            return false;
+        }
         function pruneNgCatalog() {
             const idx = bpState.catalogs.findIndex(c => c.kind === 'ng-ergaenzung');
-            if (idx < 0 || bpState.components.some(c => c.ngControls?.size)) return;
+            if (idx < 0 || ngCatalogStillReferenced()) return;
             const cat = bpState.catalogs[idx];
             bpState.controlsIndex.forEach((e, id) => { if (e.catalogHref === cat.href) bpState.controlsIndex.delete(id); });
             bpState.catalogs.splice(idx, 1);

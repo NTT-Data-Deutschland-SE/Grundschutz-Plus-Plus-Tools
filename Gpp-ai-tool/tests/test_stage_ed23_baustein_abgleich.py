@@ -176,6 +176,21 @@ async def test_run_publishes_output_and_resumes_without_calls():
             fake.calls.clear()
             await st.run_stage_ed23_baustein_abgleich()
             assert fake.calls == []
+            # Resume must keep the model results, not just the provenance block.
+            with open(out, encoding="utf-8") as f:
+                doc2 = json.load(f)["ed23_baustein_abgleich"]
+            assert doc2["anforderungen"]["SYS.1.1.A2"]["neues_control"]["id"] == "NG-SYS.1.1.A2"
+            assert doc2["anforderungen"]["SYS.1.1.A2"]["pruefung"]["modalverb"] == "MUSS"
+            assert doc2["meta"]["neue_controls"] == 1
+            assert doc2["anforderungen"] == doc["anforderungen"]
+            # A stale checkpoint candidate for an already published Anforderung is not re-checked.
+            with open(out + ".partial", "w", encoding="utf-8") as f:
+                json.dump({st.CHECKPOINT_DONE: {}, st.CHECKPOINT_KANDIDATEN: {
+                    "SYS.1.1.A2": {"pruefung": {}, "zuordnungen": [], "neues_control": {"id": "NG-SYS.1.1.A2"},
+                                   "ohne_control": None, "offen": "", "verworfen": []}}}, f)
+            fake.calls.clear()
+            await st.run_stage_ed23_baustein_abgleich()
+            assert fake.calls == [] and not os.path.exists(out + ".partial")
         finally:
             for p in patches:
                 p.stop()

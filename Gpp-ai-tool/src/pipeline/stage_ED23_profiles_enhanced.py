@@ -56,6 +56,7 @@ from utils.ed23_baustein import (
     profile_file_stem,
 )
 from utils.oscal_utils import (
+    make_prop as _prop,
     extract_all_gpp_controls,
     json_equal_ignoring,
     ng_katalog_resource,
@@ -361,16 +362,6 @@ def herkunft_remark(z: Dict[str, Any]) -> str:
     if others:
         text += f" [auch: {', '.join(others)}]"
     return text
-
-
-def _prop(name: str, value: str, ns: Optional[str] = None, remarks: Optional[str] = None) -> Dict[str, Any]:
-    p: Dict[str, Any] = {"name": name}
-    if ns:
-        p["ns"] = ns
-    p["value"] = value
-    if remarks:
-        p["remarks"] = remarks
-    return p
 
 
 def build_merge_groups(baustein_id: str, ordered: List[Dict[str, Any]], abgleich: Dict[str, Any],
