@@ -67,6 +67,7 @@ async def match_baustein_to_zielobjekt(
             prompt=prompt,
             json_schema=schema,
             request_context_log=f"BausteinToZielobjekt-{baustein_id}",
+            thinking="low",  # one classification per Baustein: bulk work
         )
 
     if not response_json:

@@ -1,47 +1,33 @@
 """
-Configures the application's logging based on the execution environment.
+One-call logging setup (the LOG_LEVEL lever).
 
-This module provides a centralized logging setup function that adheres to the
-project's conditional logging requirements. It adjusts log levels for the
-application and third-party libraries based on whether the application is in
-"test" or "production" mode.
+Nothing is hand-instrumented: lowering the root level makes every backend client emit its own
+wire logs (google-genai via httpx/httpcore, google.auth, urllib3). Logs go to stderr so stdout
+stays clean for machine output. `LOG_LEVEL` is read at process start — restart to apply.
 """
 
 import logging
-import sys
+import os
 
-from config import app_config
-from constants import *
+LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s: %(message)s"
+
+
+def configure_logging(level: str | None = None) -> None:
+    """Configures the root logger once. `level` wins; otherwise `LOG_LEVEL`; else INFO.
+
+    `force=True` re-installs the handler even if something configured logging first, so the
+    chosen level always takes effect.
+    """
+    resolved = (level or os.getenv("LOG_LEVEL") or "INFO").upper()
+    logging.basicConfig(level=resolved, format=LOG_FORMAT, force=True)
+    if resolved != "DEBUG":
+        # Below DEBUG the transport libraries only add noise.
+        for name in ("google.auth", "urllib3", "httpx", "httpcore"):
+            logging.getLogger(name).setLevel(logging.WARNING)
 
 
 def setup_logging() -> None:
-    """
-    Initializes and configures the root logger for the application.
+    """Backwards-compatible name used by main.py; reads the level from the settings."""
+    from config import app_config
 
-    This function sets the logging level and format for the root logger.
-    In production mode (TEST=false), it also suppresses verbose output from
-    noisy third-party libraries to ensure logs remain clean and focused on
-    high-level status updates.
-    """
-    if app_config.is_test_mode:
-        log_level = LOG_LEVEL_TEST
-    else:
-        log_level = LOG_LEVEL_PRODUCTION
-
-    # Configure the root logger
-    logging.basicConfig(
-        level=log_level,
-        format=LOG_FORMAT,
-        stream=sys.stdout  # Ensure logs go to stdout
-    )
-
-    # In production, reduce the noise from third-party libraries
-    if not app_config.is_test_mode:
-        noisy_libraries = ["google.auth", "urllib3"]
-        for lib_name in noisy_libraries:
-            logging.getLogger(lib_name).setLevel(
-                THIRD_PARTY_LOG_LEVEL_PRODUCTION
-            )
-
-    logger = logging.getLogger(__name__)
-    logger.debug("Logging configured for %s mode.", "test" if app_config.is_test_mode else "production")
+    configure_logging(app_config.log_level)

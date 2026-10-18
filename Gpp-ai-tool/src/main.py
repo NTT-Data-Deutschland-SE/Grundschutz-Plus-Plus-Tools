@@ -10,8 +10,11 @@ import logging
 import asyncio
 import argparse
 
-from pipeline import stage_ED23_profiles_enhanced, stage_base_process_enhanced, stage_gpp, stage_match_bausteine, stage_profiles, stage_ed23_anforderungen, stage_ed23_relationen, stage_ed23_satz_abdeckung, stage_prozessbausteine, processing
-from utils.logger import setup_logging
+import os
+import sys
+
+from constants import BUILD_VERSION
+from utils.logger import configure_logging
 
 
 async def main() -> None:
@@ -21,10 +24,15 @@ async def main() -> None:
     This function executes the main steps of the pipeline based on the
     provided command-line arguments.
     """
-    setup_logging()
+    configure_logging()
     logger = logging.getLogger(__name__)
 
     parser = argparse.ArgumentParser(description="OSCAL Generation Pipeline")
+    parser.add_argument("--version", action="version", version=f"Gpp-ai-tool {BUILD_VERSION}")
+    parser.add_argument(
+        "--fresh", action="store_true",
+        help="Start over: regenerate existing outputs (same as OVERWRITE_TEMP_FILES=true).",
+    )
     parser.add_argument(
         "--stage",
         type=str,
@@ -33,7 +41,22 @@ async def main() -> None:
         help="The pipeline stage to execute. If not provided, the full pipeline will run.",
     )
     args = parser.parse_args()
-
+    if args.fresh:
+        os.environ["OVERWRITE_TEMP_FILES"] = "true"
+    # Imported after the CLI parse so `--version`/`--help` need no settings and no network.
+    from config import app_config
+    from pipeline import (
+        stage_ED23_profiles_enhanced, stage_base_process_enhanced, stage_gpp, stage_match_bausteine,
+        stage_profiles, stage_ed23_anforderungen, stage_ed23_relationen, stage_ed23_satz_abdeckung,
+        stage_prozessbausteine, processing,
+    )
+    if args.fresh:
+        app_config.overwrite_temp_files = True
+    logger.info(
+        f"Gpp-ai-tool {BUILD_VERSION}: model={app_config.gemini_model} "
+        f"maker={app_config.maker_thinking_level} checker={app_config.checker_thinking_level} "
+        f"region={app_config.region} test={app_config.is_test_mode} fresh={app_config.overwrite_temp_files}"
+    )
 
     if args.stage:
         logger.info(f"Starting OSCAL generation pipeline for stage: {args.stage}...")

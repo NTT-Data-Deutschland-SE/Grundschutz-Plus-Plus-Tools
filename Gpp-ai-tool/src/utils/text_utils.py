@@ -7,7 +7,7 @@ This module provides utility functions for text manipulation, such as sanitizing
 import regex as re
 
 def replace_umlauts(text: str) -> str:
-    """
+    r"""
     Replaces German umlauts and 'ß' with their equivalents.
     """
     mapping = {
@@ -40,7 +40,7 @@ def sanitize_filename(filename):
     return filename
 
 def sanitize_oscal_prop_name(name: str) -> str:
-    """
+    r"""
     Sanitizes a string to conform to the OSCAL property name format.
     The name must match the regex: ^(\p{L}|_)(\p{L}|\p{N}|[.\-_])*$
     """

@@ -9,24 +9,21 @@
 # via the deploy.sh script.
 #
 # Usage:
-#   ./scripts/run_cloud.sh <GCP_PROJECT_ID> <GCP_REGION> <BUCKET_NAME> <SOURCE_PREFIX> <OUTPUT_PREFIX> <AI_ENDPOINT_ID>
+#   ./scripts/run_cloud.sh <GCP_PROJECT_ID> <GCP_REGION> [<STAGE>]
 #
 
 # --- Configuration ---
 set -e
 
 # --- Variables ---
-if [ "$#" -ne 6 ]; then
-    echo "Usage: $0 <GCP_PROJECT_ID> <GCP_REGION> <BUCKET_NAME> <SOURCE_PREFIX> <OUTPUT_PREFIX> <AI_ENDPOINT_ID>"
+if [ "$#" -lt 2 ]; then
+    echo "Usage: $0 <GCP_PROJECT_ID> <GCP_REGION> [<STAGE>]"
     exit 1
 fi
 
 GCP_PROJECT_ID="$1"
 GCP_REGION="$2"
-BUCKET_NAME="$3"
-SOURCE_PREFIX="$4"
-OUTPUT_PREFIX="$5"
-AI_ENDPOINT_ID="$6"
+STAGE="${3:-}"
 JOB_NAME="oscal-generator"
 
 
@@ -38,6 +35,7 @@ gcloud beta run jobs execute "$JOB_NAME" \
   --region "$GCP_REGION" \
   --project "$GCP_PROJECT_ID" \
   --wait \
-  --update-env-vars "BUCKET_NAME=$BUCKET_NAME,SOURCE_PREFIX=$SOURCE_PREFIX,OUTPUT_PREFIX=$OUTPUT_PREFIX,AI_ENDPOINT_ID=$AI_ENDPOINT_ID,TEST=false"
+  --update-env-vars "GCP_PROJECT_ID=$GCP_PROJECT_ID,REGION=global,TEST=false" \
+  ${STAGE:+--args="--stage,$STAGE"}
 
 echo "--- Cloud Run Job Execution Finished ---"

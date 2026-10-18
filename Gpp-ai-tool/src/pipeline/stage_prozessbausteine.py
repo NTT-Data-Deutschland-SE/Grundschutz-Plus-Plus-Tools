@@ -18,12 +18,11 @@ is complete — a run that cannot reach completeness within PROZESSBAUSTEINE_MAX
 its checkpoint and raises, so an incomplete mapping is never published and never blocks a
 later resume via the idempotency guard. In TEST mode no final artifact is written at all.
 
-Grounding: the full G++ catalog is stripped to a compact `id | title | prose` corpus and put
-into an explicit Vertex AI context cache once, then reused by every chunk request. The ED2023
-Anforderungen are sent in chunks so each request's *output* stays small and every 1:1 decision
-is made in a context the model can still reason over reliably. Because the mapping requires
-weighing near-miss candidates, the chunks are answered by the Pro model, which runs with
-thinking enabled (see `AiClient.generate_validated_json_response`).
+Grounding: the full G++ catalog is stripped to a compact `id | title | prose` corpus that forms
+the stable prefix of every chunk prompt (implicit caching discounts the repeated prefix). The
+ED2023 Anforderungen are sent in chunks so each request's *output* stays small and every 1:1
+decision is made in a context the model can still reason over reliably. Because the mapping
+requires weighing near-miss candidates, the chunks run at the checker thinking level.
 
 Every returned G++ ID is post-filtered against the real corpus, so hallucinated IDs cannot
 reach the output.
@@ -51,7 +50,6 @@ from constants import (
     PROZESSBAUSTEINE_LAYERS,
     PROZESSBAUSTEINE_CHUNK_SIZE,
     PROZESSBAUSTEINE_MAX_ROUNDS,
-    GROUND_TRUTH_MODEL_PRO,
     PROMPT_CONFIG_PATH,
 )
 
@@ -145,14 +143,14 @@ async def _match_chunk(
     prompt_template: str,
     schema: Dict[str, Any],
     gpp_lookup: Dict[str, str],
-    cached_content,
     inline_prefix: str,
+    system_instruction: str,
     semaphore: asyncio.Semaphore,
 ) -> Dict[str, str]:
     """Asks the AI for the best G++ match for every Anforderung in one chunk."""
     user_prompt = prompt_template.format(chunk=_chunk_text(chunk))
-    # When the cache is unavailable, inline the system instruction + corpus so grounding still applies.
-    prompt = user_prompt if cached_content else f"{inline_prefix}\n\n{user_prompt}"
+    # Stable prefix (corpus) first, the varying chunk last: implicit-cache layout.
+    prompt = f"{inline_prefix}\n\n{user_prompt}"
 
     async with semaphore:
         try:
@@ -160,8 +158,9 @@ async def _match_chunk(
                 prompt=prompt,
                 json_schema=schema,
                 request_context_log=f"Prozessbausteine-chunk{index}",
-                model_override=GROUND_TRUTH_MODEL_PRO,
-                cached_content=cached_content,
+                # Weighing near-miss candidates is judgment work: the checker level.
+                thinking=app_config.checker_thinking_level,
+                system_instruction=system_instruction,
             )
         except Exception as e:
             logger.warning(f"AI matching failed for chunk {index} ({len(chunk)} Anforderungen): {e}")
@@ -277,15 +276,10 @@ async def run_stage_prozessbausteine() -> None:
 
     ai_client = AiClient(app_config)
 
-    # The corpus is identical for every chunk, so it is cached once against the Pro model and
-    # attached per request instead of being re-sent (and re-billed) each time.
-    cached_content = ai_client.create_context_cache(
-        content=corpus_text,
-        system_instruction=system_instruction,
-        model_override=GROUND_TRUTH_MODEL_PRO,
-    )
+    # The corpus is identical for every chunk and forms the stable prompt prefix (implicit
+    # caching; no explicit cache on Argon). The system instruction goes into the system field.
     inline_prefix = (
-        f"{system_instruction}\n\nVerfügbare G++-Maßnahmen "
+        f"Verfügbare G++-Maßnahmen "
         f"(Format: ID | Titel | Beschreibung):\n{corpus_text}"
     )
 
@@ -295,7 +289,7 @@ async def run_stage_prozessbausteine() -> None:
     async def _match_and_checkpoint(index: int, chunk: List[Dict[str, str]], template: str) -> None:
         matched = await _match_chunk(
             ai_client, index, chunk, template, schema, gpp_lookup,
-            cached_content, inline_prefix, semaphore,
+            inline_prefix, system_instruction, semaphore,
         )
         # Serialize writes so the checkpoint file stays consistent under concurrency.
         async with checkpoint_lock:
@@ -307,53 +301,50 @@ async def run_stage_prozessbausteine() -> None:
     # prompt, which requires picking the closest available control. Failed chunks simply
     # leave their Anforderungen unmatched, so transient API errors are retried in the next
     # round instead of silently truncating the result (review finding: incomplete publish).
-    try:
-        rounds = 0
-        while True:
-            pending = [a for a in anforderungen if a["id"] not in final_map]
-            if not pending:
-                break
-            rounds += 1
-            if rounds > PROZESSBAUSTEINE_MAX_ROUNDS:
-                unmatched_ids = [a["id"] for a in pending]
-                logger.critical(
-                    f"{len(unmatched_ids)} Anforderungen still unmapped after "
-                    f"{PROZESSBAUSTEINE_MAX_ROUNDS} rounds: {', '.join(unmatched_ids)}. "
-                    f"Keeping checkpoint '{CHECKPOINT_PATH}' for resume; NOT publishing an "
-                    f"incomplete mapping."
-                )
-                raise RuntimeError(
-                    f"stage_prozessbausteine could not map {len(unmatched_ids)} Anforderungen "
-                    f"within {PROZESSBAUSTEINE_MAX_ROUNDS} rounds."
-                )
+    rounds = 0
+    while True:
+        pending = [a for a in anforderungen if a["id"] not in final_map]
+        if not pending:
+            break
+        rounds += 1
+        if rounds > PROZESSBAUSTEINE_MAX_ROUNDS:
+            unmatched_ids = [a["id"] for a in pending]
+            logger.critical(
+                f"{len(unmatched_ids)} Anforderungen still unmapped after "
+                f"{PROZESSBAUSTEINE_MAX_ROUNDS} rounds: {', '.join(unmatched_ids)}. "
+                f"Keeping checkpoint '{CHECKPOINT_PATH}' for resume; NOT publishing an "
+                f"incomplete mapping."
+            )
+            raise RuntimeError(
+                f"stage_prozessbausteine could not map {len(unmatched_ids)} Anforderungen "
+                f"within {PROZESSBAUSTEINE_MAX_ROUNDS} rounds."
+            )
 
-            template = prompt_template if rounds == 1 else prompt_template_force
-            # Stubborn items get smaller chunks in retry rounds so each decision stands alone.
-            chunk_size = PROZESSBAUSTEINE_CHUNK_SIZE if rounds == 1 else max(1, min(PROZESSBAUSTEINE_CHUNK_SIZE, 5))
-            chunks = [pending[i:i + chunk_size] for i in range(0, len(pending), chunk_size)]
+        template = prompt_template if rounds == 1 else prompt_template_force
+        # Stubborn items get smaller chunks in retry rounds so each decision stands alone.
+        chunk_size = PROZESSBAUSTEINE_CHUNK_SIZE if rounds == 1 else max(1, min(PROZESSBAUSTEINE_CHUNK_SIZE, 5))
+        chunks = [pending[i:i + chunk_size] for i in range(0, len(pending), chunk_size)]
 
-            # Respect Test Mode (Rule 9.1): only the first 2 chunks of a single round.
-            if app_config.is_test_mode:
-                chunks = chunks[:2]
-                logger.info("TEST mode: limiting to the first 2 chunks of round 1.")
+        # Respect Test Mode (Rule 9.1): only the first 2 chunks of a single round.
+        if app_config.is_test_mode:
+            chunks = chunks[:2]
+            logger.info("TEST mode: limiting to the first 2 chunks of round 1.")
 
+        logger.info(
+            f"Round {rounds}: mapping {len(pending)} pending Anforderungen in "
+            f"{len(chunks)} chunk(s) of {chunk_size} using {app_config.gemini_model} "
+            f"({len(final_map)} already mapped)."
+        )
+        await asyncio.gather(
+            *(_match_and_checkpoint(i, c, template) for i, c in enumerate(chunks))
+        )
+
+        if app_config.is_test_mode:
             logger.info(
-                f"Round {rounds}: mapping {len(pending)} pending Anforderungen in "
-                f"{len(chunks)} chunk(s) of {chunk_size} using {GROUND_TRUTH_MODEL_PRO} "
-                f"({len(final_map)} already mapped)."
+                "TEST mode: stopping after one round; final artifact is NOT written "
+                f"(checkpoint kept at '{CHECKPOINT_PATH}')."
             )
-            await asyncio.gather(
-                *(_match_and_checkpoint(i, c, template) for i, c in enumerate(chunks))
-            )
-
-            if app_config.is_test_mode:
-                logger.info(
-                    "TEST mode: stopping after one round; final artifact is NOT written "
-                    f"(checkpoint kept at '{CHECKPOINT_PATH}')."
-                )
-                return
-    finally:
-        ai_client.delete_context_cache(cached_content)
+            return
 
     # Complete coverage reached — publish. Emit in catalog order rather than completion
     # order, so reruns produce a stable diff.

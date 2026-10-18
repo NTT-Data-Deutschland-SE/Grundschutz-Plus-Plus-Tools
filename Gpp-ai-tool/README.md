@@ -2,63 +2,59 @@
 
 Gpp-ai-tool is a Python-based automation framework designed to facilitate the migration from BSI IT-Grundschutz Edition 2023 (Ed2023) to the modernized Grundschutz++ (G++) methodology using OSCAL 1.2.2 profiles.
 
-The tool leverages Google Vertex AI (Gemini) to perform semantic mapping and enrich OSCAL components with AI-generated implementation details.
+The tool uses Gemini 4 Argon on the Gemini Enterprise Agent Platform (or the Developer API) for semantic mapping and for AI-generated enrichment; everything computable is done in code first, the model only judges the residual.
 
 ## Key Features
 
 - **Automated Migration (Mapping):** Maps Ed2023 "Bausteine" to G++ "Zielobjekte" and Ed2023 "Anforderungen" to G++ "Kontrollen".
 - **AI-Powered Enrichment:** Generates detailed implementation descriptions for maturity levels 1-5 and performs automated classifications (NIST, ISMS, CIA), emitted as OSCAL `alter` blocks on the generated profiles.
 - **Multi-Stage Pipeline:** Modular architecture allowing for individual stage execution or full pipeline runs.
-- **Upstream Data Sources:** Reference data (BSI Ed2023 catalog, G++ catalog, target-object categories) is fetched directly from the upstream GitHub repositories; AI enrichment runs on Google Vertex AI (Gemini).
+- **Upstream Data Sources:** Reference data (BSI Ed2023 catalog, G++ catalog, target-object categories) is fetched from the upstream GitHub repositories at pinned commits with SHA-256 checks.
 
 ## Installation
 
 ### Prerequisites
 
-- Python 3.9 or higher
-- Access to a Google Cloud Project with Vertex AI and Cloud Storage enabled
-- `gcloud` CLI installed and authenticated
+- Python 3.12 or higher and [`uv`](https://docs.astral.sh/uv/)
+- Either a Google Cloud project with the Gemini Enterprise Agent Platform (ex Vertex AI) enabled and `gcloud auth application-default login`, or a Gemini Developer API key
+- Optional: `just` for the task shortcuts in `justfile`
 
 ### Setup
 
-1.  **Clone the repository and navigate to the project directory:**
-    ```bash
-    cd Gpp-ai-tool
-    ```
-
-2.  **Create and activate a virtual environment:**
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
-
-3.  **Install the dependencies:**
-    ```bash
-    pip install -r src/requirements.txt
-    ```
+```bash
+cd Gpp-ai-tool
+uv sync            # creates .venv from pyproject.toml / uv.lock (google-genai >= 2.30.1)
+cp .env.example .env   # fill in GCP_PROJECT_ID or GEMINI_API_KEY
+uv run pytest -q   # offline test suite, no credentials needed
+```
 
 ## Configuration
 
-The tool is configured via environment variables. Create a `.env` file (in `Gpp-ai-tool/` or the repository root, both gitignored; UTF-8 or UTF-16 with BOM both work) or export them in your shell:
+The tool is configured via environment variables, read by the typed `Settings` class in `src/config.py` (pydantic-settings). A `.env` file in `Gpp-ai-tool/` or the repository root (both gitignored) is read as well; real environment variables win. Every variable is listed in `.env.example`.
 
-| Variable | Description | Required |
+| Variable | Description | Default |
 | :--- | :--- | :--- |
-| `GCP_PROJECT_ID` | Your Google Cloud Project ID (for Vertex AI via ADC) | One of these two |
-| `GEMINI_API_KEY` | Gemini Developer API key (AI Studio) — the client then talks to the Developer API instead of Vertex, no gcloud/ADC needed | One of these two |
-| `REGION` | GCP Region (default: `global`) | No |
-| `AI_ENDPOINT_ID` | Optional Vertex AI endpoint/model override (model id otherwise comes from `constants.GROUND_TRUTH_MODEL`) | No |
-| `GROUND_TRUTH_MODEL` / `GROUND_TRUTH_MODEL_PRO` | Override the default Gemini model ids (defaults: `gemini-3.7-flash` / `gemini-3.1-pro-preview`) | No |
-| `ED23_MAKER_MODEL` | Model for the ED23 candidate (maker) pass in `stage_ed23_anforderungen` (default: `gemini-3-flash-preview` — deliberately more generous than the strict verifier on `GROUND_TRUTH_MODEL`) | No |
-| `TEST` | Set to `true` for test mode (default: `false`) | No |
-| `MAX_CONCURRENT_AI_REQUESTS` | Limit parallel AI calls (default: `5`) | No |
-| `OVERWRITE_TEMP_FILES` | Regenerate existing output files (default: `false`) | No |
-| `URL_FETCH_TIMEOUT_SECONDS` | Timeout for remote source downloads (default: `30`) | No |
-| `URL_FETCH_RETRIES` | Retry attempts for remote source downloads (default: `3`) | No |
-| `GPP_CATALOG_PIN_COMMIT` / `GPP_CATALOG_PIN_SHA256` | Override the pinned G++ catalog commit and its SHA-256 (defaults in `src/constants.py`; always change both together) | No |
-| `OUTPUT_ROOT` | Root directory for generated artifacts (default: repository root) | No |
-| `SDT_HELPER_OUTPUT_DIR` / `SDT_PROFILES_REGULAR_DIR` / `SDT_PROFILES_PROCESS_DIR` / `ED23_PROFILES_DIR` | Override individual output directories (default: under `OUTPUT_ROOT`) | No |
+| `GCP_PROJECT_ID` | Google Cloud project for the Agent Platform via ADC | one of these two is required |
+| `GEMINI_API_KEY` | Gemini Developer API key (AI Studio); no gcloud/ADC needed | one of these two is required |
+| `REGION` | Location: `global`, `eu` or `us` (Argon is served on all three) | `global` |
+| `GEMINI_MODEL` | The one model id. Cost and quality are set per call by the thinking level, never by a second model | `gemini-4-argon` |
+| `MAKER_THINKING_LEVEL` | Thinking level (`low`/`medium`/`high`) of the maker and enrichment calls (candidates, maturity texts) | `medium` |
+| `CHECKER_THINKING_LEVEL` | Thinking level of the checker/verifier calls and of judgment-heavy mapping (prozessbausteine) | `high` |
+| `MAX_OUTPUT_TOKENS` | Output budget per call, thinking tokens included (>= 32768; above 65536 the SDK runs long decode) | `65536` |
+| `MAX_CONCURRENT_AI_REQUESTS` | Size of the parallel call pool (lower it on persistent 429s) | `5` |
+| `API_MAX_RETRIES` | Retries per call for transient errors and schema violations together (max 5) | `5` |
+| `TEST` | `true`: a few items per stage, no credentials needed | `false` |
+| `OVERWRITE_TEMP_FILES` | `true`: regenerate existing outputs (CLI alias `--fresh`) | `false` |
+| `LOG_LEVEL` | `DEBUG` shows every backend call (httpx/httpcore, urllib3); read at process start | `INFO` |
+| `URL_FETCH_TIMEOUT_SECONDS` / `URL_FETCH_RETRIES` | Remote source downloads | `30` / `3` |
+| `GPP_CATALOG_PIN_COMMIT` / `GPP_CATALOG_PIN_SHA256` | Pinned G++ catalog commit and its SHA-256 (defaults in `src/constants.py`; change both together) | see constants |
+| `ED23_CATALOG_PIN_COMMIT` / `ED23_BD_CATALOG_PIN_SHA256` / `ED23_PLAIN_CATALOG_PIN_SHA256` | Pinned ED23 catalog commit (NTT DATA DACH edition) and the SHA-256 of its two files | see constants |
+| `ED23_BAUSTEIN_ABGLEICH_BATCH_SIZE` | Anforderungen per maker call in `stage_ed23_baustein_abgleich` | `5` |
+| `ED23_MATURITY_REUSE_ACROSS_BAUSTEINE` / `ED23_MATURITY_REGENERATE` | Reuse harvested maturity texts of another Baustein / force regeneration | `true` / `false` |
+| `OUTPUT_ROOT` | Root directory for generated artifacts | repository root |
+| `SDT_HELPER_OUTPUT_DIR` / `SDT_PROFILES_REGULAR_DIR` / `SDT_PROFILES_PROCESS_DIR` / `ED23_PROFILES_DIR` | Override individual output directories | under `OUTPUT_ROOT` |
 
-> **Note:** The pipeline fetches input catalogs from GitHub and writes generated artifacts to local directories (`hilfsdateien/`, `Zielobjektkategorien/profile/`, `ED23-Baustein-profile/`) relative to the repository root. The former GCS variables (`BUCKET_NAME`, `SOURCE_PREFIX`, `OUTPUT_PREFIX`) and the `google-cloud-storage` dependency have been removed — only `GCP_PROJECT_ID` is required to start the tool.
+> **Note:** The pipeline fetches input catalogs from GitHub at pinned commits and writes generated artifacts to local directories (`hilfsdateien/`, `Zielobjektkategorien/profile/`, `ED23-Baustein-profile/`) relative to the repository root. There is no explicit context cache any more (none exists on the current model generation): corpus-grounded stages put the corpus first and the varying item last, so the repeated prefix is cached implicitly. Debugging a failing call: `LOG_LEVEL=DEBUG` shows the real project/location/model in the request URL and the status code (403 = IAM/model access, 404 = wrong model, 429/5xx = transient).
 
 ## Usage
 
@@ -67,13 +63,15 @@ The tool is configured via environment variables. Create a `.env` file (in `Gpp-
 Use the provided helper script to run the pipeline locally:
 
 ```bash
-./scripts/run_local.sh --stage <stage_name>
+./scripts/run_local.sh --stage <stage_name>     # or: just dev --stage <stage_name>
 ```
 
 To run the full pipeline, omit the stage argument:
 ```bash
 ./scripts/run_local.sh
 ```
+
+`uv run python src/main.py --version` prints the build; `just test`, `just lint` and `just gemini-lint` run the offline tests, ruff and the Gemini migration lint.
 
 ### Data Sources (Inputs)
 
