@@ -1,6 +1,6 @@
-# Grundschutz++ OSCAL Tools – Version 4.4
+# Grundschutz++ OSCAL Tools – Version 5.0
 
-Version 4.4 stellt die **ED23-Baustein-Profile** auf das Muster der Mindeststandard-Profile um, nimmt die **12 nutzergenerierten Bausteine** des benutzerdefinierten ED23-Katalogs und **7 Prozess-Bausteine ohne Gegenstück in Grundschutz++** auf, und kennzeichnet alles, was nicht vom BSI stammt, als **NG (Nutzergenerierte Inhalte)** – in Daten und Werkzeugen. Die Pipeline `Gpp-ai-tool` läuft dazu auf **Gemini 4 Argon** mit einem Modell und Thinking-Levels.
+Version 5.0 stellt die **ED23-Baustein-Profile** auf das Muster der Mindeststandard-Profile um, nimmt die **12 nutzergenerierten Bausteine** des benutzerdefinierten ED23-Katalogs und **7 Prozess-Bausteine ohne Gegenstück in Grundschutz++** auf, und kennzeichnet alles, was nicht vom BSI stammt, als **NG (Nutzergenerierte Inhalte)** – in Daten und Werkzeugen. Die Pipeline `Gpp-ai-tool` läuft dazu auf **Gemini 4 Argon** mit einem Modell und Thinking-Levels.
 
 ## ED23-Baustein-Profile: Anforderungen als Struktur, NG-Ergänzungskatalog, Herkunft je Zuordnung
 
@@ -47,7 +47,7 @@ Kapitel 3 (v0.15) bekommt **3.16 „Nutzergenerierte Inhalte kennzeichnen: die E
 | SSP ausfüllen / Grundschutzcheck (ssp_ausfuellen) | v1.7.2 · nur Selbst-Pin |
 | Prüfung AP/AR (pruefung_ap_ar) | build 9.7.0 · nur Selbst-Pin |
 | POA&M-Generator | v2.5 |
-| Pipeline (Gpp-ai-tool) | 5.0.0 |
+| Pipeline (Gpp-ai-tool) | 5.0.1 |
 
 Einzelwerkzeuge in `one-page-apps/`: eigenständig, ohne `gpp-core.js`, von der Datenbank unberührt:
 

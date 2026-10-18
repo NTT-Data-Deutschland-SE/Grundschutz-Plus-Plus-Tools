@@ -1,7 +1,7 @@
 # Übergabe: ED23-Baustein-Profile nach Mindeststandard-Muster, NG-Kennzeichnung, Argon-Migration
 
 Stand: 2026-10-18, Branch `main`, Commits `b6e3d15` … `87c6192` (8 Commits auf `d359435`, Merge von Release 4.3).
-Plan: `~/.claude/plans/mir-ist-aufgefallen-dass-zesty-fiddle.md` (Teil 0–3). Release Notes: `RELEASE_NOTES_v4.4.md`.
+Plan: `~/.claude/plans/mir-ist-aufgefallen-dass-zesty-fiddle.md` (Teil 0–3). Release Notes: `RELEASE_NOTES_v5.0.md`.
 Diese Datei ist die Übergabe an die nächste Sitzung; sie wird mit dem Abschluss von Schritt 7 unten gelöscht.
 
 ## 1. Was fertig und verifiziert ist
@@ -16,14 +16,14 @@ Diese Datei ist die Übergabe an die nächste Sitzung; sie wird mit dem Abschlus
 | Profil-Stage (1.6/1.7) | `stage_ED23_profiles_enhanced`: merge.custom je Anforderung, zwei Importe, use-first, Herkunfts-Props, Reifegrad-Block zuerst, `NG_`-Präfix, Reifegrad-Cache `hilfsdateien/ed23_maturity_cache.json` (6.958 Blöcke aus 78 ED23- und 17 Prozess-Profilen geerntet) | `tests/test_stage_ED23_profiles_enhanced.py`; Offline-Trockenlauf mit Stub-Modell in Temp-Verzeichnis: 156 Profile, Prüfskript 0 Befunde |
 | Prüfskript, Pins, Doku (1.8/1.9) | `ED23-Baustein-profile/pruefe_export.py`, `check_pins.py` (ED23/GSMap-Quellen, `.venv` übersprungen, Fragmente), `Dokumentation/namespaces/ed23_baustein_props.md`, Tool-README, `docs/profile-maturity-contract.md`, `scripts/prozess_luecken.py`, `scripts/harvest_maturity_alters.py` | `check_pins.py` mit Fetch: alle Pins aktuell, 9/9 SHA-256 passen |
 | Generatoren (Teil 2) | `one-page-apps/ssp_generator_ed23.html` V1.7 (NG-Badges, Konstante, Props, Opt-in-Prüfung), `GS++-oscal-app/ssp_generator.html` V5.18.1 (NG-Profile, NG-Katalog relativ + SHA-256 fail closed, Importreihenfolge, SSP-Props), `GSpp-Viewer.html` v9.9 (NG aus Drift-Check) | nur `node --check` der Skripte; **kein Browser-Test** |
-| Doku (2.4) | Repo-README, Handbuch 3.16 (Kapitel 3 v0.15), beide Readmes, `RELEASE_NOTES_v4.4.md` | gelesen, nicht gerendert |
+| Doku (2.4) | Repo-README, Handbuch 3.16 (Kapitel 3 v0.15), beide Readmes, `RELEASE_NOTES_v5.0.md` | gelesen, nicht gerendert |
 
 ## 2. Was NICHT gemacht ist (und warum)
 
 - **Die Profile sind nicht neu erzeugt.** `ED23-Baustein-profile/DE/` enthält noch die 156 alten Dateien (Pool-Form), `hilfsdateien/baustein_zielobjekt.json` hat 78 Einträge, `hilfsdateien/ed23_baustein_abgleich.json` und `ED23-Baustein-profile/DE/NG-ergaenzungskatalog.json` existieren nicht. Grund: In der Arbeitsumgebung gab es weder `Gpp-ai-tool/.env` (GEMINI_API_KEY) noch gcloud-ADC; die drei KI-Stages konnten nicht laufen.
 - **Kein Self-Pin-Bump, kein neues ZIP.** `GPP_TOOLS_PIN_COMMIT` zeigt in allen Apps noch auf `2d17c83`; die Werkzeuge sehen die neuen Profile erst nach Schritt 6.
 - **Kein Browser-Test** der drei geänderten HTML-Werkzeuge (Teil 3 des Plans).
-- `RELEASE_NOTES_v4.4.md` ist geschrieben, aber die Pin-Zeile im Abschnitt „Hinweise zum Umstieg“ nennt noch keinen Commit.
+- `RELEASE_NOTES_v5.0.md` ist geschrieben, aber die Pin-Zeile im Abschnitt „Hinweise zum Umstieg“ nennt noch keinen Commit.
 
 ## 3. TODO für die nächste Sitzung (in dieser Reihenfolge)
 
@@ -35,8 +35,8 @@ Voraussetzung: `Gpp-ai-tool/.env` mit `GEMINI_API_KEY=…` (Developer API) oder 
 4. `./scripts/run_local.sh --stage stage_ng_katalog` — schreibt `ED23-Baustein-profile/DE/NG-ergaenzungskatalog.json`, loggt den SHA-256.
 5. `git rm -q ../ED23-Baustein-profile/DE/*.json` (die Reifegrade der alten Dateien sind im Cache gesichert), dann `./scripts/run_local.sh --stage stage_ED23_profiles_enhanced` — erwartet 97 × 2 Dateien, ca. 79 Reifegrad-Chunk-Calls (alles andere aus `ed23_maturity_cache.json`), Log-Zeile mit `maturity_cached`/`maturity_generated`.
 6. Verifikation: `python -I ../ED23-Baustein-profile/pruefe_export.py ../ED23-Baustein-profile/DE` (Exit 0), `uv run python scripts/check_pins.py`, dann Schritt 4 und 5 ohne `git rm` erneut: `git status --porcelain` muss leer sein (Idempotenz). Commit 1: Profile, NG-Katalog, `hilfsdateien/baustein_zielobjekt.json`, `ed23_baustein_abgleich.json`, `ed23_maturity_cache.json`.
-7. Self-Pin-Bump (Commit 2, Muster `fbcf2be`): `2d17c83071c067b3acdb9a13f851d4a0104a83ab` durch den SHA von Commit 1 ersetzen in `GS++-oscal-app/ssp_generator.html` (`GPP_TOOLS_PIN_COMMIT`, Methodik-Defaults, Presets, `MST_PIN_COMMIT`), `Baustein_2_Profile.html`, `GSpp-Viewer.html`, `pruefung_ap_ar.html`, `ssp_ausfuellen.html`, `one-page-apps/ssp_generator_ed23.html`; `GS++-oscal-app.zip` neu bauen (dieselben zwölf Dateien wie `unzip -l` zeigt); Pin-Zeile in `RELEASE_NOTES_v4.4.md`; `check_pins.py` grün; diese Übergabedatei löschen.
-8. Browser-Test nach Plan Teil 3 (`python3 -m http.server 8000` im Repo-Root): ED23-Generator Pill „123 Bausteine (davon 12 NG)“, Badges, „NG-Liste prüfen“ leerer Diff, Props im Export; GS++-Generator NG-Profil laden (Katalogeintrag, NG-Badges, Log „SHA-256 geprüft“), manipulierte Katalogkopie wird verweigert, Export-Reihenfolge MST → G++ → NG → weitere, SSP `catalog-role: ng-ergaenzung`; Viewer ohne Drift-Warnung für NG-IDs. Befunde an den Stellen fixen, die in `RELEASE_NOTES_v4.4.md` je Werkzeug genannt sind.
+7. Self-Pin-Bump (Commit 2, Muster `fbcf2be`): `2d17c83071c067b3acdb9a13f851d4a0104a83ab` durch den SHA von Commit 1 ersetzen in `GS++-oscal-app/ssp_generator.html` (`GPP_TOOLS_PIN_COMMIT`, Methodik-Defaults, Presets, `MST_PIN_COMMIT`), `Baustein_2_Profile.html`, `GSpp-Viewer.html`, `pruefung_ap_ar.html`, `ssp_ausfuellen.html`, `one-page-apps/ssp_generator_ed23.html`; `GS++-oscal-app.zip` neu bauen (dieselben zwölf Dateien wie `unzip -l` zeigt); Pin-Zeile in `RELEASE_NOTES_v5.0.md`; `check_pins.py` grün; diese Übergabedatei löschen.
+8. Browser-Test nach Plan Teil 3 (`python3 -m http.server 8000` im Repo-Root): ED23-Generator Pill „123 Bausteine (davon 12 NG)“, Badges, „NG-Liste prüfen“ leerer Diff, Props im Export; GS++-Generator NG-Profil laden (Katalogeintrag, NG-Badges, Log „SHA-256 geprüft“), manipulierte Katalogkopie wird verweigert, Export-Reihenfolge MST → G++ → NG → weitere, SSP `catalog-role: ng-ergaenzung`; Viewer ohne Drift-Warnung für NG-IDs. Befunde an den Stellen fixen, die in `RELEASE_NOTES_v5.0.md` je Werkzeug genannt sind.
 9. Push aller Remotes erst nach Freigabe.
 
 ## 4. Entscheidungen und Annahmen, die man kennen muss
