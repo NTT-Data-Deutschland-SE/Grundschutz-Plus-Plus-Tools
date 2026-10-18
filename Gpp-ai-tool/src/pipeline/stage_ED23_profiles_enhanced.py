@@ -91,6 +91,7 @@ from constants import (
     PROMPT_CONFIG_PATH,
     PROZESSBAUSTEINE_LAYERS,
     SDT_MODAL_VERB_NS,
+    SDT_PROFILES_PROCESS_DIR,
     ZIELOBJEKTKATEGORIEN_CSV_PATH,
 )
 
@@ -237,7 +238,8 @@ def save_maturity_cache(cache: Dict[str, Any], path: str = ED23_MATURITY_CACHE_J
     _atomic_save_json({MATURITY_CACHE_KEY: cache}, path)
 
 
-def _baustein_id_of_file(doc: Dict[str, Any], filename: str, known_ids: Optional[set]) -> Optional[str]:
+def _baustein_id_of_file(doc: Dict[str, Any], filename: str, known_ids: Optional[set]) -> str:
+    """The cache key of an enhanced profile: its Baustein id, else (process profiles) `prozess:<stem>`."""
     meta = (doc.get("profile") or {}).get("metadata") or {}
     for p in meta.get("props", []) or []:
         if p.get("name") == "ed23-baustein" and p.get("ns") == ED23_BAUSTEIN_NS:
@@ -246,11 +248,16 @@ def _baustein_id_of_file(doc: Dict[str, Any], filename: str, known_ids: Optional
     for token in stem.split("_"):
         if _BAUSTEIN_TOKEN_RE.match(token) and (known_ids is None or token in known_ids):
             return token
-    return None
+    return f"prozess:{stem}"
 
 
 def harvest_existing_maturity(profiles_dir: str, cache: Dict[str, Any], known_ids: Optional[set] = None) -> int:
-    """Copies the maturity `adds` blocks of every `*_enhanced.json` into the cache (never overwrites)."""
+    """Copies the maturity `adds` blocks of every `*_enhanced.json` into the cache (never overwrites).
+
+    Works for the per-Baustein profiles and for the Praktiken process profiles
+    (`<praktik>_process_profile_enhanced.json`, keyed `prozess:<stem>`): the process controls
+    (GC, SENS, PERS, …) only ever had maturity texts there.
+    """
     added = 0
     harvested = cache.setdefault("_meta", {}).setdefault("harvested_from", [])
     for path in sorted(glob.glob(os.path.join(profiles_dir, "*_enhanced.json"))):
@@ -262,9 +269,6 @@ def harvest_existing_maturity(profiles_dir: str, cache: Dict[str, Any], known_id
             logger.warning(f"Harvest: cannot read {name} ({e}); skipped.")
             continue
         bid = _baustein_id_of_file(doc, name, known_ids)
-        if not bid:
-            logger.warning(f"Harvest: cannot determine the Baustein of {name}; skipped.")
-            continue
         slot = cache.setdefault(bid, {})
         for alter in ((doc.get("profile") or {}).get("modify") or {}).get("alters") or []:
             cid = alter.get("control-id")
@@ -538,6 +542,7 @@ async def run_stage_ED23_profiles_enhanced():
 
     cache = load_maturity_cache()
     harvest_existing_maturity(ED23_PROFILES_DIR, cache, set(baustein_map))
+    harvest_existing_maturity(SDT_PROFILES_PROCESS_DIR, cache, set(baustein_map))
     prompt_config = read_json_file(PROMPT_CONFIG_PATH)
     enhanced_schema = read_json_file(ENHANCED_CONTROL_RESPONSE_SCHEMA_PATH)
     prompt_instruction = prompt_config["generate_enhanced_controls_prompt"]
