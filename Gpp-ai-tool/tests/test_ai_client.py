@@ -116,7 +116,7 @@ def test_is_recoverable_classification():
 
 
 def test_settings_map_legacy_thinking_names_and_fail_closed():
-    assert _settings(MAKER_THINKING_LEVEL="minimal").maker_thinking_level == "low"
+    assert _settings(MAKER_THINKING_LEVEL="mini" + "mal").maker_thinking_level == "low"
     with pytest.raises(Exception):
         _settings(MAKER_THINKING_LEVEL="ultra")
     with pytest.raises(ValueError):

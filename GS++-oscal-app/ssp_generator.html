@@ -685,7 +685,7 @@
             </div>
         </div>
 
-        <div class="rail-foot">BUILD V5.17.1</div>
+        <div class="rail-foot">BUILD V5.18.0</div>
     </aside>
 
     <div id="rail-splitter" class="splitter" title="Rail-Breite ziehen"></div>
@@ -1002,6 +1002,19 @@
            Control genau einmal übrig, in der Fassung des Mindeststandards. */
         const MST_REPO_DIR = 'mindeststandards';
         const MST_NS = 'https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/mindeststandard';
+        /* ED23-Baustein-Profile (Ordner ED23-Baustein-profile/DE, erzeugt von Gpp-ai-tool): ihre
+           Metadaten tragen Herkunft und Baustein im Namespace ed23-baustein; nutzergenerierte Inhalte
+           (NG: die 12 NTT-eigenen Bausteine und alle neuen Controls NG-<AnforderungsID> aus dem
+           gemeinsamen NG-Ergänzungskatalog) sind daran erkennbar. Der NG-Ergänzungskatalog wird wie der
+           Ergänzungskatalog eines Mindeststandards relativ zur Profil-URL geladen und per SHA-256
+           fail closed geprüft (Dokumentation/namespaces/ed23_baustein_props.md). */
+        const ED23_NS = 'https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein';
+        const NG_TOOLTIP = 'Nutzergenerierte Inhalte (NG, NTT DATA), nicht vom BSI';
+        function ngBadge(extraClass = '', title = NG_TOOLTIP) {
+            return `<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-fuchsia-900/60 text-fuchsia-200 border border-fuchsia-600 ${extraClass}" title="${escapeHTML(title)}">NG</span>`;
+        }
+        function ed23Prop(profile, name) { return ((profile?.metadata?.props) || []).find(p => p.name === name && p.ns === ED23_NS)?.value || ''; }
+        function isNgControlId(cid) { return /^NG-/.test(String(cid || '')); }
         /* Gepinnte Mindeststandard-Profile (Ordner mindeststandards/, erzeugt mit „Mindeststandard → OSCAL“):
            Commit + SHA-256 je Profil, nie Branch. Die Datei kommt vom Pin-Commit und muss den Hash treffen,
            sonst wird nichts übernommen. Neue Exporte: Commit und Hashes hier nachziehen (check_pins.py prüft SHA-256-Konstanten). */
@@ -1080,7 +1093,8 @@
         ];
         function zielobjektKategorieFromSource(source) {
             if (!source) return '';
-            const file = String(source).split('/').pop() || '';
+            // NG_-Präfix der nutzergenerierten Baustein-Profile gehört nicht zur Kategorie.
+            const file = (String(source).split('/').pop() || '').replace(/^NG_/i, '');
             return normKategorieSlug(file.replace(/\.json$/i, '').replace(/_profile$/i, ''));
         }
         // Baustein-Schicht → OSCAL-Typ, wenn die Komponente über Ed2023-Bausteine
@@ -4368,7 +4382,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             (doc?.profile?.modify?.alters || []).forEach(a => {
                 const cid = a['control-id'];
                 if (!cid) return;
-                (a.adds || []).forEach(add => {
+                // Props-only adds (Herkunfts-Props ed23-anforderung der ED23-Profile) sind keine Anpassung.
+                (a.adds || []).filter(add => (add.parts || []).length).forEach(add => {
                     const part = (add.parts || []).find(p => p.name === 'statement') || (add.parts || [])[0];
                     const text = part?.prose || (part?.props || []).find(p => p.name === 'statement')?.value || '';
                     if (!byCid.has(cid)) byCid.set(cid, []);
@@ -4545,6 +4560,87 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 alterCount: (profile.modify?.alters || []).length, paramCount: (profile.modify?.['set-parameters'] || []).length,
             };
         }
+        /* ED23-Baustein-Profil: Metadaten (ns ED23_NS) lesen und, falls ein zweiter Import auf den
+           NG-Ergänzungskatalog zeigt, diesen RELATIV zur Profil-URL laden, SHA-256 fail closed
+           prüfen und seine Controls (nur die with-ids des Imports) als ngNew in den Pool legen. */
+        async function loadEd23ProfileExtras(doc, url) {
+            const profile = doc?.profile;
+            if (!profile) return null;
+            const meta = { herkunft: ed23Prop(profile, 'herkunft'), baustein: ed23Prop(profile, 'ed23-baustein'),
+                           titel: ed23Prop(profile, 'ed23-baustein-titel'), kategorie: ed23Prop(profile, 'zielobjektkategorie') };
+            const resources = profile['back-matter']?.resources || [];
+            let ng = null;
+            for (const imp of (profile.imports || []).slice(1)) {
+                const resource = imp.href?.startsWith('#') ? resources.find(r => r.uuid === imp.href.slice(1)) : null;
+                const rl = resource?.rlinks?.[0];
+                if (!rl || !/ergaenzungskatalog\.json(\?|$)/i.test(rl.href)) continue;
+                const hash = (rl.hashes || []).find(h => /sha-?256/i.test(h.algorithm || ''))?.value || '';
+                if (!hash) throw new Error('NG-Ergänzungskatalog ohne SHA-256 in der Back-Matter — nichts übernommen');
+                let ergUrl;
+                try { ergUrl = new URL(rl.href, url).href; }
+                catch (e) { throw new Error(`NG-Ergänzungskatalog ${rl.href} kann relativ zu ${url} nicht aufgelöst werden`); }
+                const r2 = await fetch(ergUrl);
+                if (!r2.ok) throw new Error(`NG-Ergänzungskatalog ${ergUrl}: HTTP ${r2.status}`);
+                const b2 = await r2.arrayBuffer(); const h2 = await sha256Hex(b2);
+                if (h2 !== hash) throw new Error(`NG-Ergänzungskatalog weicht vom im Profil hinterlegten SHA-256 ab (${h2.slice(0, 12)}… statt ${hash.slice(0, 12)}…) — nichts übernommen`);
+                const ergDoc = JSON.parse(new TextDecoder().decode(b2).replace(/^\uFEFF/, ''));
+                if (!ergDoc.catalog) throw new Error('NG-Ergänzungskatalog ist kein OSCAL-Katalog');
+                const ids = new Set((imp['include-controls'] || []).flatMap(ic => ic['with-ids'] || []));
+                const anfById = new Map();
+                const walk = groups => (groups || []).forEach(g => {
+                    (g.controls || []).forEach(c => anfById.set(c.id, (c.props || []).find(p => p.name === 'ed23-anforderung')?.value || ''));
+                    walk(g.groups);
+                });
+                walk(ergDoc.catalog.groups);
+                const entries = extractCatalogControls(ergDoc, { href: ergUrl, name: 'NG-Ergänzungskatalog (ED23-Baustein-Profile)' });
+                const controlEntries = new Map();
+                entries.forEach((e, id) => {
+                    if (!ids.has(id)) return;
+                    e.ngNew = meta.baustein || 'NG'; e.herkunft = 'NG'; e.ed23Anforderung = anfById.get(id) || '';
+                    controlEntries.set(id, e);
+                });
+                ng = { href: ergUrl, sha256: h2, resourceUuid: resource.uuid, ids, controlEntries };
+            }
+            return { meta, ng };
+        }
+        /* Ein gemeinsamer Katalogeintrag für alle NG-Baustein-Profile; controls bleibt leer (kein eigener
+           Tailoring-Block, keine SSP-Komponente — NG-Controls hängen am Zielobjekt), pool hält die IDs. */
+        function ensureNgCatalog(ng) {
+            let cat = bpState.catalogs.find(c => c.kind === 'ng-ergaenzung');
+            if (!cat) {
+                cat = { id: crypto.randomUUID(), href: ng.href, originalHref: ng.href, name: 'NG-Ergänzungskatalog (ED23-Baustein-Profile)',
+                        kind: 'ng-ergaenzung', imported: true, sha256: ng.sha256, controls: new Set(), pool: new Set() };
+                bpState.catalogs.push(cat);
+            } else if (cat.sha256 !== ng.sha256) {
+                throw new Error('Zwei verschiedene Stände des NG-Ergänzungskatalogs — die Profile stammen aus unterschiedlichen Pins');
+            }
+            ng.ids.forEach(id => cat.pool.add(id));
+            mergeControlsIntoIndex(ng.controlEntries);
+            renderCatalogsList();
+            return cat;
+        }
+        function pruneNgCatalog() {
+            const idx = bpState.catalogs.findIndex(c => c.kind === 'ng-ergaenzung');
+            if (idx < 0 || bpState.components.some(c => c.ngControls?.size)) return;
+            const cat = bpState.catalogs[idx];
+            bpState.controlsIndex.forEach((e, id) => { if (e.catalogHref === cat.href) bpState.controlsIndex.delete(id); });
+            bpState.catalogs.splice(idx, 1);
+            renderCatalogsList();
+        }
+        function applyEd23Extras(comp, extra, data) {
+            if (!extra) return;
+            if (extra.meta.baustein) {
+                comp.bausteine = [extra.meta.baustein];
+                if (extra.meta.kategorie) comp.kategorie = extra.meta.kategorie;
+                comp.profilTitel = data?.profile?.metadata?.title || comp.profilTitel;
+                comp.herkunft = extra.meta.herkunft || 'BSI';
+            }
+            if (extra.ng) {
+                ensureNgCatalog(extra.ng);
+                comp.ngControls = new Set(extra.ng.ids);
+                aiLog('ok', `${comp.herkunft === 'NG' ? 'NG-' : ''}Baustein ${extra.meta.baustein}: ${extra.ng.ids.size} NG-Controls aus dem Ergänzungskatalog übernommen (SHA-256 geprüft)`);
+            }
+        }
         function snapshotControl(cid) {
             if (bpState.controlsOriginal.has(cid)) return;
             const e = bpState.controlsIndex.get(cid); if (!e) return;
@@ -4624,11 +4720,12 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                         <div class="min-w-0">
                             <div class="flex items-center gap-2 flex-wrap">
                                 <span class="font-bold text-slate-200 text-sm">▣ ${catalog.name || 'OSCAL Katalog'}</span>
-                                ${isBase ? '<span class="px-2 py-0.5 rounded text-[10px] uppercase bg-emerald-900 text-emerald-300 border border-emerald-700">Basis</span>' : catalog.kind === 'mindeststandard' ? `<span class="px-2 py-0.5 rounded text-[10px] uppercase bg-amber-900 text-amber-300 border border-amber-700">Mindeststandard · Overlay${catalog.baseHashOk ? '' : ' · anderer Katalogstand'}</span>` : '<span class="px-2 py-0.5 rounded text-[10px] uppercase bg-cyan-900 text-cyan-300 border border-cyan-700">Zusätzlich</span>'}
+                                ${isBase ? '<span class="px-2 py-0.5 rounded text-[10px] uppercase bg-emerald-900 text-emerald-300 border border-emerald-700">Basis</span>' : catalog.kind === 'mindeststandard' ? `<span class="px-2 py-0.5 rounded text-[10px] uppercase bg-amber-900 text-amber-300 border border-amber-700">Mindeststandard · Overlay${catalog.baseHashOk ? '' : ' · anderer Katalogstand'}</span>` : catalog.kind === 'ng-ergaenzung' ? `<span class="px-2 py-0.5 rounded text-[10px] uppercase bg-fuchsia-900/60 text-fuchsia-200 border border-fuchsia-600" title="${NG_TOOLTIP}">NG-Ergänzungskatalog · nutzergeneriert</span>` : '<span class="px-2 py-0.5 rounded text-[10px] uppercase bg-cyan-900 text-cyan-300 border border-cyan-700">Zusätzlich</span>'}
                             </div>
                             <div class="text-xs text-cyan-400 mt-1 break-all">${catalog.href}</div>
+                            ${catalog.kind === 'ng-ergaenzung' ? `<div class="text-[11px] text-slate-500 mt-1">kommt mit den ED23-Baustein-Profilen (${catalog.pool?.size || 0} NG-Controls im Pool); entfällt mit dem letzten Zielobjekt, das NG-Controls trägt</div>` : ''}
                         </div>
-                        ${isBase ? '' : `<button onclick="removeCatalog(${index})" class="text-red-400 hover:text-red-300 font-bold p-2 text-sm">✕</button>`}
+                        ${isBase || catalog.kind === 'ng-ergaenzung' ? '' : `<button onclick="removeCatalog(${index})" class="text-red-400 hover:text-red-300 font-bold p-2 text-sm">✕</button>`}
                     </li>
                 `;
             });
@@ -4780,10 +4877,10 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
                 <div class="pt-2">
                     <h3 class="text-sm font-bold text-slate-300 uppercase mb-2">4. Zielobjekte anlegen</h3>
-                    <p class="text-xs text-slate-400 mb-4">Ein Zielobjekt entsteht aus einem Profil — aus den vorbereiteten Bausteinen (Nutzergeneriert), den G++-Zielobjektkategorien oder einem Profil aus dem aktiven Arbeitsstand (z.&nbsp;B. aus „BSI → G++ Profil") — oder aus einer fertigen BSI-Komponente (Component Definition aus der Stand-der-Technik-Bibliothek, z.&nbsp;B. Keycloak, Netzarchitektur, Passwortrichtlinie). Die Controls landen beim Zielobjekt und sind im Tailoring anpassbar; mitgebrachte Ergänzungen (<code>alters</code>) werden als Anpassungen übernommen. Bei einer BSI-Komponente kommen die gemappten G++-Anforderungen mit; ihr Vorlagentext erscheint im SSP-Editor nur als Referenz, die eigene Umsetzung wird dort dokumentiert.</p>
+                    <p class="text-xs text-slate-400 mb-4">Ein Zielobjekt entsteht aus einem Profil — aus den vorbereiteten ED23-Baustein-Profilen, den G++-Zielobjektkategorien oder einem Profil aus dem aktiven Arbeitsstand (z.&nbsp;B. aus „BSI → G++ Profil") — oder aus einer fertigen BSI-Komponente (Component Definition aus der Stand-der-Technik-Bibliothek, z.&nbsp;B. Keycloak, Netzarchitektur, Passwortrichtlinie). Die Controls landen beim Zielobjekt und sind im Tailoring anpassbar; mitgebrachte Ergänzungen (<code>alters</code>) werden als Anpassungen übernommen. Bei einer BSI-Komponente kommen die gemappten G++-Anforderungen mit; ihr Vorlagentext erscheint im SSP-Editor nur als Referenz, die eigene Umsetzung wird dort dokumentiert. Einträge mit „NG“ sind nutzergenerierte Bausteine von NTT DATA, nicht Teil des BSI-Kompendiums; ihre Profile bringen zusätzliche Controls aus dem NG-Ergänzungskatalog mit (im Tailoring mit NG markiert, im Profil als eigener Import mit SHA-256).</p>
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Nutzergeneriert</label>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">ED23-Bausteine (Baustein-Profile)</label>
                             <select id="dd-nutzer" class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white"><option value="">Lade...</option></select>
                         </div>
                         <div>
@@ -5259,10 +5356,16 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 const ed23Enhanced = bpState.methodik?.type === 'enhanced';
                 d1.filter(i => i.name.endsWith('.json')
                         && !i.name.toLowerCase().includes('methodik')
+                        && !/ergaenzungskatalog\.json$/i.test(i.name)   // der NG-Katalog ist kein Profil
                         && (ed23Enhanced ? i.name.endsWith('_enhanced.json') : !i.name.endsWith('_enhanced.json')))
-                  .forEach(f => ddN.appendChild(new Option(
-                        f.name.replace(/_enhanced\.json$/, '').replace(/\.json$/, '') + (ed23Enhanced ? '  ★ erweitert' : ''),
-                        f.download_url)));
+                  .forEach(f => {
+                        // NG_-Profile sind nutzergenerierte Bausteine (NTT DATA): sichtbar markiert.
+                        const isNg = /^NG_/.test(f.name);
+                        const base = f.name.replace(/^NG_/, '').replace(/_enhanced\.json$/, '').replace(/\.json$/, '');
+                        const opt = new Option(`${isNg ? 'NG · ' : ''}${base}${ed23Enhanced ? '  ★ erweitert' : ''}${isNg ? '  — nutzergeneriert (NTT DATA)' : ''}`, f.download_url);
+                        if (isNg) { opt.title = NG_TOOLTIP; opt.dataset.ng = '1'; }
+                        ddN.appendChild(opt);
+                  });
 
                 ddG.innerHTML = '<option value="" disabled selected>Asset wählen...</option>';
                 const zielobjektFiles = d2.filter(i => i.name.endsWith('.json') && !i.name.endsWith(PRAKTIKEN_FILE_SUFFIX));
@@ -5316,8 +5419,11 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     if (!res.ok) throw new Error(`HTTP ${res.status}`);
                     data = await res.json();
                 }
-                const finalName = customNameInput.value.trim() || originalName;
                 if (!data?.profile) throw new Error('Die Quelle ist kein OSCAL-Profil.');
+                // ED23-Baustein-Profil: Herkunft/Baustein aus den Metadaten, NG-Katalog mit Hash-Prüfung.
+                const extra = setId ? null : await loadEd23ProfileExtras(data, url);
+                const ed23Name = extra?.meta.baustein ? `${extra.meta.herkunft === 'NG' ? 'NG ' : ''}${extra.meta.baustein} ${extra.meta.titel}`.trim() : '';
+                const finalName = customNameInput.value.trim() || ed23Name || originalName;
                 const extractedControls = profileControlIds(data);
                 if (!extractedControls.size) aiLog('warn', `Profil „${finalName}" enthält keine Controls (include-controls leer) — Zielobjekt wird ohne Controls angelegt.`);
 
@@ -5335,6 +5441,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     if (h.kategorie) comp.kategorie = h.kategorie;
                     if (h.titel) comp.profilTitel = h.titel;
                 }
+                applyEd23Extras(comp, extra, data);
                 bpState.components.push(comp);
                 /* Ergänzungen des Profils (alters) hängen am neuen Zielobjekt: im
                    Tailoring sichtbar und änderbar, beim Export wieder im Profil. */
@@ -5391,6 +5498,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
 				if (data.profile && data.profile.imports) {
 					isValid = true;
+					if ((data.profile['back-matter']?.resources || []).some(r => (r.rlinks || []).some(rl => /ergaenzungskatalog\.json$/i.test(rl.href || ''))))
+						aiLog('warn', 'Lokale Datei: der NG-Ergänzungskatalog (relativer rlink) kann nicht nachgeladen werden — die NG-Control-IDs werden ohne Titel übernommen. Profil besser von GitHub wählen.');
 					data.profile.imports.forEach(imp => {
 						if (imp['include-controls']) {
 							imp['include-controls'].forEach(inc => {
@@ -5456,9 +5565,10 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                                 <span class="px-2 py-0.5 rounded text-[10px] uppercase ${stateBadge} border border-slate-600">${c.state}</span>
                                 <span class="px-2 py-0.5 rounded text-[10px] uppercase border" style="${badgeStyle(schutzColor)}">◈ ${c.schutzbedarf || 'unbestimmt'}</span>
                                 ${cdefBadge}
+                                ${c.herkunft === 'NG' ? ngBadge('', 'Nutzergenerierter Baustein (NTT DATA), nicht vom BSI') : ''}
                                 ${c.aiGenerated ? '<span class="px-2 py-0.5 rounded text-[10px] uppercase bg-purple-900 text-purple-300 border border-purple-700" title="Aus der KI-Dokumentanalyse zugeordnet">◉ KI</span>' : ''}
                             </div>
-                            <div class="text-xs text-indigo-400 mt-1">+ ${c.controls.size} Controls ${c.cdef ? 'aus der Component Definition (auf G++ gemappt)' : 'importiert'}</div>
+                            <div class="text-xs text-indigo-400 mt-1">+ ${c.controls.size} Controls ${c.cdef ? 'aus der Component Definition (auf G++ gemappt)' : 'importiert'}${c.ngControls?.size ? `, davon ${c.ngControls.size} NG` : ''}</div>
                         </button>
                         <button onclick="removeAsset(${i})" class="text-red-400 hover:text-red-300 font-bold p-2 text-sm">✕</button>
                     </li>
@@ -5478,6 +5588,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 });
             }
             bpState.components.splice(i, 1);
+            pruneNgCatalog();
             renderAssetsList();
             renderTailoredList();
             refreshRiskUI();
@@ -5513,7 +5624,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             };
             add(bpState.methodik.uuid || 'methodik', 'Zwingende Basis Methodik', 'Basis', '<span class="px-2 py-0.5 rounded bg-emerald-900 text-emerald-300 text-[10px] font-bold">◼ BASE</span>', bpState.methodik.controls);
             bpState.praktiken.forEach(p => add(p.id, `Prozess: ${p.name}${p.aiGenerated ? ' ◉' : ''}`, 'Praktik', '<span class="px-2 py-0.5 rounded bg-blue-900 text-blue-300 text-[10px] font-bold">◐ PRAKTIK</span>', p.controls));
-            bpState.components.forEach(c => add(c.id, `Asset: ${c.name}${c.aiGenerated ? ' ◉' : ''}`, 'Asset', '<span class="px-2 py-0.5 rounded bg-indigo-900 text-indigo-300 text-[10px] font-bold">▣ ASSET</span>', c.controls, true));
+            bpState.components.forEach(c => add(c.id, `Asset: ${c.name}${c.aiGenerated ? ' ◉' : ''}`, 'Asset', '<span class="px-2 py-0.5 rounded bg-indigo-900 text-indigo-300 text-[10px] font-bold">▣ ASSET</span>' + (c.herkunft === 'NG' ? ngBadge('ml-1') : ''), c.controls, true));
             bpState.catalogs.slice(1).forEach(catalog => catalog.kind === 'mindeststandard'
                 ? add(catalog.id, `Mindeststandard: ${catalog.name}`, 'Mindeststandard', '<span class="px-2 py-0.5 rounded bg-amber-900 text-amber-300 text-[10px] font-bold">§ MST</span>', catalog.controls)
                 : add(catalog.id, `Katalog: ${catalog.name}`, 'Katalog', '<span class="px-2 py-0.5 rounded bg-cyan-900 text-cyan-300 text-[10px] font-bold">▣ KATALOG</span>', catalog.controls));
@@ -5609,6 +5720,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     let badges = mods.length > 0 ? `<span class="bg-blue-900/50 text-blue-300 border border-blue-700 text-[10px] px-2 py-0.5 rounded font-bold ml-2">${mods.length} Anpassungen</span>` : '';
                     if (info?.mst?.size) badges += `<span class="bg-amber-900/50 text-amber-300 border border-amber-700 text-[10px] px-2 py-0.5 rounded font-bold ml-1" title="durch Mindeststandard verändert: ${escapeHTML([...info.mst].join(', '))}">§ ${escapeHTML([...info.mst].join(', '))}</span>`;
                     if (info?.mstNew) badges += `<span class="bg-amber-900/50 text-amber-200 border border-amber-700 text-[10px] px-2 py-0.5 rounded font-bold ml-1">neu aus ${escapeHTML(info.mstNew)}</span>`;
+                    if (info?.ngNew) badges += ngBadge('ml-1', `Control des NG-Ergänzungskatalogs (nutzergeneriert, NTT DATA) zu Anforderung ${info.ed23Anforderung || '?'} des Bausteins ${info.ngNew}`);
                     if (isMuss) badges += `<span class="bg-red-900/50 text-red-300 border border-red-700 text-[10px] px-2 py-0.5 rounded font-bold ml-1">MUSS</span>`;
 
                     // Hier wurde die Änderung vorgenommen: Hinzufügen des info.text (Statement) unter dem Titel
@@ -5632,6 +5744,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                                 <div class="text-xs font-semibold text-slate-300 truncate">${escapeHTML(info?.title || 'Titel nicht im Basis-Katalog')}</div>
                                 ${info?.text ? `<div class="text-[11px] text-slate-400 mt-1 line-clamp-2 leading-relaxed" title="${safeTextForTitle}">${escapeHTML(info.text)}</div>` : ''}
                                 ${info?.mstErgaenzungen?.length ? `<div class="text-[11px] text-amber-200/80 mt-1 leading-relaxed">${info.mstErgaenzungen.map(x => `<span class="font-bold">${escapeHTML(x.by)}:</span> ${escapeHTML(x.prose)}`).join('<br>')}</div>` : ''}
+                                ${info?.ngNew ? `<div class="text-[11px] text-fuchsia-200/80 mt-1">NG-Ergänzung zu ${escapeHTML(info.ed23Anforderung || info.ngNew)} — nutzergeneriert, nicht vom BSI</div>` : ''}
                             </div>
                             <div class="flex items-center gap-2 flex-shrink-0 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button onclick="showED23('${argCid}', '${rk}')" class="px-3 py-1.5 bg-slate-700 text-blue-300 hover:bg-slate-600 rounded text-xs font-bold transition-colors">◇ ED23</button>
@@ -5717,7 +5830,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             document.getElementById('m-catalog-title').textContent = info?.title || "Details unbekannt";
             document.getElementById('m-catalog-prose').textContent = (info?.text || "Kein Text verfügbar.")
                 + (info?.mst?.size ? `\n\n[verändert durch Mindeststandard ${[...info.mst].join(', ')}]` : '')
-                + (info?.mstErgaenzungen || []).map(x => `\n\nErgänzung ${x.by}: ${x.prose}`).join('');
+                + (info?.mstErgaenzungen || []).map(x => `\n\nErgänzung ${x.by}: ${x.prose}`).join('')
+                + (info?.ngNew ? `\n\n[NG: Control des NG-Ergänzungskatalogs zu ${info.ed23Anforderung || info.ngNew}, nutzergeneriert (NTT DATA), nicht vom BSI]` : '');
             /* Parameter gibt es nur, wenn der Katalog welche am Control führt —
                dann werden GENAU die angeboten (echte IDs wie gc.1.1-prm1). Ohne
                Parameter verschwindet der Reiter; das frühere freie ID-Feld
@@ -6435,6 +6549,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                                 schutzbedarf: schutzProp?.value || ((c.props || []).some(p => p.name === 'sicherheitsniveau-herkunft' && p.value === 'unbestimmt') ? '' : 'normal-SdT'),
                                 controls: profileControlIds(data)
                             };
+                            if (!quelle.startsWith('set://')) applyEd23Extras(comp, await loadEd23ProfileExtras(data, quelle), data);
                             if (quelle.startsWith('set://')) {
                                 const h = profilHerkunft(data);
                                 if (h.bausteine.length) comp.bausteine = h.bausteine;
@@ -6828,16 +6943,22 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                übrig — in der Fassung des Mindeststandards. Die Reihenfolge der
                Mindeststandards untereinander ist die ihrer Aktivierung (siehe Overlay). */
             const mstCatalogs = bpState.catalogs.filter(c => c.kind === 'mindeststandard');
-            const orderedCatalogs = [...mstCatalogs, bpState.catalogs[0], ...bpState.catalogs.slice(1).filter(c => c.kind !== 'mindeststandard')];
+            /* Der NG-Ergänzungskatalog der ED23-Baustein-Profile folgt direkt auf den Anwenderkatalog
+               (seine IDs NG-… sind disjunkt; die Reihenfolge dokumentiert die Absicht für Resolver). */
+            const ngCatalog = bpState.catalogs.find(c => c.kind === 'ng-ergaenzung');
+            const orderedCatalogs = [...mstCatalogs, bpState.catalogs[0], ...(ngCatalog ? [ngCatalog] : []),
+                ...bpState.catalogs.slice(1).filter(c => c.kind !== 'mindeststandard' && c.kind !== 'ng-ergaenzung')];
             const catalogResources = orderedCatalogs.map(catalog => {
                 if (!catalog.resourceUuid) catalog.resourceUuid = crypto.randomUUID();
                 let title = decodeURIComponent((catalog.href || '').split('/').pop() || '') || catalog.name || 'OSCAL Katalog';
                 if (catalog.href === CATALOG_URL_BASE) title += ` @ ${GPP_CATALOG_PIN_COMMIT.slice(0, 12)}`;
                 if (catalog.kind === 'mindeststandard') title = `${catalog.title || catalog.name} (Mindeststandard-Profil)`;
+                if (catalog.kind === 'ng-ergaenzung') title = 'NG-ergaenzungskatalog.json (ED23-Baustein-Profile, nutzergeneriert)';
                 return {
                     uuid: catalog.resourceUuid,
                     title,
                     ...(catalog.kind === 'mindeststandard' ? { description: `Mindeststandard ${catalog.name} des BSI als OSCAL-Profil auf dem Anwenderkatalog; importiert dessen Controls verändert und seinen Ergänzungskatalog.` } : {}),
+                    ...(catalog.kind === 'ng-ergaenzung' ? { description: 'Ergänzungskatalog der ED23-Baustein-Profile (Gpp-ai-tool): nutzergenerierte Controls NG-<AnforderungsID> für Anforderungen ohne Entsprechung im Anwenderkatalog; nicht vom BSI.' } : {}),
                     rlinks: [{
                         href: catalog.href,
                         ...(catalog.sha256 ? { hashes: [{ algorithm: 'SHA-256', value: catalog.sha256 }] } : {})
@@ -6853,7 +6974,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                         remarks: bpState.metadata.description
                     },
                     imports: orderedCatalogs.map(catalog => ({ href: `#${catalog.resourceUuid}` })),
-                    ...(mstCatalogs.length ? { merge: { combine: { method: 'use-first' } } } : {}),
+                    ...((mstCatalogs.length || ngCatalog) ? { merge: { combine: { method: 'use-first' } } } : {}),
                     "back-matter": { resources: [...catalogResources] }
                 }
             };
@@ -6863,17 +6984,23 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             // Controls aus Ergänzungskatalogen der Mindeststandards ebenso wenig: die kommen
             // über das Mindeststandard-Profil.
             const mstNewIds = new Set(mstCatalogs.flatMap(c => [...(c.erg?.controls || [])]));
+            // NG-Controls (NG-…) kommen aus dem NG-Ergänzungskatalog, nie aus dem Anwenderkatalog.
+            const ngIds = new Set();
+            bpState.components.forEach(c => (c.ngControls || new Set()).forEach(cid => { if (c.controls.has(cid)) ngIds.add(cid); }));
+            [...bpState.manualControls].filter(isNgControlId).forEach(cid => ngIds.add(cid));
             const baseImportReqIds = new Set([
-                ...[...bpState.manualControls].filter(cid => !bpState.customControls.has(cid) && !mstNewIds.has(cid)),
+                ...[...bpState.manualControls].filter(cid => !bpState.customControls.has(cid) && !mstNewIds.has(cid) && !isNgControlId(cid)),
                 ...bpState.methodik.controls
             ]);
             bpState.praktiken.forEach(p => p.controls.forEach(cid => baseImportReqIds.add(cid)));
-            bpState.components.forEach(c => c.controls.forEach(cid => { if (!mstNewIds.has(cid)) baseImportReqIds.add(cid); }));
+            bpState.components.forEach(c => c.controls.forEach(cid => { if (!mstNewIds.has(cid) && !isNgControlId(cid)) baseImportReqIds.add(cid); }));
 
             orderedCatalogs.forEach((catalog, index) => {
                 const imp = profile.profile.imports[index];
                 if (catalog === bpState.catalogs[0]) {
                     if (baseImportReqIds.size > 0) imp["include-controls"] = [{ "with-ids": Array.from(baseImportReqIds).sort() }];
+                } else if (catalog.kind === 'ng-ergaenzung') {
+                    if (ngIds.size > 0) imp["include-controls"] = [{ "with-ids": Array.from(ngIds).sort() }];
                 } else if (catalog.controls && catalog.controls.size > 0) {
                     imp["include-controls"] = [{ "with-ids": Array.from(catalog.controls).sort() }];
                 }
@@ -6927,6 +7054,14 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     profileMetadataProps.push({
                         name: 'mindeststandard', ns: MST_NS, value: catalog.name,
                         remarks: `Mindeststandard des BSI nach § 44 Abs. 1 Satz 1 BSIG, als Profil importiert (${catalog.href}); seine Fassung der Controls gilt (merge.combine use-first).`
+                    });
+                    return;
+                }
+                if (catalog.kind === 'ng-ergaenzung') {
+                    if (!ngIds.size) return;
+                    profileMetadataProps.push({
+                        name: 'herkunft', ns: ED23_NS, value: 'NG',
+                        remarks: `Enthält ${ngIds.size} Controls des NG-Ergänzungskatalogs (nutzergenerierte Inhalte, NTT DATA, nicht vom BSI), importiert nach dem Anwenderkatalog (merge.combine use-first).`
                     });
                     return;
                 }
@@ -7111,7 +7246,13 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     name: 'source-baustein',
                     ns: 'https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',   // derselbe ns wie im Baustein-Profil
                     value: c.bausteine.join(', '),
-                    remarks: 'BSI-Baustein, aus dem das Zielobjekt-Profil abgeleitet wurde (BSI → G++ Profil).'
+                    remarks: c.herkunft === 'NG'
+                        ? 'Nutzergenerierter Baustein (NG, NTT DATA), aus dem das Zielobjekt-Profil abgeleitet wurde — nicht Teil des IT-Grundschutz-Kompendiums des BSI.'
+                        : 'BSI-Baustein, aus dem das Zielobjekt-Profil abgeleitet wurde (ED23-Baustein-Profil bzw. BSI → G++ Profil).'
+                });
+                if (c.herkunft === 'NG') props.push({
+                    name: 'herkunft', ns: ED23_NS, value: 'NG',
+                    remarks: `Zielobjekt aus dem nutzergenerierten Baustein ${(c.bausteine || []).join(', ')} (NTT DATA), nicht vom BSI.`
                 });
                 // Issue #29: source-id der Dokumentanalyse mitführen — sonst erscheint
                 // dasselbe Asset später ein zweites Mal als KI-Komponente.
@@ -7144,6 +7285,9 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             additionalCatalogs.forEach(catalog => {
                 const resUuid = crypto.randomUUID();
                 catalogResourceUuids.set(catalog.id, resUuid);
+                // NG-Controls hängen an ihren Zielobjekten (asset-bezogen, nicht systemweit): Resource ja,
+                // „Katalog-Umsetzung“-Komponente nein.
+                if (catalog.kind === 'ng-ergaenzung') return;
                 if (catalog.kind === 'mindeststandard') {
                     // Der Mindeststandard ist eine eigene Umsetzungs-Komponente: alle seine
                     // Controls hängen daran, der Link zeigt auf die gepinnte Profil-Resource.
@@ -7512,6 +7656,15 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 if (aiAnalysisResourceUuid && aiControl) {
                     requirement.links = [{ href: `#${aiAnalysisResourceUuid}`, rel: 'source' }];
                 }
+                if (isNgControlId(cid)) {
+                    const info = bpState.controlsIndex.get(cid);
+                    requirement.props = [...(requirement.props || []), {
+                        name: 'herkunft', ns: ED23_NS, value: 'NG',
+                        remarks: `Control des NG-Ergänzungskatalogs (nutzergeneriert, NTT DATA) zu Anforderung ${info?.ed23Anforderung || '?'} des Bausteins ${info?.ngNew || '?'}; nicht vom BSI.`
+                    }];
+                    const ngCat = additionalCatalogs.find(x => x.kind === 'ng-ergaenzung');
+                    if (ngCat && catalogResourceUuids.get(ngCat.id)) requirement.links = [...(requirement.links || []), { href: `#${catalogResourceUuids.get(ngCat.id)}`, rel: 'catalog' }];
+                }
                 return requirement;
             }).filter(req => req["by-components"].length > 0);
 
@@ -7619,7 +7772,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 name: 'referenced-catalog',
                 ns: OSCAL_NAMESPACES.sourceCatalog,
                 value: catalog.href,
-                remarks: catalog.kind === 'mindeststandard' ? `Mindeststandard ${catalog.name} (OSCAL-Profil des Mindeststandards)` : (catalog.name || 'Zusätzlicher OSCAL Katalog')
+                remarks: catalog.kind === 'mindeststandard' ? `Mindeststandard ${catalog.name} (OSCAL-Profil des Mindeststandards)` : catalog.kind === 'ng-ergaenzung' ? 'NG-Ergänzungskatalog der ED23-Baustein-Profile (nutzergenerierte Controls, NTT DATA)' : (catalog.name || 'Zusätzlicher OSCAL Katalog')
             }));
             bpState.catalogs.filter(c => c.kind === 'mindeststandard').forEach(catalog => characteristicProps.push({
                 name: 'mindeststandard', ns: MST_NS, value: catalog.name,
@@ -7668,15 +7821,18 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 const resUuid = index === 0 ? crypto.randomUUID() : catalogResourceUuids.get(catalog.id);
                 if (!resUuid) return;
                 const istMst = catalog.kind === 'mindeststandard';
+                const istNg = catalog.kind === 'ng-ergaenzung';
                 backMatterResources.push({
                     uuid: resUuid,
-                    title: istMst ? `Mindeststandard-Profil: ${catalog.title || catalog.name}` : `OSCAL-Katalog: ${catalog.name || 'Katalog'}${index === 0 ? ' (Basis)' : ''}`,
+                    title: istMst ? `Mindeststandard-Profil: ${catalog.title || catalog.name}` : istNg ? 'NG-Ergänzungskatalog (ED23-Baustein-Profile, nutzergeneriert)' : `OSCAL-Katalog: ${catalog.name || 'Katalog'}${index === 0 ? ' (Basis)' : ''}`,
                     description: index === 0
                         ? 'Basis-Katalog dieser Blaupause. Alle Controls ohne eigenen Katalogbezug stammen hieraus.'
                         : istMst
                             ? `OSCAL-Profil des Mindeststandards ${catalog.name} des BSI auf dem Anwenderkatalog Grundschutz++. Seine Controls sind über die Komponente "Mindeststandard: ${catalog.name}" zugeordnet; das Profil importiert den Anwenderkatalog und seinen Ergänzungskatalog und verändert Controls über modify.`
-                            : `Zusätzlich importierter Katalog. Die daraus übernommenen Controls sind über die Komponente "Katalog-Umsetzung: ${catalog.name}" zugeordnet.`,
-                    props: [{ name: 'catalog-role', ns: OSCAL_NAMESPACES.sourceCatalog, value: index === 0 ? 'base-catalog' : istMst ? 'mindeststandard' : 'additional-catalog' }],
+                            : istNg
+                                ? 'Ergänzungskatalog der ED23-Baustein-Profile (Gpp-ai-tool): nutzergenerierte Controls NG-<AnforderungsID> (NTT DATA, nicht vom BSI). Sie hängen an den Zielobjekten, deren Baustein-Profil sie mitbringt.'
+                                : `Zusätzlich importierter Katalog. Die daraus übernommenen Controls sind über die Komponente "Katalog-Umsetzung: ${catalog.name}" zugeordnet.`,
+                    props: [{ name: 'catalog-role', ns: OSCAL_NAMESPACES.sourceCatalog, value: index === 0 ? 'base-catalog' : istMst ? 'mindeststandard' : istNg ? 'ng-ergaenzung' : 'additional-catalog' }],
                     rlinks: [{
                         href: catalog.href,
                         ...(catalog.sha256 ? { hashes: [{ algorithm: 'SHA-256', value: catalog.sha256 }] } : {})

@@ -60,7 +60,7 @@ SELF_REPO = "NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools"
 # (wird aus dem Ordner gebaut, traegt dieselben Pins).
 # hilfsdateien/ und QS/fixtures/ sind Provenienz: sie halten fest, gegen welchen Stand sie
 # entstanden sind (QS-Fixtures: Analyse-Payloads der Messlaeufe), und werden nie umgepinnt.
-SKIP_DIRS = {".git", ".claude", "hilfsdateien", "fixtures", "node_modules", "__pycache__"}
+SKIP_DIRS = {".git", ".claude", "hilfsdateien", "fixtures", "node_modules", "__pycache__", ".venv", "venv", ".cache", ".pytest_cache"}
 SKIP_SUFFIXES = {".zip", ".png", ".jpg", ".pdf", ".pyc", ".docx", ".xlsx"}
 SKIP_NAMES = {"RELEASE_NOTES_v3.0.md", "RELEASE_NOTES_v4.0.md"}
 
