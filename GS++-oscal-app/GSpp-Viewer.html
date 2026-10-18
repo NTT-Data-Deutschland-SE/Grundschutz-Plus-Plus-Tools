@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GS++ Explorer v9.8 · Multi-Katalog &amp; Profile</title>
+    <title>GS++ Explorer v9.9 · Multi-Katalog &amp; Profile</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
@@ -520,7 +520,7 @@
         <div class="topbar-meta">
             <span class="pill progress-pill" id="progressLabel"></span>
             <span class="pill" id="catalogPill">0 Kataloge</span>
-            <span class="pill build-version" id="buildVersion">v9.8</span>
+            <span class="pill build-version" id="buildVersion">v9.9</span>
         </div>
         <div class="progress-track" id="progressTrack"><div class="progress-fill" id="progressFill"></div></div>
     </header>
@@ -722,7 +722,7 @@
         };
 
         // Einzige Quelle der Build-Version. Titel und Topbar-Badge werden daraus gesetzt.
-        const BUILD_VERSION = "v9.8";
+        const BUILD_VERSION = "v9.9";
 
         const byId = id => document.getElementById(id);
 
@@ -1722,8 +1722,17 @@ eine KI. Dein Satzbau ist Abwechslungsreich, konkret, präßise und du nutzt kei
                 // Drift-Check über die Control-ID-Schnittmenge.
                 const imp0 = (data.profile.imports || [])[0];
                 const pin = imp0 ? resolveImportHref(data.profile, imp0.href) : null;
-                const matched = loadedControlIds.size ? [...ids].filter(id => loadedControlIds.has(id)).length : null;
-                let msg = `${ids.size} Maßnahmen im Profil aktiv${matNote}.`;
+                // NG-Controls (NG-…, nutzergeneriert) kommen aus dem NG-Ergänzungskatalog der
+                // ED23-Baustein-Profile (zweiter Import), nicht aus dem Anwenderkatalog — sie
+                // zählen nicht als Drift. Dokumentation/namespaces/ed23_baustein_props.md.
+                const ngIds = [...ids].filter(id => /^NG-/.test(id));
+                if (ngIds.length) {
+                    const imp1 = (data.profile.imports || [])[1];
+                    const ngRes = imp1 ? resolveImportHref(data.profile, imp1.href) : null;
+                    L.info(`${ngIds.length} NG-Controls (nutzergeneriert, NTT DATA) aus dem NG-Ergänzungskatalog${ngRes?.url ? ` (${ngRes.url})` : ''} — nicht Teil des Anwenderkatalogs, im Drift-Check ausgenommen.`);
+                }
+                const matched = loadedControlIds.size ? [...ids].filter(id => loadedControlIds.has(id) || /^NG-/.test(id)).length : null;
+                let msg = `${ids.size} Maßnahmen im Profil aktiv${matNote}${ngIds.length ? ` (davon ${ngIds.length} NG)` : ''}.`;
                 let color = "var(--green)";
                 L.ok(`Profil geladen: ${ids.size} Control-IDs${activeProfileMaturity ? `, Reifegrade für ${activeProfileMaturity.size} Controls` : ''} (${Math.round(performance.now() - t0)}ms)`);
                 if (matched !== null && matched < ids.size) {
