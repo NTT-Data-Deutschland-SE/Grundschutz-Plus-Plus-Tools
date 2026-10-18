@@ -37,7 +37,10 @@ async def main() -> None:
         "--stage",
         type=str,
         required=False,
-        choices=["stage_gpp", "stage_match_bausteine", "stage_profiles", "stage_ED23_profiles_enhanced", "stage_base_process_enhanced", "stage_ed23_anforderungen", "stage_ed23_relationen", "stage_ed23_satz_abdeckung", "stage_prozessbausteine"],
+        choices=["stage_gpp", "stage_match_bausteine", "stage_profiles", "stage_ed23_baustein_abgleich",
+                 "stage_ng_katalog", "stage_ED23_profiles_enhanced", "stage_base_process_enhanced",
+                 "stage_ed23_anforderungen", "stage_ed23_relationen", "stage_ed23_satz_abdeckung",
+                 "stage_prozessbausteine"],
         help="The pipeline stage to execute. If not provided, the full pipeline will run.",
     )
     args = parser.parse_args()
@@ -48,7 +51,7 @@ async def main() -> None:
     from pipeline import (
         stage_ED23_profiles_enhanced, stage_base_process_enhanced, stage_gpp, stage_match_bausteine,
         stage_profiles, stage_ed23_anforderungen, stage_ed23_relationen, stage_ed23_satz_abdeckung,
-        stage_prozessbausteine, processing,
+        stage_prozessbausteine, stage_ed23_baustein_abgleich, stage_ng_katalog, processing,
     )
     if args.fresh:
         app_config.overwrite_temp_files = True
@@ -66,6 +69,10 @@ async def main() -> None:
             await stage_match_bausteine.run_stage_match_bausteine()
         elif args.stage == "stage_profiles":
             stage_profiles.run_stage_profiles()
+        elif args.stage == "stage_ed23_baustein_abgleich":
+            await stage_ed23_baustein_abgleich.run_stage_ed23_baustein_abgleich()
+        elif args.stage == "stage_ng_katalog":
+            stage_ng_katalog.run_stage_ng_katalog()
         elif args.stage == "stage_ED23_profiles_enhanced":
             await stage_ED23_profiles_enhanced.run_stage_ED23_profiles_enhanced()
         elif args.stage == "stage_base_process_enhanced":
