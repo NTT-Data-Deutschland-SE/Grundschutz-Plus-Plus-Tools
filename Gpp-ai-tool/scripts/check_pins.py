@@ -155,7 +155,9 @@ def scan(root: Path) -> tuple[dict, list[BareConst], list[HashConst]]:
             continue
         rel = p.relative_to(root).as_posix()
         for m in RAW_URL.finditer(text):
-            path = urllib.parse.unquote(m["path"])
+            # Fragment-Links (…catalog.json#KONF.1.1, rel="related" der Ergaenzungskataloge)
+            # zeigen auf dieselbe gepinnte Datei; das Fragment ist kein Upstream-Pfad.
+            path = urllib.parse.unquote(m["path"]).split("#", 1)[0]
             src = sources.setdefault((m["repo"], path), Source(m["repo"], path))
             src.pins[m["sha"]].add(rel)
             src.count += 1
