@@ -212,8 +212,6 @@ def filter_maker_result(
     neues_control: Optional[Dict[str, Any]] = None
     if neu:
         reasons = []
-        if zuordnungen:
-            reasons.append("Zuordnung vorhanden (Ergänzung statt neues Control)")
         if pruefung.get("control_noetig") is False:
             reasons.append("control_noetig=false")
         if pruefung.get("art") in ("hinweis", "verweis"):
@@ -258,6 +256,11 @@ def filter_maker_result(
                 "checker_begruendung": None,
                 "hinweis": hinweis,
             }
+            if zuordnungen:
+                # Kept as a fallback for the checker: "Ergänzung statt neues Control" only holds
+                # once a Zuordnung survives the checker. Dropping it here left Anforderungen
+                # without any control whenever the checker rejected every Zuordnung.
+                neues_control["fallback"] = True
 
     ohne_control = None
     if not zuordnungen and not neues_control:
@@ -283,8 +286,13 @@ def apply_checker_verdict(result: Dict[str, Any], verdict: Optional[Dict[str, An
     if not isinstance(verdict, dict):
         for z in result["zuordnungen"]:
             z["checker"] = "nicht geprüft"
-        if result.get("neues_control"):
-            result["neues_control"]["checker"] = "nicht geprüft"
+        nc = result.get("neues_control")
+        if nc and nc.pop("fallback", False) and result["zuordnungen"]:
+            # Unchecked: the conservative reading, a Zuordnung exists, so no new control.
+            result["verworfen"].append("neues Control verworfen: Zuordnung vorhanden, Checker nicht erreichbar")
+            result["neues_control"] = None
+        elif nc:
+            nc["checker"] = "nicht geprüft"
         return result
     urteile = {u.get("control_id"): u for u in verdict.get("urteile") or [] if isinstance(u, dict)}
     kept = []
@@ -298,6 +306,11 @@ def apply_checker_verdict(result: Dict[str, Any], verdict: Optional[Dict[str, An
             kept.append(z)
     result["zuordnungen"] = kept
     nc = result.get("neues_control")
+    if nc and nc.pop("fallback", False) and kept:
+        # A Zuordnung survived the checker: the Anforderung is carried, no new control.
+        result["verworfen"].append(
+            "neues Control verworfen: Zuordnung vom Checker bestätigt (Ergänzung statt neues Control)")
+        result["neues_control"] = nc = None
     if nc:
         u = verdict.get("neues_control") or {}
         nc["checker"] = u.get("urteil") or "unsicher"

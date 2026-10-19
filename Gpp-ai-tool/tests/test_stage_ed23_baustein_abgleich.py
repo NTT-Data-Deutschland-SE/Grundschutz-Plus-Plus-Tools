@@ -63,8 +63,10 @@ def test_filter_rejects_new_controls_by_each_rule():
         res = st.filter_maker_result(_item(**over), over.pop("_rec", REC), LOOKUP, {"KONF", "GC"}, {"IT-Systeme"})
         return res["neues_control"] is None and res["ohne_control"] is not None
     assert rejected(zuordnungen=[{"control_id": "gc.1.1", "relation": "equivalent-to", "konfidenz": "hoch", "begruendung": ""}]) is False  # has a zuordnung → no ohne_control
-    assert st.filter_maker_result(_item(zuordnungen=[{"control_id": "gc.1.1", "relation": "equivalent-to", "konfidenz": "hoch", "begruendung": ""}]),
-                                  REC, LOOKUP, {"KONF"}, set())["neues_control"] is None
+    # With a Zuordnung the new control is kept as the checker's fallback, not dropped.
+    res = st.filter_maker_result(_item(zuordnungen=[{"control_id": "gc.1.1", "relation": "equivalent-to", "konfidenz": "hoch", "begruendung": ""}]),
+                                 REC, LOOKUP, {"KONF"}, set())
+    assert res["neues_control"]["fallback"] is True and not any("Zuordnung vorhanden" in v for v in res["verworfen"])
     assert rejected(pruefung={"art": "hinweis", "modalverb": "keines", "control_noetig": False, "hinweis": "h"})
     assert rejected(neues_control=dict(_item()["neues_control"], statement="Es MUSS a und SOLLTE b."))
     assert rejected(neues_control=dict(_item()["neues_control"], statement="Die Institution SOLLTE x."))  # weaker than MUSS
@@ -88,6 +90,35 @@ def test_checker_verdicts_remove_rejected_and_keep_doubtful():
     assert res2["neues_control"] is None and res2["ohne_control"]["art"] == "abgelehnt-durch-checker"
     res3 = st.apply_checker_verdict(st.filter_maker_result(_item(), REC, LOOKUP, {"KONF"}, set()), None)
     assert res3["neues_control"]["checker"] == "nicht geprüft"
+
+
+def _with_fallback():
+    return st.filter_maker_result(_item(zuordnungen=[
+        {"control_id": "gc.1.1", "relation": "equivalent-to", "konfidenz": "hoch", "begruendung": ""}]), REC, LOOKUP, {"KONF"}, set())
+
+
+def test_fallback_control_is_dropped_when_a_zuordnung_survives():
+    res = st.apply_checker_verdict(_with_fallback(), {"urteile": [{"control_id": "GC.1.1", "urteil": "fraglich", "begruendung": "hm"}],
+                                                      "neues_control": {"urteil": "bestaetigt", "begruendung": "ok"}, "gesamt": ""})
+    assert res["neues_control"] is None and [z["control_id"] for z in res["zuordnungen"]] == ["GC.1.1"]
+    assert any("Zuordnung vom Checker bestätigt" in v for v in res["verworfen"]) and res["ohne_control"] is None
+
+
+def test_fallback_control_stands_when_all_zuordnungen_are_rejected():
+    res = st.apply_checker_verdict(_with_fallback(), {"urteile": [{"control_id": "GC.1.1", "urteil": "abgelehnt", "begruendung": "nein"}],
+                                                      "neues_control": {"urteil": "bestaetigt", "begruendung": "ok"}, "gesamt": ""})
+    assert res["zuordnungen"] == [] and res["neues_control"]["id"] == "NG-SYS.1.1.A5"
+    assert res["neues_control"]["checker"] == "bestaetigt" and "fallback" not in res["neues_control"] and res["ohne_control"] is None
+    # ... but not when the checker rejects it too
+    res = st.apply_checker_verdict(_with_fallback(), {"urteile": [{"control_id": "GC.1.1", "urteil": "abgelehnt", "begruendung": "nein"}],
+                                                      "neues_control": {"urteil": "abgelehnt", "begruendung": "nein"}, "gesamt": "g"})
+    assert res["neues_control"] is None and res["ohne_control"]["art"] == "abgelehnt-durch-checker"
+
+
+def test_fallback_control_is_dropped_without_checker():
+    res = st.apply_checker_verdict(_with_fallback(), None)
+    assert res["neues_control"] is None and res["zuordnungen"][0]["checker"] == "nicht geprüft"
+    assert any("Checker nicht erreichbar" in v for v in res["verworfen"])
 
 
 def test_render_block_marks_normative_sentences():
