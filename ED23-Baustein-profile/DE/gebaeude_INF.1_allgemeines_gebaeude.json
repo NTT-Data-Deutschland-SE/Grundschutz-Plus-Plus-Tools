@@ -2,10 +2,54 @@
   "profile": {
     "uuid": "87d00810-6257-5a62-a519-c24728a4a4af",
     "metadata": {
-      "title": "INF.1 - Gebäude",
-      "last-modified": "2026-07-28T15:38:32.822492+00:00",
-      "version": "0.0.1",
-      "oscal-version": "1.2.2"
+      "title": "INF.1 – Allgemeines Gebäude (Gebäude)",
+      "last-modified": "2026-10-19T01:18:09.418795+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "BSI"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "INF.1"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Allgemeines Gebäude"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Gebäude"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "system"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, INF.1, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein INF.1 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (amtlicher Wortlaut des XML-Kompendiums 2023); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41) und dem NG Ergänzungskatalog (NG-ergaenzungskatalog.json, nutzergeneriert). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls."
     },
     "imports": [
       {
@@ -13,7 +57,11 @@
         "include-controls": [
           {
             "with-ids": [
-              "ASST.7.5",
+              "ASST.3.13",
+              "ASST.3.4",
+              "ASST.5.2",
+              "BER.1.4",
+              "GC.3.1.1",
               "GEB.1.1",
               "GEB.1.1.1",
               "GEB.1.1.2",
@@ -23,62 +71,1739 @@
               "GEB.1.3.1",
               "GEB.1.4",
               "GEB.1.5",
-              "GEB.10.1",
-              "GEB.10.1.3",
               "GEB.10.2",
+              "GEB.10.2.4",
               "GEB.10.2.5",
               "GEB.10.2.7",
               "GEB.10.3",
               "GEB.10.3.1",
-              "GEB.10.3.2",
               "GEB.10.4",
               "GEB.10.4.1",
               "GEB.2.1",
-              "GEB.2.2",
               "GEB.2.3",
-              "GEB.2.4",
               "GEB.3.1",
               "GEB.3.1.1",
-              "GEB.3.1.2",
-              "GEB.3.2",
               "GEB.3.3",
-              "GEB.3.3.1",
-              "GEB.3.3.2",
               "GEB.3.3.3",
-              "GEB.3.4",
               "GEB.3.5",
               "GEB.3.6",
               "GEB.3.7",
               "GEB.4.1",
               "GEB.4.2",
-              "GEB.4.3",
-              "GEB.4.4",
-              "GEB.5.1",
+              "GEB.5.3",
               "GEB.7.1",
-              "GEB.7.2",
-              "GEB.7.3",
-              "GEB.8.1",
-              "GEB.8.1.1",
-              "GEB.8.3",
-              "GEB.9.1",
               "GEB.9.1.1",
-              "GEB.9.1.2",
-              "GEB.9.1.3",
-              "GEB.9.1.4",
-              "GEB.9.2",
-              "GEB.9.3",
               "GEB.9.4",
-              "GEB.9.5",
-              "GEB.9.5.1",
+              "GEB.9.6",
+              "NOT.1.2",
+              "PERS.2.2",
+              "PERS.3.2",
               "SENS.8.10",
+              "SENS.8.11",
               "SENS.8.4",
-              "SENS.8.6",
-              "SENS.8.7"
+              "SENS.8.6"
+            ]
+          }
+        ]
+      },
+      {
+        "href": "#6b2c3fe8-7370-556a-9c3c-540d81d5de99",
+        "include-controls": [
+          {
+            "with-ids": [
+              "NG-INF.1.A31",
+              "NG-INF.1.A32"
             ]
           }
         ]
       }
     ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "INF.1-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "INF.1.A1",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A1 Planung der Gebäudeabsicherung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Planende"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Je nach der (geplanten) Nutzung eines Gebäudes und dem Schutzbedarf der dort betriebenen Geschäftsprozesse MUSS festgelegt werden, wie das Gebäude abzusichern ist. Bei einem Gebäude MÜSSEN insbesondere Sicherheitsaspekte zum Schutz von Personen im Gebäude, dem Schutz der Wirtschaftsgüter und der IT beachtet werden, von Brandschutz über Elektrik bis hin zur Zutrittskontrolle. Die Sicherheitsanforderungen aus den verschiedenen Bereichen MÜSSEN aufeinander abgestimmt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A2",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A2 Angepasste Aufteilung der Stromkreise",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS regelmäßig überprüft werden, ob die Absicherung und Auslegung der Stromkreise noch den tatsächlichen Bedürfnissen genügen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.9.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A3",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A3 Einhaltung von Brandschutzvorschriften",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Die bestehenden Brandschutzvorschriften sowie die Auflagen der Bauaufsicht MÜSSEN eingehalten werden. Die Fluchtwege MÜSSEN vorschriftsmäßig ausgeschildert und freigehalten werden. Es MUSS regelmäßig kontrolliert werden, dass die Fluchtwege benutzbar und frei von Hindernissen sind, damit das Gebäude in einer Gefahrensituation schnell geräumt werden kann. Bei der Brandschutzplanung SOLLTE die örtliche Feuerwehr hinzugezogen werden. Unnötige Brandlasten MÜSSEN vermieden werden. Es MUSS eine Brandschutzbeauftragte oder einen Brandschutzbeauftragten oder eine mit dem Aufgabengebiet betraute Person geben. Diese Person MUSS geeignet geschult sein."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.10.2",
+                          "GEB.10.2.7",
+                          "SENS.8.10"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A4",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A4 Branderkennung in Gebäuden",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Planende"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Gebäude MÜSSEN entsprechend der Auflagen in der Baugenehmigung und dem Brandschutzkonzept folgend mit einer ausreichenden Anzahl von Rauchmeldern ausgestattet sein. Ist eine lokale Alarmierung am Ort des Melders nicht ausreichend, MÜSSEN alle Melder auf eine Brandmeldezentrale (BMZ) aufgeschaltet werden. Bei Rauchdetektion MUSS eine Alarmierung im Gebäude ausgelöst werden. Es MUSS sichergestellt sein, dass alle im Gebäude anwesenden Personen diese wahrnehmen können. Die Funktionsfähigkeit aller Rauchmelder sowie aller sonstigen Komponenten einer Brandmeldeanlage (BMA) MUSS regelmäßig überprüft werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.10.2.5"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.10.2.7",
+                    "rel": "related",
+                    "text": "GEB.10.2.7 steht unter INF.1.A3"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A5",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A5 Handfeuerlöscher",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Zur Sofortbekämpfung von Bränden MÜSSEN Handfeuerlöscher in der jeweils geeigneten Brandklasse (DIN EN 3 Tragbare Feuerlöscher) in ausreichender Zahl und Größe im Gebäude zur Verfügung stehen. Die Handfeuerlöscher MÜSSEN regelmäßig geprüft und gewartet werden. Die Mitarbeitenden SOLLTEN in die Benutzung der Handfeuerlöscher eingewiesen werden. Die Einweisungen SOLLTEN in zweckmäßigen Zeitabständen wiederholt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "SENS.8.11"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.10.2",
+                    "rel": "related",
+                    "text": "GEB.10.2 steht unter INF.1.A3"
+                  },
+                  {
+                    "href": "#GEB.10.2.7",
+                    "rel": "related",
+                    "text": "GEB.10.2.7 steht unter INF.1.A3"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A6",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A6 Geschlossene Fenster und Türen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "DARF NUR"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Mitarbeitende"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Fenster und von außen zugängliche Türen, etwa von Balkonen oder Terrassen, MÜSSEN zu Zeiten, in denen ein Raum nicht besetzt ist, geschlossen werden. Räume MÜSSEN verschlossen werden, falls dort vertrauliche Informationen zurückgelassen werden. Dafür MUSS es eine entsprechende Anweisung geben. Alle Mitarbeitenden SOLLTEN dazu verpflichtet werden, der Anweisung nachzukommen. Es MUSS regelmäßig überprüft werden, ob die Fenster und Innen- sowie Außentüren nach Verlassen des Gebäudes verschlossen sind. Brand- und Rauchschutztüren DÜRFEN NUR dann dauerhaft offen gehalten werden, wenn dies durch zugelassene Feststellanlagen erfolgt."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.3.7",
+                          "PERS.3.2",
+                          "SENS.8.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A7",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A7 Zutrittsregelung und -kontrolle",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Zentrale Verwaltung"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Der Zutritt zu schutzbedürftigen Gebäudeteilen und Räumen MUSS geregelt und kontrolliert werden. Es SOLLTE ein Konzept für die Zutrittskontrolle existieren. Die Zahl der zutrittsberechtigten Personen SOLLTE für jeden Bereich auf ein Mindestmaß reduziert werden. Weitere Personen DÜRFEN erst Zutritt erhalten, nachdem geprüft wurde, ob dies notwendig ist. Alle erteilten Zutrittsberechtigungen SOLLTEN dokumentiert werden. Die Zutrittskontrollmaßnahmen MÜSSEN regelmäßig auf ihre Wirksamkeit überprüft werden. Zutrittskontrollen SOLLTEN auch während Umzügen soweit wie möglich vorhanden sein."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.1.4",
+                          "GEB.1.1.1",
+                          "GEB.3.3",
+                          "GEB.3.3.3",
+                          "GEB.4.2",
+                          "GEB.9.6"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.3.7",
+                    "rel": "related",
+                    "text": "GEB.3.7 steht unter INF.1.A6"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A8",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A8 Rauchverbot",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Für Räume mit IT oder Datenträgern, in denen Brände oder Verschmutzungen zu hohen Schäden führen können, wie Serverräume, Datenträger- oder Belegarchive, MUSS ein Rauchverbot erlassen werden. Es MUSS regelmäßig kontrolliert werden, dass bei der Einrichtung oder Duldung von Raucherzonen der Zutrittsschutz nicht umgangen wird."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.3.7",
+                    "rel": "related",
+                    "text": "GEB.3.7 steht unter INF.1.A6"
+                  },
+                  {
+                    "href": "#SENS.8.10",
+                    "rel": "related",
+                    "text": "SENS.8.10 steht unter INF.1.A3"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A10",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A10 Einhaltung einschlägiger Normen und Vorschriften",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Errichterfirma, Bauleitung"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Bei der Planung, der Errichtung und dem Umbau von Gebäuden sowie beim Einbau von technischen Einrichtungen MÜSSEN alle relevanten Normen und Vorschriften berücksichtigt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GC.3.1.1",
+                          "GEB.1.3.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.10.2",
+                    "rel": "related",
+                    "text": "GEB.10.2 steht unter INF.1.A3"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "INF.1-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "INF.1.A9",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A9 Sicherheitskonzept für die Gebäudenutzung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Planende"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A9_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE ein Sicherheitskonzept für die Gebäudenutzung geben. Das Sicherheitskonzept für das Gebäude SOLLTE mit dem Gesamtsicherheitskonzept der Institution abgestimmt sein. Es SOLLTE dokumentiert und regelmäßig aktualisiert werden. Schützenswerte Räume oder Gebäudeteile SOLLTEN nicht in exponierten oder besonders gefährdeten Bereichen untergebracht sein. Es MUSS ein IT-bezogenes Brandschutzkonzept erstellt und umgesetzt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.1.2",
+                          "GEB.1.4"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.1.1",
+                    "rel": "related",
+                    "text": "GEB.1.1 steht unter INF.1.A1"
+                  },
+                  {
+                    "href": "#GEB.1.1.1",
+                    "rel": "related",
+                    "text": "GEB.1.1.1 steht unter INF.1.A7"
+                  },
+                  {
+                    "href": "#GEB.10.2",
+                    "rel": "related",
+                    "text": "GEB.10.2 steht unter INF.1.A3"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A11",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A11 ENTFALLEN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A11"
+                  },
+                  {
+                    "name": "entfallen",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A12",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A12 Schlüsselverwaltung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A12"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A12_anforderung",
+                    "name": "overview",
+                    "prose": "Für alle Schlüssel des Gebäudes SOLLTE ein Schließplan vorliegen. Die Herstellung, Aufbewahrung, Verwaltung und Ausgabe von Schlüsseln SOLLTE zentral geregelt sein. Reserveschlüssel SOLLTEN vorgehalten und gesichert, aber für Notfälle griffbereit aufbewahrt werden. Nicht ausgegebene Schlüssel SOLLTEN sicher aufbewahrt werden. Jede Schlüsselausgabe SOLLTE dokumentiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.3.13",
+                          "GEB.7.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A13",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A13 Regelungen für Zutritt zu Verteilern",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A13"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A13_anforderung",
+                    "name": "overview",
+                    "prose": "Der Zutritt zu den Verteilern aller Versorgungseinrichtungen in einem Gebäude SOLLTE im Bedarfsfall schnell möglich sein. Der Zutritt zu Verteilern SOLLTE auf einen engen Kreis von Berechtigten beschränkt sein"
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.3.3",
+                    "rel": "related",
+                    "text": "GEB.3.3 steht unter INF.1.A7"
+                  },
+                  {
+                    "href": "#GEB.9.6",
+                    "rel": "related",
+                    "text": "GEB.9.6 steht unter INF.1.A7"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A14",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A14 Blitzschutzeinrichtungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A14"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A14_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE eine Blitzschutzanlage nach geltender Norm installiert sein. Es SOLLTE ein umfassendes Blitz- und Überspannungsschutzkonzept vorhanden sein. Die Fangeinrichtungen bei Gebäuden mit umfangreicher IT-Ausstattung SOLLTEN mindestens der Schutzklasse II gemäß DIN EN 62305 Blitzschutz entsprechen. Die Blitzschutzanlage SOLLTE regelmäßig geprüft und gewartet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.10.4",
+                          "GEB.10.4.1",
+                          "GEB.9.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A15",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A15 Lagepläne der Versorgungsleitungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A15"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A15_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTEN aktuelle Lagepläne aller Versorgungsleitungen existieren. Es SOLLTE geregelt sein, wer die Lagepläne aller Versorgungsleitungen führt und aktualisiert. Die Pläne SOLLTEN so aufbewahrt werden, dass ausschließlich berechtigte Personen darauf zugreifen können, sie aber im Bedarfsfall schnell verfügbar sind."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.1.1.2",
+                          "GEB.1.5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A16",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A16 Vermeidung von Lagehinweisen auf schützenswerte Gebäudeteile",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A16"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A16_anforderung",
+                    "name": "overview",
+                    "prose": "Lagehinweise auf schutzwürdige Bereiche SOLLTEN vermieden werden. Schutzwürdige Gebäudebereiche SOLLTEN von außen nicht leicht einsehbar sein."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.3.4",
+                          "GEB.2.3"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.1.4",
+                    "rel": "related",
+                    "text": "GEB.1.4 steht unter INF.1.A9"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A17",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A17 Baulicher Rauchschutz",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A17"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Planende"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A17_anforderung",
+                    "name": "overview",
+                    "prose": "Der bauliche Rauchschutz SOLLTE nach Installations- und Umbauarbeiten überprüft werden. Es SOLLTE regelmäßig überprüft werden, ob die Rauchschutz-Komponenten noch funktionieren."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.10.2.7",
+                    "rel": "related",
+                    "text": "GEB.10.2.7 steht unter INF.1.A3"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A18",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A18 Brandschutzbegehungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A18"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A18_anforderung",
+                    "name": "overview",
+                    "prose": "Brandschutzbegehungen SOLLTEN regelmäßig, d. h. mindestens ein- bis zweimal im Jahr, stattfinden. Bei Brandschutzbegehungen festgestellte Mängel SOLLTEN unverzüglich behoben werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.10.2.7",
+                    "rel": "related",
+                    "text": "GEB.10.2.7 steht unter INF.1.A3"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A19",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A19 Information des oder der Brandschutzbeauftragten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A19"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A19_anforderung",
+                    "name": "overview",
+                    "prose": "Der oder die Brandschutzbeauftragte SOLLTE über Arbeiten an Leitungstrassen, Fluren, Flucht- und Rettungswegen informiert werden. Diese Person SOLLTE die ordnungsgemäße Ausführung von Brandschutzmaßnahmen kontrollieren."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.10.2.7",
+                    "rel": "related",
+                    "text": "GEB.10.2.7 steht unter INF.1.A3"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A20",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A20 Alarmierungsplan und Brandschutzübungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A20"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A20_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE ein Alarmierungsplan für die im Brandfall zu ergreifenden Maßnahmen erstellt werden. Der Alarmierungsplan SOLLTE in regelmäßigen Abständen überprüft und aktualisiert werden. Brandschutzübungen SOLLTEN regelmäßig durchgeführt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NOT.1.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.1.2",
+                    "rel": "related",
+                    "text": "GEB.1.2 steht unter INF.1.A9"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A27",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A27 Einbruchschutz",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A27"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A27_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTEN ausreichende und den örtlichen Gegebenheiten angepasste Maßnahmen zum Einbruchschutz umgesetzt werden. Bei der Planung, der Umsetzung und im Betrieb SOLLTE beim Einbruchschutz darauf geachtet werden, dass er gleichwertig und durchgängig ist. Er SOLLTE regelmäßig durch eine fachkundige Person begutachtet werden. Die Regelungen zum Einbruchschutz SOLLTEN den Mitarbeitenden bekannt sein."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.1.1.3",
+                          "GEB.2.1",
+                          "GEB.3.5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A36",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A36 Regelmäßige Aktualisierungen der Dokumentation",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A36"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A36_anforderung",
+                    "name": "overview",
+                    "prose": "Die Dokumentation eines Gebäudes, z. B. Baupläne, Trassenpläne, Strangschemata, Fluchtwegpläne und Feuerwehrlaufkarten, SOLLTE immer auf dem aktuellen Stand gehalten werden. Es SOLLTE mindestens einmal innerhalb von drei Jahren überprüft werden, ob alle relevanten Pläne noch aktuell und korrekt sind. Über Änderungen SOLLTEN die Mitarbeitenden informiert werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.1.1.3",
+                    "rel": "related",
+                    "text": "GEB.1.1.3 steht unter INF.1.A27"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "INF.1-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "INF.1.A21",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A21 ENTFALLEN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A21"
+                  },
+                  {
+                    "name": "entfallen",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A22",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A22 Sichere Türen und Fenster",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A22"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A22_anforderung",
+                    "name": "overview",
+                    "prose": "Türen und Fenster SOLLTEN anhand der Schutzziele des zu sichernden Bereichs und des Schutzbedarfs der Institution in der passenden Klassifizierung nach den einschlägigen Normen ausgewählt werden. Alle raumumschließenden Sicherungsmaßnahmen durch Fenster, Türen und Wände SOLLTEN in Bezug auf Einbruch, Brand und Rauch gleichwertig und angemessen sein. Es SOLLTE regelmäßig überprüft werden, dass die Sicherheitstüren und -fenster funktionstüchtig sind."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.10.2.4"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.3.5",
+                    "rel": "related",
+                    "text": "GEB.3.5 steht unter INF.1.A27"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A23",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A23 Bildung von Sicherheitszonen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A23"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Planende"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A23_anforderung",
+                    "name": "overview",
+                    "prose": "Räume ähnlichen Schutzbedarfs SOLLTEN in Zonen zusammengefasst werden, um vergleichbare Risiken einheitlich behandeln und Kosten für erforderliche Sicherheitsmaßnahmen reduzieren zu können."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.4.1",
+                          "GEB.5.3"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.2.1",
+                    "rel": "related",
+                    "text": "GEB.2.1 steht unter INF.1.A27"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A24",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A24 Selbsttätige Entwässerung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A24"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A24_anforderung",
+                    "name": "overview",
+                    "prose": "Alle von Wasser gefährdeten Bereiche SOLLTEN mit einer selbsttätigen Entwässerung ausgestattet sein. Es SOLLTE regelmäßig geprüft werden, ob die aktiven und passiven Entwässerungseinrichtungen noch funktionieren."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.10.3",
+                          "GEB.10.3.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A25",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A25 Geeignete Standortauswahl",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A25"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Institutionsleitung"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A25_anforderung",
+                    "name": "overview",
+                    "prose": "Bei Planung und Auswahl des Gebäudestandortes SOLLTE geprüft werden, welche Umfeldbedingungen Einfluss auf die Informationssicherheit haben könnten. Es SOLLTE eine Übersicht über standortbedingte Gefährdungen geben. Diesen Gefährdungen SOLLTE mit zusätzlichen kompensierenden Maßnahmen entgegengewirkt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.1.3.1",
+                    "rel": "related",
+                    "text": "GEB.1.3.1 steht unter INF.1.A10"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A26",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A26 Pforten- oder Sicherheitsdienst",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A26"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A26_anforderung",
+                    "name": "overview",
+                    "prose": "Die Aufgaben des Pforten- oder Sicherheitsdienstes SOLLTEN klar dokumentiert sein. Der Pfortendienst SOLLTE alle Personenbewegungen an der Pforte und an allen anderen Eingängen beobachten und, je nach Sicherheitskonzept, kontrollieren. Alle Mitarbeitenden und Besuchenden SOLLTEN sich bei dem Pfortendienst ausweisen können. Besuchende SOLLTEN zu den Besuchten begleitet oder an der Pforte abgeholt werden. Der Pfortendienst SOLLTE rechtzeitig darüber informiert werden, wenn sich Zutrittsberechtigungen ändern."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.3.1",
+                          "PERS.2.2",
+                          "SENS.8.6"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.1.1.1",
+                    "rel": "related",
+                    "text": "GEB.1.1.1 steht unter INF.1.A7"
+                  },
+                  {
+                    "href": "#GEB.3.3",
+                    "rel": "related",
+                    "text": "GEB.3.3 steht unter INF.1.A7"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A28",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A28 ENTFALLEN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A28"
+                  },
+                  {
+                    "name": "entfallen",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A29",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A29 ENTFALLEN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A29"
+                  },
+                  {
+                    "name": "entfallen",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A30",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A30 Auswahl eines geeigneten Gebäudes",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A30"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A30_anforderung",
+                    "name": "overview",
+                    "prose": "Bei der Auswahl eines geeigneten Gebäudes SOLLTE geprüft werden, ob alle für die spätere Nutzung relevanten Sicherheitsanforderungen umgesetzt werden können. Für jedes Gebäude SOLLTEN im Vorfeld die vorhandenen Gefährdungen und die erforderlichen Schäden vorbeugenden oder reduzierenden Maßnahmen dokumentiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.1.3"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.1.3.1",
+                    "rel": "related",
+                    "text": "GEB.1.3.1 steht unter INF.1.A10"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A31",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A31 Auszug aus Gebäuden",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A31"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Zentrale Verwaltung"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A31_anforderung",
+                    "name": "overview",
+                    "prose": "Im Vorfeld des Auszugs SOLLTE ein Bestandsverzeichnis aller für die Informationssicherheit für den Umzug relevanten Objekte wie Hardware, Software, Datenträger, Ordner oder Schriftstücke erstellt werden. Nach dem Auszug SOLLTEN alle Räume nach zurückgelassenen Dingen durchsucht werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NG-INF.1.A31"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A32",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A32 Brandschott-Kataster",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A32"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A32_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE ein Brandschott-Kataster geführt werden. In diesem SOLLTEN alle Arten von Schotten individuell aufgenommen werden. Nach Arbeiten an Brandschotten SOLLTEN die Änderungen im Kataster spätestens nach vier Wochen eingetragen werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NG-INF.1.A32"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A33",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A33 ENTFALLEN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A33"
+                  },
+                  {
+                    "name": "entfallen",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A34",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A34 Gefahrenmeldeanlage",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A34"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A34_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE eine den Räumlichkeiten und den Risiken angemessene Gefahrenmeldeanlage geben. Die Gefahrenmeldeanlage SOLLTE regelmäßig geprüft und gewartet werden. Es MUSS sichergestellt werden, dass diejenigen, die Gefahrenmeldungen empfangen in der Lage sind, technisch und personell angemessen auf den Alarm zu reagieren."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.5.2",
+                          "GEB.3.6"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.10.2.5",
+                    "rel": "related",
+                    "text": "GEB.10.2.5 steht unter INF.1.A4"
+                  },
+                  {
+                    "href": "#GEB.10.2.7",
+                    "rel": "related",
+                    "text": "GEB.10.2.7 steht unter INF.1.A3"
+                  }
+                ]
+              },
+              {
+                "id": "INF.1.A35",
+                "class": "ed23-anforderung",
+                "title": "INF.1.A35 Perimeterschutz",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.1.A35"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Planende, Haustechnik"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.1.A35_anforderung",
+                    "name": "overview",
+                    "prose": "Abhängig vom Schutzbedarf des Gebäudes und abhängig vom Gelände SOLLTE dieses über einen Perimeterschutz verfügen. Hierbei SOLLTEN mindestens folgende Komponenten auf ihren Nutzen und ihre Umsetzbarkeit hin betrachtet werden: äußere Umschließung oder Umfriedung, Sicherungsmaßnahmen gegen unbeabsichtigtes Überschreiten einer Grundstücksgrenze, Sicherungsmaßnahmen gegen beabsichtigtes gewaltloses Überwinden der Grundstücksgrenze, Maßnahmen zur Erschwerung des beabsichtigten gewaltsamen Überwindens der Grundstücksgrenze, Freigelände-Sicherungsmaßnahmen, Personen- und Fahrzeugdetektion, Maßnahmen zur Beweissicherung (beispielsweise Videoaufzeichnung) sowie automatische Alarmierung."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.3.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.2.1",
+                    "rel": "related",
+                    "text": "GEB.2.1 steht unter INF.1.A27"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
     "back-matter": {
       "resources": [
         {
@@ -91,6 +1816,926 @@
                 {
                   "algorithm": "SHA-256",
                   "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "6b2c3fe8-7370-556a-9c3c-540d81d5de99",
+          "title": "NG Ergänzungskatalog zu den ED23-Baustein-Profilen – Anforderungen ohne Entsprechung im Anwenderkatalog Grundschutz++",
+          "description": "NG Ergänzungskatalog mit 69 nutzergenerierten Controls, Datei NG-ergaenzungskatalog.json neben diesem Profil",
+          "rlinks": [
+            {
+              "href": "NG-ergaenzungskatalog.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "294687c3394f61715fdfd8c24bda821ffe4fbe0e30c11016ab59d24f89acfb3d"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "ASST.3.13",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): ASST.3.13 fordert als allgemeinere Maßnahme die sichere Lagerung nicht an Nutzende ausgegebener physischer Assets in dafür vorgesehenen Lagern bzw. Schränken, was die sichere Aufbewahrung nicht ausgegebener Schlüssel abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.3.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A16",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Die Maßnahme zielt auf die Kennzeichnung von IT-Assets ohne vertrauliche Angaben ab, was sich mit der Vermeidung physischer Lagehinweise auf schutzwürdige Gebäudebereiche thematisch überschneidet."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.5.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A34",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): ASST.5.2 fordert die regelmäßige oder prädiktive Wartung von Assets, deckt jedoch die zweifache Pflicht zur kombinierten Prüfung und Wartung der Gefahrenmeldeanlage nur als Schnittmenge ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.1.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 5): Das geforderte Inventar der Berechtigungen und deren Zuordnung zu Personen umfasst allgemeingültig auch physische Zutrittsberechtigungen und deckt deren Dokumentation inhaltlich ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GC.3.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker fraglich): Die Berücksichtigung relevanter gesetzlicher Vorschriften und Baunormen bei der Gebäudeplanung und -errichtung ist ein Teilbereich der allgemeinen Einhaltung gesetzlicher Verpflichtungen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equivalent-to, Teilanforderung 1,2): GEB.1.1 deckt die Forderung nach der Festlegung von Gebäudeschutzmaßnahmen ab, indem verbindliche Verfahren und Regelungen zum physischen Schutz von schutzbedürftigen Standorten verankert werden müssen. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A9",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equivalent-to, Teilanforderung 1): GEB.1.1 verlangt die Verankerung von Verfahren und Regelungen zum physischen Schutz von Standorten, was der Etablierung eines Sicherheitskonzepts für die Gebäudenutzung entspricht. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.1.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Die Forderung nach Dokumentation der Verfahren und Regelungen zum physischen Schutz deckt die geforderte Existenz eines dokumentierten Konzepts für die Zutrittskontrolle als allgemeinere Vorgabe inhaltlich ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A9",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): GEB.1.1.1 deckt die Dokumentationspflicht für gebäudebezogene Regelungen und Konzepte ab, fordert jedoch nicht die im Satz zusätzlich verlangte regelmäßige Aktualisierung. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A26",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die allgemeine Pflicht zur Dokumentation von Verfahren und Regelungen des Gebäudemanagements in GEB.1.1.1 deckt die Dokumentation der Aufgaben des Pforten- und Sicherheitsdienstes als konkrete Ausprägung ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.1.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A15",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Die Maßnahme deckt den Satz als allgemeinere Regelung ab, da sie fordert, Aufgaben und Verantwortlichkeiten im Gebäudemanagement definierten Personen oder Rollen zuzuweisen. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.1.1.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A27",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): GEB.1.1.3 verpflichtet zur Information der zuständigen Rollen über Regelungen des Gebäudemanagements, adressiert jedoch nicht die allgemeine Bekanntgabe an alle Mitarbeitenden. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A36",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): Satz 3 fordert die Information der Mitarbeitenden über Änderungen an der Dokumentation und überschneidet sich damit direkt mit der Bekanntgabepflicht aus GEB.1.1.3."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A9",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): GEB.1.2 deckt die regelmäßige Überprüfung und Aktualisierung von Regelungen ab, umfasst jedoch nicht die in Satz 3 zusätzlich geforderte Dokumentation des Sicherheitskonzepts. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A20",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): GEB.1.2 fordert als allgemeine Regelung die regelmäßige Überprüfung von Verfahren und Regelungen des Gebäudemanagements auf Aktualität, was die regelmäßige Überprüfung und Aktualisierung des Alarmierungsplans mit abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.1.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A30",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Die Autorisierung von Standorten für Assets überschneidet sich mit der Prüfung eines Gebäudes auf Umsetzbarkeit relevanter Sicherheitsanforderungen, fokussiert jedoch auf die Standortfreigabe statt auf den übergeordneten Gebäudeauswahlprozess. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.1.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Die Abnahme von Standorten anhand festgelegter Kriterien prüft im Ergebnis die Einhaltung der relevanten Normen und Vorschriften vor der Nutzung."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A25",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): GEB.1.3.1 fordert die Prüfung von Standorten vor deren Autorisierung anhand von Sicherheitskriterien in der Planungsphase, was die Prüfung relevanter Umfeldbedingungen bei der Standortauswahl inhaltlich abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A30",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equivalent-to, Teilanforderung 1): Satz 1 fordert die Prüfung relevanter Sicherheitsanforderungen vor der Nutzung eines Gebäudes, was sich direkt mit der Kriterienprüfung bei der Standortabnahme vor Autorisierung deckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.1.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A9",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equivalent-to, Teilanforderung 4): GEB.1.4 verfolgt dieselbe Schutzwirkung und Intention wie Satz 4, indem schützenswerte Assets und Infrastrukturen außerhalb exponierter oder gefährdeter Gebäudebereiche platziert werden sollen. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A16",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): Satz 2 fordert, dass schutzwürdige Gebäudebereiche von außen nicht leicht einsehbar sein sollten, was sich direkt mit der Platzierung schützenswerter Bereiche außerhalb exponierter Stellen überschneidet."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.1.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A15",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): GEB.1.5 fordert die Dokumentation von Strukturplänen, die laut Erläuterung explizit die Verlaufswege von Versorgungsleitungen umfassen, und deckt damit die geforderte Existenz von Lageplänen direkt ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.10.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): GEB.10.2 empfiehlt die Verankerung des Brandschutzes nach einschlägigen Normen, was sich mit der Einhaltung von Brandschutzvorschriften überschneidet, behördliche Auflagen der Bauaufsicht jedoch nicht explizit abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): GEB.10.2 adressiert die übergeordnete Verankerung des Brandschutzes nach Normen, fordert jedoch nicht konkret die Bereitstellung von Handfeuerlöschern in passender Brandklasse und ausreichender Zahl. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (subset-of, Konfidenz mittel, Checker bestaetigt): GEB.10.2 fordert die Einhaltung entsprechender Normen spezifisch für den Brandschutz, während die Anforderung alle relevanten Normen für Gebäude und technische Einrichtungen umfasst."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A9",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 5): GEB.10.2 empfiehlt die normative Verankerung des Brandschutzes für Standorte, fordert jedoch nicht spezifisch die Erstellung und Umsetzung eines dezidiert IT-bezogenen Brandschutzkonzepts. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.10.2.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A22",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 2): Die Zielanforderung verlangt einen gleichwertigen Schutz gegen Einbruch, Brand und Rauch, während die G++-Maßnahme lediglich den Aspekt des baulichen Feuerwiderstands adressiert."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.10.2.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equivalent-to, Teilanforderung 1,2,3): Die Überwachung des Entstehens von Bränden an Standorten deckt die Ausstattung von Gebäuden mit Brand- bzw. Rauchmeldern inhaltlich ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A34",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): Die Überwachung des Entstehens von Bränden mittels Brandmeldeanlagen (GEB.10.2.5) stellt einen wesentlichen Spezialfall einer Gefahrenmeldeanlage zur Brandfrüherkennung dar. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.10.2.7",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): Die allgemeine Forderung nach regelmaessiger Ueberpruefung der Brandschutzmassnahmen in GEB.10.2.7 deckt die wiederkehrende Kontrolle von Fluchtwegen als organisatorische Brandschutzmassnahme inhaltlich ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 5): Die G++-Maßnahme fordert die regelmäßige Prüfung von Brandschutzmaßnahmen, was die Überprüfung der Funktionsfähigkeit von Brandmeldeanlagen und Rauchmeldern direkt umfasst. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): Die Maßnahme deckt die wiederkehrende Überprüfung von Brandschutzeinrichtungen ab, schließt jedoch die zusätzlich geforderte Wartung der Handfeuerlöscher nicht ein. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A17",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): GEB.10.2.7 fordert die regelmäßige Überprüfung der Wirksamkeit von Brandschutz- und Rauchschutzmaßnahmen und deckt damit die geforderte Funktionsprüfung der Rauchschutz-Komponenten ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A18",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die regelmäßige Überprüfung der Wirksamkeit von Brandschutzmaßnahmen (Brandschutzprüfung) deckt die Forderung nach regelmäßigen Brandschutzbegehungen inhaltlich ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A19",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): Die Maßnahme überschneidet sich mit der geforderten Kontrolle von Brandschutzmaßnahmen, adressiert diese jedoch als übergeordnete Wirksamkeitsprüfung durch das Gebäudemanagement und nicht als personengebundene Ausführungskontrolle durch Brandschutzbeauftragte. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A34",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): Die Maßnahme deckt die Prüfung von Brandmeldeanlagen als Teil der Brandschutzmaßnahmen ab, schließt jedoch darüber hinausgehende Gefahrenmelder sowie die geforderte Wartung nicht ein. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.10.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A24",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): GEB.10.3 fordert allgemein physische Schutzmaßnahmen gegen Wassergefahren, schreibt jedoch nicht zwingend eine spezifische selbsttätige Entwässerung für alle gefährdeten Bereiche vor. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.10.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A24",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): GEB.10.3.1 sieht die Installation von mindestens zwei baulichen Wasserschutzmaßnahmen vor, wozu auch Entwässerungssysteme zählen können, während Satz 1 spezifisch die Ausstattung wassergefährdeter Bereiche mit einer selbsttätigen Entwässerung empfiehlt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.10.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equal-to, Teilanforderung 1,3): Beide Anforderungen fordern inhaltsgleich die normgerechte Installation von Blitzschutzeinrichtungen für Standorte. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.10.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 4): GEB.10.4.1 adressiert mit der Überprüfung auf Niederohmigkeit einen spezifischen Teilaspekt der Prüfung von Blitzschutzeinrichtungen, deckt jedoch weder eine vollständige Prüfung noch die geforderte Wartung der Gesamtanlage ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A27",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Satz 1 fordert die Umsetzung von Einbruchschutzmaßnahmen, was sich direkt mit der Installation physischer Sicherheitsperimeter zum Schutz vor unbefugtem Zutritt und Einbruch überschneidet."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A23",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Satz 1 fordert die Zonierung von Räumen ähnlichen Schutzbedarfs, was die grundlegende Strukturierung und Ausgestaltung der Sicherheitsperimeter gemäß GEB.2.1 darstellt."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A35",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equivalent-to, Teilanforderung 1,2): GEB.2.1 fordert die grundlegende Installation physischer Sicherheitsperimeter für Standorte und deckt damit die Forderung nach der Bereitstellung eines Perimeterschutzes direkt ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.2.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A16",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): GEB.2.3 fordert das Testen von Seh- und Hörschutz gegen den öffentlichen Raum und adressiert damit prüfend die Einsehbarkeit von Gebäudebereichen, umfasst jedoch zusätzlich den Hörschutz und setzt baulich-organisatorische Schutzmaßnahmen nicht selbst um. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A26",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): GEB.3.1 adressiert die allgemeine Überwachung von Zutrittspunkten auf unbefugte Zutritte, deckt jedoch die spezifische Beobachtung und Kontrolle von Personenbewegungen durch einen Pfortendienst nicht vollständig ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.3.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A35",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 2): Die Maßnahme adressiert mit der Videoüberwachung von Zutritten lediglich einen Teilaspekt der in Satz 2 für den Perimeterschutz zu betrachtenden Komponenten."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.3.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Die Authentifizierung vor Zutritt gemäß GEB.3.3 deckt den Prüfaspekt der Zutrittskontrolle ab, regelt jedoch nicht die vollumfängliche Zutrittsregelung und -organisation für schutzbedürftige Gebäudeteile. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): GEB.3.3 fordert die Authentifizierung von Zutritten an Standorten gemäß Berechtigungsmanagement und unterstützt damit die Beschränkung des Zutritts zu Verteilern, ohne die spezifische Bereichsabgrenzung für Verteiler allein vollständig zu regeln. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A26",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): GEB.3.3 verlangt allgemein die Authentifizierung von Zutritten an Standorten, was sich mit der Pflicht von Personen überschneidet, sich am Pfortendienst ausweisen zu können. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.3.3.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 4): Die Maßnahme adressiert mit der Autorisierung von Besuchen durch eine zuständige Person oder Rolle einen Teilaspekt der für weitere Personen geforderten Notwendigkeitsprüfung vor Zutrittserteilung. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.3.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A27",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): GEB.3.5 deckt als baulich-physische Maßnahme zur Installation normgerechter Bauteile einen Teilaspekt der umfassenden Maßnahmen zum Einbruchschutz ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A22",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): GEB.3.5 adressiert die Installation einbruchhemmender Bauteile nach Norm und überschneidet sich mit der schutzbedarfsgerechten Auswahl von Türen und Fenstern, ohne alle baulichen Schutzkategorien abzudecken. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.3.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A34",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): Die Bereitstellung einer Einbruchmeldeanlage (EMA) nach GEB.3.6 stellt einen konkreten Spezialfall der geforderten risikoadäquaten Gefahrenmeldeanlage dar. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.3.7",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 5): Die G++-Maßnahme fordert die regelmäßige Überprüfung der Zutrittskontrollmaßnahmen (z. B. Schließanlagen via Kontrollrundgänge), was die allgemeine Form der geforderten Kontrolle verschlossener Fenster und Türen darstellt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equal-to, Teilanforderung 6): GEB.3.7 fordert explizit die regelmäßige Überprüfung der angewendeten Zutrittskontrollmaßnahmen und deckt damit die Wirksamkeitsprüfung aus Satz 6 direkt ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Die G++-Maßnahme GEB.3.7 fordert die regelmäßige Überprüfung der Zutrittskontrollmaßnahmen und deckt damit die allgemeine Tätigkeit zur Kontrolle auf Umgehung des Zutrittsschutzes (wie bei Raucherzonen) inhaltlich ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A23",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): GEB.4.1 ermöglicht die Einrichtung geschlossener Sicherheitsbereiche für Bereiche mit erhöhtem Schutzbedarf, was sich mit der Bündelung und Zonierung von Räumen ähnlichen Schutzbedarfs überschneidet. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equivalent-to, Teilanforderung 4): Satz 4 fordert eine vorherige Prüfung der Notwendigkeit vor Erteilung von Zutritt, was der gesonderten Autorisierung von Zutrittsberechtigungen entspricht. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.5.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A23",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Beide Anforderungen behandeln die Bildung physischer Sicherheitszonen, wobei INF.1.A23 S1 die Zusammenfassung von Räumen nach Schutzbedarf empfiehlt, während GEB.5.3 die feingranulare Mikrosegmentierung innerhalb von Einrichtungen adressiert."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.7.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 2): GEB.7.1 adressiert die personelle und rollenbezogene Zuweisung der Schlüsselverwaltung, deckt damit jedoch nur einen organisatorischen Teilaspekt der umfassenden zentralen Regelung für Herstellung, Aufbewahrung, Verwaltung und Ausgabe von Schlüsseln ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.9.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Die G++-Maßnahme empfiehlt die vorausschauende Überprüfung einer bedarfsgerechten Stromversorgung, was sich thematisch mit der Prüfung der Auslegung und Absicherung von Stromkreisen überschneidet, jedoch speziell auf prädiktive Lastanalysen fokussiert ist. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.9.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): Die Maßnahme adressiert die technische Installation von Überspannungsschutzeinrichtungen, deckt jedoch weder die geforderte Konzeption noch den Blitzschutz ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.9.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 3): GEB.9.6 setzt die Reduzierung der Zutrittsberechtigten spezifisch für Räume der technischen Infrastruktur um, deckt aber nicht die geforderte Reduktion über alle anderen Gebäudebereiche ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Die G++-Maßnahme empfiehlt die Beschränkung des Zugangs zu Räumen für technische Infrastruktur auf betrieblich zuständige Personen und schließt damit die Beschränkung des Zutritts zu Verteilern als Teil der Infrastruktur ein. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A20",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): NOT.1.2 fordert die Überprüfung von Notfallregelungen auf Aktualität, deckt jedoch die explizite Aktualisierungspflicht des Alarmierungsplans im Brandschutzkontext nicht vollständig ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERS.2.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A26",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): PERS.2.2 fordert die Verankerung von Rollen einschließlich ihrer Aufgaben und Qualifikationen, was die Dokumentation der Aufgaben des Pforten- bzw. Sicherheitsdienstes als Rolle umfasst. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERS.3.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): PERS.3.2 betrifft das generelle Anweisen zur Einhaltung von Verfahrensanweisungen bei Neuzugang, während Satz 4 die Verpflichtung aller Mitarbeitenden auf die spezifische Anweisung zu Fenstern und Türen adressiert. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "SENS.8.10",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 5): Die Maßnahme SENS.8.10 zielt durch die Untersagung des ungesicherten Hinterlassens von Brandlasten direkt auf die geforderte Vermeidung unnötiger Brandlasten ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Satz 1 fordert ein Rauchverbot für sensible IT- und Archivräume zur Brand- und Schadensvermeidung, was sich direkt mit der Brandlast- und Brandrisikominimierung nach SENS.8.10 überschneidet."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "SENS.8.11",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): Die G++-Maßnahme SENS.8.11 deckt die Forderung nach Einweisung der Mitarbeitenden in die Benutzung von Brandschutz-Hilfsmitteln wie Handfeuerlöschern direkt ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "SENS.8.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,2,3): SENS.8.4 zielt auf die Sensibilisierung und Anweisung von Gebäudenutzenden ab, während Satz 1 die unmittelbare Verhaltenspflicht zum Schließen von Fenstern und Außentüren bei unbesetzten Räumen formuliert. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "SENS.8.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.1.A26",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): Die Sensibilisierungsmaßnahme kann Mitarbeitende zur Begleitung Externer anweisen und überschneidet sich mit der geforderten Begleitung von Besuchenden, adressiert aber nicht den gesamten Pfortenprozess samt Abholung. [auch: satz_abdeckung]"
                 }
               ]
             }

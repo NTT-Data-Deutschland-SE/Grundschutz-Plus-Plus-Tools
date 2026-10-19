@@ -6,20 +6,37 @@ structure is an **implicit contract**: a rename on either side silently breaks c
 (issue 3.9). Keep this file in sync with `build_oscal_maturity_statements` in
 `src/pipeline/stage_ED23_profiles_enhanced.py` and `…/stage_base_process_enhanced.py`.
 
-## Where the data lives
+## Profile shape since 2026-10 (Mindeststandard pattern)
 
-An enhanced profile is a normal OSCAL 1.2.2 **profile**:
+An ED23-Baustein profile (`ED23-Baustein-profile/DE/*.json`) is a normal OSCAL 1.2.2 **profile**
+whose structure is the Baustein itself (full description: `Dokumentation/namespaces/ed23_baustein_props.md`):
 
-- `profile.imports[].include-controls[].with-ids[]` — the G++ control IDs in scope. The
-  actual control title/prose/baseline live in the imported **G++ catalog**
-  (`profile.imports[].href`), not in the profile.
-- `profile.modify.alters[]` — one entry per enriched control (`control-id`).
-- `alters[].adds[]` — a single `adds` block per control with:
-  - `position`: `"ending"`
-  - `by-id`: the control's real **statement part id** (looked up from the catalog — the id
-    of the part whose `name == "statement"`, e.g. `ARCH.7.1_stm`). Controls with no
-    statement part are skipped (issue 3.4).
-  - `parts[]`: the five maturity-level parts.
+- `profile.imports[0]` — the pinned G++ catalog; `with-ids` = **only the G++ controls assigned
+  to the Baustein's Anforderungen** (no longer the whole Zielobjektkategorie pool).
+- `profile.imports[1]` — present only when the Baustein has NG controls: the shared
+  `NG-ergaenzungskatalog.json` next to the profile (back-matter resource with a *relative*
+  rlink and the file's SHA-256; resolve relative to the profile URI, refuse on a hash mismatch).
+- `profile.merge.combine.method = "use-first"`; `profile.merge.custom.groups` = level groups
+  (class `ed23-stufe`) → one group per Anforderung (class `ed23-anforderung`, part `overview`
+  with the original text, `insert-controls` with its controls). Consumers that only need the
+  control pool can ignore `merge`.
+- `profile.modify.alters[]` — one entry per **G++** control (`control-id`); NG controls carry
+  no alters. `adds[]` holds, in this order:
+  1. *(enhanced variant only)* the maturity block: `position: "ending"`, `by-id` = the
+     control's real **statement part id** (the part whose `name == "statement"`, e.g.
+     `ARCH.7.1_stm`; controls without one are skipped), `parts[]` = the maturity-level parts;
+  2. a props-only block (`position: "ending"`, `props[]` = one `ed23-anforderung` prop per
+     assigned Anforderung, remark `Herkunft: …`).
+
+  **Consumers must select the `adds` entry that has `parts`** (not `adds[0]` blindly) — the
+  plain variant has only the props block. `Baustein_2_Profile.html` reads `adds[0].parts[0]`,
+  which is why the maturity block comes first.
+- Metadata props (ns `…/ns/ed23-baustein`): `herkunft` (`BSI` | `NG`), `ed23-baustein`,
+  `ed23-baustein-titel`, `zielobjektkategorie`, `ed23-katalog-pin`, `ed23-schicht`. Profiles of
+  the 12 NG Bausteine are named `NG_…` and titled `NG …`.
+- Maturity texts are reused from `hilfsdateien/ed23_maturity_cache.json` (harvested from the
+  previous profiles, also across Bausteine; valid only while the m3 prose equals the control's
+  current prose). The model is called only for controls without a cache entry.
 
 ## The maturity part shape (current, post issue 3.1)
 

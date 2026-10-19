@@ -1,0 +1,20 @@
+set shell := ["bash", "-cu"]
+
+default:
+    @just --list
+sync:
+    uv sync
+# Volle Pipeline lokal (braucht GCP_PROJECT_ID oder GEMINI_API_KEY in .env).
+dev *ARGS:
+    ./scripts/run_local.sh {{ARGS}}
+test:
+    uv run pytest -q
+lint:
+    uv run ruff check .
+fmt:
+    uv run ruff format src tests scripts
+build:
+    docker build -t gpp-ai-tool:dev .
+# Migrations-Lint des cp-coding-python-gemini-Skills (Modell-IDs, Caching, Sampling, Timeout).
+gemini-lint:
+    python3 -I "$HOME/.claude/skills/synced/"*/cp-coding-python-gemini/scripts/check_gemini_usage_py.py .

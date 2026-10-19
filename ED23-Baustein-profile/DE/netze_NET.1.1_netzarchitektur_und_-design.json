@@ -2,10 +2,54 @@
   "profile": {
     "uuid": "6c1e63c5-7ed2-5d66-af10-d7a5e8dd54db",
     "metadata": {
-      "title": "NET.1.1 - Netze",
-      "last-modified": "2026-07-28T15:36:06.297914+00:00",
-      "version": "0.0.1",
-      "oscal-version": "1.2.2"
+      "title": "NET.1.1 – Netzarchitektur und -design (Netze)",
+      "last-modified": "2026-10-19T01:08:21.682443+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "BSI"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "NET.1.1"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Netzarchitektur und -design"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Netze"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "system"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, NET.1.1, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein NET.1.1 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (amtlicher Wortlaut des XML-Kompendiums 2023); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls."
     },
     "imports": [
       {
@@ -13,45 +57,2000 @@
         "include-controls": [
           {
             "with-ids": [
+              "ARCH.1.1",
+              "ARCH.1.1.1",
+              "ARCH.1.1.3",
+              "ARCH.1.2",
               "ARCH.2.1",
               "ARCH.2.2",
               "ARCH.2.2.1",
-              "ARCH.2.2.10",
               "ARCH.2.2.11",
               "ARCH.2.2.2",
               "ARCH.2.2.3",
-              "ARCH.2.2.4",
-              "ARCH.2.2.5",
               "ARCH.2.2.6",
               "ARCH.2.2.7",
               "ARCH.2.2.8",
               "ARCH.2.2.9",
+              "ARCH.2.3",
+              "ARCH.2.4",
               "ARCH.2.5",
               "ARCH.2.6",
-              "ARCH.4.2",
-              "ARCH.4.3",
+              "ARCH.3.4",
+              "ARCH.4.1",
+              "ARCH.4.1.2",
               "ARCH.5.1",
-              "ARCH.5.1.1",
-              "ARCH.5.1.12",
+              "ARCH.5.1.11",
               "ARCH.5.1.2",
-              "ARCH.5.1.3",
               "ARCH.5.1.4",
+              "ARCH.5.1.6",
+              "ARCH.5.1.8",
+              "ARCH.5.2",
+              "ARCH.6.1",
+              "ARCH.6.2",
               "ARCH.8.1",
+              "ARCH.8.2",
+              "ARCH.8.3",
               "ARCH.9.1",
               "ARCH.9.5",
-              "ASST.2.2.1",
-              "DET.4.11",
-              "DET.4.11.2",
-              "DET.4.11.3",
-              "DET.4.12",
-              "DET.4.12.1",
-              "GEB.6.3",
-              "SENS.10.4"
+              "ASST.4.2",
+              "BES.5.10",
+              "BES.7.1",
+              "DET.4.5",
+              "KONF.14.1",
+              "KONF.9.3",
+              "NOT.1.2",
+              "TEST.3.1",
+              "UMS.1.1",
+              "UMS.3.1",
+              "UMS.5.1",
+              "UMS.5.2"
             ]
           }
         ]
       }
     ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "NET.1.1-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "NET.1.1.A1",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A1 Sicherheitsrichtlinie für das Netz",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Ausgehend von der allgemeinen Sicherheitsrichtlinie der Institution MUSS eine spezifische Sicherheitsrichtlinie für das Netz erstellt werden. Darin MÜSSEN nachvollziehbar Anforderungen und Vorgaben beschrieben werden, wie Netze sicher konzipiert und aufgebaut werden. In der Richtlinie MUSS unter anderem festgelegt werden, in welchen Fällen die Zonen zu segmentieren sind und in welchen Fällen Benutzendengruppen bzw. Mandanten und Mandantinnen logisch oder sogar physisch zu trennen sind, welche Kommunikationsbeziehungen und welche Netz- und Anwendungsprotokolle jeweils zugelassen werden, wie der Datenverkehr für Administration und Überwachung netztechnisch zu trennen ist, welche institutionsinterne, standortübergreifende Kommunikation (WAN, Funknetze) erlaubt und welche Verschlüsselung im WAN, LAN oder auf Funkstrecken erforderlich ist sowie welche institutionsübergreifende Kommunikation zugelassen ist. Die Richtlinie MUSS allen im Bereich Netzdesign zuständigen Mitarbeitenden bekannt sein. Sie MUSS zudem grundlegend für ihre Arbeit sein. Wird die Richtlinie verändert oder wird von den Anforderungen abgewichen, MUSS dies dokumentiert und mit dem oder der verantwortlichen ISB abgestimmt werden. Es MUSS regelmäßig überprüft werden, ob die Richtlinie noch korrekt umgesetzt ist. Die Ergebnisse MÜSSEN sinnvoll dokumentiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.1.1",
+                          "ARCH.1.1.1",
+                          "ARCH.1.1.3",
+                          "ARCH.1.2",
+                          "ARCH.2.1",
+                          "ARCH.2.6",
+                          "UMS.1.1",
+                          "UMS.5.1",
+                          "UMS.5.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A2",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A2 Dokumentation des Netzes",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS eine vollständige Dokumentation des Netzes erstellt werden. Sie MUSS einen Netzplan beinhalten. Die Dokumentation MUSS nachhaltig gepflegt werden. Die initiale Ist-Aufnahme, einschließlich der Netzperformance, sowie alle durchgeführten Änderungen im Netz MÜSSEN in der Dokumentation enthalten sein. Die logische Struktur des Netzes MUSS dokumentiert werden, insbesondere, wie die Subnetze zugeordnet und wie das Netz zoniert und segmentiert wird."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.4",
+                          "ARCH.2.5"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.1.1",
+                    "rel": "related",
+                    "text": "ARCH.1.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.1.1.1",
+                    "rel": "related",
+                    "text": "ARCH.1.1.1 steht unter NET.1.1.A1"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A3",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A3 Anforderungsspezifikation für das Netz",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Ausgehend von der Sicherheitsrichtlinie für das Netz MUSS eine Anforderungsspezifikation erstellt werden. Diese MUSS nachhaltig gepflegt werden. Aus den Anforderungen MÜSSEN sich alle wesentlichen Elemente für Netzarchitektur und -design ableiten lassen."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.1.1",
+                    "rel": "related",
+                    "text": "ARCH.1.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.1.2",
+                    "rel": "related",
+                    "text": "ARCH.1.2 steht unter NET.1.1.A1"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A4",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A4 Netztrennung in Zonen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Das Gesamtnetz MUSS mindestens in folgende drei Zonen physisch separiert sein: internes Netz, demilitarisierte Zone (DMZ) und Außenanbindungen (inklusive Internetanbindung sowie Anbindung an andere nicht vertrauenswürdige Netze). Die Zonenübergänge MÜSSEN durch eine Firewall abgesichert werden. Diese Kontrolle MUSS dem Prinzip der lokalen Kommunikation folgen, sodass von Firewalls ausschließlich erlaubte Kommunikation weitergeleitet wird (Allowlist). Nicht vertrauenswürdige Netze (z. B. Internet) und vertrauenswürdige Netze (z. B. Intranet) MÜSSEN mindestens durch eine zweistufige Firewall-Struktur, bestehend aus zustandsbehafteten Paketfiltern (Firewall), getrennt werden. Um Internet und externe DMZ netztechnisch zu trennen, MUSS mindestens ein zustandsbehafteter Paketfilter eingesetzt werden. In der zweistufigen Firewall-Architektur MUSS jeder ein- und ausgehende Datenverkehr durch den äußeren Paketfilter bzw. den internen Paketfilter kontrolliert und gefiltert werden. Eine P-A-P-Struktur, die aus Paketfilter, Application-Layer-Gateway bzw. Sicherheits-Proxies und Paketfilter besteht, MUSS immer realisiert werden, wenn die Sicherheitsrichtlinie oder die Anforderungsspezifikation dies fordern."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.2",
+                          "ARCH.2.2.11",
+                          "ARCH.2.2.6",
+                          "ARCH.2.3",
+                          "ARCH.4.1.2",
+                          "ARCH.5.1",
+                          "ARCH.5.1.11"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.1",
+                    "rel": "related",
+                    "text": "ARCH.2.1 steht unter NET.1.1.A1"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A5",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A5 Client-Server-Segmentierung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Clients und Server MÜSSEN in unterschiedlichen Netzsegmenten platziert werden. Die Kommunikation zwischen diesen Netzsegmenten MUSS mindestens durch einen zustandsbehafteten Paketfilter kontrolliert werden. Es SOLLTE beachtet werden, dass mögliche Ausnahmen, die es erlauben, Clients und Server in einem gemeinsamen Netzsegment zu positionieren, in den entsprechenden anwendungs- und systemspezifischen Bausteinen geregelt werden. Für Gastzugänge und für Netzbereiche, in denen keine ausreichende interne Kontrolle über die Endgeräte gegeben ist, MÜSSEN dedizierte Netzsegmente eingerichtet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.2.2",
+                          "ARCH.2.2.3"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.1",
+                    "rel": "related",
+                    "text": "ARCH.2.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.2.2",
+                    "rel": "related",
+                    "text": "ARCH.2.2 steht unter NET.1.1.A4"
+                  },
+                  {
+                    "href": "#ARCH.5.1",
+                    "rel": "related",
+                    "text": "ARCH.5.1 steht unter NET.1.1.A4"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A6",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A6 Endgeräte-Segmentierung im internen Netz",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "DARF NUR"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Es DÜRFEN NUR Endgeräte in einem Netzsegment positioniert werden, die einem ähnlichen Sicherheitsniveau entsprechen."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.1",
+                    "rel": "related",
+                    "text": "ARCH.2.1 steht unter NET.1.1.A1"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A7",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A7 Absicherung von schützenswerten Informationen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Schützenswerte Informationen MÜSSEN über nach dem derzeitigen Stand der Technik sichere Protokolle übertragen werden, falls nicht über vertrauenswürdige dedizierte Netzsegmente (z. B. innerhalb des Managementnetzes) kommuniziert wird. Können solche Protokolle nicht genutzt werden, MUSS nach Stand der Technik angemessen verschlüsselt und authentisiert werden (siehe NET.3.3 VPN)."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.6.2",
+                          "ASST.4.2",
+                          "KONF.14.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A8",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A8 Grundlegende Absicherung des Internetzugangs",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Der Internetverkehr MUSS über die Firewall-Struktur geführt werden (siehe NET.1.1.A4 Netztrennung in Zonen). Die Datenflüsse MÜSSEN durch die Firewall-Struktur auf die benötigten Protokolle und Kommunikationsbeziehungen eingeschränkt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.2.1",
+                          "ARCH.5.1.2",
+                          "ARCH.5.1.4",
+                          "ARCH.5.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.5.1",
+                    "rel": "related",
+                    "text": "ARCH.5.1 steht unter NET.1.1.A4"
+                  },
+                  {
+                    "href": "#ARCH.5.1.11",
+                    "rel": "related",
+                    "text": "ARCH.5.1.11 steht unter NET.1.1.A4"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A9",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A9 Grundlegende Absicherung der Kommunikation mit nicht vertrauenswürdigen Netzen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A9_anforderung",
+                    "name": "overview",
+                    "prose": "Für jedes Netz MUSS festgelegt werden, inwieweit es als vertrauenswürdig einzustufen ist. Netze, die nicht vertrauenswürdig sind, MÜSSEN wie das Internet behandelt und entsprechend abgesichert werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.1",
+                    "rel": "related",
+                    "text": "ARCH.2.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.2.2",
+                    "rel": "related",
+                    "text": "ARCH.2.2 steht unter NET.1.1.A4"
+                  },
+                  {
+                    "href": "#ARCH.2.2.1",
+                    "rel": "related",
+                    "text": "ARCH.2.2.1 steht unter NET.1.1.A8"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A10",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A10 DMZ-Segmentierung für Zugriffe aus dem Internet",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Die Firewall-Strukur MUSS für alle Dienste bzw. Anwendungen, die aus dem Internet erreichbar sind, um eine sogenannte externe DMZ ergänzt werden. Es SOLLTE ein Konzept zur DMZ-Segmentierung erstellt werden, das die Sicherheitsrichtlinie und die Anforderungsspezifikation nachvollziehbar umsetzt. Abhängig vom Sicherheitsniveau der IT-Systeme MÜSSEN die DMZ-Segmente weitergehend unterteilt werden. Eine externe DMZ MUSS am äußeren Paketfilter angeschlossen werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.1.1",
+                    "rel": "related",
+                    "text": "ARCH.1.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.1.1.1",
+                    "rel": "related",
+                    "text": "ARCH.1.1.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.2.2",
+                    "rel": "related",
+                    "text": "ARCH.2.2 steht unter NET.1.1.A4"
+                  },
+                  {
+                    "href": "#ARCH.2.2.6",
+                    "rel": "related",
+                    "text": "ARCH.2.2.6 steht unter NET.1.1.A4"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A11",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A11 Absicherung eingehender Kommunikation vom Internet in das interne Netz",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A11"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "DARF NICHT"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A11_anforderung",
+                    "name": "overview",
+                    "prose": "Ein IP-basierter Zugriff auf das interne Netz MUSS über einen sicheren Kommunikationskanal erfolgen. Der Zugriff MUSS auf vertrauenswürdige IT-Systeme und Benutzende beschränkt werden (siehe NET.3.3 VPN). Derartige VPN-Gateways SOLLTEN in einer externen DMZ platziert werden. Es SOLLTE beachtet werden, dass hinreichend gehärtete VPN-Gateways direkt aus dem Internet erreichbar sein können. Die über das VPN-Gateway authentisierten Zugriffe ins interne Netz MÜSSEN mindestens die interne Firewall durchlaufen. IT-Systeme DÜRFEN NICHT via Internet oder externer DMZ auf das interne Netz zugreifen. Es SOLLTE beachtet werden, dass etwaige Ausnahmen zu dieser Anforderung in den entsprechenden anwendungs- und systemspezifischen Bausteinen geregelt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.5.1.6"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.2.1",
+                    "rel": "related",
+                    "text": "ARCH.2.2.1 steht unter NET.1.1.A8"
+                  },
+                  {
+                    "href": "#ARCH.2.2.6",
+                    "rel": "related",
+                    "text": "ARCH.2.2.6 steht unter NET.1.1.A4"
+                  },
+                  {
+                    "href": "#ARCH.6.2",
+                    "rel": "related",
+                    "text": "ARCH.6.2 steht unter NET.1.1.A7"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A12",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A12 Absicherung ausgehender interner Kommunikation zum Internet",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A12"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A12_anforderung",
+                    "name": "overview",
+                    "prose": "Ausgehende Kommunikation aus dem internen Netz zum Internet MUSS an einem Sicherheits-Proxy entkoppelt werden. Die Entkoppelung MUSS außerhalb des internen Netzes erfolgen. Wird eine P-A-P-Struktur eingesetzt, SOLLTE die ausgehende Kommunikation immer durch die Sicherheits-Proxies der P-A-P-Struktur entkoppelt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.5.1.8"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.5.1.11",
+                    "rel": "related",
+                    "text": "ARCH.5.1.11 steht unter NET.1.1.A4"
+                  },
+                  {
+                    "href": "#ARCH.5.2",
+                    "rel": "related",
+                    "text": "ARCH.5.2 steht unter NET.1.1.A8"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A13",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A13 Netzplanung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A13"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A13_anforderung",
+                    "name": "overview",
+                    "prose": "Jede Netzimplementierung MUSS geeignet, vollständig und nachvollziehbar geplant werden. Dabei MÜSSEN die Sicherheitsrichtlinie sowie die Anforderungsspezifikation beachtet werden. Darüber hinaus MÜSSEN in der Planung mindestens die folgenden Punkte bedarfsgerecht berücksichtigt werden: Anbindung von Internet und, sofern vorhanden, Standortnetz und Extranet, Topologie des Gesamtnetzes und der Netzbereiche, d. h. Zonen und Netzsegmente, Dimensionierung und Redundanz der Netz- und Sicherheitskomponenten, Übertragungsstrecken und Außenanbindungen, zu nutzende Protokolle und deren grundsätzliche Konfiguration und Adressierung, insbesondere IPv4/IPv6-Subnetze von Endgerätegruppen sowie Administration und Überwachung (siehe NET.1.2 Netzmanagement). Die Netzplanung MUSS regelmäßig überprüft werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.8.1",
+                          "ARCH.9.1",
+                          "UMS.3.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.1.1",
+                    "rel": "related",
+                    "text": "ARCH.1.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.1.2",
+                    "rel": "related",
+                    "text": "ARCH.1.2 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.2.5",
+                    "rel": "related",
+                    "text": "ARCH.2.5 steht unter NET.1.1.A2"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A14",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A14 Umsetzung der Netzplanung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A14"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A14_anforderung",
+                    "name": "overview",
+                    "prose": "Das geplante Netz MUSS fachgerecht umgesetzt werden. Dies MUSS während der Abnahme geprüft werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BES.7.1",
+                          "TEST.3.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#UMS.1.1",
+                    "rel": "related",
+                    "text": "UMS.1.1 steht unter NET.1.1.A1"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A15",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A15 Regelmäßiger Soll-Ist-Vergleich",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A15"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A15_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS regelmäßig geprüft werden, ob das bestehende Netz dem Soll-Zustand entspricht. Dabei MUSS mindestens geprüft werden, inwieweit es die Sicherheitsrichtlinie und Anforderungsspezifikation erfüllt. Es MUSS auch geprüft werden, inwiefern die umgesetzte Netzstruktur dem aktuellen Stand der Netzplanung entspricht. Dafür MÜSSEN zuständige Personen sowie Prüfkriterien bzw. Vorgaben festgelegt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.6",
+                    "rel": "related",
+                    "text": "ARCH.2.6 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#UMS.1.1",
+                    "rel": "related",
+                    "text": "UMS.1.1 steht unter NET.1.1.A1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "NET.1.1-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "NET.1.1.A16",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A16 Spezifikation der Netzarchitektur",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A16"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A16_anforderung",
+                    "name": "overview",
+                    "prose": "Auf Basis der Sicherheitsrichtlinie und der Anforderungsspezifikation SOLLTE eine Architektur für die Zonen inklusive internem Netz, DMZ-Bereich und Außenanbindungen entwickelt und nachhaltig gepflegt werden. Dabei SOLLTEN je nach spezifischer Situation der Institution alle relevanten Architekturelemente betrachtet werden, mindestens jedoch: Netzarchitektur des internen Netzes mit Festlegungen dazu, wie Netzvirtualisierungstechniken, Layer-2- und Layer-3-Kommunikation sowie Redundanzverfahren einzusetzen sind, Netzarchitektur für Außenanbindungen, inklusive Firewall-Architekturen, sowie DMZ- und Extranet-Design und Vorgaben an die Standortkopplung, Festlegung, an welchen Stellen des Netzes welche Sicherheitskomponenten wie Firewalls oder IDS/IPS zu platzieren sind und welche Sicherheitsfunktionen diese realisieren müssen, Vorgaben für die Netzanbindung der verschiedenen IT-Systeme, Netzarchitektur in Virtualisierungs-Hosts, wobei insbesondere Network Virtualization Overlay (NVO) und die Architektur in Vertikal integrierten Systemen (ViS) zu berücksichtigen sind, Festlegungen der grundsätzlichen Architektur-Elemente für eine Private Cloud sowie Absicherung der Anbindungen zu Virtual Private Clouds, Hybrid Clouds und Public Clouds sowie Architektur zur sicheren Administration und Überwachung der IT-Infrastruktur."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.2.7"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.1.1",
+                    "rel": "related",
+                    "text": "ARCH.1.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.2.4",
+                    "rel": "related",
+                    "text": "ARCH.2.4 steht unter NET.1.1.A2"
+                  },
+                  {
+                    "href": "#ARCH.8.1",
+                    "rel": "related",
+                    "text": "ARCH.8.1 steht unter NET.1.1.A13"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A17",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A17 Spezifikation des Netzdesigns",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A17"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A17_anforderung",
+                    "name": "overview",
+                    "prose": "Basierend auf der Netzarchitektur SOLLTE das Netzdesign für die Zonen inklusive internem Netz, DMZ-Bereich und Außenanbindungen entwickelt und nachhaltig gepflegt werden. Dafür SOLLTEN die relevanten Architekturelemente detailliert betrachtet werden, mindestens jedoch: zulässige Formen von Netzkomponenten inklusive virtualisierter Netzkomponenten, Festlegungen darüber, wie WAN- und Funkverbindungen abzusichern sind, Anbindung von Endgeräten an Switching-Komponenten, Verbindungen zwischen Netzelementen sowie Verwendung von Kommunikationsprotokollen, Redundanzmechanismen für alle Netzelemente, Adresskonzept für IPv4 und IPv6 sowie zugehörige Routing- und Switching-Konzepte, virtualisierte Netze in Virtualisierungs-Hosts inklusive NVO, Aufbau, Anbindung und Absicherung von Private Clouds sowie sichere Anbindung von Virtual Private Clouds, Hybrid Clouds und Public Clouds sowie Festlegungen zum Netzdesign für die sichere Administration und Überwachung der IT-Infrastruktur."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.3.4",
+                          "ARCH.6.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.1.1",
+                    "rel": "related",
+                    "text": "ARCH.1.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.2.2.7",
+                    "rel": "related",
+                    "text": "ARCH.2.2.7 steht unter NET.1.1.A16"
+                  },
+                  {
+                    "href": "#ARCH.2.4",
+                    "rel": "related",
+                    "text": "ARCH.2.4 steht unter NET.1.1.A2"
+                  },
+                  {
+                    "href": "#ARCH.8.1",
+                    "rel": "related",
+                    "text": "ARCH.8.1 steht unter NET.1.1.A13"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A18",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A18 P-A-P-Struktur für die Internet-Anbindung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A18"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "DARF NICHT"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A18_anforderung",
+                    "name": "overview",
+                    "prose": "Das Netz der Institution SOLLTE über eine Firewall mit P-A-P-Struktur an das Internet angeschlossen werden (siehe NET.1.1.A4 Netztrennung in Zonen). Zwischen den beiden Firewall-Stufen MUSS ein proxy-basiertes Application-Layer-Gateway (ALG) realisiert werden. Das ALG MUSS über ein eigenes Transfernetz (dual-homed) sowohl zum äußeren Paketfilter als auch zum internen Paketfilter angebunden werden. Das Transfernetz DARF NICHT mit anderen Aufgaben als denjenigen für das ALG belegt sein. Falls kein ALG eingesetzt wird, dann MÜSSEN entsprechende Sicherheits-Proxies realisiert werden. Die Sicherheits-Proxies MÜSSEN über ein eigenes Transfernetz (dual-homed) angebunden werden. Das Transfernetz DARF NICHT mit anderen Aufgaben als denjenigen für die Sicherheits-Proxies belegt sein. Es MUSS geprüft werden, ob über die Sicherheits-Proxies gegenseitige Angriffe möglich sind. Ist dies der Fall, MUSS das Transfernetz geeignet segmentiert werden. Jeglicher Datenverkehr MUSS über das ALG oder entsprechende Sicherheits-Proxies entkoppelt werden. Ein Transfernetz, das beide Firewall-Stufen direkt miteinander verbindet, DARF NICHT konfiguriert werden. Die interne Firewall MUSS zudem die Angriffsfläche des ALGs oder der Sicherheits-Proxies gegenüber Innentätern und Innentäterinnen oder IT-Systemen im internen Netz reduzieren. Authentisierte und vertrauenswürdige Netzzugriffe vom VPN-Gateway ins interne Netz SOLLTEN NICHT das ALG oder die Sicherheits-Proxies der P-A-P-Struktur durchlaufen."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.2.1",
+                    "rel": "related",
+                    "text": "ARCH.2.2.1 steht unter NET.1.1.A8"
+                  },
+                  {
+                    "href": "#ARCH.2.2.6",
+                    "rel": "related",
+                    "text": "ARCH.2.2.6 steht unter NET.1.1.A4"
+                  },
+                  {
+                    "href": "#ARCH.5.1.11",
+                    "rel": "related",
+                    "text": "ARCH.5.1.11 steht unter NET.1.1.A4"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A19",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A19 Separierung der Infrastrukturdienste",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A19"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A19_anforderung",
+                    "name": "overview",
+                    "prose": "Server, die grundlegende Dienste für die IT-Infrastruktur bereitstellen, SOLLTEN in einem dedizierten Netzsegment positioniert werden. Die Kommunikation mit ihnen SOLLTE durch einen zustandsbehafteten Paketfilter (Firewall) kontrolliert werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.1",
+                    "rel": "related",
+                    "text": "ARCH.2.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.2.2",
+                    "rel": "related",
+                    "text": "ARCH.2.2 steht unter NET.1.1.A4"
+                  },
+                  {
+                    "href": "#ARCH.2.2.3",
+                    "rel": "related",
+                    "text": "ARCH.2.2.3 steht unter NET.1.1.A5"
+                  },
+                  {
+                    "href": "#ARCH.5.1",
+                    "rel": "related",
+                    "text": "ARCH.5.1 steht unter NET.1.1.A4"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A20",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A20 Zuweisung dedizierter Subnetze für IPv4/IPv6-Endgerätegruppen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A20"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A20_anforderung",
+                    "name": "overview",
+                    "prose": "Unterschiedliche IPv4-/IPv6- Endgeräte SOLLTEN je nach verwendetem Protokoll (IPv4-/IPv6- oder IPv4/IPv6-DualStack) dedizierten Subnetzen zugeordnet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.2.9"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A21",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A21 Separierung des Management-Bereichs",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A21"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A21_anforderung",
+                    "name": "overview",
+                    "prose": "Um die Infrastruktur zu managen, SOLLTE durchgängig ein Out-of-Band-Management genutzt werden. Dabei SOLLTEN alle Endgeräte, die für das Management der IT-Infrastruktur benötigt werden, in dedizierten Netzsegmenten positioniert werden. Die Kommunikation mit diesen Endgeräten SOLLTE durch einen zustandsbehafteten Paketfilter kontrolliert werden. Die Kommunikation von und zu diesen Management-Netzsegmenten SOLLTE auf die notwendigen Management-Protokolle mit definierten Kommunikations-Endpunkten beschränkt werden. Der Management-Bereich SOLLTE mindestens die folgenden Netzsegmente umfassen. Diese SOLLTEN abhängig von der Sicherheitsrichtlinie und der Anforderungsspezifikation weiter unterteilt werden in Netzsegment(e) für IT-Systeme, die für die Authentisierung und Autorisierung der administrativen Kommunikation zuständig sind, Netzsegment(e) für die Administration der IT-Systeme, Netzsegment(e) für die Überwachung und das Monitoring, Netzsegment(e), die die zentrale Protokollierung inklusive Syslog-Server und SIEM-Server enthalten, Netzsegment(e) für IT-Systeme, die für grundlegende Dienste des Management-Bereichs benötigt werden sowie Netzsegment(e) für die Management-Interfaces der zu administrierenden IT-Systeme. Die verschiedenen Management-Interfaces der IT-Systeme MÜSSEN nach ihrem Einsatzzweck und ihrer Netzplatzierung über einen zustandsbehafteten Paketfilter getrennt werden. Dabei SOLLTEN die IT-Systeme (Management-Interfaces) zusätzlich bei folgender Zugehörigkeit über dedizierte Firewalls getrennt werden: IT-Systeme, die aus dem Internet erreichbar sind, IT-Systeme im internen Netz sowie Sicherheitskomponenten, die sich zwischen den aus dem Internet erreichbaren IT-Systemen und dem internen Netz befinden. Es MUSS sichergestellt werden, dass die Segmentierung nicht durch die Management-Kommunikation unterlaufen werden kann. Eine Überbrückung von Netzsegmenten MUSS ausgeschlossen werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.2",
+                    "rel": "related",
+                    "text": "ARCH.2.2 steht unter NET.1.1.A4"
+                  },
+                  {
+                    "href": "#ARCH.2.2.7",
+                    "rel": "related",
+                    "text": "ARCH.2.2.7 steht unter NET.1.1.A16"
+                  },
+                  {
+                    "href": "#ARCH.5.1.6",
+                    "rel": "related",
+                    "text": "ARCH.5.1.6 steht unter NET.1.1.A11"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A22",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A22 Spezifikation des Segmentierungskonzepts",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A22"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A22_anforderung",
+                    "name": "overview",
+                    "prose": "Auf Basis der Spezifikationen von Netzarchitektur und Netzdesign SOLLTE ein umfassendes Segmentierungskonzept für das interne Netz erstellt werden. Dieses Segmentierungskonzept SOLLTE eventuell vorhandene virtualisierte Netze in Virtualisierungs-Hosts beinhalten. Das Segmentierunskonzept SOLLTE geplant, umgesetzt, betrieben und nachhaltig gepflegt werden. Das Konzept SOLLTE mindestens die folgenden Punkte umfassen, soweit diese in der Zielumgebung vorgesehen sind: Initial anzulegende Netzsegmente und Vorgaben dazu, wie neue Netzsegmente zu schaffen sind und wie Endgeräte in den Netzsegmenten zu positionieren sind, Festlegung für die Segmentierung von Entwicklungs- und Testsystemen (Staging), Netzzugangskontrolle für Netzsegmente mit Clients, Anbindung von Netzbereichen, die über Funktechniken oder Standleitung an die Netzsegmente angebunden sind, Anbindung der Virtualisierungs-Hosts und von virtuellen Maschinen auf den Hosts an die Netzsegmente, Rechenzentrumsautomatisierung sowie Festlegungen dazu, wie Endgeräte einzubinden sind, die mehrere Netzsegmente versorgen, z. B. Load Balancer, und Speicher- sowie Datensicherungslösungen. Abhängig von der Sicherheitsrichtlinie und der Anforderungsspezifikation SOLLTE für jedes Netzsegment konzipiert werden, wie es netztechnisch realisiert werden soll. Darüber hinaus SOLLTE festgelegt werden, welche Sicherheitsfunktionen die Koppelelemente zwischen den Netzsegmenten bereitstellen müssen (z. B. Firewall als zustandsbehafteter Paketfilter oder IDS/IPS)."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.2.8",
+                          "ARCH.4.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.1.1",
+                    "rel": "related",
+                    "text": "ARCH.1.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.2.1",
+                    "rel": "related",
+                    "text": "ARCH.2.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.2.2",
+                    "rel": "related",
+                    "text": "ARCH.2.2 steht unter NET.1.1.A4"
+                  },
+                  {
+                    "href": "#ARCH.2.2.2",
+                    "rel": "related",
+                    "text": "ARCH.2.2.2 steht unter NET.1.1.A5"
+                  },
+                  {
+                    "href": "#ARCH.2.4",
+                    "rel": "related",
+                    "text": "ARCH.2.4 steht unter NET.1.1.A2"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A23",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A23 Trennung von Netzsegmenten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A23"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A23_anforderung",
+                    "name": "overview",
+                    "prose": "IT-Systeme mit unterschiedlichem Schutzbedarf SOLLTEN in verschiedenen Netzsegmenten platziert werden. Ist dies nicht möglich, SOLLTE sich der Schutzbedarf nach dem höchsten vorkommenden Schutzbedarf im Netzsegment richten. Darüber hinaus SOLLTEN die Netzsegmente abhängig von ihrer Größe und den Anforderungen des Segmentierungskonzepts weiter unterteilt werden. Es MUSS sichergestellt werden, dass keine Überbrückung von Netzsegmenten oder gar Zonen möglich ist. Gehören die virtuellen LANs (VLANs) an einem Switch unterschiedlichen Institutionen an, SOLLTE die Trennung physisch erfolgen. Alternativ SOLLTEN Daten verschlüsselt werden, um die übertragenen Informationen vor unbefugtem Zugriff zu schützen."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.1",
+                    "rel": "related",
+                    "text": "ARCH.2.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.2.2",
+                    "rel": "related",
+                    "text": "ARCH.2.2 steht unter NET.1.1.A4"
+                  },
+                  {
+                    "href": "#ARCH.2.2.11",
+                    "rel": "related",
+                    "text": "ARCH.2.2.11 steht unter NET.1.1.A4"
+                  },
+                  {
+                    "href": "#KONF.14.1",
+                    "rel": "related",
+                    "text": "KONF.14.1 steht unter NET.1.1.A7"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A24",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A24 Sichere logische Trennung mittels VLAN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A24"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A24_anforderung",
+                    "name": "overview",
+                    "prose": "Falls VLANs eingesetzt werden, dann DARF dadurch KEINE Verbindung geschaffen werden zwischen dem internen Netz und einer Zone vor dem ALG oder den Sicherheits-Proxies. Generell MUSS sichergestellt werden, dass VLANs nicht überwunden werden können."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.2",
+                    "rel": "related",
+                    "text": "ARCH.2.2 steht unter NET.1.1.A4"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A25",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A25 Fein- und Umsetzungsplanung von Netzarchitektur und -design",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A25"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A25_anforderung",
+                    "name": "overview",
+                    "prose": "Eine Fein- und Umsetzungsplanung für die Netzarchitektur und das Netzdesign SOLLTE durchgeführt, dokumentiert, geprüft und nachhaltig gepflegt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.1.1",
+                    "rel": "related",
+                    "text": "ARCH.1.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.2.4",
+                    "rel": "related",
+                    "text": "ARCH.2.4 steht unter NET.1.1.A2"
+                  },
+                  {
+                    "href": "#ARCH.2.5",
+                    "rel": "related",
+                    "text": "ARCH.2.5 steht unter NET.1.1.A2"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A26",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A26 Spezifikation von Betriebsprozessen für das Netz",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A26"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A26_anforderung",
+                    "name": "overview",
+                    "prose": "Betriebsprozesse SOLLTEN bedarfsgerecht erzeugt oder angepasst und dokumentiert werden. Dabei SOLLTE insbesondere berücksichtigt werden, wie sich die Zonierung sowie das Segmentierungskonzept auf den IT-Betrieb auswirken."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.1.1",
+                    "rel": "related",
+                    "text": "ARCH.1.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.1.1.1",
+                    "rel": "related",
+                    "text": "ARCH.1.1.1 steht unter NET.1.1.A1"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A27",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A27 Einbindung der Netzarchitektur in die Notfallplanung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A27"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A27_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE initial und in regelmäßigen Abständen nachvollziehbar analysiert werden, wie sich die Netzarchitektur und die abgeleiteten Konzepte auf die Notfallplanung auswirken."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NOT.1.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "NET.1.1-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "NET.1.1.A28",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A28 Hochverfügbare Netz- und Sicherheitskomponenten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A28"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A28_anforderung",
+                    "name": "overview",
+                    "prose": "Zentrale Bereiche des internen Netzes sowie die Sicherheitskomponenten SOLLTEN hochverfügbar ausgelegt sein. Dazu SOLLTEN die Komponenten redundant ausgelegt und auch intern hochverfügbar realisiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.8.3"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.8.1",
+                    "rel": "related",
+                    "text": "ARCH.8.1 steht unter NET.1.1.A13"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A29",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A29 Hochverfügbare Realisierung von Netzanbindungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A29"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A29_anforderung",
+                    "name": "overview",
+                    "prose": "Die Netzanbindungen, wie z. B. Internet-Anbindung und WAN-Verbindungen, SOLLTEN vollständig redundant gestaltet werden. Je nach Verfügbarkeitsanforderung SOLLTEN redundante Anbindungen an Dienstleistende bedarfsabhängig mit unterschiedlicher Technik und Performance bedarfsgerecht umgesetzt werden. Auch SOLLTE Wegeredundanz innerhalb und außerhalb der eigenen Zuständigkeit bedarfsgerecht umgesetzt werden. Dabei SOLLTEN mögliche Single Points of Failures (SPoF) und störende Umgebungsbedingungen berücksichtigt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.8.2",
+                          "KONF.9.3"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.8.1",
+                    "rel": "related",
+                    "text": "ARCH.8.1 steht unter NET.1.1.A13"
+                  },
+                  {
+                    "href": "#ARCH.8.3",
+                    "rel": "related",
+                    "text": "ARCH.8.3 steht unter NET.1.1.A28"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A30",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A30 Schutz vor Distributed-Denial-of-Service",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A30"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A30_anforderung",
+                    "name": "overview",
+                    "prose": "Um DDoS-Angriffe abzuwehren, SOLLTE per Bandbreitenmanagement die verfügbare Bandbreite gezielt zwischen verschiedenen Kommunikationspartnern und -partnerinnen sowie Protokollen aufgeteilt werden. Um DDoS-Angriffe mit sehr hohen Datenraten abwehren zu können, SOLLTEN Mitigation-Dienste über größere Internet Service Provider (ISPs) eingekauft werden. Deren Nutzung SOLLTE in Verträgen geregelt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.9.5",
+                          "BES.5.10"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A31",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A31 Physische Trennung von Netzsegmenten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A31"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A31_anforderung",
+                    "name": "overview",
+                    "prose": "Abhängig von Sicherheitsrichtlinie und Anforderungsspezifikation SOLLTEN Netzsegmente physisch durch separate Switches getrennt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.1",
+                    "rel": "related",
+                    "text": "ARCH.2.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.2.2.11",
+                    "rel": "related",
+                    "text": "ARCH.2.2.11 steht unter NET.1.1.A4"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A32",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A32 Physische Trennung von Management-Netzsegmenten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A32"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A32_anforderung",
+                    "name": "overview",
+                    "prose": "Abhängig von Sicherheitsrichtlinie und Anforderungsspezifikation SOLLTEN Netzsegmente des Management-Bereichs physisch voneinander getrennt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.2.11",
+                    "rel": "related",
+                    "text": "ARCH.2.2.11 steht unter NET.1.1.A4"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A33",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A33 Mikrosegmentierung des Netzes",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A33"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A33_anforderung",
+                    "name": "overview",
+                    "prose": "Das Netz SOLLTE in kleine Netzsegmente mit sehr ähnlichem Anforderungsprofil und selbem Schutzbedarf unterteilt werden. Insbesondere SOLLTE dies für die DMZ-Segmente berücksichtigt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.1",
+                    "rel": "related",
+                    "text": "ARCH.2.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.2.3",
+                    "rel": "related",
+                    "text": "ARCH.2.3 steht unter NET.1.1.A4"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A34",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A34 Einsatz kryptografischer Verfahren auf Netzebene",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A34"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A34_anforderung",
+                    "name": "overview",
+                    "prose": "Die Netzsegmente SOLLTEN im internen Netz, im Extranet und im DMZ-Bereich mittels kryptografischer Techniken bereits auf Netzebene realisiert werden. Dafür SOLLTEN VPN-Techniken oder IEEE 802.1AE eingesetzt werden. Wenn innerhalb von internem Netz, Extranet oder DMZ über Verbindungsstrecken kommuniziert wird, die für einen erhöhten Schutzbedarf nicht ausreichend sicher sind, SOLLTE die Kommunikation angemessen auf Netzebene verschlüsselt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.1",
+                    "rel": "related",
+                    "text": "ARCH.2.1 steht unter NET.1.1.A1"
+                  },
+                  {
+                    "href": "#ARCH.3.4",
+                    "rel": "related",
+                    "text": "ARCH.3.4 steht unter NET.1.1.A17"
+                  },
+                  {
+                    "href": "#ARCH.6.2",
+                    "rel": "related",
+                    "text": "ARCH.6.2 steht unter NET.1.1.A7"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A35",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A35 Einsatz von netzbasiertem DLP",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A35"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A35_anforderung",
+                    "name": "overview",
+                    "prose": "Auf Netzebene SOLLTEN Systeme zur Data Lost Prevention (DLP) eingesetzt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.4.5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.1.A36",
+                "class": "ed23-anforderung",
+                "title": "NET.1.1.A36 Trennung mittels VLAN bei sehr hohem Schutzbedarf",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.1.A36"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.1.A36_anforderung",
+                    "name": "overview",
+                    "prose": "Bei sehr hohem Schutzbedarf SOLLTEN KEINE VLANs eingesetzt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.2.11",
+                    "rel": "related",
+                    "text": "ARCH.2.2.11 steht unter NET.1.1.A4"
+                  },
+                  {
+                    "href": "#ARCH.2.1",
+                    "rel": "related",
+                    "text": "ARCH.2.1 steht unter NET.1.1.A1"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
     "back-matter": {
       "resources": [
         {
@@ -64,6 +2063,1223 @@
                 {
                   "algorithm": "SHA-256",
                   "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "ARCH.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ARCH.1.1 fordert die Verankerung von Verfahren und Regelungen zur Netzarchitektur, was der Erstellung einer spezifischen Sicherheitsrichtlinie für das Netz inhaltlich entspricht. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A2",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A3",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Das Verankern von Verfahren und Regelungen zur Netzarchitektur und Segmentierung umfasst die geforderte konzeptionelle Regelung zur DMZ-Segmentierung als allgemeinerer Rahmen. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): ARCH.1.1 verankert übergeordnete Verfahren und Regelungen zur Netzarchitektur, fordert jedoch nicht die operative Durchführung der Planung jeder konkreten Netzimplementierung. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A16",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ARCH.1.1 fordert die grundlegende Verankerung von Verfahren und Regelungen zur Netzarchitektur und deckt damit die geforderte Entwicklung und Pflege der Architektur für Zonen und Netzanbindungen auf übergeordneter Ebene ab. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A17",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A22",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die G++-Maßnahme ARCH.1.1 fordert die Verankerung von Verfahren und Regelungen zur Netzarchitektur, was laut Erläuterung explizit die Konzeption und Regelung der Netzsegmentierung umfasst. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A25",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A26",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker fraglich): ARCH.1.1 verlangt die Verankerung von Verfahren und Regelungen zur Netzarchitektur, worunter auch die von Zonierung und Segmentierung abhängigen Betriebsprozesse fallen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.1.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Die G++-Maßnahme ARCH.1.1.1 fordert die Dokumentation der netzarchitektonischen Verfahren und Regelungen, was die nachvollziehbare schriftliche Erfassung von Anforderungen und Vorgaben für den Netzaufbau inhaltlich abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A2",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (equivalent-to)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): ARCH.1.1.1 fordert die Dokumentation von Verfahren und Regelungen zur Netzarchitektur, was die Erstellung eines Konzepts zur DMZ-Segmentierung inhaltlich abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A26",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker fraglich): ARCH.1.1.1 fordert die Dokumentation der Verfahren und Regelungen zur Netzarchitektur, was die Dokumentation der angepassten Betriebsprozesse abdeckt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.1.1.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): Die G++-Maßnahme ARCH.1.1.3 fordert die gezielte Information der zuständigen Personen über die Regelungen, was der Forderung nach Bekanntheit der Richtlinie bei den zuständigen Mitarbeitenden direkt entspricht. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 7): ARCH.1.2 adressiert die regelmäßige und anlassbezogene Überprüfung von Verfahren und Regelungen auf Aktualität, während S7 die Überprüfung der korrekten Umsetzung der Netz-Sicherheitsrichtlinie verlangt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): Die Überprüfung von Regelungen auf Aktualität gemäß ARCH.1.2 überschneidet sich mit der geforderten nachhaltigen Pflege der netzbezogenen Anforderungsspezifikation, deckt deren spezifische Fortschreibung jedoch nicht vollständig ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): ARCH.1.2 fordert die Überprüfung von Verfahren und Regelungen auf Aktualität, was sich mit der regelmäßigen Überprüfung planerischer Vorgaben überschneidet, die eigentliche Netzplanung jedoch nicht vollständig umfasst. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 3): ARCH.2.1 adressiert die Verankerung der Netzsegmentierung, deckt jedoch die weiteren geforderten Richtlinieninhalte wie Protokollvorgaben und WAN-/Funkverschlüsselung nicht ab."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A4",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A5",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ARCH.2.1 fordert die Unterteilung des internen Netzes in Netzsegmente unter Beruecksichtigung des Schutzbedarfs und deckt damit die Bildung von Segmenten nach aehnlichem Sicherheitsniveau inhaltlich ab. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): ARCH.2.1 fordert die Unterteilung des Netzes in Segmente unter Berücksichtigung des Schutzbedarfs, was die Bewertung der Vertrauenswürdigkeit von Teilnetzen voraussetzt."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A19",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ARCH.2.1 fordert die generelle Unterteilung des Netzes in Segmente nach Schutzbedarf und Zweck, was die Positionierung grundlegender Server- und Infrastrukturdienste in dedizierten Segmenten als allgemeine Anforderung abdeckt. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A22",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equivalent-to, Teilanforderung 1): Beide Anforderungen fordern auf konzeptioneller bzw. architektonischer Ebene die systematische Unterteilung des internen Netzes in Segmente. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A23",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1,3): ARCH.2.1 fordert allgemein die Unterteilung interner Netze in Netzsegmente nach Schutzbedarf und schließt die Platzierung von Systemen unterschiedlichen Schutzbedarfs in separaten Segmenten ein. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A31",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A33",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A34",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A36",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker fraglich): ARCH.2.1 fordert die Netzsegmentierung unter Berücksichtigung des Schutzbedarfs, woraus sich bei sehr hohem Schutzbedarf die Wahl der Trennungstechnik ableitet."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): ARCH.2.2 fordert allgemein die Einschränkung von Verbindungen zwischen Segmenten nach Kriterien und deckt das Allowlist-Prinzip an Firewall-Übergängen als spezifische Ausprägung ab. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A5",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): ARCH.2.2 fordert die Einschränkung von Verbindungen zwischen Netzsegmenten, was für die Absicherung gegenüber nicht vertrauenswürdigen Netzen erforderlich ist."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A10",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A19",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): ARCH.2.2 fordert als allgemeinere Maßnahme die kriterienbasierte Einschränkung und Kontrolle von Verbindungen zwischen Netzsegmenten, was die Filterung des Datenverkehrs zu dedizierten Dienstesegmenten abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A21",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4,7,10): ARCH.2.2 fordert als übergeordnete Maßnahme die kriterienbasierte Einschränkung von Verbindungen zwischen Netzsegmenten, was die Begrenzung auf notwendige Protokolle und Endpunkte für Segmentkommunikation abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A22",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A23",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): Die G++-Maßnahme ARCH.2.2 fordert übergeordnet die kriterienbasierte Einschränkung von Verbindungen zwischen Netzsegmenten und schließt das Verhindern einer unzulässigen Überbrückung von Segmenten oder Zonen vollständig ein. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A24",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Satz 2 fordert die Einschränkung der Datenflüsse des Internetverkehrs auf benötigte Protokolle und Kommunikationsbeziehungen, was die Einschränkung von Verbindungen über externe Netzanschlüsse konkretisiert. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): ARCH.2.2.1 fordert die Einschränkung von Verbindungen über externe Netzanschlüsse und setzt damit die Absicherung gegenüber nicht vertrauenswürdigen Netzen wie dem Internet um."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A11",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Satz 2 schränkt externe Zugriffe auf das interne Netz konkret auf vertrauenswürdige IT-Systeme und Benutzende ein und setzt damit die Einschränkung von Verbindungen über externe Netzanschlüsse um."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A18",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2.11",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A4",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A23",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A31",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ARCH.2.2.11 umfasst als übergeordnete Maßnahme zur physischen Segmentierung auch die konkrete Trennung von Netzsegmenten durch separate Switches. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A32",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A36",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker fraglich): ARCH.2.2.11 behandelt die physische Segmentierung von Netzen für erhöhte Sicherheitsanforderungen als Alternative zur rein logischen Trennung per VLAN."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 4): Die G++-Maßnahme adressiert die Einschränkung und Trennung für Gastnetze, deckt jedoch darüber hinausgehende Netzbereiche ohne ausreichende Endgerätekontrolle nicht ab. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A22",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): ARCH.2.2.3 zielt auf die allgemeine Einschränkung von Verbindungen zwischen Hostsystemen und Clients ab, fordert im normativen Text jedoch nicht explizit die Platzierung in getrennten Netzsegmenten. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A19",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (equivalent-to)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): ARCH.2.2.6 adressiert mit der Empfehlung zur Installation einer DMZ nur einen Teilaspekt der geforderten physischen Dreiteilung des Gesamtnetzes in internes Netz, DMZ und Außenanbindungen. [auch: gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): ARCH.2.2.6 empfiehlt allgemein die Installation einer DMZ für exponierte Systeme, was die verpflichtende Ergänzung der Firewall-Struktur um eine externe DMZ für alle Internet-Dienste thematisch überschneidet. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A11",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): ARCH.2.2.6 empfiehlt generell die Einrichtung einer DMZ für exponierte Systeme, verlangt jedoch nicht explizit die Platzierung konkreter VPN-Gateways in einer externen DMZ. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A18",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): ARCH.2.2.6 empfiehlt die generelle Einrichtung einer DMZ, schreibt jedoch weder ein Application-Layer-Gateway noch dessen dedizierte Dual-Homed-Transfernetzanbindung in einer P-A-P-Struktur vor."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2.7",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A16",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 2): Die Maßnahme ARCH.2.2.7 deckt mit der Bereitstellung von Management-Netzen zur Überwachung und Verwaltung einen spezifisch im Satz geforderten Aspekt der Netzarchitektur (sichere Administration und Überwachung) ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A17",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 2): ARCH.2.2.7 setzt als konkrete Maßnahme die in Satz 2 geforderten Festlegungen im Netzdesign für die sichere Administration und Überwachung der IT-Infrastruktur mittels Management-Netzen um. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A21",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,2): ARCH.2.2.7 fordert die Einrichtung von Management-Netzen, regelt jedoch nicht die im Satz geforderte durchgängige Nutzung eines Out-of-Band-Managements für die gesamte Infrastruktur. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2.8",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A22",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 4): ARCH.2.2.8 behandelt mit der Beschränkung von Verbindungen zwischen Testumgebungen und Betrieb lediglich einen Teilaspekt der in Satz 4 geforderten umfassenden Konzeptinhalte zur Netzsegmentierung. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2.9",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A20",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Beide Anforderungen zielen auf die netzseitige Trennung von IPv4 und IPv6 ab. Während ARCH.2.2.9 allgemein die netzarchitektonische Einschränkung von Verbindungen zwischen beiden Protokollen empfiehlt, adressiert NET.1.1.A20 konkret die Zuweisung von Endgeräten zu dedizierten Subnetzen nach Protokolltyp. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A4",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A33",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equivalent-to, Teilanforderung 1): ARCH.2.3 adressiert explizit das Konzept der Mikrosegmentierung zur feingranularen Unterteilung und Isolation von Systemen im Netz. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1,5): Die Dokumentation eines Inventars der Netze und Segmente gemäß ARCH.2.4 deckt einen Teilaspekt einer vollständigen Netzdokumentation ab, umfasst jedoch nicht alle geforderten Bestandteile wie Netzpläne oder Leistungsdaten. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A16",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A17",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A22",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A25",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equivalent-to, Teilanforderung 2): Beide Anforderungen zielen deckungsgleich auf das Vorhandensein und die Dokumentation eines Netzplans als Bestandteil der Netzarchitektur ab. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A13",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A25",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A1",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A15",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equivalent-to, Teilanforderung 1,3): Die Forderung in ARCH.2.6, die Einhaltung der Netzarchitektur regelmäßig zu überprüfen, deckt den regelmäßigen Soll-Ist-Abgleich des Netzes inhaltlich direkt ab. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.3.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A17",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 2): Die G++-Maßnahme ARCH.3.4 deckt den Teilaspekt der Festlegung zur Absicherung von Funkverbindungen im Netzdesign durch die Vorgabe einer standardbasierten Verschlüsselung von WLAN-Verbindungen ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A34",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A22",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 4): ARCH.4.1 deckt die Netzzugangskontrolle für Clients ab, adressiert jedoch nicht die weiteren im umfassenden Segmentierungskonzept geforderten Festlegungen (z. B. Staging, Virtualisierung, Datensicherung)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.4.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A4",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.5.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2,3,5): ARCH.5.1 verlangt als allgemeine Grundforderung die Einschränkung von Netzverbindungen (u. a. mittels Firewall- und Paketfiltertechnologie), was die Absicherung von Zonenübergängen durch Firewalls inhaltlich abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): ARCH.5.1 fordert allgemein die Einschränkung von Verbindungen zwischen IT-Systemen in Netzarchitekturen, was explizit die Kontrolle des Datenverkehrs mittels zustandsbehafteter Paketfilter umfasst. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): ARCH.5.1 fordert die generelle Einschränkung von Verbindungen zwischen IT-Systemen (u. a. per Paketfilter auf benötigte Ports, Protokolle und Kommunikationsbeziehungen) und deckt den Satz damit direkt ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A19",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): G++ ARCH.5.1 fordert die generelle Einschränkung von Verbindungen zwischen IT-Systemen, was die geforderte Kontrolle der Kommunikation mittels zustandsbehafteter Paketfilterung inhaltlich umfasst. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.5.1.11",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 7): Die G++-Maßnahme ARCH.5.1.11 fordert die generelle Einrichtung einer P-A-P-Struktur für externe Netzanschlüsse und deckt damit die bedingte Umsetzungspflicht aus Satz 7 vollständig ab. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): Die Installation einer P-A-P-Struktur (Paketfilter - Anwendungsfilter - Paketfilter) für externe Netzanschlüsse stellt eine spezifische Umsetzung der Pflicht dar, den Internetverkehr über eine Firewall-Struktur zu führen. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1,3): Die Forderung nach einer P-A-P-Struktur für ausgehende Verbindungen deckt die Entkoppelung des ausgehenden Datenverkehrs über einen Sicherheits-Proxy (Filter auf Anwendungsebene) als spezifische Architekturform ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A18",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1,2,5,10,11): Die G++-Maßnahme fordert explizit die Installation einer P-A-P-Struktur für externe Netzanschlüsse, was der geforderten Anbindung des Netzes an das Internet über eine Firewall mit P-A-P-Struktur entspricht. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.5.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A8",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.5.1.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A8",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.5.1.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A11",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A21",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.5.1.8",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A12",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.5.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equivalent-to, Teilanforderung 1): Satz 1 fordert, dass der gesamte Internetverkehr über die Firewall-Struktur geführt werden muss, was direkte ungefilterte Verbindungen in das öffentliche Netz ausschließt. [auch: gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Die G++-Maßnahme ARCH.5.2 zielt auf das generelle Blockieren direkter Verbindungen ins öffentliche Netz ab, fordert jedoch im Gegensatz zu Satz 1 keine spezifische Entkopplung ausgehender Kommunikation an einem Sicherheits-Proxy."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.6.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A17",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 2): Die kontrollierte Verbindungsführung für Weitverkehrsverbindungen deckt einen Teilaspekt der im Netzdesign geforderten Festlegungen zur Absicherung von WAN-Verbindungen und Routing-Strukturen ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.6.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Satz 1 fordert die Nutzung von nach Stand der Technik sicheren Protokollen bei der Übertragung über nicht vertrauenswürdige Netzsegmente, was sich inhaltlich mit der Verschlüsselung von Weitverkehrsverbindungen deckt."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A11",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ARCH.6.2 fordert die standardkonforme Verschlüsselung von Weitverkehrsverbindungen und deckt damit die Nutzung eines sicheren Kommunikationskanals für IP-basierte Zugriffe aus dem Internet als allgemeine Vorgabe ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A34",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): Satz 3 fordert die Verschlüsselung auf Netzebene für die Kommunikation über nicht ausreichend sichere Verbindungsstrecken (wie etwa im Extranet), was sich mit der Verschlüsselung von Weitverkehrsverbindungen überschneidet. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.8.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 3): ARCH.8.1 adressiert mit der redundanten Auslegung im Kernnetz einen spezifischen Aspekt der bei der Netzplanung zu berücksichtigenden Redundanz von Netzkomponenten, lässt die übrigen Planungsinhalte jedoch offen. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A16",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 2): ARCH.8.1 adressiert als architektonische Vorgabe zur Redundanz im Kernnetz einen Teilaspekt der geforderten Festlegungen für das interne Netz, umfasst jedoch nicht die weiteren geforderten Architekturelemente. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A17",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A28",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1,2): ARCH.8.1 adressiert mit der Redundanz im Kernnetz zentrale Bereiche des internen Netzes, schließt jedoch Sicherheitskomponenten nicht explizit ein. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A29",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (equivalent-to)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.8.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A29",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.8.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A28",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A29",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.9.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 3): ARCH.9.1 deckt die in Satz 3 geforderte bedarfsgerechte Berücksichtigung und Dimensionierung von Netzanbindungen und Übertragungsstrecken als spezifischen Teilaspekt der Netzplanung ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.9.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A30",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,2): ARCH.9.5 adressiert allgemein den Schutz gegen volumetrische DoS-Angriffe, schreibt jedoch nicht spezifisch das geforderte Bandbreitenmanagement zur Bandbreitenaufteilung vor. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1,2): Die G++-Maßnahme fordert die Gewährleistung von Vertraulichkeit und Integrität beim Datentransport (einschließlich Netzübertragung) und deckt damit die sichere Übertragung schützenswerter Daten als allgemeinere Pflicht inhaltlich ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.5.10",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A30",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): BES.5.10 adressiert allgemein die Vereinbarung von Regelungen zur Vorfallbehandlung, was die vertragliche Einbindung von DDoS-Mitigation-Diensten im Ernstfall berührt; die spezifischen vertraglichen Nutzungsbedingungen von DDoS-Abwehrdiensten werden dadurch jedoch nicht vollständig abgedeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.7.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): BES.7.1 fordert die Prüfung erbrachter oder gelieferter Leistungen anhand von Akzeptanzkriterien vor der Verwendung und deckt damit die allgemeine Abnahme- und Übergabeprüfung inhaltlich ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A35",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die G++-Maßnahme DET.4.5 adressiert die Erkennung und Überwachung unerwünschter Datenabflüsse über alle Kanäle hinweg und schließt den spezifischen Einsatz netzbasierter Data-Loss-Prevention-Systeme (DLP) als Spezialfall vollständig ein. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.14.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,2): KONF.14.1 verlangt die Transportverschlüsselung auf Anwendungsebene, während die Anforderung die netzwerkweite Nutzung sicherer Protokolle bei nicht vertrauenswürdigen Segmenten adressiert. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A23",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 6): Die G++-Maßnahme KONF.14.1 fordert die Verschlüsselung von Daten beim Transport über Netze und deckt damit die geforderte Schutzmaßnahme zur Vertraulichkeit übertragener Informationen inhaltlich ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.9.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A29",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Die Maßnahme betrifft allgemein alternative Komponenten für IT-Systeme, während die Anforderung eine vollständig redundante Auslegung von Netzanbindungen wie Internet und WAN vorgibt; beide überschneiden sich im Bereich redundanter Netzwerkschnittstellen und -anbindungen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A27",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz niedrig, Checker bestaetigt): NOT.1.2 fordert die regelmäßige und anlassbezogene Überprüfung der Notfallverfahren, adressiert aber nicht gezielt die Analyse der Netzarchitektur."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "TEST.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): TEST.3.1 verlangt Sicherheitstests vor wesentlichen Änderungen, während der Satz die Abnahmeprüfung der fachgerechten Netzumsetzung fordert. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 7): Die G++-Maßnahme fordert allgemein die regelmäßige Überprüfung des Umsetzungsstatus, was die geforderte regelmäßige Prüfung der korrekten Umsetzung der Richtlinienvorgaben abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A14",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A15",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A13",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.5.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 6): UMS.5.1 deckt die Autorisierung von Abweichungen ab, fordert jedoch weder die im Satz verlangte Dokumentation noch erfasst es Richtlinienänderungen. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.5.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.1.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 6): UMS.5.2 betrifft die Dokumentation von Abweichungen, schließt aber die Abstimmung mit dem oder der verantwortlichen ISB nicht ein. [auch: satz_abdeckung]"
                 }
               ]
             }

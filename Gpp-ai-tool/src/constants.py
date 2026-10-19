@@ -22,11 +22,35 @@ OUTPUT_ROOT = os.path.abspath(os.environ.get("OUTPUT_ROOT", REPO_ROOT))
 # ANFORDERUNG_ID_PATTERN = re.compile(r"^[A-Z]{2,}(\.\d+)+(?:.A\d+)?$")
 ANFORDERUNG_ID_PATTERN = re.compile(r"^.*$")
 
+# --- Build ---
+BUILD_VERSION = "5.0.1"
+
 # --- Data Source URLs ---
-# Input data is fetched directly from the upstream GitHub repositories (raw
-# content) rather than from local submodule checkouts. The loaders in
-# utils/data_loader.py and utils/file_utils.py transparently download these.
-BSI_2023_JSON_PATH = "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/refs/heads/main/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json"
+# Input data is fetched directly from the upstream GitHub repositories (raw content), always
+# at a pinned commit and verified against a pinned SHA-256 (Handbuch 3.13/3.14, Grundregel 8).
+
+# --- ED23 catalog pin (NTT DATA DACH benutzerdefinierte OSCAL-Ausgabe der Edition 2023) ---
+# Two files at the same commit: the benutzerdefinierte Gesamtkatalog (111 BSI-Bausteine plus
+# the 12 NTT-eigenen "NG"-Bausteine) and the plain BSI file (111). The catalog itself carries
+# no marker for the NTT-Bausteine — the difference of the two Baustein-ID sets IS the NG set
+# (utils/ed23_baustein.detect_ng). Change commit and both hashes together.
+ED23_CATALOG_PIN_COMMIT = os.environ.get(
+    "ED23_CATALOG_PIN_COMMIT", "62f080393956331bb202f2c057eb416af8fcd4de"
+)
+ED23_BD_CATALOG_PIN_SHA256 = os.environ.get(
+    "ED23_BD_CATALOG_PIN_SHA256",
+    "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c",
+)
+ED23_PLAIN_CATALOG_PIN_SHA256 = os.environ.get(
+    "ED23_PLAIN_CATALOG_PIN_SHA256",
+    "119e70545b896ff3b592af250097b960ed33d6e98ac775b7f230403a92b118a0",
+)
+_ED23_RAW = (
+    "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/"
+    f"{ED23_CATALOG_PIN_COMMIT}/BS_GK_OSCAL_JSON_DATA/"
+)
+BSI_2023_JSON_PATH = _ED23_RAW + "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json"  # 123 Bausteine
+BSI_2023_PLAIN_JSON_PATH = _ED23_RAW + "BSI_GS_OSCAL_current_2023.json"  # 111 Bausteine
 
 # --- G++ Catalog Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
 # The G++ catalog is consumed at a pinned commit and verified against a known SHA-256 —
@@ -56,7 +80,16 @@ ZIELOBJEKTKATEGORIEN_CSV_PATH = (
 
 # --- Filtering ---
 ALLOWED_MAIN_GROUPS = ["SYS", "INF", "IND", "APP", "NET"]
-ALLOWED_PROCESS_BAUSTEINE = ["OPS.2.2", "OPS.2.3", "OPS.3.2"]
+# Prozess-Bausteine, die trotzdem ein eigenes Profil in ED23-Baustein-profile/DE bekommen:
+# die drei OPS-Bausteine der ersten Fassung, die drei NTT-eigenen Prozess-Bausteine (NG), und die
+# sieben BSI-Prozess-Bausteine, deren Thema in Grundschutz++ keine eigene Praktik hat
+# (Satzabdeckung < 45 % oder >= 5 Anforderungen ohne jeden Treffer; Tabelle reproduzierbar mit
+# scripts/prozess_luecken.py aus hilfsdateien/ed23_satz_abdeckung.json).
+ALLOWED_PROCESS_BAUSTEINE = [
+    "OPS.2.2", "OPS.2.3", "OPS.3.2",
+    "ORP.6", "OPS.1.1.8", "DER.7",                                    # NG (NTT DATA)
+    "DER.3.1", "DER.3.2", "DER.2.2", "DER.2.3", "DER.4", "OPS.1.2.2", "CON.11.1",  # ohne Praktik
+]
 # The prozessorientierte layers of the BSI ED2023 Kompendium; every Anforderung below them
 # is mapped 1:1 to a G++ control by stage_prozessbausteine. Note: the OPS Bausteine listed
 # in ALLOWED_PROCESS_BAUSTEINE above are *also* routed through the per-Baustein profile flow
@@ -84,6 +117,12 @@ ED23_ANFORDERUNGEN_STRIPPED_JSON_PATH = os.path.join(SDT_HELPER_OUTPUT_DIR, "ed2
 # Per-sentence coverage judgment of the OFFICIAL ED23 Kompendium (amtliches XML) against the
 # G++ catalog (stage_ed23_satz_abdeckung). Consumed by scripts/analyze_ed23_coverage.py.
 ED23_SATZ_ABDECKUNG_JSON_PATH = os.path.join(SDT_HELPER_OUTPUT_DIR, "ed23_satz_abdeckung.json")
+# Per-Anforderung assignment of every Baustein that gets a profile: deterministic sources plus the
+# maker-checker residual, incl. the proposed NG controls (stage_ed23_baustein_abgleich).
+ED23_BAUSTEIN_ABGLEICH_JSON_PATH = os.path.join(SDT_HELPER_OUTPUT_DIR, "ed23_baustein_abgleich.json")
+# Harvested maturity alter blocks (paid LLM output) keyed by Baustein and control, reused by
+# stage_ED23_profiles_enhanced so a regeneration only pays for controls without an entry.
+ED23_MATURITY_CACHE_JSON_PATH = os.path.join(SDT_HELPER_OUTPUT_DIR, "ed23_maturity_cache.json")
 SDT_PROFILES_REGULAR_DIR = os.path.abspath(
     os.environ.get("SDT_PROFILES_REGULAR_DIR", os.path.join(OUTPUT_ROOT, "Zielobjektkategorien/profile/regular"))
 )
@@ -92,6 +131,21 @@ SDT_PROFILES_PROCESS_DIR = os.path.abspath(
 )
 ED23_PROFILES_DIR = os.path.abspath(
     os.environ.get("ED23_PROFILES_DIR", os.path.join(OUTPUT_ROOT, "ED23-Baustein-profile/DE"))
+)
+# The one shared NG Ergänzungskatalog next to the profiles (relative rlink in their back-matter).
+NG_KATALOG_FILENAME = "NG-ergaenzungskatalog.json"
+NG_KATALOG_PATH = os.path.join(ED23_PROFILES_DIR, NG_KATALOG_FILENAME)
+
+# --- BSI GSMap (ITGS 2023 -> GS++), the official bridge; pinned, used as a deterministic source ---
+ITGS_PIN_COMMIT = "8f0bcd1fbb4f47a7bec911fc20118ce6e8ef4dad"
+ITGS_MAPPING_URL = (
+    "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/"
+    f"{ITGS_PIN_COMMIT}/control_layer/Mappings/IT-GS2023-zu-GSpp/ITGS-to-GS%2B%2B-mapping_collection.json"
+)
+ITGS_MAPPING_PIN_SHA256 = "df7ea11261ace956a3ebb440f60928851a4815f5545775ac9b24e4d3d22f267f"
+SDT_SECURITY_LEVEL_CSV_PATH = (
+    "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/"
+    f"{GPP_CATALOG_PIN_COMMIT}/documentation/namespaces/security_level.csv"
 )
 
 
@@ -108,19 +162,12 @@ ED23_SATZ_VERIFY_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/e
 ED23_RELATION_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_relation_response_schema.json")
 ED23_RELATION_CONTROL_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_relation_control_response_schema.json")
 PROZESSBAUSTEINE_RESPONSE_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/prozessbausteine_response_schema.json")
+ED23_BAUSTEIN_ABGLEICH_MAKER_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_baustein_abgleich_maker_schema.json")
+ED23_BAUSTEIN_ABGLEICH_CHECKER_SCHEMA_PATH = os.path.join(SRC_ROOT, "assets/schemas/ed23_baustein_abgleich_checker_schema.json")
 
-# --- AI Model Configuration ---
-# These default to current Gemini preview identifiers. They are env-overridable so a stable,
-# versioned Vertex AI model id can be pinned for reproducibility without a code change
-# (issue 4.1).
-GROUND_TRUTH_MODEL = os.environ.get("GROUND_TRUTH_MODEL", "gemini-3.7-flash")
-GROUND_TRUTH_MODEL_PRO = os.environ.get("GROUND_TRUTH_MODEL_PRO", "gemini-3.1-pro-preview")
-# Maker model for the ED23 candidate pass (stage_ed23_anforderungen). Deliberately a
-# different model than the verifier: gemini-3-flash-preview nominates candidates far more
-# generously (high recall), while the strict verification pass on GROUND_TRUTH_MODEL
-# (gemini-3.7-flash) restores precision. Measured on a 23-control sample: the 3.7 maker
-# never nominates certain valid candidates, so no checker could recover them.
-ED23_MAKER_MODEL = os.environ.get("ED23_MAKER_MODEL", "gemini-3-flash-preview")
+# --- AI call tuning ---
+# The model id and the thinking levels live in config.Settings (GEMINI_MODEL, MAKER_THINKING_LEVEL,
+# CHECKER_THINKING_LEVEL, MAX_OUTPUT_TOKENS, API_MAX_RETRIES) — one model, no sampling params.
 # Controls per maker call in stage_ed23_anforderungen (docs/token-kostenplan.md, Maßnahme 3):
 # the cached corpus is billed per CALL, so batching divides the dominant cached-input cost
 # by the batch size. Keep small — per-control attention (recall) must not suffer.
@@ -135,19 +182,15 @@ PROZESSBAUSTEINE_CHUNK_SIZE = int(os.environ.get("PROZESSBAUSTEINE_CHUNK_SIZE", 
 # fails loudly instead of publishing an incomplete mapping.
 PROZESSBAUSTEINE_MAX_ROUNDS = int(os.environ.get("PROZESSBAUSTEINE_MAX_ROUNDS", "10"))
 
-# --- API Configuration ---
-# Constants for external API interactions, such as retry logic parameters.
-API_MAX_RETRIES = 5
-API_RETRY_BACKOFF_FACTOR = 2
-API_RETRY_JITTER = 0.5  # 50% jitter
-API_TEMPERATURE = 1
-API_MAX_OUTPUT_TOKEN = 65536
+# Anforderungen per maker call in stage_ed23_baustein_abgleich (never across Bausteine).
+ED23_BAUSTEIN_ABGLEICH_BATCH_SIZE = int(os.environ.get("ED23_BAUSTEIN_ABGLEICH_BATCH_SIZE", "5"))
+# Maturity texts describe the control, the Baustein is only prompt context: reuse an entry
+# harvested under another Baustein instead of paying for a regeneration.
+ED23_MATURITY_REUSE_ACROSS_BAUSTEINE = os.environ.get("ED23_MATURITY_REUSE_ACROSS_BAUSTEINE", "true").lower() == "true"
+ED23_MATURITY_REGENERATE = os.environ.get("ED23_MATURITY_REGENERATE", "false").lower() == "true"
 
 # --- Logging ---
-LOG_LEVEL_TEST = "DEBUG"
-LOG_LEVEL_PRODUCTION = "INFO"
-THIRD_PARTY_LOG_LEVEL_PRODUCTION = "WARNING"
-LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s: %(message)s"
 
 # --- OSCAL Metadata ---
 # Default values and namespaces for OSCAL artifact generation.
@@ -160,6 +203,17 @@ OSCAL_NAMESPACE = "http://csrc.nist.gov/ns/oscal/1.0"
 # neither OSCAL- nor BSI-defined, so they carry this dedicated, documented namespace; the URI
 # resolves to the file describing the allowed values.
 GPP_ENHANCEMENT_PROPS_NS = "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+# Naming system of the ED23-Baustein profiles and the NG Ergänzungskatalog (herkunft, ed23-baustein,
+# ed23-anforderung, praktik, ohne-control, ...); documented in
+# Dokumentation/namespaces/ed23_baustein_props.md. An identifier, not a dereferenceable file.
+ED23_BAUSTEIN_NS = "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein"
+# The BSI's own namespace for the ED23 `level` prop (1 = Basis, 3 = Standard, 5 = erhöht).
+BSI_GRUNDSCHUTZ_NS = "https://www.bsi.bund.de/ns/grundschutz"
+# Stand-der-Technik-Bibliothek vocabularies (same ns strings the Anwenderkatalog uses).
+SDT_NS_BASE = "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces"
+SDT_MODAL_VERB_NS = f"{SDT_NS_BASE}/modal_verbs.csv"
+SDT_TARGET_OBJECT_NS = f"{SDT_NS_BASE}/target_object_categories.csv"
+SDT_SECURITY_LEVEL_NS = f"{SDT_NS_BASE}/security_level.csv"
 
 # --- Praktiken (Practices) ---
 # Maps a practice abbreviation (Kürzel, e.g. "ARCH") to its full German term (Begriff,

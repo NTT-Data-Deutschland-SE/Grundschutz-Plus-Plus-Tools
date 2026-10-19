@@ -2,10 +2,54 @@
   "profile": {
     "uuid": "f6b1f3a1-cea6-58fa-8fd9-8e31c1ffc3e8",
     "metadata": {
-      "title": "INF.8 - Räume",
-      "last-modified": "2026-07-28T15:40:47.249629+00:00",
-      "version": "0.0.1",
-      "oscal-version": "1.2.2"
+      "title": "INF.8 – Häuslicher Arbeitsplatz (Räume)",
+      "last-modified": "2026-10-19T01:07:48.134579+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "BSI"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "INF.8"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Häuslicher Arbeitsplatz"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Räume"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "system"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, INF.8, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein INF.8 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (amtlicher Wortlaut des XML-Kompendiums 2023); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls."
     },
     "imports": [
       {
@@ -13,76 +57,344 @@
         "include-controls": [
           {
             "with-ids": [
+              "ASST.1.1",
+              "ASST.1.1.3",
+              "ASST.3.10",
+              "ASST.4.2",
+              "ASST.7.3",
               "ASST.7.5",
-              "DET.4.19",
-              "GEB.1.1",
-              "GEB.1.1.1",
-              "GEB.1.1.2",
-              "GEB.1.1.3",
               "GEB.1.2",
-              "GEB.1.3",
-              "GEB.1.3.1",
-              "GEB.1.4",
-              "GEB.1.5",
-              "GEB.10.1",
-              "GEB.10.1.3",
-              "GEB.10.2",
-              "GEB.10.2.1",
-              "GEB.10.2.2",
-              "GEB.10.2.3",
-              "GEB.10.2.4",
-              "GEB.10.2.5",
-              "GEB.10.2.7",
-              "GEB.10.3",
-              "GEB.10.3.1",
-              "GEB.10.3.2",
-              "GEB.10.4",
-              "GEB.10.4.1",
-              "GEB.2.1",
-              "GEB.2.3",
-              "GEB.2.4",
-              "GEB.3.1",
-              "GEB.3.1.1",
-              "GEB.3.1.2",
-              "GEB.3.2",
-              "GEB.3.3",
-              "GEB.3.3.1",
-              "GEB.3.3.2",
-              "GEB.3.3.3",
-              "GEB.3.4",
               "GEB.3.5",
-              "GEB.3.6",
-              "GEB.3.7",
-              "GEB.4.1",
-              "GEB.4.2",
-              "GEB.4.3",
-              "GEB.4.4",
               "GEB.5.1",
-              "GEB.7.1",
-              "GEB.7.2",
-              "GEB.7.3",
               "GEB.8.1",
-              "GEB.8.1.1",
-              "GEB.8.3",
-              "GEB.9.1",
-              "GEB.9.1.1",
-              "GEB.9.1.2",
-              "GEB.9.1.3",
-              "GEB.9.1.4",
-              "GEB.9.2",
-              "GEB.9.3",
-              "GEB.9.4",
-              "GEB.9.5",
-              "GEB.9.5.1",
-              "SENS.8.10",
-              "SENS.8.6",
-              "SENS.8.7",
-              "SENS.8.8"
+              "SENS.1.1.3",
+              "SENS.8.2",
+              "SENS.8.4",
+              "SENS.9.3",
+              "SENS.9.4"
             ]
           }
         ]
       }
     ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "INF.8-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "INF.8.A1",
+                "class": "ed23-anforderung",
+                "title": "INF.8.A1 Sichern von dienstlichen Unterlagen am häuslichen Arbeitsplatz",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.8.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.8.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Dienstliche Unterlagen und Datenträger MÜSSEN am häuslichen Arbeitsplatz so aufbewahrt werden, dass keine unbefugten Personen darauf zugreifen können. Daher MÜSSEN ausreichend verschließbare Behältnisse (z. B. abschließbare Rollcontainer oder Schränke) vorhanden sein. Alle Mitarbeitenden MÜSSEN ihre Arbeitsplätze aufgeräumt hinterlassen und sicherstellen, dass keine vertraulichen Informationen frei zugänglich sind."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.5.1",
+                          "GEB.8.1",
+                          "SENS.8.2",
+                          "SENS.9.3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.8.A2",
+                "class": "ed23-anforderung",
+                "title": "INF.8.A2 Transport von Arbeitsmaterial zum häuslichen Arbeitsplatz",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.8.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.8.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS geregelt werden, welche Datenträger und Unterlagen am häuslichen Arbeitsplatz bearbeitet und zwischen der Institution und dem häuslichen Arbeitsplatz hin und her transportiert werden dürfen. Generell MÜSSEN Datenträger und andere Unterlagen sicher transportiert werden. Diese Regelungen MÜSSEN den Mitarbeitenden in geeigneter Weise bekanntgegeben werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.1.1.3",
+                          "ASST.3.10",
+                          "ASST.4.2",
+                          "SENS.9.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.8.A3",
+                "class": "ed23-anforderung",
+                "title": "INF.8.A3 Schutz vor unbefugtem Zutritt am häuslichen Arbeitsplatz",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.8.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.8.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Den Mitarbeitenden MUSS mitgeteilt werden, welche Regelungen und Maßnahmen zum Einbruchs- und Zutrittsschutz zu beachten sind. So MUSS darauf hingewiesen werden, Fenster zu schließen und Türen abzuschließen, wenn der häusliche Arbeitsplatz nicht besetzt ist. Es MUSS sichergestellt werden, dass unbefugte Personen zu keiner Zeit den häuslichen Arbeitsplatz betreten und auf dienstliche IT und Unterlagen zugreifen können. Diese Maßnahmen MÜSSEN in sinnvollen zeitlichen Abständen überprüft werden, mindestens aber, wenn sich die häuslichen Verhältnisse ändern."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.1.2",
+                          "SENS.1.1.3",
+                          "SENS.8.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "INF.8-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "INF.8.A4",
+                "class": "ed23-anforderung",
+                "title": "INF.8.A4 Geeignete Einrichtung des häuslichen Arbeitsplatzes",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.8.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.8.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Der häusliche Arbeitsplatz SOLLTE durch eine geeignete Raumaufteilung von den privaten Bereichen der Wohnung getrennt sein. Der häusliche Arbeitsplatz SOLLTE mit Büromöbeln eingerichtet sein, die ergonomischen Anforderungen entsprechen. Ebenso SOLLTE der häusliche Arbeitsplatz durch geeignete technische Sicherungsmaßnahmen vor Einbrüchen geschützt werden. Die Schutzmaßnahmen SOLLTEN an die örtlichen Gegebenheiten und den vorliegenden Schutzbedarf angepasst sein."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.3.5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.8.A5",
+                "class": "ed23-anforderung",
+                "title": "INF.8.A5 Entsorgung von vertraulichen Informationen am häuslichen Arbeitsplatz",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.8.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.8.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Vertrauliche Informationen SOLLTEN sicher entsorgt werden. In einer speziellen Sicherheitsrichtlinie SOLLTE daher geregelt werden, wie schutzbedürftiges Material zu beseitigen ist. Es SOLLTEN die dafür benötigten Entsorgungsmöglichkeiten verfügbar sein."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.1.1",
+                          "ASST.7.3",
+                          "ASST.7.5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "INF.8-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "INF.8.A6",
+                "class": "ed23-anforderung",
+                "title": "INF.8.A6 Umgang mit dienstlichen Unterlagen bei erhöhtem Schutzbedarf am häuslichen Arbeitsplatz",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.8.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.8.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Wenn Informationen mit erhöhtem Schutzbedarf bearbeitet werden, SOLLTE überlegt werden, von einem häuslichen Arbeitsplatz ganz abzusehen. Anderenfalls SOLLTE der häusliche Arbeitsplatz durch erweiterte, hochwertige technische Sicherungsmaßnahmen geschützt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ASST.3.10",
+                    "rel": "related",
+                    "text": "ASST.3.10 steht unter INF.8.A2"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
     "back-matter": {
       "resources": [
         {
@@ -95,6 +407,273 @@
                 {
                   "algorithm": "SHA-256",
                   "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "ASST.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.8.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): ASST.1.1 fordert die Verankerung von Regelungen zum Lebenszyklus von Informationen, was die geforderte Regelung zur Beseitigung und Vernichtung schutzbedürftigen Materials explizit einschließt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.1.1.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.8.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): Die G++-Maßnahme ASST.1.1.3 verlangt allgemein die Bekanntgabe bzw. Information über die Verfahren und Regelungen an die zuständigen Personen, was die Forderung zur Bekanntgabe an die Mitarbeitenden in Satz 3 abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.3.10",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.8.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): ASST.3.10 deckt die Zulässigkeit der Datenbearbeitung am häuslichen Arbeitsplatz als Datenlokation ab, erfasst jedoch nicht die Regelungen zum physischen Hin- und Rücktransport von Unterlagen und Datenträgern. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.8.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ASST.3.10 fordert die Autorisierung physischer und virtueller Datenlokationen nach Schutzbedarf, was das Verbot oder den Verzicht auf die Bearbeitung schutzbedürftiger Daten am häuslichen Arbeitsplatz als allgemeine Regelung abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.8.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): ASST.4.2 verlangt die Sicherstellung von Vertraulichkeit und Integrität beim physischen und digitalen Transport von Daten und Datenträgern und deckt die Forderung nach sicherem Transport damit inhaltlich ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.7.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.8.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ASST.7.3 fordert das sichere Löschen bzw. Vernichten von Daten und Speichermedien, was die sichere Entsorgung vertraulicher Informationen inhaltlich abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.7.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.8.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): ASST.7.5 umfasst die Bereitstellung von Vernichtungseinrichtungen an allen Verarbeitungsstandorten und schließt Entsorgungsmöglichkeiten am häuslichen Arbeitsplatz als Spezialfall ein. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.8.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): GEB.1.2 adressiert die Überprüfung von Regelungen des Gebäudemanagements für Standorte, was sich thematisch mit der Überprüfung von Zutrittsschutzmaßnahmen am häuslichen Arbeitsplatz überschneidet, diesen spezifischen Kontext aber nicht umfasst. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.3.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.8.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): GEB.3.5 überschneidet sich im Schutzziel der baulich-technischen Einbruchhemmung, bezieht sich jedoch auf Liegenschaften der Institution und nicht auf den häuslichen Arbeitsplatz. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.5.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.8.A1",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.8.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.8.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): Beide Anforderungen zielen auf verschließbare Behältnisse ab, jedoch beschränkt sich GEB.8.1 auf institutionelle Standorte, während Satz 2 die Ausstattung am häuslichen Arbeitsplatz fordert."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "SENS.1.1.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.8.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die G++-Maßnahme fordert als allgemeine Regelung die Information der zuständigen Personen über geltende Verfahren und Vorgaben, was die Information der Mitarbeitenden über Einbruchs- und Zutrittsschutzregeln abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "SENS.8.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.8.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): SENS.8.2 zielt allgemein auf die Sensibilisierung zum Aufräumen vertraulicher Dokumente und Datenträger ab, während Satz 3 eine verbindliche Pflicht zur aufgeräumten Arbeitsplatzgestaltung und Sicherstellung speziell für den häuslichen Arbeitsplatz formuliert. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "SENS.8.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.8.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): SENS.8.4 fordert die Sensibilisierung von Gebäudenutzenden allgemein, während Satz 2 einen spezifischen Hinweis für den häuslichen Arbeitsplatz vorschreibt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "SENS.9.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.8.A1",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "SENS.9.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.8.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): Satz 2 fordert den sicheren Transport von Unterlagen und Datenträgern, was sich direkt mit dem sicheren Transport und Schutz analoger Dokumente unterwegs gemäß SENS.9.4 überschneidet."
                 }
               ]
             }

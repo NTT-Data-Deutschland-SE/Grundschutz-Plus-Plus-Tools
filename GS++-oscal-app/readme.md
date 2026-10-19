@@ -1,6 +1,6 @@
 # Tools der NTT zur Bearbeitung von OSCAL Dateien im Kontext BSI Grundschutz++
 
-Diese Sammlung enthält Werkzeuge zur Erstellung, Verwaltung und Dokumentation von **Systemsicherheitsprofilen (SSP)** im Kontext nutzergenerierter Inhalte. Die Tools sind webbasiert (HTML/JS) und ermöglichen einen durchgängigen Workflow von der Planung bis zur Zertifizierung und dem Abarbeiten der Festellungen.
+Diese Sammlung enthält Werkzeuge zur Erstellung, Verwaltung und Dokumentation von **Systemsicherheitsprofilen (SSP)** auf dem Anwenderkatalog Grundschutz++; nutzergenerierte Inhalte (NG) sind darin als solche gekennzeichnet. Die Tools sind webbasiert (HTML/JS) und ermöglichen einen durchgängigen Workflow von der Planung bis zur Zertifizierung und dem Abarbeiten der Festellungen.
 
 **NEU** [Schulungsvideo zu OSCAL, GS++ und den Tools](https://youtu.be/nqLAiSsXqqA)
 
@@ -86,7 +86,7 @@ Ein vollständig im Browser laufender Validator für OSCAL-1.2.2-Dateien (Catalo
 
 Zwei Werkzeuge lösen abgegrenzte Sonderaufgaben und stehen deshalb außerhalb des durchgängigen Ablaufs, in [`../one-page-apps/`](../one-page-apps/readme.md):
 
-* **SSP-Generator Edition 2023** — derselbe Ablauf wie der [SSP-Generator](./ssp_generator.html), aber gegen den BSI IT-Grundschutz Edition 2023 statt gegen den G++-Anwenderkatalog.
+* **SSP-Generator Edition 2023** — derselbe Ablauf wie der [SSP-Generator](./ssp_generator.html), aber gegen den BSI IT-Grundschutz Edition 2023 statt gegen den G++-Anwenderkatalog; die 12 nutzergenerierten Bausteine (NG) des Katalogs sind markiert.
 * **YAML → OSCAL Konverter (C5:2026)** — deterministische Umwandlung von YAML-Kriteriendateien in einen OSCAL-Katalog, ohne KI.
 
 Beide sind **vollständig eigenständig**: eine einzelne HTML-Datei ohne `gpp-core.js`, mit eigenem KI-Zugang und eigenen Prompts. Sie arbeiten weder auf dem gemeinsamen Artefakt-Set noch mit der zentralen `config.html`. Ihr Ergebnis ist eine heruntergeladene Datei, die sich hier unter „Artefakte" in ein Set laden lässt.
@@ -104,6 +104,7 @@ Beide Generatoren schreiben seit V5.8 bzw. ED23 V1.3 einen SSP, der sich ohne Na
 * **Der Schutzbedarf steht auch auf Systemebene.** `security-sensitivity-level`, `security-impact-level` und die Impacts am Informationstyp werden nach dem Maximumprinzip aus den Assets abgeleitet und begründet.
 * **Offene Stellen sind als offen markiert.** Controls, die nur über ein Prozess-Profil oder einen Zusatzkatalog in den Geltungsbereich kommen, tragen `implementation-status: planned` mit Hinweis, statt ohne Status dazustehen.
 * **Keine Dubletten.** Assets werden über die `source-id` der Dokumentanalyse abgeglichen, nicht nur über den Namen; Props und Links werden beim Zusammenführen dedupliziert.
+* **Nutzergenerierte Inhalte sind markiert** (seit V5.18 bzw. ED23 V1.7). Ein ED23-Baustein-Profil bringt seine NG-Controls (`NG-<AnforderungsID>`) aus dem gemeinsamen `NG-ergaenzungskatalog.json` mit; der Generator lädt den Katalog relativ zur Profil-URL, prüft den SHA-256 aus der Back-Matter (bei Abweichung wird nichts übernommen) und hängt die Controls an das Zielobjekt. Im Profil stehen die Importe in der Reihenfolge Mindeststandard-Profile → Anwenderkatalog → NG-Ergänzungskatalog → weitere Kataloge mit `merge.combine use-first`; NG-IDs stehen nie im Import des Anwenderkatalogs. Profil, SSP-Komponenten und implemented-requirements tragen `herkunft=NG` (Namespace [`ed23-baustein`](../Dokumentation/namespaces/ed23_baustein_props.md)), die Back-Matter-Resource des NG-Katalogs `catalog-role: ng-ergaenzung`; eine eigene „Katalog-Umsetzung“-Komponente gibt es für ihn nicht, weil seine Controls asset-bezogen sind.
 
 ---
 
@@ -168,6 +169,7 @@ Das Tool überführt ungelöste Mängel in einen verbindlichen Maßnahmenplan, d
 * Wähle ein Basis-ISMS (Standard oder Enhanced), um die Pflicht-Controls zu laden.
 * **Mindeststandards des BSI (Block 2b):** Wähle im Dropdown die Mindeststandards, denen der Informationsverbund unterliegt (gepinnte Profile aus `mindeststandards/`, Commit plus SHA-256 je Datei), oder gib eine Profil-URL ein; aktive Mindeststandards stehen als Chips darunter und lassen sich dort wieder entfernen. Ein aktivierter Mindeststandard legt sich vor der Modellierung über den Katalog: Parameterwerte, angehobene Modalverben, geänderte Statements und Ergänzungen gelten für alle Zielobjekte, neue Controls aus seinem Ergänzungskatalog kommen in den Pool, und alle seine Controls landen im Profil und im SSP (Komponente „Mindeststandard: …“). Im Profil steht er vor dem Anwenderkatalog mit `merge.combine use-first`; bei mehreren gilt die Reihenfolge der Aktivierung, Konflikte meldet der Block.
 * Importiere Muster-Assets aus der GitHub-Bibliothek, wodurch die App deren Anforderungen automatisch extrahiert.
+* **ED23-Bausteine (Baustein-Profile):** Das Dropdown listet die Profile aus `ED23-Baustein-profile/DE` (Selbst-Pin). Einträge mit „NG“ sind nutzergenerierte Bausteine von NTT DATA, nicht Teil des BSI-Kompendiums. Ein Profil mit NG-Controls lädt den NG-Ergänzungskatalog relativ zur Profil-URL und prüft seinen SHA-256 fail closed; die NG-Controls erscheinen im Tailoring mit NG-Badge und verschwinden mit dem letzten Zielobjekt, das sie trägt. Lokal hochgeladene Profile können den relativen Katalog nicht nachladen (Hinweis im Log).
 
 ### 4. Tailoring (Anpassung)
 * Nutze den Button "⚙️ Modify", um Parameter-Werte innerhalb der Controls zu definieren.

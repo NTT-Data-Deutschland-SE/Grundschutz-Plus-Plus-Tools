@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "description": "Maker result for a batch of ED2023 Anforderungen of one Baustein: per Anforderung the classification, the G++ control assignments and, sparingly, one proposed new control.",
+  "properties": {
+    "ergebnisse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "anforderung_id": {"type": "string", "description": "Exactly the Anforderung id from the prompt, e.g. 'SYS.1.1.A5'."},
+          "pruefung": {
+            "type": "object",
+            "properties": {
+              "art": {"type": "string", "enum": ["umsetzungsanforderung", "verweis", "hinweis", "ausnahme"]},
+              "modalverb": {"type": "string", "enum": ["MUSS", "SOLLTE", "KANN", "DARF NICHT", "DARF NUR", "keines"]},
+              "control_noetig": {"type": "boolean"},
+              "hinweis": {"type": "string"}
+            },
+            "required": ["art", "modalverb", "control_noetig"]
+          },
+          "zuordnungen": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "control_id": {"type": "string", "description": "Exact G++ control id from the catalog in the context."},
+                "relation": {"type": "string", "enum": ["equivalent-to", "subset-of", "superset-of", "intersects-with"], "description": "The Anforderung relative to the control."},
+                "konfidenz": {"type": "string", "enum": ["hoch", "mittel", "niedrig"]},
+                "begruendung": {"type": "string"}
+              },
+              "required": ["control_id", "relation", "konfidenz", "begruendung"]
+            }
+          },
+          "neues_control": {
+            "type": "object",
+            "properties": {
+              "titel": {"type": "string"},
+              "statement": {"type": "string", "description": "One sentence with exactly one upper-case modal verb."},
+              "guidance": {"type": "string"},
+              "praktik": {"type": "string", "description": "Practice id from the list in the prompt."},
+              "zielobjektkategorien": {"type": "array", "items": {"type": "string"}},
+              "verwandte_controls": {"type": "array", "items": {"type": "string"}}
+            },
+            "required": ["titel", "statement", "praktik", "zielobjektkategorien"]
+          },
+          "offen": {"type": "string"}
+        },
+        "required": ["anforderung_id", "pruefung", "zuordnungen"]
+      }
+    }
+  },
+  "required": ["ergebnisse"]
+}

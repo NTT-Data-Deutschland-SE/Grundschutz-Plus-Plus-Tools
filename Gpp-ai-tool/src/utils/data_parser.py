@@ -48,6 +48,7 @@ def find_bausteine_with_prose(bsi_data: Dict[str, Any]) -> List[Dict[str, Any]]:
                                 "id": sub_group.get("id"),
                                 "title": _ensure_string_title(sub_group.get("title")),
                                 "description": baustein_description,
+                                "layer": group_id,
                             }
                         )
     return bausteine_with_prose

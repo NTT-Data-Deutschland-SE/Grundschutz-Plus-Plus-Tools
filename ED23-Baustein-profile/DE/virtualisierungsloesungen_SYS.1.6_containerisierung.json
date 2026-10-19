@@ -2,10 +2,54 @@
   "profile": {
     "uuid": "3dfdd8d7-b33b-5816-b25a-de87f6b6cd8a",
     "metadata": {
-      "title": "SYS.1.6 - Virtualisierungslösungen",
-      "last-modified": "2026-07-28T15:29:20.518628+00:00",
-      "version": "0.0.1",
-      "oscal-version": "1.2.2"
+      "title": "SYS.1.6 – Containerisierung (Virtualisierungslösungen)",
+      "last-modified": "2026-10-19T01:09:15.461815+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "BSI"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "SYS.1.6"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Containerisierung"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Virtualisierungslösungen"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "system"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, SYS.1.6, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein SYS.1.6 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (amtlicher Wortlaut des XML-Kompendiums 2023); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls."
     },
     "imports": [
       {
@@ -13,96 +57,1343 @@
         "include-controls": [
           {
             "with-ids": [
+              "ARCH.2.1",
+              "ARCH.2.2",
+              "ARCH.2.2.7",
+              "ARCH.2.3",
+              "ARCH.2.5",
+              "ARCH.5.1",
               "ARCH.7.1",
-              "ARCH.7.3",
               "ARCH.8.3",
-              "ARCH.9.2",
-              "ARCH.9.3",
-              "ARCH.9.4",
-              "ASST.2.3.2",
-              "ASST.7.1",
-              "BER.3.11",
-              "BER.3.13",
-              "BER.3.25",
-              "BER.3.7",
-              "BER.3.8",
-              "BER.4.6",
+              "BER.4.1",
               "BER.5.11",
-              "BER.5.7",
-              "BER.5.8",
+              "BES.2.1",
+              "BES.2.1.1",
+              "BES.3.3",
+              "BES.5.10.3",
               "DET.3.1",
-              "DET.3.1.10",
-              "DET.3.1.11",
-              "DET.3.1.7",
-              "DET.3.1.8",
-              "DET.3.1.9",
-              "DET.4.14",
-              "DET.4.16",
-              "DET.4.17",
+              "DET.4.2",
               "DET.4.6",
-              "DET.5.10.3",
-              "DEV.2.2",
-              "DEV.2.3",
+              "DET.5.10",
+              "DET.6.1.2",
               "DEV.2.5",
-              "DEV.2.6",
-              "DEV.2.6.1",
-              "DEV.2.6.2",
-              "DEV.3.1",
-              "DEV.3.2",
-              "DEV.3.3",
-              "DEV.3.4",
-              "DEV.4.1",
-              "DEV.4.10",
-              "DEV.4.11",
               "DEV.4.2",
-              "DEV.4.3",
-              "DEV.4.4",
-              "DEV.4.5",
-              "DEV.4.6",
-              "DEV.4.7",
-              "DEV.4.8",
-              "DEV.4.9",
-              "DEV.5.1",
-              "DEV.5.2",
-              "DEV.5.3",
-              "DEV.7.2",
-              "KONF.10.1",
+              "DEV.6.1",
+              "KONF.1.1",
+              "KONF.1.1.1",
+              "KONF.1.5",
               "KONF.10.1.1",
-              "KONF.10.2",
-              "KONF.10.3",
-              "KONF.10.4",
-              "KONF.10.5",
-              "KONF.10.5.1",
-              "KONF.11.1",
-              "KONF.11.1.2",
-              "KONF.11.6",
-              "KONF.11.7",
-              "KONF.11.8",
-              "KONF.12.1",
-              "KONF.14.1",
-              "KONF.14.1.1",
-              "KONF.14.1.2",
-              "KONF.14.4",
-              "KONF.14.5",
-              "KONF.15.1",
               "KONF.15.2",
-              "KONF.15.3",
-              "KONF.15.4",
-              "KONF.6.13",
-              "KONF.6.16",
-              "KONF.6.6",
-              "KONF.6.6.1",
-              "KONF.6.7",
-              "KONF.8.2",
-              "NOT.4.17",
-              "NOT.4.3",
-              "SENS.2.3",
-              "SENS.7.10"
+              "KONF.2.1",
+              "KONF.2.1.1",
+              "KONF.2.4",
+              "KONF.6.1",
+              "KONF.6.1.2",
+              "KONF.6.2",
+              "KONF.7.3",
+              "KONF.9.2",
+              "REA.2.5.1",
+              "STM.2.1.3",
+              "TEST.1.1",
+              "TEST.1.1.1",
+              "TEST.2.1",
+              "TEST.3.1.1",
+              "TEST.3.1.2",
+              "TEST.3.1.3",
+              "TEST.4.1",
+              "UMS.5.2"
             ]
           }
         ]
       }
     ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "SYS.1.6-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "SYS.1.6.A1",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A1 Planung des Container-Einsatzes",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Bevor Container eingesetzt werden, MUSS zunächst das Ziel des Container-Einsatzes (z. B. Skalierung, Verfügbarkeit, Wegwerf-Container zur Sicherheit oder CI/CD) festgelegt werden, damit alle sicherheitsrelevanten Aspekte der Installation, des Betriebs und der Außerbetriebnahme geplant werden können. Bei der Planung SOLLTE auch der Betriebsaufwand berücksichtigt werden, der durch Container-Einsatz oder Mischbetrieb entsteht. Die Planung MUSS angemessen dokumentiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BES.2.1",
+                          "BES.2.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A2",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A2 Planung der Verwaltung von Containern",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "DARF NUR"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Die Verwaltung der Container DARF NUR nach einer geeigneten Planung erfolgen. Diese Planung MUSS den gesamten Lebenszyklus von Inbetrieb- bis Außerbetriebnahme inklusive Betrieb und Updates umfassen. Bei der Planung der Verwaltung MUSS berücksichtigt werden, dass Erstellende eines Containers aufgrund der Auswirkungen auf den Betrieb in Teilen wie Administrierende zu betrachten sind. Start, Stopp und Überwachung der Container MUSS über die eingesetzte Verwaltungssoftware erfolgen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "TEST.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A3",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A3 Sicherer Einsatz containerisierter IT-Systeme",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Bei containerisierten IT-Systemen MUSS berücksichtigt werden, wie sich eine Containerisierung auf die betriebenen IT-Systeme und Anwendungen auswirkt, dies betrifft insbesondere die Verwaltung und Eignung der Anwendungen. Es MUSS anhand des Schutzbedarfs der Anwendungen geprüft werden, ob die Anforderungen an die Isolation und Kapselung der containerisierten IT-Systeme und der virtuellen Netze sowie der betriebenen Anwendungen hinreichend erfüllt sind. In diese Prüfung SOLLTEN die betriebssystemeigenen Mechanismen mit einbezogen werden. Für die virtuellen Netze nimmt der Host die Funktion einer Netzkomponente wahr, die Bausteine der Teilschichten NET.1 Netze und NET.3 Netzkomponenten MÜSSEN entsprechend berücksichtigt werden. Logische und Overlay-Netze MÜSSEN ebenfalls betrachtet und modelliert werden. Weiterhin MÜSSEN die eingesetzten containerisierten IT-Systeme den Anforderungen an die Verfügbarkeit und den Datendurchsatz genügen. Im laufenden Betrieb SOLLTEN die Performance und der Zustand der containerisierten IT-Systeme überwacht werden (sogenannte Health Checks)."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.5",
+                          "KONF.6.1.2",
+                          "STM.2.1.3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A4",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A4 Planung der Bereitstellung und Verteilung von Images",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Der Prozess zur Bereitstellung und Verteilung von Images MUSS geplant und angemessen dokumentiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.1.1",
+                          "KONF.1.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A5",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A5 Separierung der Administrations- und Zugangsnetze bei Containern",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Die Netze für die Administration des Hosts, die Administration der Container und deren Zugangsnetze MÜSSEN dem Schutzbedarf angemessen separiert werden. Grundsätzlich SOLLTE mindestens die Administration des Hosts nur aus dem Administrationsnetz möglich sein. Es SOLLTEN nur die für den Betrieb notwendigen Kommunikationsbeziehungen erlaubt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.1",
+                          "ARCH.2.2",
+                          "ARCH.2.2.7",
+                          "ARCH.2.3",
+                          "ARCH.5.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A6",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A6 Verwendung sicherer Images",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "DARF NICHT"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS sichergestellt sein, dass sämtliche verwendeten Images nur aus vertrauenswürdigen Quellen stammen. Es MUSS eindeutig identifizierbar sein, wer das Image erstellt hat. Die Quelle MUSS danach ausgewählt werden, dass die im Image enthaltene Software regelmäßig auf Sicherheitsprobleme geprüft wird und diese behoben sowie dokumentiert werden. Die Quelle MUSS diesen Umgang mit Sicherheitsproblemen zusichern und einhalten. Die verwendete Version von Basis-Images DARF NICHT abgekündigt („deprecated\") sein. Es MÜSSEN eindeutige Versionsnummern angegeben sein. Wenn ein Image mit einer neueren Versionsnummer verfügbar ist, MUSS im Rahmen des Patch- und Änderungsmanagement geprüft werden, ob und wie dieses ausgerollt werden kann."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BES.3.3",
+                          "BES.5.10.3",
+                          "DET.5.10",
+                          "DEV.4.2",
+                          "TEST.3.1.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A7",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A7 Persistenz von Protokollierungsdaten der Container",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Die Speicherung der Protokollierungsdaten der Container MUSS außerhalb des Containers, mindestens auf dem Container-Host, erfolgen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.3.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A8",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A8 Sichere Speicherung von Zugangsdaten bei Containern",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Zugangsdaten MÜSSEN so gespeichert und verwaltet werden, dass nur berechtigte Personen und Container darauf zugreifen können. Insbesondere MUSS sichergestellt sein, dass Zugangsdaten nur an besonders geschützten Orten und nicht in den Images liegen. Die von der Verwaltungssoftware des Container-Dienstes bereitgestellten Verwaltungsmechanismen für Zugangsdaten SOLLTEN eingesetzt werden. Mindestens die folgenden Zugangsdaten MÜSSEN sicher gespeichert werden: Passwörter jeglicher Accounts, API-Keys für von der Anwendung genutzte Dienste, Schlüssel für symmetrische Verschlüsselungen sowie private Schlüssel bei Public-Key-Authentisierung."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.5.11",
+                          "DEV.2.5",
+                          "KONF.1.5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "SYS.1.6-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "SYS.1.6.A9",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A9 Eignung für Container-Betrieb",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A9_anforderung",
+                    "name": "overview",
+                    "prose": "Die Anwendung oder der Dienst, die oder der im Container betrieben werden soll, SOLLTE für den Container-Betrieb geeignet sein. Dabei SOLLTE berücksichtigt werden, dass Container häufiger für die darin ausgeführte Anwendung unvorhergesehen beendet werden können. Die Ergebnisse der Prüfung nach SYS.1.6.A3 Sicherer Einsatz containerisierter IT-Systeme SOLLTE nachvollziehbar dokumentiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "TEST.3.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A10",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A10 Richtlinie für Images und Container-Betrieb",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE eine Richtlinie erstellt und angewendet werden, die die Anforderungen an den Betrieb der Container und die erlaubten Images festlegt. Die Richtlinie SOLLTE auch Anforderungen an den Betrieb und die Bereitstellung der Images enthalten."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.2.1",
+                          "TEST.1.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.1.1.1",
+                    "rel": "related",
+                    "text": "KONF.1.1.1 steht unter SYS.1.6.A4"
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A11",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A11 Nur ein Dienst pro Container",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A11"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A11_anforderung",
+                    "name": "overview",
+                    "prose": "Jeder Container SOLLTE jeweils nur einen Dienst bereitstellen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.7.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A12",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A12 Verteilung sicherer Images",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A12"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A12_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE angemessen dokumentiert werden, welche Quellen für Images als vertrauenswürdig klassifiziert wurden und warum. Zusätzlich SOLLTE der Prozess angemessen dokumentiert werden, wie Images bzw. die im Image enthaltenen Softwarebestandteile aus vertrauenswürdigen Quellen bezogen und schließlich für den produktiven Betrieb bereitgestellt werden. Die verwendeten Images SOLLTEN über Metadaten verfügen, die die Funktion und die Historie des Images nachvollziehbar machen. Digitale Signaturen SOLLTEN jedes Image gegen Veränderung absichern."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "TEST.3.1.3",
+                          "TEST.2.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#TEST.3.1.2",
+                    "rel": "related",
+                    "text": "TEST.3.1.2 steht unter SYS.1.6.A6"
+                  },
+                  {
+                    "href": "#TEST.1.1.1",
+                    "rel": "related",
+                    "text": "TEST.1.1.1 steht unter SYS.1.6.A10"
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A13",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A13 Freigabe von Images",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A13"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A13_anforderung",
+                    "name": "overview",
+                    "prose": "Alle Images für den produktiven Betrieb SOLLTEN wie Softwareprodukte einen Test- und Freigabeprozess gemäß dem Baustein OPS.1.1.6 Software-Test und Freigaben durchlaufen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DEV.6.1",
+                          "TEST.4.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A14",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A14 Aktualisierung von Images",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A14"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A14_anforderung",
+                    "name": "overview",
+                    "prose": "Bei der Erstellung des Konzeptes für das Patch- und Änderungsmanagement gemäß OPS.1.1.3 Patch- und Änderungsmanagement SOLLTE entschieden werden, wann und wie die Updates der Images bzw. der betriebenen Software oder des betriebenen Dienstes ausgerollt werden. Bei persistenten Containern SOLLTE geprüft werden, ob in Ausnahmefällen ein Update des jeweiligen Containers geeigneter ist, als den Container vollständig neu zu provisionieren."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.10",
+                    "rel": "related",
+                    "text": "DET.5.10 steht unter SYS.1.6.A6"
+                  },
+                  {
+                    "href": "#TEST.1.1",
+                    "rel": "related",
+                    "text": "TEST.1.1 steht unter SYS.1.6.A2"
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A15",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A15 Limitierung der Ressourcen pro Container",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A15"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A15_anforderung",
+                    "name": "overview",
+                    "prose": "Für jeden Container SOLLTEN Ressourcen auf dem Host-System, wie CPU, flüchtiger und persistenter Speicher sowie Netzbandbreite, angemessen reserviert und limitiert werden. Es SOLLTE definiert und dokumentiert sein, wie das System im Fall einer Überschreitung dieser Limitierungen reagiert."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.15.2",
+                          "KONF.9.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A16",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A16 Administrativer Fernzugriff auf Container",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A16"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A16_anforderung",
+                    "name": "overview",
+                    "prose": "Administrative Zugriffe von einem Container auf den Container-Host und umgekehrt SOLLTEN prinzipiell wie administrative Fernzugriffe betrachtet werden. Aus einem Container SOLLTEN KEINE administrativen Fernzugriffe auf den Container-Host erfolgen. Applikations-Container SOLLTEN keine Fernwartungszugänge enthalten. Administrative Zugriffe auf Applikations-Container SOLLTEN immer über die Container-Runtime erfolgen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.2.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A17",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A17 Ausführung von Containern ohne Privilegien",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A17"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A17_anforderung",
+                    "name": "overview",
+                    "prose": "Die Container-Runtime und alle instanziierten Container SOLLTEN nur von einem nicht-privilegierten System-Account ausgeführt werden, der über keine erweiterten Rechte für den Container-Dienst und das Betriebssystem des Host-Systems verfügt oder diese Rechte erlangen kann. Die Container-Runtime SOLLTE durch zusätzliche Maßnahmen gekapselt werden, etwa durch Verwendung der Virtualisierungserweiterungen von CPUs. Sofern Container ausnahmsweise Aufgaben des Host-Systems übernehmen sollen, SOLLTEN die Privilegien auf dem Host-System auf das erforderliche Minimum begrenzt werden. Ausnahmen SOLLTEN angemessen dokumentiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.4.1",
+                          "KONF.6.1",
+                          "UMS.5.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.6.1.2",
+                    "rel": "related",
+                    "text": "KONF.6.1.2 steht unter SYS.1.6.A3"
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A18",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A18 Accounts der Anwendungsdienste",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A18"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A18_anforderung",
+                    "name": "overview",
+                    "prose": "Die System-Accounts innerhalb eines Containers SOLLTEN keine Berechtigungen auf dem Host-System haben. Wo aus betrieblichen Gründen diese Berechtigung notwendig ist, SOLLTE diese nur für unbedingt notwendige Daten und Systemzugriffe gelten. Der Account im Container, der für diesen Datenaustausch notwendig ist, SOLLTE im Host-System bekannt sein."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#BER.4.1",
+                    "rel": "related",
+                    "text": "BER.4.1 steht unter SYS.1.6.A17"
+                  },
+                  {
+                    "href": "#KONF.6.1",
+                    "rel": "related",
+                    "text": "KONF.6.1 steht unter SYS.1.6.A17"
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A19",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A19 Einbinden von Datenspeichern in Container",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A19"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A19_anforderung",
+                    "name": "overview",
+                    "prose": "Die Container SOLLTEN NUR auf die für den Betrieb notwendigen Massenspeicher und Verzeichnisse zugreifen können. Nur wenn Berechtigungen benötigt werden, SOLLTEN diese explizit vergeben werden. Sofern die Container-Runtime für einen Container lokalen Speicher einbindet, SOLLTEN die Zugriffsrechte im Dateisystem auf den Service-Account des Containers eingeschränkt sein. Werden Netzspeicher verwendet, so SOLLTEN die Berechtigungen auf dem Netzspeicher selbst gesetzt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.6.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#BER.4.1",
+                    "rel": "related",
+                    "text": "BER.4.1 steht unter SYS.1.6.A17"
+                  },
+                  {
+                    "href": "#KONF.6.1",
+                    "rel": "related",
+                    "text": "KONF.6.1 steht unter SYS.1.6.A17"
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A20",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A20 Absicherung von Konfigurationsdaten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A20"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A20_anforderung",
+                    "name": "overview",
+                    "prose": "Die Beschreibung der Container-Konfigurationsdaten SOLLTE versioniert erfolgen. Änderungen SOLLTEN nachvollziehbar dokumentiert sein."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.10.1.1",
+                          "KONF.2.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#TEST.2.1",
+                    "rel": "related",
+                    "text": "TEST.2.1 steht unter SYS.1.6.A12"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "SYS.1.6-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "SYS.1.6.A21",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A21 Erweiterte Sicherheitsrichtlinien",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A21"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A21_anforderung",
+                    "name": "overview",
+                    "prose": "Erweiterte Richtlinien SOLLTEN die Berechtigungen der Container einschränken. Mandatory Access Control (MAC) oder eine vergleichbare Technik SOLLTE diese Richtlinien erzwingen. Die Richtlinien SOLLTEN mindestens folgende Zugriffe einschränken: eingehende und ausgehende Netzverbindungen, Dateisystem-Zugriffe und Kernel-Anfragen (Syscalls). Die Runtime SOLLTE die Container so starten, dass der Kernel des Host-Systems alle nicht von der Richtlinie erlaubten Aktivitäten der Container verhindert (z. B. durch die Einrichtung lokaler Paketfilter oder durch Entzug von Berechtigungen) oder zumindest Verstöße geeignet meldet."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.6.1",
+                    "rel": "related",
+                    "text": "KONF.6.1 steht unter SYS.1.6.A17"
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A22",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A22 Vorsorge für Untersuchungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A22"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A22_anforderung",
+                    "name": "overview",
+                    "prose": "Um Container im Bedarfsfall für eine spätere Untersuchung verfügbar zu haben, SOLLTE ein Abbild des Zustands nach festgelegten Regeln erstellt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "REA.2.5.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A23",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A23 Unveränderlichkeit der Container",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A23"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A23_anforderung",
+                    "name": "overview",
+                    "prose": "Container SOLLTEN ihr Dateisystem während der Laufzeit nicht verändern können. Dateisysteme SOLLTEN nicht mit Schreibrechten eingebunden sein."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.6.1",
+                    "rel": "related",
+                    "text": "KONF.6.1 steht unter SYS.1.6.A17"
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A24",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A24 Hostbasierte Angriffserkennung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A24"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A24_anforderung",
+                    "name": "overview",
+                    "prose": "Das Verhalten der Container und der darin betriebenen Anwendungen und Dienste SOLLTE überwacht werden. Abweichungen von einem normalen Verhalten SOLLTEN bemerkt und gemeldet werden. Die Meldungen SOLLTEN im zentralen Prozess zur Behandlung von Sicherheitsvorfällen angemessen behandelt werden. Das zu überwachende Verhalten SOLLTE mindestens umfassen: Netzverbindungen, erstellte Prozesse, Dateisystem-Zugriffe und Kernel-Anfragen (Syscalls)."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.4.2",
+                          "DET.4.6",
+                          "DET.6.1.2",
+                          "KONF.7.3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A25",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A25 Hochverfügbarkeit von containerisierten Anwendungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A25"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A25_anforderung",
+                    "name": "overview",
+                    "prose": "Bei hohen Verfügbarkeitsanforderungen der containerisierten Anwendungen SOLLTE entschieden werden, auf welcher Ebene die Verfügbarkeit realisiert werden soll (z. B. redundant auf der Ebene des Hosts)."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.8.3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.6.A26",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.6.A26 Weitergehende Isolation und Kapselung von Containern",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.6.A26"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.6.A26_anforderung",
+                    "name": "overview",
+                    "prose": "Wird eine weitergehende Isolation und Kapselung von Containern benötigt, dann SOLLTEN folgende Maßnahmen nach steigender Wirksamkeit geprüft werden: feste Zuordnung von Containern zu Container-Hosts, Ausführung der einzelnen Container und/oder des Container-Hosts mit Hypervisoren, feste Zuordnung eines einzelnen Containers zu einem einzelnen Container-Host."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.6.1.2",
+                    "rel": "related",
+                    "text": "KONF.6.1.2 steht unter SYS.1.6.A3"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
     "back-matter": {
       "resources": [
         {
@@ -115,6 +1406,831 @@
                 {
                   "algorithm": "SHA-256",
                   "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "ARCH.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ARCH.2.1 fordert die grundlegende schutzbedarfsbezogene Segmentierung von Netzen, was laut Erläuterung ausdrücklich auch für Container- und Managementnetze auf virtueller Ebene gilt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): Die G++-Maßnahme ARCH.2.2 fordert die Einschränkung von Verbindungen zwischen Segmenten auf nur die für den Geschäftsbetrieb notwendigen Zugriffe und deckt damit die Beschränkung auf betriebsnotwendige Kommunikationsbeziehungen ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2.7",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,2): ARCH.2.2.7 fordert allgemein Management-Netze, adressiert aber nicht die differenzierte Separierung zwischen Host-, Container-Admin- und Zugangsnetzen im Container-Umfeld. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A5",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (equivalent-to)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 5): Ein Netzplan bildet logische Netzstrukturen ab, deckt die spezifische Betrachtung und Modellierung von Overlay-Netzen im Container-Kontext jedoch nicht vollständig ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.5.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): ARCH.5.1 fordert die generelle Einschränkung von Netzverbindungen zwischen IT-Systemen (insbesondere über Allowlisting), was die Erlaubnis ausschließlich betriebsnotwendiger Kommunikationsbeziehungen direkt abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.7.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A11",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Satz 1 fordert die Beschränkung auf einen einzelnen Dienst pro Container, was eine technologiespezifische Umsetzung des Prinzips dedizierter Ausführungsumgebungen darstellt. [auch: gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.8.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A25",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Das Control fordert redundante Hostsysteme für die Funktionsfähigkeit von Anwendungen, was direkt das im Anforderungstext genannte Beispiel (Redundanz auf Ebene des Hosts) zur Realisierung hoher Verfügbarkeit abdeckt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A17",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1,3): Die G++-Maßnahme BER.4.1 fordert die allgemeine Anwendung des Prinzips der geringsten Berechtigung auf Prozesse und Konten, was die Ausführung von Container-Runtimes und Containern über nicht-privilegierte Systemkonten als Spezialfall abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A18",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): BER.4.1 fordert die allgemeine Beschränkung von Berechtigungen nach dem Prinzip der geringsten Rechte (Least Privilege), was die Beschränkung auf unbedingt notwendige Daten und Systemzugriffe bei Ausnahmeberechtigungen direkt abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A19",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1,2,3): Die G++-Maßnahme fordert die allgemeine Umsetzung des Principle of Least Privilege für Systeme und Prozesse, was die spezifische Einschränkung des Containerzugriffs auf nur betriebsnotwendige Speicher und Verzeichnisse direkt umfasst. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.5.11",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,4): BER.5.11 regelt die Beschränkung des Anwendungszugriffs (z. B. für Container), deckt jedoch die Berechtigungsvergabe für Personen sowie die Vorgaben zur Art der Speicherung und Verwaltung nicht ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker fraglich): Deckt die dokumentierte Bedarfserfassung und Umsetzungsstrategie vor der Einführung neuer Komponenten ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.2.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (subset-of, Konfidenz hoch, Checker fraglich): Deckt die verpflichtende Dokumentation des Verwendungszwecks (S1, S3) direkt ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.3.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): BES.3.3 formuliert das übergeordnete Beschaffungsverbot für unzuverlässige Quellen und schließt den Bezug von Images aus vertrauenswürdigen Quellen als Anwendungsfall vollständig ein. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.5.10.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): BES.5.10.3 fordert allgemein die Vereinbarung zur Schwachstellenbehebung, schließt jedoch die in Satz 4 über Satz 3 verlangte Zusicherung regelmäßiger Prüfungen und Dokumentationen von Sicherheitsproblemen für Image-Quellen nicht vollständig ein. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A7",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz niedrig, Checker bestaetigt): Fordert die Aufbewahrung von Protokolldaten über einen definierten Zeitraum, was bei flüchtigen Containern technisch eine externe Speicherung voraussetzt, diese aber nicht explizit benennt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A24",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Satz 1 fordert die verhaltensbasierte Überwachung von Containern und Diensten, was einem hostbasierten System zur automatischen Angriffserkennung (HIDS) gemäß DET.4.2 entspricht."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A24",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.10",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 7): DET.5.10 verlangt ein zeitnahes Patchmanagement, welches die Prüfung und den Rollout neuer Software- und Imageversionen als allgemeine Kernpflicht abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): DET.5.10 verlangt die Verankerung eines zeitnahen Patchmanagements inklusive Festlegungen zu Rollout-Verfahren und Zeitpunkten von Software- und Systemupdates. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.6.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A24",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): DET.6.1.2 deckt die Alarmierung bei sicherheitskritischen Ereignissen ab, fordert jedoch nicht das Bemerken bzw. Erkennen von Verhaltensabweichungen bei Containern. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DEV.2.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,2): DEV.2.5 zielt auf die Einschränkung des Zugriffs auf Zugangsdaten in der Entwicklung ab, was sich mit der containerbezogenen Speicher- und Rechteverwaltung überschneidet, den betrieblichen Schutzbedarf von Containern jedoch nicht vollständig abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DEV.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): DEV.4.2 bezieht sich auf die Einbindung von Artefakten (wie Images) im Rahmen der Anwendungsentwicklung, während Satz 1 den vertrauenswürdigen Bezug sämtlicher im Containerbetrieb genutzter Images fordert."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DEV.6.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): DEV.6.1 ist bezüglich des Gegenstands allgemeiner gefasst, adressiert jedoch im Unterschied zu Satz 1 primär die Autorisierung der Freigabe und nicht das operative Durchlaufen des gesamten Testprozesses. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): KONF.1.1 fordert das Verankern von Verfahren und Regelungen zum Konfigurationsmanagement und deckt damit die Planung des Prozesses zur Image-Bereitstellung und -Verteilung ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.1.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): KONF.1.1.1 deckt die Dokumentation der verfahrensbezogenen Regelungen im Konfigurationskontext ab, umfasst jedoch nicht die explizite planerische Ausgestaltung des Bereitstellungs- und Verteilungsprozesses. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker fraglich): Deckt die Erstellung und Dokumentation von Richtlinien zum Konfigurations- und Betriebsmanagement ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.1.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): Die Maßnahme KONF.1.5 fordert die Verschlüsselung von Konfigurationsgeheimnissen wie Passwörtern, API-Schlüsseln sowie kryptografischen Schlüsseln und deckt damit die geforderte sichere Speicherung dieser Zugangsdatenarten ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.10.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A20",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die allgemeine Vorgabe zur Versionierung von Anwendungskonfigurationen schließt den Spezialfall der versionierten Container-Konfigurationsdaten vollständig ein. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.15.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A15",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Satz 1 fordert unter anderem die Limitierung von CPU-Ressourcen für Container auf dem Host-System, was der geforderten Begrenzung der Rechenleistung entspricht."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker fraglich): Trägt die Festlegung von Vorgaben für den sicheren Betrieb und die Konfiguration der Systeme bzw. Container."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A20",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die allgemeine Pflicht zur Versionierung von IT-Systemkonfigurationen schließt die container-spezifische Versionierung von Konfigurationsbeschreibungen als Spezialfall vollständig ein. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A16",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): Die G++-Maßnahme fordert allgemein die Deaktivierung nicht benötigter Systemfunktionen und Dienste, was das Weglassen bzw. Deaktivieren von Fernwartungszugängen in Applikations-Containern als Spezialfall abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.6.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A17",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): KONF.6.1 fordert allgemein die Einschränkung von Anwendungsberechtigungen auf das Minimum, was die Ausführung von Container-Runtime und Containern unter unprivilegierten Konten als Anwendungsfall abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A18",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): KONF.6.1 fordert die Beschränkung von Anwendungsberechtigungen auf das erforderliche Minimum (Principle of Least Privilege) und deckt damit die geforderte Begrenzung auf unbedingt notwendige Daten- und Systemzugriffe generalisierend ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A19",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1,3): KONF.6.1 fordert die allgemeine Beschränkung von Berechtigungen für Anwendungen (u. a. für Verzeichnisse und Speicherzugriffe) auf das notwendige Minimum, was den geforderten restriktiven Zugriff von Containern auf Massenspeicher und Verzeichnisse abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A21",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): KONF.6.1 fordert als allgemeiner Grundsatz die Einschränkung von Anwendungsberechtigungen auf das notwendige Minimum, was die Einschränkung von Container-Berechtigungen durch Richtlinien abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A23",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz niedrig, Checker fraglich): Das Entziehen von Schreibrechten auf das Dateisystem ist eine spezifische Ausprägung der Einschränkung von Berechtigungen auf das minimal erforderliche Maß."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.6.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): Satz 2 fordert die Prüfung und Sicherstellung der Anforderungen an die Isolation und Kapselung betriebener containerisierter Anwendungen, was sich direkt mit der Isolierung von Anwendungen nach KONF.6.1.2 überschneidet."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A17",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Die G++-Maßnahme fordert die generelle Isolierung und Kapselung bestimmter Anwendungen (u. a. durch Virtualisierung oder Sandboxing), was die Kapselung der Container-Runtime als Spezialfall inhaltlich abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A26",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): KONF.6.1.2 fordert die allgemeine Aktivierung der Isolation von Anwendungen (einschließlich Container- und VM-Kapselung) und deckt damit die weitergehende Isolation und Kapselung von Containern ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.6.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A19",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): KONF.6.2 fordert allgemein restriktive Zugriffsrechte auf Dateiservern, während SYS.1.6.A19 S4 im Container-Kontext die Durchsetzung von Berechtigungen direkt auf dem Netzspeicher verlangt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.7.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A24",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Die Aktivierung hostbasierter Angriffserkennung überschneidet sich mit der Verhaltensüberwachung von Containern und Diensten, deckt container-spezifische Überwachungsanforderungen jedoch nicht vollständig ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.9.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A15",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Satz 1 fordert explizit die Limitierung von CPU-Ressourcen auf dem Host-System pro Container, was sich direkt mit der Begrenzung der Rechenleistung deckt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "REA.2.5.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A22",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): REA.2.5.1 behandelt die Beweissicherung im Vorfallsfall, während SYS.1.6.A22 die präventive Regelerstellung und Erstellung von Container-Abbildern für spätere Untersuchungen fordert. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "STM.2.1.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): STM.2.1.3 fordert allgemein die methodische Zuweisung von Zielobjektkategorien zu Assets, deckt jedoch nicht die konkrete Modellierungsvorgabe ab, den Container-Host für virtuelle Netze als Netzkomponente einzustufen und die Bausteine der Schichten NET.1 und NET.3 anzuwenden. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "TEST.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): TEST.1.1 deckt Neueinführung, Änderungen und Außerbetriebnahme ab, schließt jedoch die darüber hinausgehende Planung des laufenden Betriebs nicht ein. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): TEST.1.1 fordert die grundlegende Verankerung von Verfahren und Regelungen für das Änderungsmanagement, was das Festlegen des Vorgehens und Zeitpunkts für das Ausrollen von Updates allgemein abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "TEST.1.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Deckt die dokumentierten Vorgaben für die Bereitstellung von Images im Rahmen des Änderungs- und Releasemanagements ab (S2)."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A12",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Deckt die Dokumentation des Bezugs- und Bereitstellungsprozesses für den produktiven Betrieb ab (S2)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "TEST.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A12",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker fraglich): Trägt die Nachvollziehbarkeit der Historie von Artefakten und Änderungen (S3)."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A20",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): TEST.2.1 zielt auf die Protokollierung einer Versionshistorie wesentlicher Änderungen ab, deckt jedoch die spezifische nachvollziehbare Dokumentation sämtlicher Container-Konfigurationsdaten nur teilweise ab. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "TEST.3.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A9",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): TEST.3.1.1 deckt die Forderung als allgemeinere Maßnahme zur nachvollziehbaren Dokumentation von Prüfungen und deren Testergebnissen ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "TEST.3.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die G++-Maßnahme untersagt die Einbindung externer Softwareartefakte (explizit inklusive Container-Images) aus unzuverlässigen oder unbekannten Quellen, was inhaltlich die Beschränkung auf vertrauenswürdige Quellen abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A12",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): Deckt die Beschränkung auf vertrauenswürdige Quellen bei der Einbindung von Softwareartefakten/Images ab (S1, S2)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "TEST.3.1.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A12",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker fraglich): Deckt die Absicherung und Prüfung der Integrität von Softwareartefakten (z. B. durch digitale Signaturen, S4) ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "TEST.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): TEST.4.1 deckt die kriterienbasierte Freigabe ab, umfasst jedoch nicht den vollständigen Test- und Freigabeprozess gemäß OPS.1.1.6 für Betriebssystem-Images. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.5.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.6.A17",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): UMS.5.2 fordert explizit die Dokumentation von Ausnahmen und deckt damit die Anforderung aus Satz 4 vollständig auf allgemeiner Ebene ab. [auch: satz_abdeckung]"
                 }
               ]
             }

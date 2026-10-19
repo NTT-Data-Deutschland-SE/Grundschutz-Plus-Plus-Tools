@@ -14,11 +14,11 @@ Method (maker-checker, mirroring the sister stage's proven precision measures):
 * Query unit is one Anforderung (~1.8k queries), not one sentence — the maker sees all
   numbered sentences of the official wording (normative ones marked) and over-collects
   (satz_nr, control_id) candidates against the cached G++ corpus (recall pass, generous
-  by instruction, on ED23_MAKER_MODEL).
+  by instruction, at MAKER_THINKING_LEVEL).
 * Every candidate pair is then re-judged by a strict, self-contained verification call
   (the sentence in its full requirement context + the candidate control's statement,
   guidance, and its Praktik siblings as explicit negative context) on the default
-  GROUND_TRUTH_MODEL (precision pass). Only verified pairs reach the output.
+  CHECKER_THINKING_LEVEL (precision pass). Only verified pairs reach the output.
 * Control IDs are post-validated against the pinned G++ resolved catalog; satz numbers
   against the requirement's real sentence count. Sentence numbering uses the shared
   splitter (utils.sentence_split), so it is identical to every other ED23 artifact.
@@ -54,8 +54,6 @@ from constants import (
     ED23_SATZ_ABDECKUNG_JSON_PATH,
     ED23_SATZ_RESPONSE_SCHEMA_PATH,
     ED23_SATZ_VERIFY_RESPONSE_SCHEMA_PATH,
-    ED23_MAKER_MODEL,
-    GROUND_TRUTH_MODEL,
     PROMPT_CONFIG_PATH,
 )
 
@@ -171,8 +169,8 @@ async def _collect_candidates(
     prompt_template: str,
     schema: Dict[str, Any],
     gpp_lookup: Dict[str, str],
-    cached_content,
     inline_prefix: str,
+    system_instruction: str,
     semaphore: asyncio.Semaphore,
 ) -> List[Dict[str, Any]]:
     """Asks the AI for (satz, G++ control) *candidates* for one Anforderung (recall pass)."""
@@ -183,15 +181,16 @@ async def _collect_candidates(
         rolle=req["rolle"] or "(keine)",
         saetze=_numbered_saetze(req),
     )
-    prompt = user_prompt if cached_content else f"{inline_prefix}\n\n{user_prompt}"
+    # Stable prefix (corpus) first, the varying Anforderung last: implicit-cache layout.
+    prompt = f"{inline_prefix}\n\n{user_prompt}"
     async with semaphore:
         try:
             response = await ai_client.generate_validated_json_response(
                 prompt=prompt,
                 json_schema=schema,
                 request_context_log=f"ED23Satz-{req['id']}",
-                cached_content=cached_content,
-                model_override=ED23_MAKER_MODEL,
+                thinking=app_config.maker_thinking_level,
+                system_instruction=system_instruction,
             )
         except Exception as e:
             logger.warning(f"AI candidate pass failed for Anforderung '{req['id']}': {e}")
@@ -233,6 +232,7 @@ async def _verify_candidate(
                 prompt=prompt,
                 json_schema=verify_schema,
                 request_context_log=f"ED23SatzVerify-{req['id']}-S{satz_nr}-{candidate['control_id']}",
+                thinking=app_config.checker_thinking_level,
             )
         except Exception as e:
             logger.warning(
@@ -292,12 +292,10 @@ async def run_stage_ed23_satz_abdeckung() -> None:
     verify_prompt_template = prompt_config["ed23_satz_verify_prompt"]
 
     ai_client = AiClient(app_config)
-    # The cache must live on the maker model — the candidate pass is the only cached caller.
-    cached_content = ai_client.create_context_cache(
-        content=corpus_text, system_instruction=system_instruction, model_override=ED23_MAKER_MODEL
-    )
+    # The corpus is the stable prefix of every maker prompt (implicit caching; no explicit cache
+    # on Argon); the system instruction goes into the request's system field.
     inline_prefix = (
-        f"{system_instruction}\n\nVerfügbare G++-Maßnahmen "
+        f"Verfügbare G++-Maßnahmen "
         f"(Format: ID | Titel | Beschreibung):\n{corpus_text}"
     )
 
@@ -340,8 +338,8 @@ async def run_stage_ed23_satz_abdeckung() -> None:
         candidates = kandidaten_map.get(req_id)
         if candidates is None:
             candidates = await _collect_candidates(
-                ai_client, req, prompt_template, schema, gpp_lookup, cached_content,
-                inline_prefix, semaphore,
+                ai_client, req, prompt_template, schema, gpp_lookup,
+                inline_prefix, system_instruction, semaphore,
             )
             async with checkpoint_lock:
                 kandidaten_map[req_id] = candidates
@@ -365,12 +363,8 @@ async def run_stage_ed23_satz_abdeckung() -> None:
             _save_checkpoint()
 
     if pending:
-        try:
-            await asyncio.gather(*(_judge_and_checkpoint(r) for r in pending))
-        finally:
-            ai_client.delete_context_cache(cached_content)
+        await asyncio.gather(*(_judge_and_checkpoint(r) for r in pending))
     else:
-        ai_client.delete_context_cache(cached_content)
         logger.info("All Anforderungen already present in checkpoint; nothing to query.")
 
     # Serialize: per-Anforderung sentence bookkeeping + verified hits. Official sentence
@@ -399,8 +393,8 @@ async def run_stage_ed23_satz_abdeckung() -> None:
                 "quelle_gpp": {
                     "url": GPP_KOMPENDIUM_JSON_PATH, "sha256": GPP_CATALOG_PIN_SHA256,
                 },
-                "maker_model": ED23_MAKER_MODEL,
-                "checker_model": GROUND_TRUTH_MODEL,
+                "maker_model": f"{app_config.gemini_model} (thinking {app_config.maker_thinking_level})",
+                "checker_model": f"{app_config.gemini_model} (thinking {app_config.checker_thinking_level})",
                 "anforderungen": len(anforderungen),
                 "normative_saetze": total_norm,
                 "normative_saetze_abgedeckt": covered_norm,

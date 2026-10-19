@@ -2,10 +2,54 @@
   "profile": {
     "uuid": "cfbe4d81-cebe-5a9b-8fc5-71f749a4f69e",
     "metadata": {
-      "title": "SYS.2.6 - Virtualisierungslösungen",
-      "last-modified": "2026-07-28T15:31:27.912668+00:00",
-      "version": "0.0.1",
-      "oscal-version": "1.2.2"
+      "title": "SYS.2.6 – Virtual Desktop Infrastructure (Virtualisierungslösungen)",
+      "last-modified": "2026-10-19T01:18:12.063365+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "BSI"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "SYS.2.6"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Virtual Desktop Infrastructure"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Virtualisierungslösungen"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "system"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, SYS.2.6, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein SYS.2.6 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (amtlicher Wortlaut des XML-Kompendiums 2023); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41) und dem NG Ergänzungskatalog (NG-ergaenzungskatalog.json, nutzergeneriert). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls."
     },
     "imports": [
       {
@@ -13,96 +57,846 @@
         "include-controls": [
           {
             "with-ids": [
+              "ARCH.2.1",
+              "ARCH.2.2.3",
+              "ARCH.2.2.7",
               "ARCH.7.1",
-              "ARCH.7.3",
               "ARCH.8.3",
               "ARCH.9.2",
-              "ARCH.9.3",
-              "ARCH.9.4",
-              "ASST.2.3.2",
-              "ASST.7.1",
-              "BER.3.11",
-              "BER.3.13",
-              "BER.3.25",
-              "BER.3.7",
-              "BER.3.8",
-              "BER.4.6",
-              "BER.5.11",
-              "BER.5.7",
-              "BER.5.8",
-              "DET.3.1",
-              "DET.3.1.10",
-              "DET.3.1.11",
-              "DET.3.1.7",
-              "DET.3.1.8",
-              "DET.3.1.9",
+              "ASST.6.4",
+              "BES.2.1.4",
+              "BES.2.1.6",
+              "DET.3.1.1",
+              "DET.4.13",
               "DET.4.14",
+              "DET.4.15",
               "DET.4.16",
               "DET.4.17",
-              "DET.4.6",
-              "DET.5.10.3",
-              "DEV.2.2",
-              "DEV.2.3",
-              "DEV.2.5",
-              "DEV.2.6",
-              "DEV.2.6.1",
-              "DEV.2.6.2",
-              "DEV.3.1",
-              "DEV.3.2",
-              "DEV.3.3",
-              "DEV.3.4",
-              "DEV.4.1",
-              "DEV.4.10",
-              "DEV.4.11",
-              "DEV.4.2",
-              "DEV.4.3",
-              "DEV.4.4",
-              "DEV.4.5",
-              "DEV.4.6",
-              "DEV.4.7",
-              "DEV.4.8",
-              "DEV.4.9",
-              "DEV.5.1",
-              "DEV.5.2",
-              "DEV.5.3",
-              "DEV.7.2",
+              "DET.4.2",
+              "DET.5.10",
+              "DET.5.3",
+              "DET.6.1",
               "KONF.10.1",
-              "KONF.10.1.1",
-              "KONF.10.2",
-              "KONF.10.3",
               "KONF.10.4",
-              "KONF.10.5",
-              "KONF.10.5.1",
-              "KONF.11.1",
-              "KONF.11.1.2",
-              "KONF.11.6",
-              "KONF.11.7",
-              "KONF.11.8",
-              "KONF.12.1",
               "KONF.14.1",
-              "KONF.14.1.1",
-              "KONF.14.1.2",
-              "KONF.14.4",
-              "KONF.14.5",
-              "KONF.15.1",
               "KONF.15.2",
-              "KONF.15.3",
-              "KONF.15.4",
-              "KONF.6.13",
+              "KONF.2.1",
+              "KONF.2.4",
+              "KONF.5.1",
               "KONF.6.16",
-              "KONF.6.6",
-              "KONF.6.6.1",
-              "KONF.6.7",
-              "KONF.8.2",
-              "NOT.4.17",
-              "NOT.4.3",
-              "SENS.2.3",
-              "SENS.7.10"
+              "KONF.6.3",
+              "KONF.9.2"
+            ]
+          }
+        ]
+      },
+      {
+        "href": "#6b2c3fe8-7370-556a-9c3c-540d81d5de99",
+        "include-controls": [
+          {
+            "with-ids": [
+              "NG-SYS.2.6.A13",
+              "NG-SYS.2.6.A3",
+              "NG-SYS.2.6.A7"
             ]
           }
         ]
       }
     ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "SYS.2.6-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "SYS.2.6.A1",
+                "class": "ed23-anforderung",
+                "title": "SYS.2.6.A1 Planung des Einsatzes einer VDI",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.2.6.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.2.6.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Die Leistungsanforderungen und Anzahl der benötigten virtuellen Clients sowie die daraus resultierenden Anforderungen an die Dimensionierung der VDI MÜSSEN identifiziert werden. Die VDI-Komponenten MÜSSEN anhand dieser Dimensionierungsanforderungen bedarfsgerecht geplant werden. Die VDI-Komponenten und die genutzte Virtualisierungsinfrastruktur MÜSSEN aufeinander abgestimmt geplant werden. Bei der Dimensionierung der VDI MUSS berücksichtigt werden, ob und wie sich die Anforderungen hieran über den geplanten Einsatzzeitraum der VDI-Lösung ändern. Der Support MUSS für den gesamten geplanten Einsatzzeitraum der VDI-Lösung bei der Planung mitberücksichtig werden. Die Anzahl virtueller Clients und deren benötigte Leistung pro Virtualisierungsserver MUSS festgelegt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BES.2.1.4",
+                          "BES.2.1.6"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.2.6.A2",
+                "class": "ed23-anforderung",
+                "title": "SYS.2.6.A2 Sichere Installation und Konfiguration der VDI-Komponenten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.2.6.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.2.6.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Wenn die VDI-Komponenten installiert und konfiguriert werden, MUSS mindestens berücksichtigt werden, wie: auf betrieblich und technisch notwendige Funktionen beschränkt wird, die Kommunikation zwischen VDI-Komponenten abgesichert wird sowie virtuelle Clients sicher den Benutzenden oder Gruppen hiervon zugewiesen werden. Empfehlungen von dem herstellenden Unternehmen der VDI-Lösung für die sichere Konfiguration MÜSSEN berücksichtigt werden. Die Konfigurationen der VDI-Komponenten MÜSSEN geeignet dokumentiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.10.1",
+                          "KONF.10.4",
+                          "KONF.14.1",
+                          "KONF.2.1",
+                          "KONF.2.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "SYS.2.6-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "SYS.2.6.A3",
+                "class": "ed23-anforderung",
+                "title": "SYS.2.6.A3 Sichere Installation und Konfiguration der virtuellen Clients mithilfe der VDI",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.2.6.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.2.6.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Die VDI-Lösung SOLLTE genutzt werden, um die virtuellen Clients zu installieren und zu konfigurieren. Virtuelle Clients SOLLTEN NICHT manuell in die VDI-Lösung integriert werden. In der für die VDI verwendeten Virtualisierungsinfrastruktur SOLLTEN virtuelle Clients NICHT unabhängig von der VDI erzeugt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NG-SYS.2.6.A3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.2.6.A4",
+                "class": "ed23-anforderung",
+                "title": "SYS.2.6.A4 Netzsegmentierung der VDI-Komponenten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.2.6.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Planende"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.2.6.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Die VDI-Komponenten inklusive der virtuellen Clients SOLLTEN bei der Netzsegmentierung gesondert berücksichtigt werden. Netze SOLLTEN dabei mindestens mit Hilfe der Virtualisierungsinfrastruktur getrennt werden. Dedizierte Netzsegmente SOLLTEN mindestens für das Administrationsnetz der VDI-Komponenten und für die Netze der internen Kommunikation zwischen VDI-Komponenten eingerichtet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.1",
+                          "ARCH.2.2.3",
+                          "ARCH.2.2.7",
+                          "KONF.6.16"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.2.6.A5",
+                "class": "ed23-anforderung",
+                "title": "SYS.2.6.A5 Standardisierter Zugriff auf virtuelle Clients",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.2.6.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.2.6.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Die Mechanismen und Dienste der VDI-Lösung SOLLTEN genutzt werden, um die Zugriffe auf die virtuellen Clients zu steuern und abzusichern. Falls eine zusätzliche Software für diese Zugriffe auf den zugreifenden Clients eingesetzt wird, SOLLTE diese Software standardisiert und zentralisiert bereitgestellt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.5.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.2.6.A6",
+                "class": "ed23-anforderung",
+                "title": "SYS.2.6.A6 Verwendung einer dedizierten Infrastruktur für virtuelle VDI-Komponenten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.2.6.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.2.6.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Falls die VDI-Komponenten virtualisiert betrieben werden, SOLLTEN sie auf einer dedizierten Virtualisierungsinfrastruktur betrieben werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.7.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.2.6.A7",
+                "class": "ed23-anforderung",
+                "title": "SYS.2.6.A7 Härtung der virtualisierten Clients durch die VDI-Lösung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.2.6.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.2.6.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Die Möglichkeiten der VDI-Lösung SOLLTEN für die Härtung der virtuellen Clients entsprechend den Anforderungen des Bausteins SYS.2.5 Client-Virtualisierung genutzt werden. Die Betriebssysteme der Clients SOLLTEN ausschließlich über die Managementkomponente der VDI-Lösung konfiguriert werden. Eine individuelle Konfiguration bestehender virtueller Clients über die Virtualisierungsinfrastruktur SOLLTE mit technischen Mitteln unterbunden werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NG-SYS.2.6.A7"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.2.6.A8",
+                "class": "ed23-anforderung",
+                "title": "SYS.2.6.A8 Härtung der VDI-Lösung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.2.6.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.2.6.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Eine automatische Anmeldung an der VDI SOLLTE nicht möglich sein. Die Authentisierung SOLLTE nur erfolgen, nachdem die Benutzenden mit der VDI interagiert haben."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.5.1",
+                    "rel": "related",
+                    "text": "KONF.5.1 steht unter SYS.2.6.A5"
+                  }
+                ]
+              },
+              {
+                "id": "SYS.2.6.A9",
+                "class": "ed23-anforderung",
+                "title": "SYS.2.6.A9 Einbindung der virtuellen Clients in das Patch- und Änderungsmanagement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.2.6.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.2.6.A9_anforderung",
+                    "name": "overview",
+                    "prose": "Die virtuellen Clients SOLLTEN, wenn möglich, zentral über die Managementkomponenten der VDI-Lösung verwaltet werden. Die virtuellen Clients SOLLTEN auch im ausgeschalteten Zustand gepatcht werden, falls dies von der VDI-Lösung unterstützt wird. Die Templates, aus denen virtuelle Clients erzeugt werden, SOLLTEN regelmäßig aktualisiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.5.10"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.2.6.A10",
+                "class": "ed23-anforderung",
+                "title": "SYS.2.6.A10 Monitoring von Verfügbarkeit und Nutzungsgrad der VDI",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.2.6.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.2.6.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Der Zustand der VDI-Komponenten SOLLTE zentral überwacht werden. Es SOLLTEN mindestens folgende Parameter für jede VDI-Komponente überwacht werden: Erreichbarkeit der benötigten Netzschnittstellen Verfügbarkeit der von der VDI-Komponente bereitgestellten Dienste Auslastung der CPU und des Arbeitsspeichers"
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.4.13",
+                          "DET.4.14",
+                          "DET.4.15",
+                          "DET.4.16"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.2.6.A11",
+                "class": "ed23-anforderung",
+                "title": "SYS.2.6.A11 Monitoring von sicherheitsrelevanten Ereignissen der VDI",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.2.6.A11"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.2.6.A11_anforderung",
+                    "name": "overview",
+                    "prose": "Für die VDI-Komponenten SOLLTEN mindestens die folgenden Ereignisse an ein zentrales Monitoring weitergeleitet werden: erfolgreiche und fehlgeschlagene Anmeldeversuche Konfigurationsänderungen an VDI-Komponenten oder virtuellen Clients erfolgreiche und fehlgeschlagene Updates an VDI-Komponenten fehlgeschlagene Updates an virtuellen Clients Die VDI-Komponenten SOLLTEN regelmäßig auf Schwachstellen überprüft werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.3.1.1",
+                          "DET.5.3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.2.6.A12",
+                "class": "ed23-anforderung",
+                "title": "SYS.2.6.A12 Verteilung von virtuellen Clients auf Virtualisierungsservern",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.2.6.A12"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.2.6.A12_anforderung",
+                    "name": "overview",
+                    "prose": "Pro Virtualisierungsserver SOLLTE die maximale Leistung festgelegt werden, die dieser für virtuelle Clients zur Verfügung stellen darf. Diese Grenzwerte SOLLTEN in der VDI-Managementkomponente genutzt werden, um bei hoher Auslastung die virtuellen Clients auf verschiedene Virtualisierungsserver zu verteilen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.9.2",
+                          "DET.4.17",
+                          "KONF.15.2",
+                          "KONF.9.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "SYS.2.6-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "SYS.2.6.A13",
+                "class": "ed23-anforderung",
+                "title": "SYS.2.6.A13 Verwendung getrennter VDI-Lösungen für unterschiedliche Benutzendengruppen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.2.6.A13"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.2.6.A13_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE geprüft werden, ob es Benutzendengruppen gibt, die sich in ihren Berechtigungen so stark unterscheiden, dass die Nutzung einer gemeinsamen VDI-Lösung nicht sinnvoll ist. In diesem Fall SOLLTE jeweils eine eigene VDI-Lösung pro Benutzendengruppe verwendet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NG-SYS.2.6.A13"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.2.6.A14",
+                "class": "ed23-anforderung",
+                "title": "SYS.2.6.A14 Verwendung von nicht-persistenten virtuellen Clients",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.2.6.A14"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.2.6.A14_anforderung",
+                    "name": "overview",
+                    "prose": "Nachdem sie benutzt wurden oder zu einem definierten Zeitpunkt SOLLTEN die virtuellen Clients auf ihren Grundzustand, d. h. auf das zugrundeliegende Template, zurückgesetzt oder bei Bedarf neu provisioniert werden. Diese Zeitfenster SOLLTEN dokumentiert und an die Betroffenen kommuniziert werden. Nicht zurückgesetzte virtuelle Clients SOLLTEN NICHT von mehreren unterschiedlichen Benutzenden verwendet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.6.4",
+                          "KONF.6.3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.2.6.A15",
+                "class": "ed23-anforderung",
+                "title": "SYS.2.6.A15 Hochverfügbare Bereitstellung der VDI-Komponenten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.2.6.A15"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.2.6.A15_anforderung",
+                    "name": "overview",
+                    "prose": "Die VDI-Komponenten SOLLTEN redundant ausgelegt werden. Jede Komponente SOLLTE darüber hinaus redundant an die relevanten Netze angeschlossen werden. Falls die VDI-Komponenten auf physischen IT-Systemen betrieben werden, SOLLTEN diese IT-Systeme über redundante Stromversorgung und Datenspeicher verfügen. Falls die VDI-Komponenten virtualisiert betrieben werden, SOLLTEN Mechanismen der Virtualisierungsinfrastruktur für die Hochverfügbarkeit eingesetzt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.8.3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.2.6.A16",
+                "class": "ed23-anforderung",
+                "title": "SYS.2.6.A16 Integration der VDI in ein SIEM",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.2.6.A16"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.2.6.A16_anforderung",
+                    "name": "overview",
+                    "prose": "Wird ein Security Information and Event Management (SIEM) genutzt, SOLLTEN die VDI-Komponenten darin eingebunden werden. Im SIEM SOLLTEN die überwachten Ereignisse automatisiert hinsichtlich Anomalien inklusive Angriffsmustern analysiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.4.2",
+                          "DET.6.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
     "back-matter": {
       "resources": [
         {
@@ -115,6 +909,514 @@
                 {
                   "algorithm": "SHA-256",
                   "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "6b2c3fe8-7370-556a-9c3c-540d81d5de99",
+          "title": "NG Ergänzungskatalog zu den ED23-Baustein-Profilen – Anforderungen ohne Entsprechung im Anwenderkatalog Grundschutz++",
+          "description": "NG Ergänzungskatalog mit 69 nutzergenerierten Controls, Datei NG-ergaenzungskatalog.json neben diesem Profil",
+          "rlinks": [
+            {
+              "href": "NG-ergaenzungskatalog.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "294687c3394f61715fdfd8c24bda821ffe4fbe0e30c11016ab59d24f89acfb3d"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "ARCH.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1,3): ARCH.2.1 fordert die grundlegende Unterteilung des Netzes in Segmente unter Beruecksichtigung des Schutzbedarfs und schliesst laut Erlaeuterung virtuelle Systeme und Endgeraete-Domaenen ausdruecklich mit ein. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): ARCH.2.2.3 zielt auf die Verbindungseinschränkung zwischen Hostsystemen und Clients ab, umfasst jedoch nicht die gesonderte netzseitige Segmentierung aller weiteren VDI-Komponenten. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2.7",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): ARCH.2.2.7 fordert allgemein Management-Netze, regelt jedoch nicht die dedizierten Segmente für die Administration und interne Kommunikation von VDI-Komponenten. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.7.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ARCH.7.1 deckt die Forderung als allgemeine Architekturvorgabe ab, wonach Serverdienste einer Anwendung auf für sie dedizierten Hostsystemen bzw. Infrastrukturen betrieben werden sollen. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.8.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A15",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ARCH.8.3 deckt die redundante Auslegung von VDI-Komponenten ab, indem es die redundante Installation von für die Anwendung erforderlichen Hostsystemen adressiert. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.9.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): ARCH.9.2 behandelt die automatische Lastverteilung auf Architekturebene, was sich mit der dynamischen Verteilung von VDI-Clients überschneidet, jedoch nicht die spezifische Nutzung definierter Grenzwerte in der VDI-Managementkomponente umfasst. [auch: gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.6.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): ASST.6.4 fordert allgemein das Zurücksetzen von Systemen bei Rücknahme, deckt aber das regelmäßige zeitgesteuerte Zurücksetzen auf Templates oder Neu-Provisionieren virtueller Clients nur teilweise ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.2.1.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): Die aufeinander abgestimmte Planung von VDI-Komponenten und Virtualisierungsinfrastruktur überschneidet sich mit der Erfassung von Kompatibilitätsanforderungen bei Beschaffungen, ist jedoch eine spezifische Planungsaufgabe. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.2.1.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 5): Die G++-Maßnahme fordert allgemein die Dokumentation des Bedarfs an Supportverträgen bei IT-Produkten, was sich inhaltlich mit der Berücksichtigung des Supports bei der Planung einer VDI-Lösung überschneidet. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A11",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Satz 1 fordert für VDI-Komponenten explizit die Erfassung und Weiterleitung erfolgreicher und fehlgeschlagener Anmeldeversuche an das Monitoring."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.13",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): DET.4.13 überschneidet sich bezüglich der Netzerreichbarkeit mit den Monitoring-Parametern für VDI-Komponenten, erfasst jedoch andere Parameter wie Diensteverfügbarkeit und Ressourcenauslastung nicht. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.14",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): DET.4.14 überschneidet sich mit der Überwachung der Dienstverfügbarkeit von VDI-Komponenten, deckt jedoch hardware- und netzwerkbezogene Parameter wie Schnittstellen- und Ressourcenauslastung nicht ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.15",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): DET.4.15 fordert die Überwachung der Ressourcenauslastung (wie CPU und Arbeitsspeicher) von Hostsystemen und deckt damit die geforderten Auslastungsparameter des Satzes inhaltlich ab. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.16",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): Satz 2 fordert explizit die Überwachung der Auslastung von CPU und Arbeitsspeicher für VDI-Komponenten und deckt sich damit mit der Überwachung der Ressourcenauslastung aus DET.4.16. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.17",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): Satz 2 fordert die Nutzung von Schwellwerten im VDI-Management zur Erkennung hoher Auslastung und Verteilung über mehrere Virtualisierungsserver, was sich mit der systemübergreifenden, schwellwertbasierten Überwachung der Ressourcenauslastung überschneidet."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A16",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): DET.4.2 fordert die automatisierte Überwachung auf Angriffsanzeichen einschließlich Anomalie- und Verhaltensanalyse und deckt damit die geforderte automatisierte Ereignisanalyse inhaltlich ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.10",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A9",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): Das allgemeine Gebot zur Verankerung eines zeitnahen Patchmanagements nach DET.5.10 schließt die regelmäßige Aktualisierung und das Einspielen von Patches auf Templates als Basiskomponenten mit ein. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A11",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): DET.5.3 deckt die Schwachstellenprüfung von VDI-Komponenten ab, erfasst jedoch die im selben Satz geforderte Weiterleitung diverser Monitoring-Ereignisse nicht. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.6.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A16",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): DET.6.1 betrifft die Kriterien zur Beurteilung von Ereignissen, was sich mit der automatisierten SIEM-Analyse von VDI-Ereignissen auf Anomalien und Angriffsmuster überschneidet. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.10.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): KONF.10.1 fordert die Dokumentation einer Grundkonfiguration für Anwendungen und deckt damit die geforderte Dokumentation der Konfiguration von VDI-Komponenten als allgemeinere Maßnahme ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.10.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): KONF.10.4 deckt die Beschränkung auf notwendige Funktionen ab, umfasst jedoch nicht die zusätzlich geforderte Absicherung der Kommunikation zwischen VDI-Komponenten sowie die sichere Zuweisung virtueller Clients. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.14.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): KONF.14.1 deckt die im Satz geforderte Absicherung der Kommunikation zwischen den Komponenten auf allgemeiner Ebene durch Vorgabe einer Transportverschlüsselung ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.15.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Die Begrenzung der Rechenleistung überschneidet sich mit der Festlegung maximaler Leistungswerte für Virtualisierungsserver, deckt den spezifischen VDI-Infrastrukturkontext jedoch nicht vollständig ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): Die G++-Maßnahme KONF.2.1 fordert die Dokumentation der Konfiguration (Grundkonfiguration) von IT-Systemen und deckt damit die allgemeine Forderung nach Dokumentation der Konfigurationen von VDI-Komponenten ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): KONF.2.4 adressiert die allgemeine Beschränkung auf notwendige Funktionen bei der Systemkonfiguration, deckt jedoch die im Satz zusätzlich geforderte Kommunikationsabsicherung und Benutzerzuweisung für VDI-Komponenten nicht ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.5.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A5",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker fraglich): KONF.5.1 fordert die Authentifizierung am System, spezifiziert jedoch nicht die zwingende Nutzung der VDI-eigenen Zugriffssteuerungsdienste (Connection Broker/Gateway) und die zentrale Bereitstellung von VDI-Client-Software."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): KONF.5.1 fordert allgemein die Authentifizierung beim Zugriff auf das System, was das Unterbinden einer automatischen Anmeldung (Auto-Login) grundlegend mit abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.6.16",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): KONF.6.16 fordert die Einschränkung des Datenaustauschs und der Kommunikation zwischen virtualisierten Clients über die Virtualisierungslösung, was die Netztrennung mittels Virtualisierungsinfrastruktur umfasst. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.6.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Die Maßnahme ermöglicht das Zurücksetzen von Endgeräten auf einen definierten Ausgangszustand nach der Nutzung, deckt jedoch die Neuprovisionierung virtueller Clients nicht ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.9.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.2.6.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Die Begrenzung der Rechenleistung auf Hostsystemen stellt einen technischen Mechanismus bereit, deckt die spezifische Festlegung maximaler Leistungskontingente für virtuelle Clients auf Virtualisierungsservern jedoch nur teilweise ab. [auch: satz_abdeckung]"
                 }
               ]
             }

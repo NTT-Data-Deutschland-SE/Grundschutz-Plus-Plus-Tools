@@ -1,0 +1,1835 @@
+{
+  "profile": {
+    "uuid": "17ea5f8c-8c76-5131-8425-256f80779d48",
+    "metadata": {
+      "title": "DER.4 – Notfallmanagement (Institutionsleitung)",
+      "last-modified": "2026-10-19T01:06:23.389994+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "BSI"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "DER.4"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Notfallmanagement"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Institutionsleitung"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "prozess"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, DER.4, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein DER.4 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (amtlicher Wortlaut des XML-Kompendiums 2023); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls. Prozess-Baustein ohne eigene Praktik in Grundschutz++; die Zielobjektkategorie ist nur informativ."
+    },
+    "imports": [
+      {
+        "href": "#afe1c75e-8725-5df2-a57b-235d7d5236f4",
+        "include-controls": [
+          {
+            "with-ids": [
+              "ASST.3.12",
+              "DLS.3.1",
+              "GC.11.1",
+              "GC.5.1.4",
+              "GC.7.2",
+              "GC.8.1",
+              "NOT.1.1",
+              "NOT.1.1.1",
+              "NOT.1.1.2",
+              "NOT.1.1.3",
+              "NOT.1.1.4",
+              "NOT.1.2",
+              "NOT.2.1.1",
+              "NOT.2.1.4",
+              "NOT.3.1",
+              "NOT.3.2",
+              "NOT.3.3",
+              "NOT.3.4",
+              "NOT.3.6",
+              "PERF.1.1",
+              "PERF.1.2",
+              "PERF.3.1",
+              "PERF.3.1.1",
+              "PERF.4.2",
+              "PERS.1.1.3",
+              "PERS.2.2",
+              "PERS.2.4",
+              "PERS.4.2",
+              "SENS.1.1",
+              "STM.4.1",
+              "TEST.4.4",
+              "UMS.6.1",
+              "VRB.2.1",
+              "VRB.3.1",
+              "VRB.4.1",
+              "VRB.4.2",
+              "VRB.6.2"
+            ]
+          }
+        ]
+      }
+    ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "DER.4-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "DER.4.A1",
+                "class": "ed23-anforderung",
+                "title": "DER.4.A1 Erstellung eines Notfallhandbuchs",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.4.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.4.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE ein Notfallhandbuch erstellt werden, in dem die wichtigsten Informationen zu Rollen, Sofortmaßnahmen, Alarmierung und Eskalation sowie Kommunikations-, grundsätzlichen Geschäftsfortführungs-, Wiederanlauf- und Wiederherstellungsplänen enthalten sind. Zuständigkeiten und Befugnisse SOLLTEN zugewiesen, kommuniziert und im Notfallhandbuch festgehalten werden. Es SOLLTE sichergestellt sein, dass im Notfall entsprechend geschultes Personal zur Verfügung steht. Es SOLLTE regelmäßig durch Tests und Übungen überprüft werden, ob die im Notfallhandbuch beschriebenen Maßnahmen auch wie vorgesehen funktionieren. Es SOLLTE regelmäßig geprüft werden, ob das Notfallhandbuch noch aktuell ist. Gegebenenfalls SOLLTE es aktualisiert werden. Es SOLLTE auch im Notfall zugänglich sein. Das Notfallhandbuch SOLLTE um Verhaltensregeln für spezielle Fälle ergänzt werden, z. B. Brand. Die Regeln SOLLTEN allen Mitarbeitenden bekanntgegeben werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NOT.1.1.1",
+                          "NOT.1.1.2",
+                          "NOT.1.1.3",
+                          "NOT.1.2",
+                          "NOT.2.1.1",
+                          "NOT.2.1.4",
+                          "NOT.3.1",
+                          "NOT.3.3",
+                          "NOT.3.4",
+                          "TEST.4.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "DER.4.A2",
+                "class": "ed23-anforderung",
+                "title": "DER.4.A2 Integration von Notfallmanagement und Informationssicherheitsmanagement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.4.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Informationssicherheitsbeauftragte (ISB)"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.4.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Die Prozesse im Sicherheitsmanagement SOLLTEN mit dem Notfallmanagement abgestimmt werden (siehe DER.2.1 Behandlung von Sicherheitsvorfällen)."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NOT.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "DER.4-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "DER.4.A3",
+                "class": "ed23-anforderung",
+                "title": "DER.4.A3 Festlegung des Geltungsbereichs und der Notfallmanagementstrategie",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.4.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Institutionsleitung"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.4.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Der Geltungsbereich für das Notfallmanagementsystem SOLLTE eindeutig festgelegt werden. Die Institutionsleitung SOLLTE eine Notfallmanagementstrategie festlegen, welche die angestrebten Ziele und das Risikoakzeptanzniveau darlegen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NOT.1.1.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "DER.4.A4",
+                "class": "ed23-anforderung",
+                "title": "DER.4.A4 Leitlinie zum Notfallmanagement und Übernahme der Gesamtverantwortung durch die Institutionsleitung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.4.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Institutionsleitung"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.4.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Die Institutionsleitung SOLLTE eine Leitlinie zum Notfallmanagement verabschieden. Diese SOLLTE die wesentlichen Eckpunkte des Notfallmanagements enthalten. Die Leitlinie zum Notfallmanagement SOLLTE regelmäßig überprüft und gegebenenfalls überarbeitet werden. Sie SOLLTE allen Mitarbeitenden bekanntgegeben werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GC.5.1.4",
+                          "PERS.1.1.3"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#NOT.1.1",
+                    "rel": "related",
+                    "text": "NOT.1.1 steht unter DER.4.A2"
+                  },
+                  {
+                    "href": "#NOT.1.1.3",
+                    "rel": "related",
+                    "text": "NOT.1.1.3 steht unter DER.4.A1"
+                  },
+                  {
+                    "href": "#NOT.1.2",
+                    "rel": "related",
+                    "text": "NOT.1.2 steht unter DER.4.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.4.A5",
+                "class": "ed23-anforderung",
+                "title": "DER.4.A5 Aufbau einer geeigneten Organisationsstruktur für das Notfallmanagement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.4.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Institutionsleitung"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.4.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Die Rollen für das Notfallmanagement SOLLTEN für die Gegebenheiten der Institution angemessen festgelegt werden. Dies SOLLTE mit den Aufgaben, Pflichten und Kompetenzen der Rollen schriftlich dokumentiert werden. Es SOLLTEN für alle Rollen im Notfallmanagement qualifizierte Mitarbeitende benannt werden. Die Organisationsstruktur im Notfallmanagement SOLLTE regelmäßig darauf überprüft werden, ob sie praxistauglich, effektiv und effizient ist."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "PERS.2.2",
+                          "PERS.2.4"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#NOT.1.1.2",
+                    "rel": "related",
+                    "text": "NOT.1.1.2 steht unter DER.4.A1"
+                  },
+                  {
+                    "href": "#NOT.1.2",
+                    "rel": "related",
+                    "text": "NOT.1.2 steht unter DER.4.A1"
+                  },
+                  {
+                    "href": "#NOT.2.1.1",
+                    "rel": "related",
+                    "text": "NOT.2.1.1 steht unter DER.4.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.4.A6",
+                "class": "ed23-anforderung",
+                "title": "DER.4.A6 Bereitstellung angemessener Ressourcen für das Notfallmanagement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.4.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Institutionsleitung"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.4.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Die finanziellen, technischen und personellen Ressourcen für die angestrebten Ziele des Notfallmanagements SOLLTEN angemessen sein. Der oder die Notfallbeauftragte bzw. das Notfallmanagement-Team SOLLTE über genügend Zeit für die Aufgaben im Notfallmanagement verfügen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GC.8.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#NOT.1.1.4",
+                    "rel": "related",
+                    "text": "NOT.1.1.4 steht unter DER.4.A3"
+                  }
+                ]
+              },
+              {
+                "id": "DER.4.A7",
+                "class": "ed23-anforderung",
+                "title": "DER.4.A7 Erstellung eines Notfallkonzepts",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.4.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Institutionsleitung"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.4.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Alle kritischen Geschäftsprozesse und Ressourcen SOLLTEN identifiziert werden, beispielsweise mit einer Business-Impact-Analyse (BIA). Es SOLLTEN die wichtigsten relevanten Risiken für die kritischen Geschäftsprozesse und Fachaufgaben sowie deren Ressourcen identifiziert werden. Für jedes identifizierte Risiko SOLLTE entschieden werden, welche Risikostrategien zur Risikobehandlung eingesetzt werden sollen. Es SOLLTEN Kontinuitätsstrategien entwickelt werden, die einen Wiederanlauf und eine Wiederherstellung der kritischen Geschäftsprozesse in der geforderten Zeit ermöglichen. Es SOLLTE ein Notfallkonzept erstellt werden. Es SOLLTEN solche Notfallpläne und Maßnahmen entwickelt und implementiert werden, die eine effektive Notfallbewältigung und eine schnelle Wiederaufnahme der kritischen Geschäftsprozesse ermöglichen. Im Notfallkonzept SOLLTE die Informationssicherheit berücksichtigt und entsprechende Sicherheitskonzepte für die Notfalllösungen entwickelt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GC.7.2",
+                          "NOT.3.2",
+                          "NOT.3.6",
+                          "STM.4.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#NOT.1.1",
+                    "rel": "related",
+                    "text": "NOT.1.1 steht unter DER.4.A2"
+                  },
+                  {
+                    "href": "#NOT.3.1",
+                    "rel": "related",
+                    "text": "NOT.3.1 steht unter DER.4.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.4.A8",
+                "class": "ed23-anforderung",
+                "title": "DER.4.A8 Integration der Mitarbeitenden in den Notfallmanagement-Prozess",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.4.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Vorgesetzte, Personalabteilung"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.4.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Alle Mitarbeitenden SOLLTEN regelmäßig für das Thema Notfallmanagement sensibilisiert werden. Zum Notfallmanagement SOLLTE es ein Schulungs- und Sensibilisierungskonzept geben. Die Mitarbeitenden im Notfallmanagement-Team SOLLTEN regelmäßig geschult werden, um die benötigten Kompetenzen aufzubauen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "PERS.4.2",
+                          "SENS.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#NOT.3.3",
+                    "rel": "related",
+                    "text": "NOT.3.3 steht unter DER.4.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.4.A9",
+                "class": "ed23-anforderung",
+                "title": "DER.4.A9 Integration von Notfallmanagement in organisationsweite Abläufe und Prozesse",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.4.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Institutionsleitung"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.4.A9_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE sichergestellt werden, dass Aspekte des Notfallmanagements in allen Geschäftsprozessen und Fachaufgaben der Institution berücksichtigt werden. Die Prozesse, Vorgaben und Verantwortlichkeiten im Notfallmanagement SOLLTEN mit dem Risikomanagement und Krisenmanagement abgestimmt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#NOT.1.1",
+                    "rel": "related",
+                    "text": "NOT.1.1 steht unter DER.4.A2"
+                  },
+                  {
+                    "href": "#NOT.1.1.4",
+                    "rel": "related",
+                    "text": "NOT.1.1.4 steht unter DER.4.A3"
+                  }
+                ]
+              },
+              {
+                "id": "DER.4.A10",
+                "class": "ed23-anforderung",
+                "title": "DER.4.A10 Tests und Notfallübungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.4.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Institutionsleitung"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.4.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Alle wesentlichen Sofortmaßnahmen und Notfallpläne SOLLTEN in angemessener Weise regelmäßig und anlassbezogen getestet und geübt werden. Der zeitliche Rahmen und die fachliche Abdeckung aller Übungen SOLLTEN übergreifend in einem Übungsplan dokumentiert werden. Im Notfallmanagement SOLLTEN ausreichend Ressourcen für die Planung, Konzeption, Durchführung und Auswertung der Tests und Übungen bereitgestellt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#NOT.2.1.4",
+                    "rel": "related",
+                    "text": "NOT.2.1.4 steht unter DER.4.A1"
+                  },
+                  {
+                    "href": "#NOT.3.4",
+                    "rel": "related",
+                    "text": "NOT.3.4 steht unter DER.4.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.4.A11",
+                "class": "ed23-anforderung",
+                "title": "DER.4.A11 ENTFALLEN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.4.A11"
+                  },
+                  {
+                    "name": "entfallen",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "id": "DER.4.A12",
+                "class": "ed23-anforderung",
+                "title": "DER.4.A12 Dokumentation im Notfallmanagement-Prozess",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.4.A12"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.4.A12_anforderung",
+                    "name": "overview",
+                    "prose": "Der Ablauf des Notfallmanagement-Prozesses, die Arbeitsergebnisse der einzelnen Phasen und wichtige Entscheidungen SOLLTEN dokumentiert werden. Ein festgelegtes Verfahren SOLLTE sicherstellen, dass diese Dokumente regelmäßig aktualisiert werden. Darüber hinaus SOLLTE der Zugriff auf die Dokumentation auf autorisierte Personen beschränkt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.3.12",
+                          "GC.11.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#NOT.1.1.1",
+                    "rel": "related",
+                    "text": "NOT.1.1.1 steht unter DER.4.A1"
+                  },
+                  {
+                    "href": "#NOT.1.2",
+                    "rel": "related",
+                    "text": "NOT.1.2 steht unter DER.4.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.4.A13",
+                "class": "ed23-anforderung",
+                "title": "DER.4.A13 Überprüfung und Steuerung des Notfallmanagement-Systems",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.4.A13"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Institutionsleitung"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.4.A13_anforderung",
+                    "name": "overview",
+                    "prose": "Die Institutionsleitung SOLLTE sich regelmäßig anhand von Managementberichten über den Stand des Notfallmanagements informieren. Sie SOLLTE so das Notfallmanagement-System regelmäßig überprüfen, bewerten und gegebenenfalls korrigieren."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "PERF.4.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#NOT.1.1.4",
+                    "rel": "related",
+                    "text": "NOT.1.1.4 steht unter DER.4.A3"
+                  },
+                  {
+                    "href": "#NOT.1.2",
+                    "rel": "related",
+                    "text": "NOT.1.2 steht unter DER.4.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.4.A14",
+                "class": "ed23-anforderung",
+                "title": "DER.4.A14 Regelmäßige Überprüfung und Verbesserung der Notfallmaßnahmen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.4.A14"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Institutionsleitung"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.4.A14_anforderung",
+                    "name": "overview",
+                    "prose": "Alle Notfallmaßnahmen SOLLTEN regelmäßig oder bei größeren Änderungen daraufhin überprüft werden, ob sie noch eingehalten und korrekt umgesetzt werden. Es SOLLTE geprüft werden, ob sie sich noch dazu eignen, die definierten Ziele zu erreichen. Dabei SOLLTE untersucht werden, ob technische Maßnahmen korrekt implementiert und konfiguriert wurden und ob organisatorische Maßnahmen effektiv und effizient umgesetzt sind. Bei Abweichungen SOLLTEN die Ursachen für die Mängel ermittelt und Verbesserungsmaßnahmen veranlasst werden. Diese Ergebnisübersicht SOLLTE von der Institutionsleitung freigegeben werden. Es SOLLTE zudem ein Prozess etabliert werden, der steuert und überwacht, ob und wie die Verbesserungsmaßnahmen umgesetzt werden. Verzögerungen SOLLTEN frühzeitig an die Institutionsleitung gemeldet werden. Es SOLLTE von der Institutionsleitung festgelegt sein, wie die Überprüfungen koordiniert werden. Die Überprüfungen SOLLTEN so geplant werden, dass kein relevanter Teil ausgelassen wird. Insbesondere SOLLTEN die im Bereich der Revision, der IT, des Sicherheitsmanagements, des Informationssicherheitsmanagements und des Notfallmanagements durchgeführten Überprüfungen miteinander koordiniert werden. Dazu SOLLTE geregelt werden, welche Maßnahmen wann und von wem überprüft werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "PERF.1.2",
+                          "PERF.3.1",
+                          "PERF.3.1.1",
+                          "UMS.6.1",
+                          "VRB.2.1",
+                          "VRB.4.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#NOT.1.2",
+                    "rel": "related",
+                    "text": "NOT.1.2 steht unter DER.4.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.4.A15",
+                "class": "ed23-anforderung",
+                "title": "DER.4.A15 Bewertung der Leistungsfähigkeit des Notfallmanagementsystems",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.4.A15"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Institutionsleitung"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.4.A15_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE regelmäßig bewertet werden, wie leistungsfähig und effektiv das Notfallmanagement-System ist. Als Grundlage SOLLTEN Mess- und Bewertungskriterien wie z. B. Leistungskennzahlen definiert werden. Diese Messgrößen SOLLTEN regelmäßig ermittelt und mit geeigneten vorangegangenen Werten, mindestens aber mit den Vorjahreswerten, verglichen werden. Weichen die Werte negativ ab, SOLLTEN die Ursachen ermittelt und Verbesserungsmaßnahmen definiert werden. Die Ergebnisse der Bewertung SOLLTEN an die Leitung berichtet werden. Die Leitung SOLLTE entscheiden, mit welchen Maßnahmen das Notfallmanagement weiterentwickelt werden soll. Alle Entscheidungen der Institutionsleitung SOLLTEN dokumentiert und die bisherigen Aufzeichnungen aktualisiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "PERF.1.1",
+                          "VRB.3.1",
+                          "VRB.4.2",
+                          "VRB.6.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#NOT.1.1.4",
+                    "rel": "related",
+                    "text": "NOT.1.1.4 steht unter DER.4.A3"
+                  },
+                  {
+                    "href": "#NOT.1.2",
+                    "rel": "related",
+                    "text": "NOT.1.2 steht unter DER.4.A1"
+                  },
+                  {
+                    "href": "#PERF.4.2",
+                    "rel": "related",
+                    "text": "PERF.4.2 steht unter DER.4.A13"
+                  },
+                  {
+                    "href": "#VRB.2.1",
+                    "rel": "related",
+                    "text": "VRB.2.1 steht unter DER.4.A14"
+                  },
+                  {
+                    "href": "#VRB.4.1",
+                    "rel": "related",
+                    "text": "VRB.4.1 steht unter DER.4.A14"
+                  }
+                ]
+              },
+              {
+                "id": "DER.4.A16",
+                "class": "ed23-anforderung",
+                "title": "DER.4.A16 Notfallvorsorge- und Notfallreaktionsplanung für ausgelagerte Komponenten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.4.A16"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Institutionsleitung"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.4.A16_anforderung",
+                    "name": "overview",
+                    "prose": "Bei der Notfallvorsorge- und Notfallreaktionsplanung für ausgelagerte Komponenten SOLLTE regelmäßig das Notfallmanagement der liefernden oder dienstleistenden Institution in den unterzeichneten Verträgen geprüft werden. Auch SOLLTEN die Abläufe in Notfalltests und -übungen mit der liefernden oder bereitstellenden Institution abgestimmt und, wenn angemessen, gemeinsam durchgeführt werden. Die Ergebnisse und Auswertungen SOLLTEN regelmäßig zwischen der Institutionsleitung und den liefernden Institutionen oder Dienstleistenden ausgetauscht werden. In den Auswertungen SOLLTEN auch eventuelle Verbesserungsmaßnahmen enthalten sein."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DLS.3.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#NOT.1.1.4",
+                    "rel": "related",
+                    "text": "NOT.1.1.4 steht unter DER.4.A3"
+                  },
+                  {
+                    "href": "#NOT.3.4",
+                    "rel": "related",
+                    "text": "NOT.3.4 steht unter DER.4.A1"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "back-matter": {
+      "resources": [
+        {
+          "uuid": "afe1c75e-8725-5df2-a57b-235d7d5236f4",
+          "title": "Grundschutz++-resolved_catalog.json @ a12831136f41",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/a12831136f4122a4c43854622180a24f2576a41e/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "ASST.3.12",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): Die Maßnahme ASST.3.12 verlangt die Autorisierung des Zugriffs von Personen auf Daten und deckt damit die allgemeine Pflicht ab, den Zugriff auf Dokumentationen auf autorisierte Personen zu beschränken. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DLS.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A16",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): DLS.3.1 deckt die regelmäßige Überprüfung der Einhaltung von Sicherheitsvorgaben (wozu vertragliche Notfallregelungen zählen) durch den Dienstleister ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GC.11.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2,3): GC.11.1 verankert ein allgemeines Verfahren zur Dokumentenlenkung über den gesamten Lebenszyklus inklusive Änderungsmanagement, was das geforderte Verfahren zur Aktualisierung von Dokumenten abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GC.5.1.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Satz 1 empfiehlt die Verabschiedung einer spezifischen Leitlinie für das Notfallmanagement durch die Institutionsleitung, was sich mit der geforderten Autorisierung der allgemeinen Sicherheitsleitlinie methodisch überschneidet."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GC.7.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): Beide Anforderungen adressieren die Risikoanalyse für kritische Geschäftsprozesse; GC.7.2 zielt auf das allgemeine Informationssicherheits-Risikomanagement ab, während der Notfallmanagement-Satz spezifisch auch Fachaufgaben und zugehörige Ressourcen einbezieht. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GC.8.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): GC.8.1 fordert ein Verfahren zur kontinuierlichen ISMS-Ressourcenplanung, gewährleistet jedoch nicht die tatsächliche Bereitstellung und Angemessenheit der Mittel für das Notfallmanagement."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A2",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equivalent-to, Teilanforderung 1): Das Verankern von Verfahren und Regelungen zur Notfallvorsorge in NOT.1.1 stellt die allgemeine Entsprechung zur Verabschiedung einer Leitlinie zum Notfallmanagement dar. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 6): NOT.1.1 fordert allgemein die Verankerung von Verfahren und Regelungen zur Notfallvorsorge, deckt jedoch die operative Entwicklung und Implementierung von Notfallplänen zur schnellen Wiederaufnahme kritischer Geschäftsprozesse nur teilweise ab."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A9",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): NOT.1.1 verankert Verfahren und Regelungen zur Notfallvorsorge, während Satz 1 die Einbindung von Notfallmanagement-Aspekten in sämtliche Geschäftsprozesse der Institution fordert; die Anforderungen überschneiden sich im Ziel der organisatorischen Verankerung."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.1.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): Die allgemeine Pflicht zur Dokumentation von Verfahren und Regelungen deckt die geforderte Erstellung eines Notfallhandbuchs als Teilaspekt ab, umfasst jedoch nicht die spezifische Ausgestaltung sämtlicher geforderter Handbuchinhalte. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): Die Dokumentation von Verfahren und Regelungen deckt die Prozessvorgaben ab, schließt die darüber hinaus geforderte Erfassung konkreter Arbeitsergebnisse und Entscheidungen der Phasen jedoch nicht vollständig ein. [auch: gsmap, prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.1.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 2): NOT.1.1.2 deckt den Teilaspekt der Zuweisung von Zuständigkeiten ab, lässt jedoch die geforderte Kommunikation und Dokumentation im Notfallhandbuch offen. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 3): NOT.1.1.2 adressiert die Zuweisung von Aufgaben an Personen oder Rollen, fordert jedoch nicht die explizite Benennung qualifizierter Mitarbeitender für Notfallmanagement-Rollen. [auch: prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.1.1.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 9): Die Maßnahme adressiert die Information zuständiger Personen oder Rollen über Notfallverfahren und -regelungen, fordert jedoch im Gegensatz zum Zielabsatz keine flächendeckende Bekanntgabe an alle Mitarbeitenden. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): Die Maßnahme überschneidet sich inhaltlich mit der Bekanntmachung von Notfallregelungen, beschränkt den Adressatenkreis normativ jedoch auf zuständige Personen oder Rollen statt auf alle Mitarbeitenden. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.1.1.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die Verankerung eines BCMS nach BSI-Standard 200-4 schließt die Festlegung des Geltungsbereichs für das Notfallmanagementsystem als grundlegenden Teilschritt vollständig ein. [auch: prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A6",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A9",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A13",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A15",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A16",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 5): NOT.1.2 fordert explizit die regelmäßige Überprüfung der Verfahren und Regelungen der Notfallplanung auf Aktualität, was die regelmäßige Aktualitätsprüfung des Notfallhandbuchs inhaltlich abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): NOT.1.2 fordert die regelmäßige Aktualitätsprüfung von Notfallregelungen, schließt aber die explizite Überarbeitungspflicht der Notfallleitlinie nicht vollständig ein. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): NOT.1.2 bezieht sich auf Verfahren und Regelungen, während der Satz die Überprüfung der organisatorischen Rollen- und Aufbaustruktur auf Praxistauglichkeit und Effizienz fordert. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): NOT.1.2 adressiert die Aktualitätsprüfung von Verfahren und Regelungen, verlangt aber kein eigenständiges Verfahren zur Aktualisierung von Prozess- und Ergebnisdokumentationen. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): NOT.1.2 fordert die Überprüfung von Verfahren auf Aktualität, deckt aber die umfassende strategische Bewertung und Korrektur des gesamten Notfallmanagementsystems durch die Institutionsleitung nicht ab. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): NOT.1.2 fokussiert auf die Aktualitätsprüfung von Regelungen und Verfahren, während der Satz die operative Überprüfung der Einhaltung und korrekten Umsetzung konkreter Notfallmaßnahmen verlangt. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A15",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): NOT.1.2 verlangt die Aktualitätsprüfung von Notfallverfahren, umfasst jedoch nicht die kennzahlenbasierte Bewertung der Leistungsfähigkeit und Effektivität des gesamten Notfallmanagementsystems. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.2.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 2): Die Maßnahme adressiert die Zuweisung von Aufgaben an Rollen der BAO, umfasst jedoch nicht die explizite Zuweisung von Befugnissen sowie deren Kommunikation und Dokumentation im Notfallhandbuch. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1,2): Die Maßnahme fokussiert auf die Zuweisung von Aufgaben innerhalb der BAO und deckt damit einen Teilbereich der institutionsweiten Rollenfestlegung für das Notfallmanagement ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.2.1.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 4): Die Maßnahme behandelt mit der regelmäßigen Stabsübung zur Überprüfung der BAO eine spezifische Übungsform, umfasst jedoch nicht sämtliche im Notfallhandbuch beschriebenen Maßnahmen und weiteren Testarten. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): Die Maßnahme adressiert mit Stabsübungen für die BAO eine konkrete Teilmenge von Übungen, deckt jedoch nicht alle wesentlichen Sofortmaßnahmen und Notfallpläne sowie anlassbezogene Tests ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): NOT.3.1 fordert die Dokumentation eines Wiederanlaufplans für zeitkritische Systeme und deckt damit einen spezifischen Teilaspekt des in DER.4.A1 Satz 1 geforderten Notfallhandbuchs ab, welches neben Wiederanlaufplänen auch Rollen, Sofortmaßnahmen und weitere Notfallpläne umfasst."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 6): NOT.3.1 verlangt mit der Dokumentation eines Wiederanlaufplans für zeitkritische Systeme die Erstellung eines zentralen Notfallplans zur schnellen Wiederaufnahme des Betriebs. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.3.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 6): Die Dokumentation eines Geschäftsfortführungsplans adressiert die Erstellung von Plänen zur Fortführung kritischer Prozesse, deckt jedoch weder deren Implementierung noch weitere operative Notfallmaßnahmen vollständig ab. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.3.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 3,9): Die Sensibilisierung der Nutzenden zum Vorgehen im Notfall vermittelt grundlegende Handlungskompetenzen, deckt jedoch die umfassende Bereitstellung und spezifische Schulung von Notfallpersonal nur teilweise ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): Die Maßnahme adressiert die Sensibilisierung von Nutzenden für das konkrete Handeln im Notfall, lässt jedoch die geforderte Regelmäßigkeit sowie das Notfallmanagement als übergeordnetes Gesamtthema offen. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.3.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 4): NOT.3.4 adressiert die Funktionsprüfung von Notfallplänen und deckt damit einen Teilaspekt der geforderten Tests und Übungen für die Maßnahmen des Notfallhandbuchs ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): NOT.3.4 deckt mit der Funktionsprüfung von Notfallplänen einen Teilbereich ab, umfasst jedoch nicht das gesamte Spektrum regelmäßiger und anlassbezogener Notfall- und Krisenübungen. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A16",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz niedrig, Checker bestaetigt): NOT.3.4 behandelt Funktionstests von Notfallplänen allgemein, adressiert jedoch nicht explizit die Abstimmung und gemeinsame Durchführung mit Dienstleistern."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.3.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 7): NOT.3.6 fordert die Verankerung alternativer Sicherheitsmechanismen für Notfälle im Rahmen der Notfallplanung, was der Berücksichtigung der Informationssicherheit und Entwicklung von Sicherheitskonzepten für Notfalllösungen entspricht. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A15",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): PERF.1.1 verankert Verfahren zur Leistungsmessung und -bewertung des ISMS, was sich methodisch mit der Leistungsbewertung des Notfallmanagementsystems überschneidet, jedoch einen anderen Managementsystembereich betrifft."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 6): PERF.1.2 fordert die regelmäßige Überprüfung und Fortschreibung des Umsetzungsplans hinsichtlich Fortschritt und Fristeinhaltung, was das Steuern und Überwachen der Umsetzung von Verbesserungsmaßnahmen abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 8): PERF.3.1 regelt allgemein die Auditprogrammierung, schließt aber die spezifische Festlegung zur Koordination von Notfallmaßnahmen-Überprüfungen durch die Institutionsleitung nicht vollständig ein. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.3.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 11): PERF.3.1.1 legt im Auditplan Prüfgegenstand, Zeitplan und Rollen für Audits fest, deckt aber das institutionsweite Prüfprogramm für Notfallmaßnahmen nicht vollständig ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die G++-Maßnahme PERF.4.2 deckt den Satz ab, da sie explizit vorschreibt, die Institutionsleitung regelmäßig anhand des Managementberichts über den Stand des Managementsystems zu informieren. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A15",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 5): G++ PERF.4.2 fordert explizit die regelmäßige Unterrichtung der Institutionsleitung anhand des Managementberichts, was die Berichterstattung der Bewertungsergebnisse an die Leitung abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERS.1.1.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): PERS.1.1.3 verpflichtet allgemein zur Information über Regelungen und deckt die Bekanntgabe der Notfall-Leitlinie an alle Mitarbeitenden als Spezialfall vollständig ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERS.2.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Satz 2 fordert die Dokumentation von Rollen mit deren Aufgaben, Pflichten und Kompetenzen für das Notfallmanagement, was ein fachspezifischer Anwendungsfall von PERS.2.2 ist. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERS.2.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): PERS.2.4 fordert allgemein die Zuweisung von Personen zu definierten Rollen und deckt damit die Benennung von Mitarbeitenden für Notfallmanagement-Rollen inhaltlich ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERS.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): PERS.4.2 fordert die regelmäßige Durchführung rollenspezifischer Schulungen, was die spezifische Schulung von Mitgliedern des Notfallmanagement-Teams zur Kompetenzentwicklung als Rolleninhaber inhaltlich abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "SENS.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Die Etablierung von Verfahren und Regelungen zur Schulung und Sensibilisierung in SENS.1.1 deckt die allgemeinere Forderung nach einem entsprechenden Schulungs- und Sensibilisierungskonzept inhaltlich ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "STM.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): STM.4.1 erfordert die Durchführung einer Risikobetrachtung für Geschäftsprozesse und Assets mit hohem Schutzbedarf und überschneidet sich mit der Risikoidentifikation, adressiert jedoch nicht den spezifischen BCM-Rahmen der Notfallplanung. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "TEST.4.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A1",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.6.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 6): Die G++-Maßnahme UMS.6.1 fordert die Verankerung eines Verfahrens zur Nachverfolgung der Umsetzung von Maßnahmen, was den geforderten Steuerungs- und Überwachungsprozess für Verbesserungsmaßnahmen inhaltlich abdeckt. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "VRB.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): VRB.2.1 deckt die methodische Ursachenanalyse bei Abweichungen ab, schließt jedoch das darüber hinaus geforderte Veranlassen konkreter Verbesserungsmaßnahmen nicht ein. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A15",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): VRB.2.1 deckt die Ursachenermittlung bei Abweichungen methodisch ab, fordert jedoch nicht die zusätzlich verlangte Definition von Verbesserungsmaßnahmen. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "VRB.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A15",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "VRB.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): VRB.4.1 fordert die Festlegung von Korrekturmaßnahmen zur Beseitigung von Fehlerursachen, was der Ursachenermittlung und Maßnahmenveranlassung bei Mängeln und Abweichungen entspricht. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A15",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): VRB.4.1 fordert die Festlegung von Maßnahmen zur Beseitigung von Fehlerursachen, was die Ursachenermittlung und Maßnahmenfestlegung bei negativen Abweichungen inhaltlich abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "VRB.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A15",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 6): VRB.4.2 regelt allgemein die Festlegung von Verbesserungsmaßnahmen, adressiert jedoch nicht die spezifische Leitungsentscheidung zur Weiterentwicklung des Notfallmanagements."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "VRB.6.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.4.A15",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): VRB.6.2 fordert allgemein ein Verfahren zur Bewertung erreichter Verbesserungen, was sich mit der Auswertung von Messgrößen zur Leistungsbewertung überschneidet. Die konkrete Pflicht zur regelmäßigen Ermittlung und dem Vergleich mit Vorjahreswerten im Notfallmanagement geht jedoch über den allgemeinen Rahmen der Maßnahme hinaus."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

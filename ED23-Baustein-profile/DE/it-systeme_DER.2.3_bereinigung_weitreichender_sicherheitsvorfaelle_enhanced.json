@@ -1,0 +1,3568 @@
+{
+  "profile": {
+    "uuid": "811408a5-5aaf-5364-9a19-9b817d937f22",
+    "metadata": {
+      "title": "DER.2.3 – Bereinigung weitreichender Sicherheitsvorfälle (IT-Systeme) – Enhanced (ED2023)",
+      "last-modified": "2026-10-19T01:06:07.851453+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "BSI"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "DER.2.3"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Bereinigung weitreichender Sicherheitsvorfälle"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "IT-Systeme"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "prozess"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, DER.2.3, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein DER.2.3 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (amtlicher Wortlaut des XML-Kompendiums 2023); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls. Prozess-Baustein ohne eigene Praktik in Grundschutz++; die Zielobjektkategorie ist nur informativ."
+    },
+    "imports": [
+      {
+        "href": "#afe1c75e-8725-5df2-a57b-235d7d5236f4",
+        "include-controls": [
+          {
+            "with-ids": [
+              "ARCH.2.4",
+              "ASST.7.1",
+              "ASST.7.3",
+              "BER.5.14",
+              "DET.4.2",
+              "NOT.2.1.1",
+              "NOT.3.5",
+              "NOT.4.5",
+              "REA.2.5",
+              "REA.2.6",
+              "REA.2.6.3",
+              "REA.2.6.5",
+              "REA.3.1",
+              "UMS.1.1",
+              "UMS.3.1",
+              "VRB.4.1"
+            ]
+          }
+        ]
+      }
+    ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "DER.2.3-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "DER.2.3.A1",
+                "class": "ed23-anforderung",
+                "title": "DER.2.3.A1 Einrichtung eines Leitungsgremiums",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.2.3.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.2.3.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Um einen APT-Vorfall zu bereinigen, MUSS ein Leitungsgremium eingerichtet werden, das alle notwendigen Aktivitäten plant, koordiniert und überwacht. Dem Gremium MÜSSEN alle für die Aufgaben erforderlichen Weisungsbefugnisse übertragen werden. Wenn ein solches Leitungsgremium zu dem Zeitpunkt, als der APT-Vorfall detektiert und klassifiziert wurde, bereits eingerichtet ist, SOLLTE dasselbe Gremium auch die Bereinigung planen und leiten. Wurden schon spezialisierte Forensikdienstleistende hinzugezogen, um den APT-Vorfall zu analysieren, SOLLTEN diese auch bei der Bereinigung des Vorfalls miteinbezogen werden. Ist die IT zu stark kompromittiert, um weiter betrieben zu werden, oder sind die notwendigen Bereinigungsmaßnahmen sehr umfangreich, SOLLTE geprüft werden, ob ein Krisenstab eingerichtet werden soll. In diesem Fall MUSS das Leitungsgremium die Bereinigungsmaßnahmen überwachen. Das Leitungsgremium MUSS dann dem Krisenstab berichten."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NOT.2.1.1",
+                          "REA.2.6.3",
+                          "REA.2.6.5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "DER.2.3.A2",
+                "class": "ed23-anforderung",
+                "title": "DER.2.3.A2 Entscheidung für eine Bereinigungsstrategie",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.2.3.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.2.3.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Bevor ein APT-Vorfall tatsächlich bereinigt wird, MUSS das Leitungsgremium eine Bereinigungsstrategie festlegen. Dabei MUSS insbesondere entschieden werden, ob die Schadsoftware von kompromittierten IT-Systemen entfernt werden kann, ob IT-Systeme neu installiert werden müssen oder ob IT-Systeme inklusive der Hardware komplett ausgetauscht werden sollen. Weiterhin MUSS festgelegt werden, welche IT-Systeme bereinigt werden. Grundlage für diese Entscheidungen MÜSSEN die Ergebnisse einer zuvor durchgeführten forensischen Untersuchung sein. Es SOLLTEN alle betroffenen IT-Systeme neu installiert werden. Danach MÜSSEN die Wiederanlaufpläne der Institution benutzt werden. Bevor jedoch Backups wieder eingespielt werden, MUSS durch forensische Untersuchungen sichergestellt sein, dass dadurch keine manipulierten Daten oder Programme auf das neu installierte IT-System übertragen werden. Entscheidet sich eine Institution dagegen, alle IT-Systeme neu zu installieren, MUSS eine gezielte APT-Bereinigung umgesetzt werden. Um das Risiko übersehener Hintertüren zu minimieren, MÜSSEN nach der Bereinigung die IT-Systeme gezielt daraufhin überwacht werden, ob sie noch mit den Angreifenden kommunizieren."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "REA.2.5",
+                          "REA.2.6"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "DER.2.3.A3",
+                "class": "ed23-anforderung",
+                "title": "DER.2.3.A3 Isolierung der betroffenen Netzabschnitte",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.2.3.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.2.3.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Die von einem APT-Vorfall betroffenen Netzabschnitte MÜSSEN vollständig isoliert werden (Cut-Off). Insbesondere MÜSSEN die betroffenen Netzabschnitte vom Internet getrennt werden. Um die Angreifenden effektiv auszusperren und zu verhindern, dass sie ihre Spuren verwischen oder noch weitere IT-Systeme sabotieren, MÜSSEN die Netzabschnitte auf einen Schlag isoliert werden. Welche Netzabschnitte isoliert werden müssen, MUSS vorher durch eine forensische Analyse festgelegt werden. Es MÜSSEN dabei sämtliche betroffenen Abschnitte identifiziert werden. Kann das nicht sichergestellt werden, MÜSSEN alle verdächtigen sowie alle auch nur theoretisch infizierten Netzabschnitte isoliert werden. Um Netzabschnitte effektiv isolieren zu können, MÜSSEN sämtliche lokalen Internetanschlüsse, z. B. zusätzliche DSL-Anschlüsse in einzelnen Subnetzen, möglichst vollständig erfasst und ebenfalls berücksichtigt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.4"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#REA.2.5",
+                    "rel": "related",
+                    "text": "REA.2.5 steht unter DER.2.3.A2"
+                  },
+                  {
+                    "href": "#REA.2.6",
+                    "rel": "related",
+                    "text": "REA.2.6 steht unter DER.2.3.A2"
+                  }
+                ]
+              },
+              {
+                "id": "DER.2.3.A4",
+                "class": "ed23-anforderung",
+                "title": "DER.2.3.A4 Sperrung und Änderung von Zugangsdaten und kryptografischen Schlüsseln",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.2.3.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.2.3.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Alle Zugangsdaten MÜSSEN geändert werden, nachdem das Netz isoliert wurde. Weiterhin MÜSSEN auch zentral verwaltete Zugangsdaten zurückgesetzt werden, z. B. in Active-Directory-Umgebungen oder wenn das Lightweight Directory Access Protocol (LDAP) benutzt wurde. Ist der zentrale Authentisierungsserver (Domaincontroller oder LDAP-Server) kompromittiert, MÜSSEN sämtliche dort vorhandenen Zugänge gesperrt und ihre Passwörter ausgetauscht werden. Dies MÜSSEN erfahrene Administrierende umsetzen, falls erforderlich, auch mithilfe interner oder externer Expertise aus dem Bereich Forensik. Wurden TLS-Schlüssel oder eine interne Certification Authority (CA) durch den APT-Angriff kompromittiert, MÜSSEN entsprechende Schlüssel, Zertifikate und Infrastrukturen neu erzeugt und verteilt werden. Auch MÜSSEN die kompromittierten Schlüssel und Zertifikate zuverlässig gesperrt und zurückgerufen werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.5.14"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "DER.2.3.A5",
+                "class": "ed23-anforderung",
+                "title": "DER.2.3.A5 Schließen des initialen Einbruchswegs",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.2.3.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.2.3.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Wurde durch eine forensische Untersuchung herausgefunden, dass die Angreifenden durch eine technische Schwachstelle in das Netz der Institution eingedrungen sind, MUSS diese Schwachstelle geschlossen werden. Konnten die Angreifenden die IT-Systeme durch menschliche Fehlhandlungen kompromittieren, MÜSSEN organisatorische, personelle und technische Maßnahmen ergriffen werden, um ähnliche Vorfälle künftig zu verhindern."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "REA.3.1",
+                          "VRB.4.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#REA.2.6",
+                    "rel": "related",
+                    "text": "REA.2.6 steht unter DER.2.3.A2"
+                  }
+                ]
+              },
+              {
+                "id": "DER.2.3.A6",
+                "class": "ed23-anforderung",
+                "title": "DER.2.3.A6 Rückführung in den Produktivbetrieb",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.2.3.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.2.3.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Nachdem das Netz erfolgreich bereinigt wurde, MÜSSEN die IT-Systeme geordnet in den Produktivbetrieb zurückgeführt werden. Dabei MÜSSEN sämtliche zuvor eingesetzten IT-Systeme und installierten Programme, mit denen der Angriff beobachtet und analysiert wurde, entweder entfernt oder aber in den Produktivbetrieb überführt werden. Dasselbe MUSS mit Kommunikations- und Kollaborationssystemen erfolgen, die für die Bereinigung angeschafft wurden. Beweismittel und ausgesonderte IT-Systeme MÜSSEN entweder sicher gelöscht bzw. vernichtet oder aber geeignet archiviert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.7.1",
+                          "ASST.7.3",
+                          "NOT.4.5"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#REA.2.6",
+                    "rel": "related",
+                    "text": "REA.2.6 steht unter DER.2.3.A2"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "DER.2.3-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "DER.2.3.A7",
+                "class": "ed23-anforderung",
+                "title": "DER.2.3.A7 Gezielte Systemhärtung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.2.3.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.2.3.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Nach einem APT-Angriff SOLLTEN alle betroffenen IT-Systeme gehärtet werden. Grundlage hierfür SOLLTEN die Ergebnisse der forensischen Untersuchungen sein. Zusätzlich SOLLTE erneut geprüft werden, ob die betroffene Umgebung noch sicher ist. Wenn möglich, SOLLTEN IT-Systeme bereits während der Bereinigung gehärtet werden. Maßnahmen, die sich nicht kurzfristig durchführen lassen, SOLLTEN in einen Maßnahmenplan aufgenommen und mittelfristig umgesetzt werden. Der oder die ISB SOLLTE den Plan aufzustellen und prüfen, ob er korrekt umgesetzt wurde."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "UMS.1.1",
+                          "UMS.3.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#REA.3.1",
+                    "rel": "related",
+                    "text": "REA.3.1 steht unter DER.2.3.A5"
+                  }
+                ]
+              },
+              {
+                "id": "DER.2.3.A8",
+                "class": "ed23-anforderung",
+                "title": "DER.2.3.A8 Etablierung sicherer, unabhängiger Kommunikationskanäle",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.2.3.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.2.3.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTEN sichere Kommunikationskanäle für das Leitungsgremium und die mit der Bereinigung beauftragten Mitarbeitenden etabliert werden. Wird auf Kommunikationsdienste Dritter zurückgegriffen, SOLLTE auch hier darauf geachtet werden, dass ein sicherer Kommunikationskanal ausgewählt wird."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NOT.3.5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "DER.2.3-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "DER.2.3.A9",
+                "class": "ed23-anforderung",
+                "title": "DER.2.3.A9 Hardwaretausch betroffener IT-Systeme",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.2.3.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.2.3.A9_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE erwogen werden, nach einem APT-Vorfall die Hardware komplett auszutauschen. Auch wenn nach einer Bereinigung bei einzelnen IT-Systemen noch verdächtiges Verhalten beobachtet wird, SOLLTEN die betroffenen IT-Systeme ausgetauscht werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#REA.2.6",
+                    "rel": "related",
+                    "text": "REA.2.6 steht unter DER.2.3.A2"
+                  }
+                ]
+              },
+              {
+                "id": "DER.2.3.A10",
+                "class": "ed23-anforderung",
+                "title": "DER.2.3.A10 Umbauten zur Erschwerung eines erneuten Angriffs durch dieselben Angreifenden",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.2.3.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.2.3.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Damit dieselben Angreifenden nicht noch einmal einen APT-Angriff auf die IT-Systeme der Institution durchführen können, SOLLTE der interne Aufbau der Netzumgebung geändert werden. Außerdem SOLLTEN Mechanismen etabliert werden, mit denen sich wiederkehrende Angreifende schnell detektieren lassen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.4.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#REA.3.1",
+                    "rel": "related",
+                    "text": "REA.3.1 steht unter DER.2.3.A5"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "back-matter": {
+      "resources": [
+        {
+          "uuid": "afe1c75e-8725-5df2-a57b-235d7d5236f4",
+          "title": "Grundschutz++-resolved_catalog.json @ a12831136f41",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/a12831136f4122a4c43854622180a24f2576a41e/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "ARCH.2.4",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "ARCH.2.4_stm",
+              "parts": [
+                {
+                  "id": "ARCH.2.4-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Risk Assessment",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Es existieren unvollständige Aufzeichnungen über genutzte IP-Bereiche und Netzsegmente.",
+                  "parts": [
+                    {
+                      "id": "ARCH.2.4-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Die Dokumentation ist lückenhaft und wird nur bei Bedarf oder bei Fehlern aktualisiert."
+                    },
+                    {
+                      "id": "ARCH.2.4-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Sichtung vorhandener Textdateien oder manueller Notizen zur Netzwerkkonfiguration."
+                    }
+                  ]
+                },
+                {
+                  "id": "ARCH.2.4-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Risk Assessment",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Eine manuell gepflegte Liste der physischen und logischen Netzsegmente liegt vor.",
+                  "parts": [
+                    {
+                      "id": "ARCH.2.4-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Die Dokumentation erfolgt meist in Tabellenform (z. B. Excel) und umfasst die wichtigsten Segmente."
+                    },
+                    {
+                      "id": "ARCH.2.4-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Abgleich der Dokumentation mit Routing-Tabellen via 'ip route show' oder 'netstat -rn' auf Gateways."
+                    }
+                  ]
+                },
+                {
+                  "id": "ARCH.2.4-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Risk Assessment",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Architektur SOLLTE ein Inventar der Netze einschließlich interner Segmente, externer Netzanschlüsse und deren Verwendungszweck dokumentieren.",
+                  "parts": [
+                    {
+                      "id": "ARCH.2.4-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Es muss eine strukturierte Dokumentation aller Netzsegmente und deren Zweck vorhanden sein."
+                    },
+                    {
+                      "id": "ARCH.2.4-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Vollständigkeitsprüfung des Netzinventars gegen die aktuelle Netzwerktopologie und Firewall-Regelwerke."
+                    }
+                  ]
+                },
+                {
+                  "id": "ARCH.2.4-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Risk Assessment",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Ein automatisiertes Inventarsystem erfasst regelmäßig alle aktiven Netzsegmente und Anschlüsse.",
+                  "parts": [
+                    {
+                      "id": "ARCH.2.4-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Discovery-Tools gleichen den Soll-Zustand des Inventars kontinuierlich mit dem Ist-Zustand ab."
+                    },
+                    {
+                      "id": "ARCH.2.4-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Check: 'nmap -sP 10.0.0.0/8' ausführen und Ergebnis automatisiert gegen die Inventar-Datenbank prüfen."
+                    }
+                  ]
+                },
+                {
+                  "id": "ARCH.2.4-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Risk Assessment",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Echtzeit-Inventarisierung durch Integration in SDN-Controller mit automatischer Klassifizierung.",
+                  "parts": [
+                    {
+                      "id": "ARCH.2.4-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Neue Segmente werden sofort erkannt, dokumentiert und gemäß Policy-as-Code klassifiziert."
+                    },
+                    {
+                      "id": "ARCH.2.4-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Abfrage der API des SDN-Controllers (z.B. mittels curl) zur Verifizierung der Echtzeit-Dokumentation."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 7): Das in ARCH.2.4 vorgesehene Inventar externer Netzanschlüsse schließt die vollständige Erfassung lokaler Internetanschlüsse als allgemeinerer Rahmen vollständig ein. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.7.1",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "ASST.7.1_stm",
+              "parts": [
+                {
+                  "id": "ASST.7.1-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Nicht mehr benötigte Anwendungen werden gelegentlich bei Platzmangel gelöscht.",
+                  "parts": [
+                    {
+                      "id": "ASST.7.1-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Führen Sie eine Bestandsaufnahme der laufenden Instanzen durch."
+                    },
+                    {
+                      "id": "ASST.7.1-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Manuelle Sichtung der Anwendungsliste auf Testsystemen."
+                    }
+                  ]
+                },
+                {
+                  "id": "ASST.7.1-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Jährliche manuelle Überprüfung und Bereinigung alter Anwendungsinstanzen.",
+                  "parts": [
+                    {
+                      "id": "ASST.7.1-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Erstellen Sie eine Richtlinie für die Stilllegung von Software."
+                    },
+                    {
+                      "id": "ASST.7.1-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Decommissioning-Protokolle des letzten Jahres."
+                    }
+                  ]
+                },
+                {
+                  "id": "ASST.7.1-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Informationen und Assets für Anwendungen SOLLTE eine Deinstallation nicht mehr benötigter Anwendungsinstanzen verankern.",
+                  "parts": [
+                    {
+                      "id": "ASST.7.1-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Verhindern Sie Sicherheitsrisiken durch verwaiste Installationen durch geregelte Abbauprozesse."
+                    },
+                    {
+                      "id": "ASST.7.1-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Abgleich der aktiven Instanzen mit der Liste der genehmigten Business-Services."
+                    }
+                  ]
+                },
+                {
+                  "id": "ASST.7.1-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Automatisierter Workflow zur Identifizierung und Deinstallation inaktiver Instanzen.",
+                  "parts": [
+                    {
+                      "id": "ASST.7.1-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Nutzen Sie Nutzungsmetriken zur Erkennung verwaister Umgebungen."
+                    },
+                    {
+                      "id": "ASST.7.1-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Automatisierungsskripte für den Lifecycle-Prozess."
+                    }
+                  ]
+                },
+                {
+                  "id": "ASST.7.1-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Einsatz von Ephemeral Infrastructure (kurzlebige Instanzen) als Standard.",
+                  "parts": [
+                    {
+                      "id": "ASST.7.1-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Instanzen werden nach der Nutzung oder in festen Zyklen automatisch vernichtet."
+                    },
+                    {
+                      "id": "ASST.7.1-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Überprüfung der Uptime-Statistiken auf Einhaltung der Lebensdauer-Limits."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): ASST.7.1 fordert die Deinstallation nicht mehr benötigter Anwendungsinstanzen, was das Entfernen temporärer Analyseprogramme nach Abschluss der Bereinigung (S2) teilweise abdeckt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.7.3",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "ASST.7.3_stm",
+              "parts": [
+                {
+                  "id": "ASST.7.3-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Das Löschen von Daten und Assets nach einem Sicherheitsvorfall oder bei Fristablauf erfolgt nur vereinzelt und ohne definiertes Verfahren."
+                },
+                {
+                  "id": "ASST.7.3-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Daten und Assets werden bei Erreichen der Löschfrist grundsätzlich manuell mittels Standardwerkzeugen der Betriebssysteme gelöscht."
+                },
+                {
+                  "id": "ASST.7.3-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Informationen und Assets für Daten SOLLTE diese bei Erreichen der Aufbewahrungs- und Löschfrist durch {{ insert: param, asst.7.3-prm1 }} löschen."
+                },
+                {
+                  "id": "ASST.7.3-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Das sichere Löschen von Daten bei Fristablauf oder nach Bereinigung erfolgt automatisiert durch zentrale Skripte inklusive Löschprotokollierung."
+                },
+                {
+                  "id": "ASST.7.3-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Ein integriertes Data-Lifecycle-Management löscht Daten bei Fristablauf vollautomatisch mittels kryptografischer Verfahren (Crypto-Shredding) und verifiziert dies kontinuierlich via Policy-as-Code."
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): ASST.7.3 regelt das sichere Löschen oder Vernichten von Daten nach Ablauf der Aufbewahrungsfrist, was für nicht mehr benötigte Beweismittel und ausgesonderte IT-Systeme (S4) relevant ist."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.5.14",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "BER.5.14_stm",
+              "parts": [
+                {
+                  "id": "BER.5.14-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Sperrung erfolgt sporadisch nach Kenntnisnahme ohne definierten Zeitrahmen.",
+                  "parts": [
+                    {
+                      "id": "BER.5.14-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Authentifizierungsmittel werden nur bei explizitem Verdacht manuell deaktiviert."
+                    },
+                    {
+                      "id": "BER.5.14-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfen Sie den Zeitverzug zwischen Diebstahlmeldung und Deaktivierung im AD."
+                    }
+                  ]
+                },
+                {
+                  "id": "BER.5.14-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Definierter Prozess zur manuellen Sperrung innerhalb der Geschäftszeiten.",
+                  "parts": [
+                    {
+                      "id": "BER.5.14-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Dokumentierte Anleitung für Admins zur Sperrung von Konten und Zertifikaten."
+                    },
+                    {
+                      "id": "BER.5.14-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Sichten Sie Tickets für Verlustmeldungen und die entsprechenden Sperrvermerke."
+                    }
+                  ]
+                },
+                {
+                  "id": "BER.5.14-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Berechtigung SOLLTE die Sperrung kompromittierter Authentifizierungsmittel verankern.",
+                  "parts": [
+                    {
+                      "id": "BER.5.14-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Zeitnahe Sperrung ist kritisch, um Missbrauch nach Kompromittierung zu verhindern."
+                    },
+                    {
+                      "id": "BER.5.14-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfen Sie den Prozess zur Einleitung von Sperrmaßnahmen bei Kompromittierung."
+                    }
+                  ]
+                },
+                {
+                  "id": "BER.5.14-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Automatisierte Sperrung basierend auf Threat Intelligence Feeds und Security-Alerts.",
+                  "parts": [
+                    {
+                      "id": "BER.5.14-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Integration von SOC-Alerts zur automatischen Deaktivierung betroffener Identitäten."
+                    },
+                    {
+                      "id": "BER.5.14-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfen Sie die SIEM-Automatisierungsregeln (SOAR) auf automatische Sperraktionen."
+                    }
+                  ]
+                },
+                {
+                  "id": "BER.5.14-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Echtzeit-Sperrung durch adaptive Security-Analysen und Continuous Auth.",
+                  "parts": [
+                    {
+                      "id": "BER.5.14-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Sperrung erfolgt sofort bei Verhaltensanomalien durch UEBA-Systeme."
+                    },
+                    {
+                      "id": "BER.5.14-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Analysieren Sie UEBA-Logs auf automatische Interventionsmaßnahmen bei Risiko-Scores."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): Die Sperrung kompromittierter Authentifizierungsmittel überschneidet sich mit der Sperrung betroffener Zugänge, umfasst jedoch nicht den zusätzlich geforderten Austausch sämtlicher Passwörter. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "DET.4.2_stm",
+              "parts": [
+                {
+                  "id": "DET.4.2-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Manuelle Sichtung von Systemprotokollen bei Sicherheitsverdacht.",
+                  "parts": [
+                    {
+                      "id": "DET.4.2-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Suche nach Angriffsmustern erfolgt nur reaktiv."
+                    },
+                    {
+                      "id": "DET.4.2-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung von `grep -i \"attack\" /var/log/syslog` Ergebnissen."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.4.2-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Einsatz von signaturbasierten IDS auf kritischen Hostsystemen.",
+                  "parts": [
+                    {
+                      "id": "DET.4.2-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Verwendung von Standard-Tools zur Erkennung bekannter Angriffsmuster."
+                    },
+                    {
+                      "id": "DET.4.2-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der IDS-Konfiguration und Aktualität der Signaturen (z. B. Snort)."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.4.2-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Detektion für IT-Systeme SOLLTE diese auf Anzeichen für Angriffe durch {{ insert: param, det.4.2-prm1 }} überwachen.",
+                  "parts": [
+                    {
+                      "id": "DET.4.2-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Implementierung einer automatisierten Angriffserkennung basierend auf Parametern."
+                    },
+                    {
+                      "id": "DET.4.2-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Abgleich der implementierten Detektionsregeln mit der Bedrohungslage."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.4.2-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Zentrale Korrelation von Detektionsereignissen in einem SIEM.",
+                  "parts": [
+                    {
+                      "id": "DET.4.2-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Zusammenführung verschiedener Datenquellen zur Erkennung komplexer Angriffe."
+                    },
+                    {
+                      "id": "DET.4.2-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der SIEM-Use-Cases und Korrelationsregeln (z. B. ELK Stack)."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.4.2-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Verhaltensbasierte Anomalieerkennung und automatische Incident-Response.",
+                  "parts": [
+                    {
+                      "id": "DET.4.2-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Einsatz von Machine Learning zur Identifikation neuartiger Bedrohungen."
+                    },
+                    {
+                      "id": "DET.4.2-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Review der ML-Modell-Performance und automatisierter Block-Aktionen."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Die G++-Maßnahme DET.4.2 fordert die Etablierung automatisierter Mechanismen zur Angriffserkennung auf IT-Systemen, was die allgemeinere Fassung der schnellen Erkennung von (wiederkehrenden) Angreifern darstellt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.2.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "NOT.2.1.1_stm",
+              "parts": [
+                {
+                  "id": "NOT.2.1.1-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Rollen für den Krisenstab sind ad-hoc definiert.",
+                  "parts": [
+                    {
+                      "id": "NOT.2.1.1-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Benennen Sie Verantwortliche im Krisenfall."
+                    },
+                    {
+                      "id": "NOT.2.1.1-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Befragung zu Verantwortlichkeiten in Notfallsituationen."
+                    }
+                  ]
+                },
+                {
+                  "id": "NOT.2.1.1-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Wesentliche Rollen der BAO sind in Stellenbeschreibungen hinterlegt.",
+                  "parts": [
+                    {
+                      "id": "NOT.2.1.1-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Definieren Sie Standardrollen für die Notfallteams."
+                    },
+                    {
+                      "id": "NOT.2.1.1-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Sichtung der Rollenbeschreibungen für das Notfallmanagement."
+                    }
+                  ]
+                },
+                {
+                  "id": "NOT.2.1.1-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Notfallplanung SOLLTE Aufgaben für die BAO einschließlich BAO-Stab und Notfallteams {{ insert: param, not.2.1.1-prm1 }} zuweisen.",
+                  "parts": [
+                    {
+                      "id": "NOT.2.1.1-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Weisen Sie Aufgaben für Stab und Teams gemäß den Parametern zu."
+                    },
+                    {
+                      "id": "NOT.2.1.1-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Zuweisungsmatrix für BAO-Aufgaben."
+                    }
+                  ]
+                },
+                {
+                  "id": "NOT.2.1.1-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Rollenbasierte Zugriffsberechtigungen für Notfallwerkzeuge sind automatisiert hinterlegt.",
+                  "parts": [
+                    {
+                      "id": "NOT.2.1.1-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Verknüpfen Sie BAO-Rollen mit dem Identitätsmanagement."
+                    },
+                    {
+                      "id": "NOT.2.1.1-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Automatisierter Abgleich der Rollenmatrix mit dem Identity Management System (IAM)."
+                    }
+                  ]
+                },
+                {
+                  "id": "NOT.2.1.1-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Dynamische Rollenzuweisung basierend auf Präsenz und Qualifikation in Echtzeit.",
+                  "parts": [
+                    {
+                      "id": "NOT.2.1.1-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Implementieren Sie ein Tool zur dynamischen Ressourcenplanung im Krisenfall."
+                    },
+                    {
+                      "id": "NOT.2.1.1-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Test der dynamischen Zuweisung in einem unangekündigten Simulationstest."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A1",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.3.5",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "NOT.3.5_stm",
+              "parts": [
+                {
+                  "id": "NOT.3.5-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Private Mobilgeräte dienen als informeller Ersatz.",
+                  "parts": [
+                    {
+                      "id": "NOT.3.5-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Listen Sie private Nummern als Backup auf."
+                    },
+                    {
+                      "id": "NOT.3.5-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfen der Erreichbarkeit über Backup-Nummern."
+                    }
+                  ]
+                },
+                {
+                  "id": "NOT.3.5-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Zusätzliche Mobilfunkverträge für Schlüsselpersonal sind vorhanden.",
+                  "parts": [
+                    {
+                      "id": "NOT.3.5-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Stellen Sie dedizierte Notfall-Handys bereit."
+                    },
+                    {
+                      "id": "NOT.3.5-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Inventur der vorhandenen Notfall-Kommunikationsmittel."
+                    }
+                  ]
+                },
+                {
+                  "id": "NOT.3.5-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Notfallplanung SOLLTE Ausweich-Telekommunikationsdienste verankern.",
+                  "parts": [
+                    {
+                      "id": "NOT.3.5-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Etablieren Sie formale Ausweichdienste für die Telekommunikation."
+                    },
+                    {
+                      "id": "NOT.3.5-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Verträge und Verfügbarkeit der Ausweichdienste."
+                    }
+                  ]
+                },
+                {
+                  "id": "NOT.3.5-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Redundante Carrier-Anbindungen und alternative Funktechnologien.",
+                  "parts": [
+                    {
+                      "id": "NOT.3.5-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Nutzen Sie Satellitentelefonie oder Richtfunk als Backup."
+                    },
+                    {
+                      "id": "NOT.3.5-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Technischer Test der Umschaltung auf alternative Kanäle."
+                    }
+                  ]
+                },
+                {
+                  "id": "NOT.3.5-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Vollintegriertes, automatisiertes Failover-Netzwerk für Sprach- und Datenkommunikation.",
+                  "parts": [
+                    {
+                      "id": "NOT.3.5-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Implementieren Sie SD-WAN mit automatischer Provider-Umschaltung."
+                    },
+                    {
+                      "id": "NOT.3.5-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Automatisierte Überprüfung der Leitungsredundanz via Monitoring-Tool."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): NOT.3.5 verankert Ausweich-Telekommunikationsdienste (Out-of-Band-Kommunikation) für Notfälle, um insbesondere die sichere Koordination und Entscheidungsfindung der zuständigen Mitarbeiter bei Kompromittierung primärer Kanäle zu gewährleisten. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.4.5",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "NOT.4.5_stm",
+              "parts": [
+                {
+                  "id": "NOT.4.5-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Langfristig benötigte Daten (z. B. forensische Beweise nach Vorfällen) werden nur ad-hoc und ohne festes Konzept archiviert."
+                },
+                {
+                  "id": "NOT.4.5-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Die Archivierung langfristig benötigter Daten erfolgt manuell auf dedizierten Speichermedien nach grundlegenden Vorgaben."
+                },
+                {
+                  "id": "NOT.4.5-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Notfallplanung für Daten SOLLTE die Archivierung langfristig benötigter Daten {{ insert: param, not.4.5-prm1 }} ausführen."
+                },
+                {
+                  "id": "NOT.4.5-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Die Archivierung erfolgt automatisiert auf unveränderlichen Speichern (WORM) inklusive regelmäßiger Integritätsprüfungen mittels kryptografischer Prüfsummen."
+                },
+                {
+                  "id": "NOT.4.5-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Ein hochautomatisiertes Archivierungssystem sichert Daten revisionssicher, redundant und verschlüsselt mit kontinuierlicher Selbstheilung und automatisierten Wiederherstellungstests."
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz niedrig, Checker bestaetigt): NOT.4.5 regelt die Archivierung langfristig benötigter Daten, was den Teilaspekt der geeigneten Archivierung von Beweismitteln (S4) berührt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "REA.2.5",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "REA.2.5_stm",
+              "parts": [
+                {
+                  "id": "REA.2.5-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Forensik beschränkt sich auf das Sichten von Log-Dateien.",
+                  "parts": [
+                    {
+                      "id": "REA.2.5-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Durchsuchen Sie lokale Logs nach Anomalien."
+                    },
+                    {
+                      "id": "REA.2.5-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Log-History. 'grep \"error\" /var/log/syslog'"
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.2.5-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Nutzung von Standard-Forensik-Tools auf Live-Systemen.",
+                  "parts": [
+                    {
+                      "id": "REA.2.5-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Führen Sie Tools zur Speicheranalyse manuell aus."
+                    },
+                    {
+                      "id": "REA.2.5-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Sichtung der installierten Tools. 'which vol.py'"
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.2.5-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Sicherheitsvorfallsbehandlung SOLLTE eine forensische Analyse bei Vorfällen, die {{ insert: param, rea.2.5-prm1 }} erfüllen, ausführen.",
+                  "parts": [
+                    {
+                      "id": "REA.2.5-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Forensik sichert Fakten für rechtliche oder technische Klärung."
+                    },
+                    {
+                      "id": "REA.2.5-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung forensischer Berichte. Befehl: 'ls /data/forensics/cases/'"
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.2.5-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Dedizierte forensische Workstations und Offline-Analysen.",
+                  "parts": [
+                    {
+                      "id": "REA.2.5-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Führen Sie Analysen in isolierten Umgebungen durch."
+                    },
+                    {
+                      "id": "REA.2.5-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Besichtigung der Labor-Hardware. Prüfung der Netzwerkisolierung."
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.2.5-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Technical",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Automatisierte forensische Beweissicherung per API-Trigger.",
+                  "parts": [
+                    {
+                      "id": "REA.2.5-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Nutzen Sie Cloud-APIs für sofortige Disk-Snapshots bei Alarm."
+                    },
+                    {
+                      "id": "REA.2.5-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Review der API-Logs. 'curl -s https://cloud-provider/audit'"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): Die Maßnahme REA.2.5 fordert die Durchführung einer forensischen Analyse bei relevanten Vorfällen und deckt damit die Bereitstellung forensischer Untersuchungsergebnisse für das weitere Vorgehen inhaltlich ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): Die G++-Maßnahme REA.2.5 fordert die generelle Durchführung einer forensischen Analyse bei relevanten Sicherheitsvorfällen und deckt damit die in Satz 4 geforderte forensische Analyse zur Bestimmung des Vorfallsausmaßes ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "REA.2.6",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "REA.2.6_stm",
+              "parts": [
+                {
+                  "id": "REA.2.6-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Ursachenanalyse erfolgt ad-hoc nach größeren Störungen.",
+                  "parts": [
+                    {
+                      "id": "REA.2.6-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Besprechen Sie die Ursache im kleinen Kreis."
+                    },
+                    {
+                      "id": "REA.2.6-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Sichtung formloser Besprechungsnotizen."
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.2.6-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Nutzung eines Standardformulars für die Ursachenanalyse.",
+                  "parts": [
+                    {
+                      "id": "REA.2.6-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Führen Sie strukturierte Root-Cause-Analysen durch."
+                    },
+                    {
+                      "id": "REA.2.6-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung ausgefüllter RCA-Formulare. 'ls /archive/rca/'"
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.2.6-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Sicherheitsvorfallsbehandlung SOLLTE eine Vorgehensweise zur Ursachenanalyse und Behandlung verankern.",
+                  "parts": [
+                    {
+                      "id": "REA.2.6-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Nur die Behebung der Ursache verhindert Wiederholungen."
+                    },
+                    {
+                      "id": "REA.2.6-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Audit der Korrekturmaßnahmen. Befehl: 'grep \"remediation\" incidents.db'"
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.2.6-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Ursachenanalyse mit direkter Maßnahmenverfolgung im ISMS.",
+                  "parts": [
+                    {
+                      "id": "REA.2.6-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Verknüpfen Sie Incident-Ursachen mit dem Risikomanagement."
+                    },
+                    {
+                      "id": "REA.2.6-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung des Action-Trackers. 'curl https://isms/api/actions'"
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.2.6-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Automatisierte Feedback-Loops optimieren Präventionssysteme.",
+                  "parts": [
+                    {
+                      "id": "REA.2.6-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Nutzen Sie RCA-Ergebnisse zum Update von SIEM-Rules und Policies."
+                    },
+                    {
+                      "id": "REA.2.6-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Nachweis der Regeländerungen basierend auf RCA-Reports."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2,3,8): Satz 2 fordert konkrete Entscheidungen zur Vorfallsbehandlung (Entfernung von Schadsoftware, Neuinstallation oder Austausch von IT-Systemen), was sich direkt mit den Behandlungsmethoden der Maßnahme REA.2.6 deckt. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A3",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): REA.2.6 fordert die Ursachenanalyse und anschließende Behandlung von Sicherheitsvorfällen, was explizit das Schließen ausgenutzter Sicherheitslücken und Schwachstellen umfasst. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A6",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A9",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1,2): REA.2.6 verlangt die Verankerung einer Vorgehensweise zur Vorfallsbehandlung, welche als allgemeinere Fassung ausdrücklich auch den Austausch betroffener Systeme zur Bereinigung umfasst. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "REA.2.6.3",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "REA.2.6.3_stm",
+              "parts": [
+                {
+                  "id": "REA.2.6.3-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Die Koordinierung erfolgt unstrukturiert durch Zuruf zwischen IT-Mitarbeitern.",
+                  "parts": [
+                    {
+                      "id": "REA.2.6.3-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Nutzen Sie Sofortnachrichten-Kanäle zur Abstimmung während eines Vorfalls."
+                    },
+                    {
+                      "id": "REA.2.6.3-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Beobachtung der Zusammenarbeit bei einer simulierten Störung."
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.2.6.3-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Ein technischer Lead wird pro Vorfall bestimmt, um die Aktivitäten grob zu steuern.",
+                  "parts": [
+                    {
+                      "id": "REA.2.6.3-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Benennen Sie für jeden Vorfall einen Koordinator (Incident Commander)."
+                    },
+                    {
+                      "id": "REA.2.6.3-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Rollenzuweisung in vergangenen Vorfallsprotokollen."
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.2.6.3-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Sicherheitsvorfallsbehandlung SOLLTE die Koordinierung bei Vorfällen verankern.",
+                  "parts": [
+                    {
+                      "id": "REA.2.6.3-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Etablieren Sie eine zentrale Instanz (z. B. CSIRT), die alle Reaktionsmaßnahmen steuert."
+                    },
+                    {
+                      "id": "REA.2.6.3-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Überprüfung der Prozessbeschreibung zur Vorfallskoordination."
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.2.6.3-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Ein dediziertes Incident Command System (ICS) definiert klare Rollen für Fachabteilungen.",
+                  "parts": [
+                    {
+                      "id": "REA.2.6.3-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Führen Sie regelmäßige Koordinationsübungen mit verschiedenen IT-Teams durch."
+                    },
+                    {
+                      "id": "REA.2.6.3-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Review der Protokolle von Incident-Response-Übungen."
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.2.6.3-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Operation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Die Koordinierung erfolgt plattformgestützt mit dynamischer Ressourcenplanung und Echtzeit-Lagebild.",
+                  "parts": [
+                    {
+                      "id": "REA.2.6.3-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Setzen Sie SOAR-Lösungen ein, um Aufgaben automatisch an verfügbare Experten zu verteilen."
+                    },
+                    {
+                      "id": "REA.2.6.3-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Dashboard-Funktionalität für das Echtzeit-Lagebild im SOC."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Satz 1 fordert die Einrichtung eines Leitungsgremiums, das alle Aktivitäten zur Bereinigung eines Sicherheitsvorfalls koordiniert, was sich direkt mit der Maßnahme zur Koordinierung bei Vorfällen überschneidet."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "REA.2.6.5",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "REA.2.6.5_stm",
+              "parts": [
+                {
+                  "id": "REA.2.6.5-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Eskalation erfolgt nur bei massivem Druck oder völligem Stillstand.",
+                  "parts": [
+                    {
+                      "id": "REA.2.6.5-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Rufen Sie den IT-Leiter an, wenn Sie nicht mehr weiterwissen."
+                    },
+                    {
+                      "id": "REA.2.6.5-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Befragung der Techniker zur Eskalationspraxis."
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.2.6.5-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Es existiert eine einfache Liste, wen man bei Problemen informieren kann.",
+                  "parts": [
+                    {
+                      "id": "REA.2.6.5-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Dokumentieren Sie Telefonnummern der Vorgesetzten für den Notfall."
+                    },
+                    {
+                      "id": "REA.2.6.5-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Sichtung der Notfall-Kontaktliste."
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.2.6.5-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Sicherheitsvorfallsbehandlung SOLLTE eine Eskalationsleiter verankern.",
+                  "parts": [
+                    {
+                      "id": "REA.2.6.5-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Legen Sie klare Kriterien und Hierarchiestufen für die fachliche und disziplinarische Eskalation fest."
+                    },
+                    {
+                      "id": "REA.2.6.5-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Audit des Eskalationsmodells auf Vollständigkeit und Verständlichkeit."
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.2.6.5-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Zeitgesteuerte, automatisierte Eskalations-Workflows im Ticketsystem sind aktiv.",
+                  "parts": [
+                    {
+                      "id": "REA.2.6.5-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Richten Sie im ITSM-Tool automatische Benachrichtigungen an das Management nach X Stunden ein."
+                    },
+                    {
+                      "id": "REA.2.6.5-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Eskalationsregeln in der Ticketing-Software-Konfiguration."
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.2.6.5-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Intelligente Eskalation basierend auf Impact-Analyse und Verfügbarkeit von Experten.",
+                  "parts": [
+                    {
+                      "id": "REA.2.6.5-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Nutzen Sie On-Call-Management-Systeme zur automatischen Eskalation an den Bereitschaftsdienst."
+                    },
+                    {
+                      "id": "REA.2.6.5-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Simulation einer Nicht-Reaktion und Prüfung der automatischen Eskalation an die nächste Stufe."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 7): Die Maßnahme fordert allgemein eine Eskalationsleiter, deckt aber die spezifische Pflicht zur Berichterstattung des APT-Leitungsgremiums an den Krisenstab nicht vollständig ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "REA.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "REA.3.1_stm",
+              "parts": [
+                {
+                  "id": "REA.3.1-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Maßnahmen werden nur nach schwerwiegenden Vorfällen ohne Systematik besprochen.",
+                  "parts": [
+                    {
+                      "id": "REA.3.1-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Sprechen Sie im Team kurz über die Ursache eines großen Ausfalls."
+                    },
+                    {
+                      "id": "REA.3.1-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung, ob nach dem letzten Major Incident Änderungen vorgenommen wurden."
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.3.1-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Ein einfacher Lessons-Learned-Bericht wird nach Vorfällen erstellt.",
+                  "parts": [
+                    {
+                      "id": "REA.3.1-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Halten Sie die wichtigsten Erkenntnisse in einem Protokoll fest."
+                    },
+                    {
+                      "id": "REA.3.1-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Einsicht in die Protokolle der letzten drei Vorfall-Nachbesprechungen."
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.3.1-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Sicherheitsvorfallsbehandlung SOLLTE bisherige Maßnahmen anhand von Erkenntnissen aus Informationssicherheitsvorfällen {{ insert: param, rea.3.1-prm1 }} überprüfen.",
+                  "parts": [
+                    {
+                      "id": "REA.3.1-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Führen Sie strukturierte Reviews durch, um Schwachstellen im Prozess zu identifizieren und zu beheben."
+                    },
+                    {
+                      "id": "REA.3.1-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Überprüfung des kontinuierlichen Verbesserungsprozesses (KVP) für die Vorfallsbehandlung."
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.3.1-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Maßnahmenpläne werden nach jedem Vorfall automatisch getrackt und deren Umsetzung überwacht.",
+                  "parts": [
+                    {
+                      "id": "REA.3.1-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Nutzen Sie ein Maßnahmen-Tracking-Tool zur Überwachung der Korrekturmaßnahmen."
+                    },
+                    {
+                      "id": "REA.3.1-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung des Status offener Maßnahmen aus vergangenen Vorfällen."
+                    }
+                  ]
+                },
+                {
+                  "id": "REA.3.1-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Feedback-Schleifen sind direkt in die SIEM/SOAR-Konfiguration integriert (Infrastructure as Code).",
+                  "parts": [
+                    {
+                      "id": "REA.3.1-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Automatisieren Sie die Anpassung von Detektionsregeln basierend auf False-Positive-Analysen."
+                    },
+                    {
+                      "id": "REA.3.1-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Nachweis der automatisierten Regelanpassung im SOC-System."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): REA.3.1 beinhaltet die Berücksichtigung menschlicher Faktoren bei der Überprüfung von Maßnahmen, fordert jedoch eine regelmäßige Überprüfung statt der verpflichtenden Einführung konkreter Schutzmaßnahmen nach Fehlhandlungen. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): REA.3.1 fordert die Überprüfung von Maßnahmen anhand technischer Erkenntnisse aus Vorfällen und überschneidet sich mit der Nutzung forensischer Ergebnisse zur Systemhärtung nach APT-Angriffen. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A10",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "UMS.1.1_stm",
+              "parts": [
+                {
+                  "id": "UMS.1.1-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Audit",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Der Umsetzungsstatus wird nur für einzelne, kritische Anforderungen sporadisch ermittelt.",
+                  "parts": [
+                    {
+                      "id": "UMS.1.1-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Fokussieren Sie sich auf die offensichtlichsten Sicherheitslücken."
+                    },
+                    {
+                      "id": "UMS.1.1-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung vorhandener Notizen. Automatisierung: `grep -r 'TODO' ./compliance_checks/`."
+                    }
+                  ]
+                },
+                {
+                  "id": "UMS.1.1-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Audit",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Der Umsetzungsstatus wird tabellarisch auf Basis von Selbstauskünften der Fachabteilungen erfasst.",
+                  "parts": [
+                    {
+                      "id": "UMS.1.1-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Verwenden Sie einfache Tabellen zur Konsolidierung der Statusmeldungen."
+                    },
+                    {
+                      "id": "UMS.1.1-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Einsicht in die Statustabelle. Automatisierung: `wc -l implementation_status.csv` zur Prüfung der Vollständigkeit."
+                    }
+                  ]
+                },
+                {
+                  "id": "UMS.1.1-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Audit",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Umsetzung MUSS den Umsetzungsstatus der Anforderungen im Anforderungspaket vollständig {{ insert: param, ums.1.1-prm1 }} überprüfen.",
+                  "parts": [
+                    {
+                      "id": "UMS.1.1-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Stellen Sie sicher, dass jede Anforderung im Paket einzeln bewertet und der Status belegt ist."
+                    },
+                    {
+                      "id": "UMS.1.1-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Abgleich des Pakets mit der Statusliste. Automatisierung: `python validate_coverage.py --package requirements.json`."
+                    }
+                  ]
+                },
+                {
+                  "id": "UMS.1.1-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Audit",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Ein zentrales Dashboard visualisiert den Umsetzungsstatus in Echtzeit basierend auf aggregierten Daten.",
+                  "parts": [
+                    {
+                      "id": "UMS.1.1-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Nutzen Sie GRC-Tools zur Aggregation der Statusinformationen aus verschiedenen Quellen."
+                    },
+                    {
+                      "id": "UMS.1.1-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Demonstration des Dashboards. Automatisierung: API-Abfrage `curl -X GET https://grc-tool/api/status`."
+                    }
+                  ]
+                },
+                {
+                  "id": "UMS.1.1-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Audit",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Der Umsetzungsstatus wird durch automatisierte technische Kontrollen kontinuierlich validiert und verifiziert.",
+                  "parts": [
+                    {
+                      "id": "UMS.1.1-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Verknüpfen Sie Anforderungen direkt mit technischen Scans (z.B. OpenSCAP)."
+                    },
+                    {
+                      "id": "UMS.1.1-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Scan-Reports. Automatisierung: `oscap xccdf eval --profile standard ssg-rhel8-ds.xml`."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A7",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "UMS.3.1_stm",
+              "parts": [
+                {
+                  "id": "UMS.3.1-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Zuständigkeiten werden informell und meist erst bei Bedarf zugewiesen.",
+                  "parts": [
+                    {
+                      "id": "UMS.3.1-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Zuweisungen können mündlich erfolgen."
+                    },
+                    {
+                      "id": "UMS.3.1-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung von E-Mails auf Zuweisungen. Automatisierung: `grep -i 'assign' mailbox_dump.txt`."
+                    }
+                  ]
+                },
+                {
+                  "id": "UMS.3.1-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Zuständige werden in einer zentralen, statischen RACI-Matrix oder Liste benannt.",
+                  "parts": [
+                    {
+                      "id": "UMS.3.1-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Führen Sie eine einfache Tabelle mit Namen und Aufgaben."
+                    },
+                    {
+                      "id": "UMS.3.1-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Sichtung der RACI-Matrix. Automatisierung: `grep -v 'TBD' responsibilities.csv`."
+                    }
+                  ]
+                },
+                {
+                  "id": "UMS.3.1-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Umsetzung MUSS Zuständige für die Umsetzung der bisher nicht erfüllten Anforderungen eindeutig zuweisen.",
+                  "parts": [
+                    {
+                      "id": "UMS.3.1-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Eindeutigkeit der Zuweisungen im Maßnahmenplan. Automatisierung: `jq '.[] | select(.owner == null)' tasks.json`."
+                    }
+                  ]
+                },
+                {
+                  "id": "UMS.3.1-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Zuständigkeiten sind direkt im Projektmanagement-Tool mit Benachrichtigungsfunktionen hinterlegt.",
+                  "parts": [
+                    {
+                      "id": "UMS.3.1-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Nutzen Sie Rollen statt Einzelpersonen zur Erhöhung der Resilienz."
+                    },
+                    {
+                      "id": "UMS.3.1-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Rollenzuweisungen im Tool. Automatisierung: LDAP-Abgleich der Projektmitglieder via `ldapsearch`."
+                    }
+                  ]
+                },
+                {
+                  "id": "UMS.3.1-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Verantwortlichkeiten werden dynamisch über Code-Owner-Files in Git-Repositories gesteuert und erzwungen.",
+                  "parts": [
+                    {
+                      "id": "UMS.3.1-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Implementieren Sie 'CODEOWNERS' zur automatischen Zuweisung von Approvern."
+                    },
+                    {
+                      "id": "UMS.3.1-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der CODEOWNERS-Dateien. Automatisierung: `git check-ignore -v CODEOWNERS`."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A7",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "VRB.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "VRB.4.1_stm",
+              "parts": [
+                {
+                  "id": "VRB.4.1-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Korrekturen konzentrieren sich auf die schnelle Behebung von Symptomen.",
+                  "parts": [
+                    {
+                      "id": "VRB.4.1-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Beheben Sie den unmittelbaren Fehler, um den Betrieb wiederherzustellen."
+                    },
+                    {
+                      "id": "VRB.4.1-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfen Sie Fehlerprotokolle auf Wiederholungsfehler desselben Typs."
+                    }
+                  ]
+                },
+                {
+                  "id": "VRB.4.1-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Korrekturmaßnahmen werden für jeden Fehler individuell festgelegt.",
+                  "parts": [
+                    {
+                      "id": "VRB.4.1-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Stellen Sie sicher, dass nach einem Fehler eine Reparatur erfolgt."
+                    },
+                    {
+                      "id": "VRB.4.1-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Sichten Sie Reparaturbelege oder Ticket-Abschlüsse. Check: `status: resolved`."
+                    }
+                  ]
+                },
+                {
+                  "id": "VRB.4.1-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Verbesserung MUSS angemessene Korrekturmaßnahmen zur Beseitigung der Ursachen von Fehlern festlegen.",
+                  "parts": [
+                    {
+                      "id": "VRB.4.1-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Maßnahmen müssen darauf abzielen, das Grundproblem dauerhaft zu lösen, nicht nur den Effekt."
+                    },
+                    {
+                      "id": "VRB.4.1-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfen Sie den Maßnahmenplan auf Ursachenbezug. Check: Link zwischen RCA und Maßnahme."
+                    }
+                  ]
+                },
+                {
+                  "id": "VRB.4.1-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Die Wirksamkeit von Korrekturmaßnahmen wird nach Abschluss formal validiert.",
+                  "parts": [
+                    {
+                      "id": "VRB.4.1-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Führen Sie nach der Korrektur einen Test durch, um die dauerhafte Lösung zu bestätigen."
+                    },
+                    {
+                      "id": "VRB.4.1-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfen Sie Testprotokolle nach Korrekturen. Tooling: Regressionstests via `pytest`."
+                    }
+                  ]
+                },
+                {
+                  "id": "VRB.4.1-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Operational",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Automatisierte Self-Healing-Skripte korrigieren bekannte Fehlerursachen sofort.",
+                  "parts": [
+                    {
+                      "id": "VRB.4.1-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Implementieren Sie Automatisierung, die bei Detektion bekannter Fehlkonfigurationen eingreift."
+                    },
+                    {
+                      "id": "VRB.4.1-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfen Sie Automation-Logs. Check: `ansible-playbook --check remediation.yml`."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.2.3.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,2): VRB.4.1 fordert übergreifend die Festlegung von Korrekturmaßnahmen zur Beseitigung von Fehlerursachen, während S1 das konkrete Schließen einer ausgenutzten technischen Schwachstelle im Vorfallkontext verlangt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

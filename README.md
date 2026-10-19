@@ -26,7 +26,7 @@ Das Repository umfasst insbesondere folgende Bereiche:
 - [`one-page-apps`](./one-page-apps) – eigenständige Einzelwerkzeuge in je einer HTML-Datei (SSP-Generator Edition 2023, C5 → OSCAL, Mindeststandard → OSCAL)
 - [`kataloge`](./kataloge) – produktive OSCAL-Kataloge zu anderen Themen
 - [`mindeststandards`](./mindeststandards) – die Mindeststandards des BSI als OSCAL-Profil, Ergänzungskatalog und aufgelöster Katalog auf dem Anwenderkatalog Grundschutz++, mit Prüfskript
-- [`ED23-Baustein-profile`](./ED23-Baustein-profile) – OSCAL-Profile je Baustein des IT-Grundschutz Edition 2023
+- [`ED23-Baustein-profile`](./ED23-Baustein-profile) – OSCAL-Profile je Baustein des IT-Grundschutz Edition 2023 (BSI-Bausteine und die 12 nutzergenerierten Bausteine „NG“ von NTT DATA, mit gemeinsamem NG-Ergänzungskatalog und Prüfskript)
 - [`Zielobjektkategorien`](./Zielobjektkategorien) – OSCAL-Profile je Zielobjektkategorie, getrennt nach Prozessen und regulären Zielobjekten
 - [`hilfsdateien`](./hilfsdateien) – Mapping-, Referenz- und Arbeitsdateien zur Unterstützung der Werkzeuge und Inhalte
 - [`beispiel-kataloge`](./beispiel-kataloge) – Beispielkataloge im OSCAL-Format für Demonstration, Tests und Experimente
@@ -228,7 +228,7 @@ Diese Kataloge sind in das OSCAL Katalog Format konvertierte Sicherheitsstandard
 
 ### `ED23-Baustein-profile`
 
-Dieses Verzeichnis enthält OSCAL-Profile, die auf den Bausteinen des BSI IT-Grundschutz Edition 2023 basieren. Die Dateien liegen unter `DE/`.
+Dieses Verzeichnis enthält OSCAL-Profile, die auf den Bausteinen des BSI IT-Grundschutz Edition 2023 basieren, erzeugt von `Gpp-ai-tool`. Die Dateien liegen unter `DE/`, dazu das Prüfskript `pruefe_export.py`.
 
 #### Zweck
 
@@ -237,10 +237,15 @@ Die Profile in diesem Verzeichnis dienen als Grundlage für:
 - Die automatisierte Erstellung und Anreicherung von System Security Plans (SSP).
 - Die detaillierte Dokumentation von Umsetzungsmaßnahmen.
 - Die Durchführung von Audits auf Basis von Reifegraden (Maturity Levels).
+- Den Übertrag eines Bausteins der Edition 2023 nach Grundschutz++: Anforderung für Anforderung, mit Herkunft.
 
 #### Inhalt
 
-Die Dateien sind nach Schicht und Baustein benannt (`anwendungen_APP.4.2_sap-erp-system.json`). Zu jedem Baustein gibt es zwei Fassungen: die schlichte und eine mit dem Zusatz `_enhanced`, die über die reinen Anforderungen hinaus konkrete Implementierungsvorschläge und Prüfhinweise liefert.
+Die Dateien sind nach Zielobjektkategorie und Baustein benannt (`<kategorie>_<ID>_<titel>.json`, z. B. `anwendungen_APP.4.2_sap-erp-system.json`). Zu jedem Baustein gibt es zwei Fassungen: die schlichte und eine mit dem Zusatz `_enhanced`, die je Control des Anwenderkatalogs die Reifegrad-Beschreibungen (Stufen 1–5) mit Umsetzungs- und Prüfhinweisen trägt.
+
+Ein Profil folgt dem Muster der Mindeststandard-Profile (Handbuch 3.15/3.16): `imports[0]` ist der gepinnte Anwenderkatalog Grundschutz++ mit genau den Controls, die den Anforderungen des Bausteins zugeordnet sind; `merge.custom` bildet den Baustein ab (Stufen Basis/Standard/erhöht, darunter je Anforderung eine Gruppe mit dem amtlichen Wortlaut als Part `overview` und ihren Controls per `insert-controls`); `modify.alters` nennt je Control die Anforderungen mit `Herkunft:`-Remark (Mapping, Satzabdeckung, GSMap, Prozessmapping oder KI-Vorschlag mit Checker-Urteil). Anforderungen, für die der Anwenderkatalog nichts bietet, bekommen ein neues Control im gemeinsamen `DE/NG-ergaenzungskatalog.json`; das Profil importiert ihn als `imports[1]` mit relativem rlink und SHA-256 (fail closed), `merge.combine.method = use-first`.
+
+**NG = Nutzergenerierte Inhalte.** Alles, was nicht vom BSI stammt, ist so markiert: die 12 Bausteine von NTT DATA (APP.4.5, APP.4.7, APP.4.8, APP.4.9, APP.4.10, SYS.1.10, SYS.1.11, SYS.1.2.4, SYS.5.1, ORP.6, OPS.1.1.8, DER.7) als `NG_<kategorie>_<ID>_<titel>.json` mit Titel `NG …`, jedes neue Control als `NG-<AnforderungsID>` mit Titel `NG: …`, und jedes Profil und der Katalog mit der Metadata-Prop `herkunft` (`BSI` oder `NG`) im Namespace [`ed23-baustein`](./Dokumentation/namespaces/ed23_baustein_props.md). Sieben Prozess-Bausteine ohne eigene Praktik in Grundschutz++ (DER.3.1, DER.3.2, DER.2.2, DER.2.3, DER.4, OPS.1.2.2, CON.11.1) werden wie System-Bausteine übertragen; die übrigen Prozess-Bausteine tragen die Praktiken-Profile unter `Zielobjektkategorien/profile/process/`.
 
 ---
 
@@ -357,7 +362,7 @@ Die Verzeichnisse sind bewusst so angelegt, dass sie zusammen einen nachvollzieh
 
 1. **Katalog wählen** – Basiskatalog in `kataloge/` identifizieren.
 2. **Inhalte auswählen** – passende Zielobjektkategorie in `Zielobjektkategorien/` identifizieren.
-3. **Umsetzung festlegen** – passende Baustein-Profile aus `ED23-Baustein-profile/` wählen.
+3. **Umsetzung festlegen** – passende Baustein-Profile aus `ED23-Baustein-profile/` wählen (NG-Bausteine und NG-Controls sind markiert).
 4. **Grundlage modellieren** – mit den Apps in `GS++-oscal-app/` Profile und SSPs erzeugen bzw. bearbeiten.
 5. **Hilfsdaten einbinden** – Referenz- und Mapping-Dateien aus `hilfsdateien/` zur Unterstützung von Zuordnung, Parsing oder Kontextualisierung nutzen.
 6. **Automatisieren und anreichern** – mit `Gpp-ai-tool/` Profile, Zuordnungen oder ergänzende Beschreibungen programmatisch erzeugen.
