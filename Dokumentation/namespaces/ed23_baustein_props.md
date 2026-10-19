@@ -47,6 +47,7 @@ neuen Controls sind NG.
 | `entfallen` | Anforderungsgruppe | die Anforderung ist im Kompendium entfallen (Gruppe ohne Text und Controls) | `true` |
 | `ed23-anforderung` | `modify.alters[].adds[].props` am Control des Anwenderkatalogs; Prop am NG-Control | die Anforderung, der das Control zugeordnet ist; Remark beginnt mit `Herkunft:` (siehe unten) | Anforderungs-ID |
 | `praktik` | NG-Control | Praktik des Anwenderkatalogs, in die das Control gehört; Remark = Klartext | Praktik-Kürzel (`KONF`, `DET`, …) |
+| `checker` | NG-Control | Urteil des Checkers zum neuen Control; Remark = `Checker: <Begründung>` und/oder `Hinweis: <deterministischer Hinweis>` (OSCAL erlaubt kein `remarks` am Control) | `bestaetigt` \| `fraglich` \| `nicht geprüft` |
 
 Fremde Namespaces an denselben Stellen: `level` (ns `https://www.bsi.bund.de/ns/grundschutz`,
 `1`/`3`/`5` = Basis/Standard/erhöht), `modal_verb`, `target_object_categories`, `sec_level`

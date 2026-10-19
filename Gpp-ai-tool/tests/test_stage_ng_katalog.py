@@ -37,6 +37,8 @@ def test_builder_groups_marks_and_formats_controls():
     assert props["herkunft"]["value"] == "NG" and props["herkunft"]["ns"] == ED23_BAUSTEIN_NS
     assert props["ed23-anforderung"]["value"] == "SYS.1.1.A9" and props["ed23-anforderung"]["remarks"].startswith("Herkunft:")
     assert props["sec_level"]["value"] == "normal-SdT" and props["level"]["value"] == "1"
+    assert props["checker"]["ns"] == ED23_BAUSTEIN_NS and props["checker"]["value"] in ("bestaetigt", "fraglich", "nicht geprüft")
+    assert "remarks" not in c  # OSCAL 1.2.2: a control has no remarks; the checker text is a prop
     stm = c["parts"][0]
     assert stm["id"] == "NG-SYS.1.1.A9_stm" and {p["name"]: p["value"] for p in stm["props"]} == {
         "target_object_categories": "IT-Systeme", "modal_verb": "MUSS"}

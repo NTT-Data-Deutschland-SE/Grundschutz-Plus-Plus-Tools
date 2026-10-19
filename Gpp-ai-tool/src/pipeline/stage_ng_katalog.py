@@ -86,6 +86,11 @@ def build_ng_control(anf_id: str, rec: Dict[str, Any], gpp_titles: Dict[str, str
     ]
     if rec.get("level_num"):
         props.append(_prop("level", str(rec["level_num"]), BSI_GRUNDSCHUTZ_NS))
+    # OSCAL allows no `remarks` on a control: the checker's verdict and reasoning live in a prop.
+    checker_remark = " ".join(
+        s for s in (f"Checker: {nc['checker_begruendung']}" if nc.get("checker_begruendung") else "",
+                    f"Hinweis: {nc['hinweis']}" if nc.get("hinweis") else "") if s) or None
+    props.append(_prop("checker", nc.get("checker") or "nicht geprüft", ED23_BAUSTEIN_NS, checker_remark))
     stm_props = []
     if nc.get("zielobjektkategorien"):
         stm_props.append(_prop("target_object_categories", ", ".join(nc["zielobjektkategorien"]), SDT_TARGET_OBJECT_NS))
@@ -101,10 +106,6 @@ def build_ng_control(anf_id: str, rec: Dict[str, Any], gpp_titles: Dict[str, str
     ]
     if links:
         control["links"] = links
-    if nc.get("checker_begruendung") or nc.get("hinweis"):
-        control["remarks"] = " ".join(
-            s for s in (f"Checker: {nc['checker_begruendung']}" if nc.get("checker_begruendung") else "",
-                        f"Hinweis: {nc['hinweis']}" if nc.get("hinweis") else "") if s)
     return control
 
 
