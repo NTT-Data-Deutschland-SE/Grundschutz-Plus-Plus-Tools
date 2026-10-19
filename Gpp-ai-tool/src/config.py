@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     # --- Model: one id, quality and cost via thinking level ---
     gemini_model: str = Field(default="gemini-4-argon", alias="GEMINI_MODEL")
     maker_thinking_level: str = Field(default="medium", alias="MAKER_THINKING_LEVEL")
-    checker_thinking_level: str = Field(default="high", alias="CHECKER_THINKING_LEVEL")
+    checker_thinking_level: str = Field(default="medium", alias="CHECKER_THINKING_LEVEL")
     max_output_tokens: int = Field(default=65_536, alias="MAX_OUTPUT_TOKENS")
     max_concurrent_ai_requests: int = Field(default=5, alias="MAX_CONCURRENT_AI_REQUESTS")
     api_max_retries: int = Field(default=5, alias="API_MAX_RETRIES")

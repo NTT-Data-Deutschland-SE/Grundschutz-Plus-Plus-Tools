@@ -39,9 +39,9 @@ The tool is configured via environment variables, read by the typed `Settings` c
 | `REGION` | Location: `global`, `eu` or `us` (Argon is served on all three) | `global` |
 | `GEMINI_MODEL` | The one model id. Cost and quality are set per call by the thinking level, never by a second model | `gemini-4-argon` |
 | `MAKER_THINKING_LEVEL` | Thinking level (`low`/`medium`/`high`) of the maker and enrichment calls (candidates, maturity texts) | `medium` |
-| `CHECKER_THINKING_LEVEL` | Thinking level of the checker/verifier calls and of judgment-heavy mapping (prozessbausteine) | `high` |
+| `CHECKER_THINKING_LEVEL` | Thinking level of the checker/verifier calls and of judgment-heavy mapping (prozessbausteine); on Argon `high` buys little over `medium` and triples the wall-clock | `medium` |
 | `MAX_OUTPUT_TOKENS` | Output budget per call, thinking tokens included (>= 32768; above 65536 the SDK runs long decode) | `65536` |
-| `MAX_CONCURRENT_AI_REQUESTS` | Size of the parallel call pool (lower it on persistent 429s) | `5` |
+| `MAX_CONCURRENT_AI_REQUESTS` | Size of the parallel call pool (lower it on persistent 429s; 20 is fine on Argon pay-as-you-go and cuts the checker phase to a quarter) | `5` |
 | `API_MAX_RETRIES` | Retries per call for transient errors and schema violations together (max 5) | `5` |
 | `TEST` | `true`: a few items per stage, no credentials needed | `false` |
 | `OVERWRITE_TEMP_FILES` | `true`: regenerate existing outputs (CLI alias `--fresh`) | `false` |
