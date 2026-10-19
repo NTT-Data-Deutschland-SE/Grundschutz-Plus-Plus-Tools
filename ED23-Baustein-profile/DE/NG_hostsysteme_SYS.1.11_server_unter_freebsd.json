@@ -1,0 +1,1412 @@
+{
+  "profile": {
+    "uuid": "6e083cf8-a699-5958-b862-3c2e63d554b3",
+    "metadata": {
+      "title": "NG SYS.1.11 – Server unter FreeBSD (Hostsysteme)",
+      "last-modified": "2026-10-19T01:09:29.702060+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "NG"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "SYS.1.11"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Server unter FreeBSD"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Hostsysteme"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "system"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, SYS.1.11, NG, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein SYS.1.11 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe, NG-Baustein)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (Text des nutzergenerierten Bausteins (NG, NTT DATA), kein BSI-Text); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls."
+    },
+    "imports": [
+      {
+        "href": "#afe1c75e-8725-5df2-a57b-235d7d5236f4",
+        "include-controls": [
+          {
+            "with-ids": [
+              "ARCH.7.1",
+              "BER.3.16",
+              "BER.6.4",
+              "DET.3.1.6",
+              "DET.5.10",
+              "DET.5.10.2",
+              "DET.5.3",
+              "KONF.2.1",
+              "KONF.2.2",
+              "KONF.2.4",
+              "KONF.2.9",
+              "KONF.3.2",
+              "KONF.4.3",
+              "KONF.4.4",
+              "KONF.6.1",
+              "KONF.6.1.2",
+              "KONF.6.4",
+              "KONF.7.15",
+              "KONF.7.16",
+              "KONF.9.1",
+              "KONF.9.2",
+              "NOT.4.2",
+              "NOT.4.4",
+              "TEST.3.1.2",
+              "TEST.3.1.3"
+            ]
+          }
+        ]
+      }
+    ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "SYS.1.11-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "SYS.1.11.A1",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.11.A1 Planung des Server-Betriebs unter FreeBSD",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.11.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.11.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Vor der Installation wird geplant, wie der FreeBSD-Server in die bestehende Infrastruktur integriert werden soll. Es wird festgelegt, welche Systemdienste benötigt werden und wie das Dateisystem sowie die Netzwerkanbindung strukturiert sein müssen. Die Planung wird dokumentiert."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.2.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.11.A2",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.11.A2 Gesicherte und minimalistische Installation",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.11.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.11.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Die Installation von FreeBSD erfolgt von einem kryptografisch verifizierten, offiziellen Installationsmedium. Es werden nur die für den Betrieb zwingend erforderlichen Komponenten (Distribution Sets) des Basissystems installiert. Für das Administrator-Konto (root) wird ein sicheres Passwort vergeben."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "TEST.3.1.2",
+                          "TEST.3.1.3",
+                          "KONF.2.4",
+                          "BER.6.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.11.A3",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.11.A3 Deaktivierung nicht benötigter Dienste",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.11.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.11.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Das System wird so konfiguriert, dass keine ungenutzten Dienste gestartet werden. Alle Dienste, die standardmäßig aktiviert sind, aber für den spezifischen Betriebszweck nicht benötigt werden, werden in der Konfiguration (z. B. /etc/rc.conf) dauerhaft deaktiviert."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.2.4",
+                    "rel": "related",
+                    "text": "KONF.2.4 steht unter SYS.1.11.A2"
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.11.A4",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.11.A4 Konsequentes Patch-Management für Basissystem und Pakete",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.11.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.11.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Sowohl das Basissystem als auch alle installierten Drittanbieter-Pakete werden zeitnah aktualisiert. Hierfür werden die systemeigenen Werkzeuge (z. B. freebsd-update, pkg) verwendet. Zusätzlich wird das System regelmäßig und automatisiert auf bekannte Schwachstellen in installierten Paketen geprüft (z. B. mittels pkg audit)."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.5.10",
+                          "DET.5.10.2",
+                          "DET.5.3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.11.A5",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.11.A5 Konfiguration der systemeigenen Firewall",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.11.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.11.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Es wird eine in FreeBSD integrierte Firewall (z. B. PF oder IPFW) aktiviert. Diese wird mit einer restriktiven „Default Deny“-Regelbasis konfiguriert, die standardmäßig alle nicht explizit freigegebenen ein- und ausgehenden Verbindungen blockiert."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.7.15"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.11.A6",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.11.A6 Absicherung des administrativen Zugriffs",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.11.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.11.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Der Remote-Zugriff für Administrationszwecke (z. B. über SSH) ist kryptografisch abgesichert. Es ist nicht möglich, sich remote direkt mit dem Konto root anzumelden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.2.2",
+                          "KONF.4.3",
+                          "KONF.4.4",
+                          "BER.3.16"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "SYS.1.11-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "SYS.1.11.A7",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.11.A7 Konzept für Jails und ZFS",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.11.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.11.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Es wird ein Konzept zur Nutzung der spezifischen FreeBSD-Funktionen erstellt. Es wird vorab geplant, welche Dienste zur Isolation in Jails ausgelagert werden und wie die Datasets im ZFS-Dateisystem strukturiert sein müssen, um Datensicherung und Berechtigungsmanagement optimal zu unterstützen."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.2.1",
+                    "rel": "related",
+                    "text": "KONF.2.1 steht unter SYS.1.11.A1"
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.11.A8",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.11.A8 Isolation von Diensten mittels Jails",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.11.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.11.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Netzwerkdienste werden voneinander sowie vom Basissystem isoliert betrieben. Hierfür werden die Dienste in dedizierte FreeBSD-Jails ausgelagert. Den Jails werden nur die Berechtigungen zugewiesen, die für den jeweiligen Dienst zwingend erforderlich sind."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.6.1.2",
+                          "KONF.6.1",
+                          "ARCH.7.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.11.A9",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.11.A9 Strukturierte Nutzung und Sicherung von ZFS-Dateisystemen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.11.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.11.A9_anforderung",
+                    "name": "overview",
+                    "prose": "Das ZFS-Dateisystem wird verwendet, um Daten logisch in separaten Datasets zu strukturieren (z. B. getrennt nach System, Jails, Logs und Benutzerdaten). Es werden regelmäßig automatisiert Snapshots der kritischen Datasets erstellt, um eine schnelle Wiederherstellung zu gewährleisten."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NOT.4.2",
+                          "NOT.4.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.11.A10",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.11.A10 Härtung des Kernels über System-Parameter",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.11.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.11.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Sicherheitsrelevante Kernel-Parameter werden restriktiv konfiguriert (z. B. über sysctl.conf). Dies umfasst Maßnahmen, um das System vor gängigen Netzwerkangriffen zu schützen (z. B. Schutz vor SYN-Flooding) und den Informationsabfluss auf Systemebene einzuschränken."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.7.16"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.2.1",
+                    "rel": "related",
+                    "text": "KONF.2.1 steht unter SYS.1.11.A1"
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.11.A11",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.11.A11 Konfiguration von Ressourcenlimits",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.11.A11"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.11.A11_anforderung",
+                    "name": "overview",
+                    "prose": "Um Denial-of-Service-Angriffe durch Ressourcenerschöpfung zu erschweren, werden dedizierte Ressourcenlimits konfiguriert. Dies erfolgt auf Benutzerebene (z. B. über login.conf) sowie für isolierte Prozesse und Jails (z. B. über das Resource Control Framework rctl)."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.9.1",
+                          "KONF.9.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.11.A12",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.11.A12 Zentrale Protokollierung von Systemereignissen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.11.A12"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.11.A12_anforderung",
+                    "name": "overview",
+                    "prose": "Der systemeigene Protokollierungsdienst wird so konfiguriert, dass sicherheitsrelevante Ereignisse des Hosts und der betriebenen Jails zentral erfasst werden. Die Logdaten werden zeitnah an ein separates Log-Management- oder SIEM-System weitergeleitet."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.3.1.6"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "SYS.1.11-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "SYS.1.11.A13",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.11.A13 Einsatz von ZFS-Verschlüsselung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.11.A13"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.11.A13_anforderung",
+                    "name": "overview",
+                    "prose": "Datasets auf ZFS, die sensible Daten enthalten, werden mit der nativen Verschlüsselungsfunktion von ZFS verschlüsselt. Die Schlüsselmaterialien werden sicher verwaltet."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.3.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.11.A14",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.11.A14 Erweiterte Härtung von Jails",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.11.A14"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.11.A14_anforderung",
+                    "name": "overview",
+                    "prose": "Jails werden zusätzlich gehärtet. Hierbei werden Berechtigungen über restriktive Parameter (z. B. securelevel) minimiert und der Zugriff auf Gerätedateien über strikte Devfs-Rulesets streng limitiert."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.6.4"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.6.1.2",
+                    "rel": "related",
+                    "text": "KONF.6.1.2 steht unter SYS.1.11.A8"
+                  },
+                  {
+                    "href": "#KONF.6.1",
+                    "rel": "related",
+                    "text": "KONF.6.1 steht unter SYS.1.11.A8"
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.11.A15",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.11.A15 Absicherung des Boot-Prozesses",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.11.A15"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.11.A15_anforderung",
+                    "name": "overview",
+                    "prose": "Sofern die zugrunde liegende Hardware dies unterstützt, wird der UEFI Secure Boot Mechanismus von FreeBSD genutzt, um sicherzustellen, dass beim Start ausschließlich ein kryptografisch signierter Bootloader und Kernel ausgeführt wird."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.2.9"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.11.A16",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.11.A16 Einsatz des Mandatory Access Control (MAC) Frameworks",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.11.A16"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.11.A16_anforderung",
+                    "name": "overview",
+                    "prose": "Das in FreeBSD integrierte Mandatory Access Control (MAC) Framework wird aktiviert. Es wird ein geeignetes Sicherheitsrichtlinienmodul (z. B. mac_bsdextended) konfiguriert, um die Zugriffsrechte von Prozessen und Benutzern feingranular und jenseits klassischer Unix-Rechte zu steuern."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.6.1",
+                    "rel": "related",
+                    "text": "KONF.6.1 steht unter SYS.1.11.A8"
+                  },
+                  {
+                    "href": "#KONF.6.4",
+                    "rel": "related",
+                    "text": "KONF.6.4 steht unter SYS.1.11.A14"
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.11.A17",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.11.A17 Erstellung eines gehärteten, angepassten Kernels",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.11.A17"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.11.A17_anforderung",
+                    "name": "overview",
+                    "prose": "Für hochkritische Systeme wird ein angepasster Kernel kompiliert, aus dem alle für den spezifischen Einsatzzweck nicht benötigten Treiber, Protokolle und Funktionen entfernt wurden, um die Angriffsfläche auf Kernel-Ebene auf ein Minimum zu reduzieren."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.2.4",
+                    "rel": "related",
+                    "text": "KONF.2.4 steht unter SYS.1.11.A2"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "back-matter": {
+      "resources": [
+        {
+          "uuid": "afe1c75e-8725-5df2-a57b-235d7d5236f4",
+          "title": "Grundschutz++-resolved_catalog.json @ a12831136f41",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/a12831136f4122a4c43854622180a24f2576a41e/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "ARCH.7.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A8",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Trägt den Gedanken der Platzierung von Serverdiensten in dedizierten Umgebungen (hier über Jails auf dem Hostsystem)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.3.16",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Untersagt die Nutzung von Gruppenkonten (wie dem unpersönlichen Konto root) im Regelbetrieb und stützt damit das Verbot des direkten Root-Logins."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.6.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A2",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): BER.6.4 (zusammen mit KONF.2.3 zur Änderung von Default-Zugangsdaten) verlangt Kriterien für die Qualität von Passwörtern, was die Vergabe eines sicheren Passworts für das root-Konto (S3) abdeckt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A12",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker fraglich): Deckt die lokale Protokollierung systemspezifischer Ereignisse des Hosts und der Jails ab, jedoch nicht die Weiterleitung an ein separates Log-Management- oder SIEM-System."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.10",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A4",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): DET.5.10 fordert ein zeitnahes Patchmanagement, was die zeitnahe Aktualisierung von Basissystem und Drittanbieter-Paketen (S1, S2) abdeckt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.10.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A4",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker fraglich): DET.5.10.2 und KONF.8.1 fordern die automatisierte Überwachung des Patchstatus bzw. das Überwachen auf Sicherheitsupdates, was der regelmäßigen automatisierten Prüfung mittels pkg audit (S3) entspricht."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A4",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): DET.5.3 fordert regelmäßige Schwachstellenscans, wozu der automatisierte Abgleich installierter Pakete gegen Schwachstellendatenbanken (pkg audit, S3) beiträgt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): KONF.2.1 fordert die Dokumentation einer Grundkonfiguration für IT-Systeme, was die Festlegung und Dokumentation benötigter Systemdienste, Dateisystemstrukturen und Netzwerkanbindungen (S2, S3) abdeckt."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A7",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker fraglich): Das Konzept für die systemspezifischen Funktionen (Jails, ZFS-Datasets) ist Teil der dokumentierten Grundkonfiguration für das FreeBSD-System."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker fraglich): Die Härtung über System-Parameter (sysctl.conf) ist wesentlicher Bestandteil der sicheren Grundkonfiguration eines Hostsystems."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker fraglich): Deckt die kryptografische Absicherung von Verbindungen und Verfahren auf dem IT-System (hier SSH für Remote-Administration) ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A2",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker fraglich): KONF.2.4 und KONF.7.9 zielen auf die Beschränkung auf benötigte Systemfunktionen und Anwendungen ab, was die minimalistische Auswahl der Distribution Sets bei der Installation (S2) im Kern trägt."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A3",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker bestaetigt): KONF.2.4 verlangt allgemein die Deaktivierung nicht benötigter Systemfunktionen auf IT-Systemen; die Deaktivierung ungenutzter FreeBSD-Dienste in /etc/rc.conf ist die konkrete Ausprägung davon."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A17",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker bestaetigt): Das Entfernen nicht benötigter Treiber, Protokolle und Funktionen durch einen angepassten Kernel ist eine spezifische Umsetzung der Deaktivierung nicht benötigter Systemfunktionen zur Reduzierung der Angriffsfläche."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.9",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A15",
+                  "remarks": "Herkunft: KI-Vorschlag (equivalent-to, Konfidenz hoch, Checker bestaetigt): KONF.2.9 verlangt genau die Aktivierung eines abgesicherten und authentisierten Bootprozesses (wie UEFI Secure Boot mit signiertem Bootloader und Kernel)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.3.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A13",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): Trägt die Verschlüsselung von Festspeichermedien bzw. darauf angelegten Dateisystemen (wie ZFS-Datasets)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.4.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Fordert die Authentifizierung von Fernwartungsfunktionen im Einklang mit dem Identitäts- und Berechtigungsmanagement (keine Nutzung von generischen Konten wie root aus der Ferne)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.4.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker fraglich): Trägt die Einschränkung von Fernwartungsfunktionen, wozu das Unterbinden der direkten Remote-Anmeldung mit dem Konto root gehört."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.6.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A8",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker bestaetigt): Setzt die Anforderung um, den Jails und den darin laufenden Anwendungen nur die minimal erforderlichen Berechtigungen zuzuweisen."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A14",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Trägt die Beschränkung der Berechtigungen für in Jails betriebene Anwendungen und Dienste auf das minimal erforderliche Maß."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A16",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker fraglich): Das MAC-Framework schränkt die Berechtigungen von Prozessen und Anwendungen auf dem System feingranular ein."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.6.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A8",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker bestaetigt): Deckt die Isolierung von Anwendungen bzw. Netzwerkdiensten (hier konkretisiert durch FreeBSD-Jails) auf dem System direkt ab."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A14",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker fraglich): Die Härtung von Jails ist eine spezifische Ausprägung der Isolierung von Anwendungen und Prozessen auf dem Hostsystem."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.6.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A14",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker bestaetigt): Die Minimierung von Berechtigungen über Parameter wie securelevel und die Limitierung des Zugriffs auf Gerätedateien (devfs) setzen die Einschränkung privilegierter Systemfunktionen um."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A16",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Durch Sicherheitsrichtlinienmodule im MAC-Framework werden auch privilegierte Funktionen und Prozesse jenseits klassischer Unix-Rechte eingeschränkt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.7.15",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A5",
+                  "remarks": "Herkunft: KI-Vorschlag (equivalent-to, Konfidenz hoch, Checker bestaetigt): KONF.7.15 (Lokale Firewall) verlangt für IT-Systeme die Einschränkung ein- und ausgehender Netzverbindungen, was exakt der Aktivierung von PF/IPFW mit einer Default-Deny-Regelbasis entspricht."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.7.16",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker fraglich): Deckt die Aktivierung von Systemfunktionen (wie restriktive sysctl-Kernel-Parameter) zum Schutz des Systems vor Angriffen und Ausnutzung von Schwachstellen ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.9.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A11",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker fraglich): Deckt die Begrenzung des Speicherplatzes für die Nutzerumgebung als Teil der geforderten Ressourcenlimits ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.9.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A11",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): Deckt die Begrenzung der zur Verfügung stehenden Rechenleistung auf Hostsystemen (z. B. für Nutzer, Prozesse und Jails) ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker fraglich): Deckt die regelmäßige Sicherung des Systems (hier unterstützt durch regelmäßige ZFS-Snapshots zur schnellen Wiederherstellung) ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.4.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker fraglich): Trägt die Anforderung, Sicherungsmechanismen für Daten automatisiert auszuführen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "TEST.3.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A2",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): TEST.3.1.2 untersagt die Einbindung von Softwareartefakten aus unzuverlässigen oder unbekannten Quellen, was der Nutzung offizieller Installationsmedien (S1) entspricht."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "TEST.3.1.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.11.A2",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): TEST.3.1.3 verlangt den Integritätstest von Softwareartefakten, was die kryptografische Verifikation des Installationsmediums (S1) abdeckt."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

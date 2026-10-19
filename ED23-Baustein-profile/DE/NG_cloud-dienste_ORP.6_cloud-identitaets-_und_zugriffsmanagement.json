@@ -1,0 +1,1542 @@
+{
+  "profile": {
+    "uuid": "568eff62-9b71-566b-86e3-212c8bb2fd46",
+    "metadata": {
+      "title": "NG ORP.6 – Cloud-Identitäts- und Zugriffsmanagement (Cloud-Dienste)",
+      "last-modified": "2026-10-19T01:04:35.008958+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "NG"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "ORP.6"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Cloud-Identitäts- und Zugriffsmanagement"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Cloud-Dienste"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "prozess"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, ORP.6, NG, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein ORP.6 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe, NG-Baustein)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (Text des nutzergenerierten Bausteins (NG, NTT DATA), kein BSI-Text); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls. Prozess-Baustein ohne eigene Praktik in Grundschutz++; die Zielobjektkategorie ist nur informativ."
+    },
+    "imports": [
+      {
+        "href": "#afe1c75e-8725-5df2-a57b-235d7d5236f4",
+        "include-controls": [
+          {
+            "with-ids": [
+              "BER.1.1",
+              "BER.1.1.1",
+              "BER.3.1",
+              "BER.3.16",
+              "BER.3.21",
+              "BER.3.22",
+              "BER.3.3",
+              "BER.3.4",
+              "BER.3.7",
+              "BER.4.1",
+              "BER.4.1.1",
+              "BER.4.1.2",
+              "BER.4.4",
+              "BER.4.4.1",
+              "BER.5.8",
+              "BER.5.9",
+              "BER.6.4",
+              "DET.3.1.1",
+              "DET.3.1.8",
+              "DET.3.2",
+              "DET.3.5",
+              "DLS.2.1",
+              "KONF.10.5",
+              "KONF.11.1",
+              "KONF.11.1.2",
+              "KONF.6.13",
+              "KONF.6.5"
+            ]
+          }
+        ]
+      }
+    ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "ORP.6-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "ORP.6.A1",
+                "class": "ed23-anforderung",
+                "title": "ORP.6.A1 Planung des Cloud-Identitäts- und Zugriffsmanagements",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "ORP.6.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "ORP.6.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Vor der Nutzung von Cloud-Diensten MUSS ein spezifisches IAM-Konzept für die Cloud-Umgebung geplant werden. Darin MÜSSEN die Verwaltung von Identitäten, die Authentifizierungsmechanismen und die Struktur der Berechtigungsvergabe festgelegt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.1.1",
+                          "BER.1.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "ORP.6.A2",
+                "class": "ed23-anforderung",
+                "title": "ORP.6.A2 Richtlinie zur Verwaltung von Cloud-Identitäten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "ORP.6.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "ORP.6.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS eine Richtlinie erstellt werden, die den gesamten Lebenszyklus von Cloud-Identitäten regelt. Diese MUSS verbindliche Vorgaben für die Erstellung, Änderung, Deaktivierung und Löschung von menschlichen und nicht-menschlichen Identitäten (Dienstkonten) enthalten."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#BER.1.1",
+                    "rel": "related",
+                    "text": "BER.1.1 steht unter ORP.6.A1"
+                  },
+                  {
+                    "href": "#BER.1.1.1",
+                    "rel": "related",
+                    "text": "BER.1.1.1 steht unter ORP.6.A1"
+                  }
+                ]
+              },
+              {
+                "id": "ORP.6.A3",
+                "class": "ed23-anforderung",
+                "title": "ORP.6.A3 Absicherung des Haupt-Administratorkontos",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "ORP.6.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "DARF NICHT"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "ORP.6.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Das initiale Haupt-Administratorkonto (Root-Account) der Cloud-Umgebung MUSS durch ein starkes Passwort und eine Multi-Faktor-Authentifizierung (MFA) geschützt werden. Das Konto DARF NICHT für alltägliche administrative Aufgaben oder den regulären Betrieb verwendet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.3.22",
+                          "BER.5.9",
+                          "BER.6.4",
+                          "BER.3.16"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "ORP.6.A4",
+                "class": "ed23-anforderung",
+                "title": "ORP.6.A4 Einführung eines grundlegenden Rollenkonzepts",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "ORP.6.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "ORP.6.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Für die Cloud-Umgebung MUSS ein rollenbasiertes Zugriffskonzept (Role-Based Access Control, RBAC) umgesetzt werden. Dieses MUSS zumindest eine Trennung zwischen lesenden, bearbeitenden und verwaltenden Rechten auf Cloud-Ressourcen sicherstellen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.4.1.1",
+                          "BER.4.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "ORP.6.A5",
+                "class": "ed23-anforderung",
+                "title": "ORP.6.A5 Erzwingung der Multi-Faktor-Authentifizierung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "ORP.6.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "ORP.6.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Für alle Benutzer, die über Berechtigungen zur Änderung von Cloud-Konfigurationen, IAM-Richtlinien oder Daten verfügen, MUSS die Verwendung von Multi-Faktor-Authentifizierung (MFA) technisch erzwungen werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DLS.2.1",
+                          "BER.5.8"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#BER.5.9",
+                    "rel": "related",
+                    "text": "BER.5.9 steht unter ORP.6.A3"
+                  }
+                ]
+              },
+              {
+                "id": "ORP.6.A6",
+                "class": "ed23-anforderung",
+                "title": "ORP.6.A6 Protokollierung von IAM-Aktivitäten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "ORP.6.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "ORP.6.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Alle sicherheitsrelevanten IAM-Ereignisse MÜSSEN lückenlos protokolliert werden. Dazu gehören insbesondere Anmeldeversuche, administrative API-Aufrufe sowie alle Änderungen an Identitäten und Berechtigungen. Die Protokolldaten MÜSSEN zentral gesammelt und vor Manipulation geschützt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.3.4",
+                          "DET.3.1.1",
+                          "DET.3.1.8",
+                          "DET.3.2",
+                          "DET.3.5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ORP.6-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "ORP.6.A7",
+                "class": "ed23-anforderung",
+                "title": "ORP.6.A7 Konzeption von Berechtigungen nach dem Least-Privilege-Prinzip",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "ORP.6.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "ORP.6.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS ein Prozess zur Vergabe von Berechtigungen definiert sein, der sicherstellt, dass Rechte nicht pauschal, sondern aufgabenbezogen vergeben werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#BER.4.1",
+                    "rel": "related",
+                    "text": "BER.4.1 steht unter ORP.6.A4"
+                  },
+                  {
+                    "href": "#BER.4.1.1",
+                    "rel": "related",
+                    "text": "BER.4.1.1 steht unter ORP.6.A4"
+                  }
+                ]
+              },
+              {
+                "id": "ORP.6.A8",
+                "class": "ed23-anforderung",
+                "title": "ORP.6.A8 Nutzung von Föderation statt nativer Cloud-Benutzer",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "ORP.6.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "ORP.6.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Die Authentifizierung menschlicher Benutzer MUSS zentral geregelt und verwaltet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.3.7",
+                          "BER.3.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "ORP.6.A9",
+                "class": "ed23-anforderung",
+                "title": "ORP.6.A9 Einsatz temporärer Anmeldeinformationen für maschinellen Zugriff",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "ORP.6.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "ORP.6.A9_anforderung",
+                    "name": "overview",
+                    "prose": "Der maschinelle Zugriff durch Anwendungen oder Skripte MUSS sicher authentifiziert werden, wobei statische Schlüssel sicher zu verwalten sind."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.3.21",
+                          "KONF.11.1.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "ORP.6.A10",
+                "class": "ed23-anforderung",
+                "title": "ORP.6.A10 Regelmäßige Überprüfung der Berechtigungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "ORP.6.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "ORP.6.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Die zugewiesenen Berechtigungen für alle Identitäten MÜSSEN in regelmäßigen Abständen auf ihre Erforderlichkeit überprüft werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.4.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "ORP.6.A11",
+                "class": "ed23-anforderung",
+                "title": "ORP.6.A11 Nutzung von bedingtem Zugriff",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "ORP.6.A11"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "ORP.6.A11_anforderung",
+                    "name": "overview",
+                    "prose": "Der Zugriff auf Cloud-Ressourcen MUSS durch definierte Zugriffsrichtlinien geschützt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.6.13",
+                          "KONF.6.5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ORP.6-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "ORP.6.A12",
+                "class": "ed23-anforderung",
+                "title": "ORP.6.A12 Einsatz von Just-in-Time-Zugriff für administrative Rollen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "ORP.6.A12"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "ORP.6.A12_anforderung",
+                    "name": "overview",
+                    "prose": "Hochprivilegierte administrative Berechtigungen MÜSSEN restriktiv vergeben und ihre Nutzung MUSS überwacht werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.4.1.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#BER.4.1",
+                    "rel": "related",
+                    "text": "BER.4.1 steht unter ORP.6.A4"
+                  },
+                  {
+                    "href": "#DET.3.1.8",
+                    "rel": "related",
+                    "text": "DET.3.1.8 steht unter ORP.6.A6"
+                  }
+                ]
+              },
+              {
+                "id": "ORP.6.A13",
+                "class": "ed23-anforderung",
+                "title": "ORP.6.A13 Kontinuierliche Überwachung der Berechtigungsstruktur",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "ORP.6.A13"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "ORP.6.A13_anforderung",
+                    "name": "overview",
+                    "prose": "Die IAM-Konfiguration MUSS regelmäßig auf Fehlkonfigurationen und weitreichende Berechtigungen geprüft werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.4.4.1",
+                          "KONF.10.5"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#BER.4.4",
+                    "rel": "related",
+                    "text": "BER.4.4 steht unter ORP.6.A10"
+                  }
+                ]
+              },
+              {
+                "id": "ORP.6.A14",
+                "class": "ed23-anforderung",
+                "title": "ORP.6.A14 Implementierung von Berechtigungsgrenzen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "ORP.6.A14"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "ORP.6.A14_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS sichergestellt werden, dass Identitäten ihre Rechte nicht unkontrolliert ausweiten können."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.3.3"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#BER.4.1",
+                    "rel": "related",
+                    "text": "BER.4.1 steht unter ORP.6.A4"
+                  }
+                ]
+              },
+              {
+                "id": "ORP.6.A15",
+                "class": "ed23-anforderung",
+                "title": "ORP.6.A15 Zentrales IAM für Multi-Cloud-Umgebungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "ORP.6.A15"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "ORP.6.A15_anforderung",
+                    "name": "overview",
+                    "prose": "Bei der Nutzung mehrerer Cloud-Plattformen MÜSSEN die Berechtigungen in allen Umgebungen konsistent verwaltet werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#BER.3.1",
+                    "rel": "related",
+                    "text": "BER.3.1 steht unter ORP.6.A8"
+                  }
+                ]
+              },
+              {
+                "id": "ORP.6.A16",
+                "class": "ed23-anforderung",
+                "title": "ORP.6.A16 Absicherung von Workload-Identitäten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "ORP.6.A16"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "ORP.6.A16_anforderung",
+                    "name": "overview",
+                    "prose": "Die Authentifizierung zwischen externen Diensten und der Cloud-Umgebung MUSS sicher konfiguriert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.11.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#BER.3.21",
+                    "rel": "related",
+                    "text": "BER.3.21 steht unter ORP.6.A9"
+                  },
+                  {
+                    "href": "#KONF.11.1.2",
+                    "rel": "related",
+                    "text": "KONF.11.1.2 steht unter ORP.6.A9"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "back-matter": {
+      "resources": [
+        {
+          "uuid": "afe1c75e-8725-5df2-a57b-235d7d5236f4",
+          "title": "Grundschutz++-resolved_catalog.json @ a12831136f41",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/a12831136f4122a4c43854622180a24f2576a41e/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "BER.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A1",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A2",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.1.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker fraglich): BER.1.1.1 fordert die Dokumentation der Verfahren und Regelungen zum Identitäts- und Berechtigungsmanagement, was das geforderte Cloud-IAM-Konzept abdeckt."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A2",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker bestaetigt): BER.1.1.1 verlangt die Dokumentation der Verfahren und Regelungen zum Identitäts- und Berechtigungsmanagement in Form einer Richtlinie."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A8",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): BER.3.1 fordert ein zentrales Managementsystem für Zugangskonten."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A15",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.3.16",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A3",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker fraglich): BER.3.16 untersagt Gruppenkonten im Regelbetrieb; das initiale Root-Konto ist ein nicht personengebundenes Konto und fällt im Regelbetrieb unter dieses Verbot."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.3.21",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A9",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A16",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.3.22",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A3",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.3.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A14",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): BER.3.3 schränkt das Management von Zugangskonten ein, was eine unkontrollierte Selbstzuweisung von Rechten verhindert."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.3.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A6",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.3.7",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A8",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A4",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): BER.4.1 verlangt die Einschränkung von Berechtigungen nach dem Prinzip der geringsten Berechtigungen, was durch die Abstufung in lesende, bearbeitende und verwaltende Rechte (S2) umgesetzt wird."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A7",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A12",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): BER.4.1 fordert die Vergabe von Berechtigungen nach dem Prinzip der geringsten Berechtigungen (restriktive Vergabe)."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A14",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.4.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A4",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A7",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker fraglich): BER.4.1.1 verlangt die rollenbasierte Zuweisung von Berechtigungen, was die aufgabenbezogene statt pauschale Rechtevergabe stützt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.4.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A12",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.4.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A10",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A13",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.4.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A13",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): BER.4.4.1 verlangt den Abgleich dokumentierter und tatsächlich vergebener Berechtigungen, um Fehlkonfigurationen in der Berechtigungsstruktur aufzudecken."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.5.8",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A5",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): BER.5.8 verlangt Mehr-Faktor-Authentisierung für alle Schnittstellen, auf die von extern zugegriffen werden kann, was auf Cloud-Verwaltungsschnittstellen zutrifft."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.5.9",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A3",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): BER.5.9 fordert die Aktivierung von Mehr-Faktor-Authentisierung für weitreichende Berechtigungen, was den MFA-Schutz des Haupt-Administratorkontos (S1) abdeckt."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A5",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.6.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A3",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): BER.6.4 verlangt Kriterien für die Qualität von Passwörtern, was die Forderung nach einem starken Passwort für das Haupt-Administratorkonto (S1) stützt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (subset-of, Konfidenz hoch, Checker bestaetigt): DET.3.1.1 fordert die Protokollierung erfolgreicher und fehlgeschlagener Authentifizierungen (Anmeldeversuche)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1.8",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (subset-of, Konfidenz mittel, Checker bestaetigt): DET.3.1.8 deckt die Protokollierung privilegierter Ereignisse (wie administrative API-Aufrufe) ab."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A12",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): DET.3.1.8 deckt die Überwachung bzw. Protokollierung der Nutzung privilegierter Funktionen und Ereignisse ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): DET.3.2 adressiert die zentrale Sammlung von Cloud-Ereignissen im Audit Log der Institution."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (subset-of, Konfidenz hoch, Checker bestaetigt): DET.3.5 fordert die revisionssichere Dokumentation am Audit Log und setzt damit den Manipulationsschutz der Protokolldaten um."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DLS.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A5",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): DLS.2.1 fordert die Aktivierung von Mehr-Faktor-Authentifizierung beim Login in Online-Dienste, wozu Cloud-Dienste zählen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.10.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A13",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): KONF.10.5 fordert die regelmäßige Überprüfung der tatsächlichen Konfiguration gegen den Referenzzustand zur Erkennung von Fehlkonfigurationen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.11.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A16",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Das Control fordert allgemein die Authentifizierung vor dem Zugriff auf schützenswerte Daten in Anwendungen gemäß den Vorgaben des Identitäts- und Berechtigungsmanagements, was auch Zugriffe externer Dienste auf Cloud-Umgebungen einschließt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.11.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): KONF.11.1.2 fordert die Authentifizierung der Gegenstelle vor dem Datenaustausch im Einklang mit dem Identitäts- und Berechtigungsmanagement."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A16",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Das Control verlangt die Authentifizierung der Gegenstelle vor dem Datenaustausch bei Netzverbindungen im Einklang mit dem Identitäts- und Berechtigungsmanagement."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.6.13",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A11",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.6.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "ORP.6.A11",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): KONF.6.5 adressiert die dynamische Zugriffskontrolle auf Systemebene anhand definierter Richtlinien."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

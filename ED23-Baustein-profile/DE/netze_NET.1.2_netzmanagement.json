@@ -2,10 +2,54 @@
   "profile": {
     "uuid": "aaea2e93-f4c2-5577-b0be-731e10a25834",
     "metadata": {
-      "title": "NET.1.2 - Netze",
-      "last-modified": "2026-07-28T15:36:42.407083+00:00",
-      "version": "0.0.1",
-      "oscal-version": "1.2.2"
+      "title": "NET.1.2 – Netzmanagement (Netze)",
+      "last-modified": "2026-10-19T01:07:58.553647+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "BSI"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "NET.1.2"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Netzmanagement"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Netze"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "system"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, NET.1.2, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein NET.1.2 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (amtlicher Wortlaut des XML-Kompendiums 2023); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls."
     },
     "imports": [
       {
@@ -13,45 +57,1720 @@
         "include-controls": [
           {
             "with-ids": [
+              "ARCH.1.1",
+              "ARCH.1.1.3",
+              "ARCH.1.2",
               "ARCH.2.1",
               "ARCH.2.2",
-              "ARCH.2.2.1",
-              "ARCH.2.2.10",
               "ARCH.2.2.11",
-              "ARCH.2.2.2",
-              "ARCH.2.2.3",
-              "ARCH.2.2.4",
-              "ARCH.2.2.5",
-              "ARCH.2.2.6",
+              "ARCH.2.2.12",
               "ARCH.2.2.7",
-              "ARCH.2.2.8",
-              "ARCH.2.2.9",
-              "ARCH.2.5",
+              "ARCH.2.4",
               "ARCH.2.6",
-              "ARCH.4.2",
-              "ARCH.4.3",
-              "ARCH.5.1",
               "ARCH.5.1.1",
-              "ARCH.5.1.12",
-              "ARCH.5.1.2",
-              "ARCH.5.1.3",
-              "ARCH.5.1.4",
-              "ARCH.8.1",
-              "ARCH.9.1",
-              "ARCH.9.5",
-              "ASST.2.2.1",
-              "DET.4.11",
-              "DET.4.11.2",
-              "DET.4.11.3",
+              "ARCH.5.1.6",
+              "ARCH.8.3",
+              "ASST.2.1",
+              "ASST.2.2",
+              "BER.4.1",
+              "BES.2.1",
+              "BES.2.1.4.1",
+              "BES.4.2",
+              "DET.3.1",
+              "DET.3.1.1",
+              "DET.3.1.4",
+              "DET.3.1.5",
+              "DET.3.1.9",
+              "DET.3.4",
+              "DET.3.5",
+              "DET.4.11.1",
               "DET.4.12",
               "DET.4.12.1",
-              "GEB.6.3",
-              "SENS.10.4"
+              "DET.4.15",
+              "DET.6.1.2",
+              "KONF.1.2",
+              "KONF.10.1",
+              "KONF.14.1.1",
+              "KONF.2.1",
+              "KONF.2.1.1",
+              "KONF.2.2",
+              "KONF.2.4",
+              "KONF.2.5",
+              "KONF.4.4",
+              "KONF.4.5",
+              "KONF.6.4",
+              "NOT.1.1",
+              "NOT.3.1",
+              "NOT.4.15",
+              "NOT.4.2",
+              "NOT.4.3",
+              "PERS.4.2.1",
+              "REA.2.5.1",
+              "UMS.1.1",
+              "UMS.2.1"
             ]
           }
         ]
       }
     ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "NET.1.2-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "NET.1.2.A1",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A1 Planung des Netzmanagements",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Die Netzmanagement-Infrastruktur MUSS geeignet geplant werden. Dabei SOLLTEN alle in der Sicherheitsrichtlinie und Anforderungsspezifikation für das Netzmanagement genannten Punkte berücksichtigt werden. Es MÜSSEN mindestens folgende Themen berücksichtigt werden: zu trennende Bereiche für das Netzmanagement, Zugriffsmöglichkeiten auf die Management-Server, Kommunikation für den Managementzugriff, eingesetzte Protokolle, z. B. IPv4 und IPv6, Anforderungen an Management-Werkzeuge, Schnittstellen, um erfasste Ereignis- oder Alarmmeldungen weiterzuleiten, Protokollierung, inklusive erforderlicher Schnittstellen zu einer zentralen Protokollierungslösung, Reporting und Schnittstellen zu übergreifenden Lösungen sowie korrespondierende Anforderungen an die einzubindenden Netzkomponenten."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A2",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A2 Anforderungsspezifikation für das Netzmanagement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Ausgehend von NET.1.2.A1 Planung des Netzmanagements MÜSSEN Anforderungen an die Netzmanagement-Infrastruktur und -Prozesse spezifiziert werden. Dabei MÜSSEN alle wesentlichen Elemente für das Netzmanagement berücksichtigt werden. Auch SOLLTE die Richtlinie für das Netzmanagement beachtet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BES.2.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A3",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A3 ENTFALLEN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A3"
+                  },
+                  {
+                    "name": "entfallen",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A4",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A4 ENTFALLEN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A4"
+                  },
+                  {
+                    "name": "entfallen",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A5",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A5 ENTFALLEN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A5"
+                  },
+                  {
+                    "name": "entfallen",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A6",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A6 Regelmäßige Datensicherung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Bei der Datensicherung des Netzmanagements MÜSSEN mindestens die Systemdaten für die Einbindung der zu verwaltenden Komponenten bzw. Objekte, Ereignismeldungen, Statistikdaten sowie vorgehaltene Daten für das Konfigurationsmanagement gesichert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NOT.4.2",
+                          "NOT.4.3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A7",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A7 Grundlegende Protokollierung von Ereignissen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Mindestens folgende Ereignisse MÜSSEN protokolliert werden: unerlaubte Zugriffe bzw. Zugriffsversuche, Leistungs- oder Verfügbarkeitsschwankungen des Netzes, Fehler in automatischen Prozessen (z. B. bei der Konfigurationsverteilung) sowie eingeschränkte Erreichbarkeit von Netzkomponenten."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.3.1",
+                          "DET.3.1.1",
+                          "DET.3.1.5",
+                          "DET.3.1.9",
+                          "DET.4.11.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A8",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A8 Zeit-Synchronisation",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Alle Komponenten des Netzmanagements, inklusive der eingebundenen Netzkomponenten, MÜSSEN eine synchrone Uhrzeit nutzen. Die Uhrzeit SOLLTE an jedem Standort innerhalb des lokalen Netzes mittels NTP-Service synchronisiert werden. Ist ein separates Managementnetz eingerichtet, SOLLTE eine NTP-Instanz in diesem Managementnetz positioniert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.4.5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A9",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A9 Absicherung der Netzmanagement-Kommunikation und des Zugriffs auf Netz-Management-Werkzeuge",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A9_anforderung",
+                    "name": "overview",
+                    "prose": "Erfolgt die Netzmanagement-Kommunikation über die produktive Infrastruktur, MÜSSEN dafür sichere Protokolle verwendet werden. Ist dies nicht möglich, MUSS ein eigens dafür vorgesehenes Administrationsnetz (Out-of-Band-Management) verwendet werden (siehe NET.1.1 Netzarchitektur und -design). Falls von einem Netz außerhalb der Managementnetze auf Netzmanagement-Werkzeuge zugegriffen wird, MÜSSEN als sicher geltende Authentisierungs- und Verschlüsselungsmethoden realisiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.2.7"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A10",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A10 Beschränkung der SNMP-Kommunikation",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Grundsätzlich DÜRFEN im Netzmanagement KEINE unsicheren Versionen des Simple Network Management Protocol (SNMP) eingesetzt werden. Werden dennoch unsichere Protokolle verwendet und nicht über andere sichere Netzprotokolle (z. B. VPN oder TLS) abgesichert, MUSS ein separates Managementnetz genutzt werden. Grundsätzlich SOLLTE über SNMP nur mit den minimal erforderlichen Zugriffsrechten zugegriffen werden. Die Zugangsberechtigung SOLLTE auf dedizierte Management-Server eingeschränkt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.5.1.1",
+                          "BER.4.1",
+                          "KONF.14.1.1",
+                          "KONF.4.4"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.2.7",
+                    "rel": "related",
+                    "text": "ARCH.2.2.7 steht unter NET.1.2.A9"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "NET.1.2-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "NET.1.2.A11",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A11 Festlegung einer Sicherheitsrichtlinie für das Netzmanagement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A11"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A11_anforderung",
+                    "name": "overview",
+                    "prose": "Für das Netzmanagement SOLLTE eine Sicherheitsrichtlinie erstellt und nachhaltig gepflegt werden. Die Sicherheitsrichtlinie SOLLTE allen Personen, die am Netzmanagement beteiligt sind, bekannt sein. Die Sicherheitsrichtlinie SOLLTE zudem grundlegend für ihre Arbeit sein. Es SOLLTE regelmäßig und nachvollziehbar überprüft werden, dass die in der Sicherheitsrichtlinie geforderten Inhalte umgesetzt werden. Die Ergebnisse SOLLTEN sinnvoll dokumentiert werden. Die Sicherheitsrichtlinie SOLLTE festlegen, welche Bereiche des Netzmanagements über zentrale Management-Werkzeuge und -Dienste realisiert werden. Auch SOLLTE sie definieren, inwieweit Aufgaben im Netzmanagement der Institution automatisiert realisiert werden sollen. Darüber hinaus SOLLTEN Rahmenbedingungen und Vorgaben für die Netztrennung, die Zugriffskontrolle, die Protokollierung sowie für den Schutz der Kommunikation spezifiziert werden. Auch für das eingesetzte Netzmanagement-Werkzeug und für die operativen Grundregeln des Netzmanagements SOLLTEN Rahmenbedingungen und Vorgaben spezifiziert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.1.1.3",
+                          "ARCH.2.2",
+                          "ARCH.2.6"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.1.1",
+                    "rel": "related",
+                    "text": "ARCH.1.1 steht unter NET.1.2.A1"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A12",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A12 Ist-Aufnahme und Dokumentation des Netzmanagements",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A12"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A12_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE eine Dokumentation erstellt werden, die beschreibt, wie die Management-Infrastruktur des Netzes aufgebaut ist. Darin SOLLTEN die initiale Ist-Aufnahme sowie alle durchgeführten Änderungen im Netzmanagement enthalten sein. Insbesondere SOLLTE dokumentiert werden, welche Netzkomponenten mit welchen Management-Werkzeugen verwaltet werden. Außerdem SOLLTEN alle für das Netzmanagement benutzten IT-Arbeitsplätze und -Endgeräte sowie alle Informationsbestände, Management-Daten und Informationen über den Betrieb des Netzmanagements erfasst werden. Letztlich SOLLTEN sämtliche Schnittstellen zu Anwendungen und Diensten außerhalb des Netzmanagements dokumentiert werden. Der so dokumentierte Ist-Zustand der Management-Infrastruktur SOLLTE mit der Dokumentation der Netz-Infrastruktur abgeglichen werden (siehe Baustein NET.1.1 Netz-Architektur- und Design). Die Dokumentation SOLLTE vollständig und immer aktuell sein."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.4",
+                          "ASST.2.1",
+                          "ASST.2.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.1.1",
+                    "rel": "related",
+                    "text": "ARCH.1.1 steht unter NET.1.2.A1"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A13",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A13 Erstellung eines Netzmanagement-Konzepts",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A13"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A13_anforderung",
+                    "name": "overview",
+                    "prose": "Ausgehend von der Sicherheitsrichtlinie für das Netzmanagement SOLLTE ein Netzmanagement-Konzept erstellt und nachhaltig gepflegt werden. Dabei SOLLTEN mindestens folgende Aspekte bedarfsgerecht berücksichtigt werden: Methoden, Techniken und Werkzeuge für das Netzmanagement, Absicherung des Zugangs und der Kommunikation, Netztrennung, insbesondere Zuordnung von Netzmanagement-Komponenten zu Zonen, Umfang des Monitorings und der Alarmierung je Netzkomponente, Protokollierung, Automatisierung, insbesondere zentrale Verteilung von Konfigurationsdateien auf Switches, Meldeketten bei Störungen und Sicherheitsvorfällen, Bereitstellung von Netzmanagement-Informationen für andere Betriebsbereiche sowie Einbindung des Netzmanagements in die Notfallplanung."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.4",
+                    "rel": "related",
+                    "text": "ARCH.2.4 steht unter NET.1.2.A12"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A14",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A14 Fein- und Umsetzungsplanung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A14"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A14_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE eine Fein- und Umsetzungsplanung für die Netzmanagement-Infrastruktur erstellt werden. Dabei SOLLTEN alle in der Sicherheitsrichtlinie und im Netzmanagement-Konzept adressierten Punkte berücksichtigt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "UMS.2.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.1.1",
+                    "rel": "related",
+                    "text": "ARCH.1.1 steht unter NET.1.2.A1"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A15",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A15 Konzept für den sicheren Betrieb der Netzmanagement-Infrastruktur",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A15"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A15_anforderung",
+                    "name": "overview",
+                    "prose": "Ausgehend von der Sicherheitsrichtlinie für das Netzmanagement und dem Netzmanagement-Konzept SOLLTE ein Konzept für den sicheren Betrieb der Netzmanagement-Infrastruktur erstellt werden. Darin SOLLTE der Anwendungs- und Systembetrieb für die Netzmanagement-Werkzeuge berücksichtigt werden. Auch SOLLTE geprüft werden, wie sich die Leistungen anderer operativer Einheiten einbinden und steuern lassen."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.1.1",
+                    "rel": "related",
+                    "text": "ARCH.1.1 steht unter NET.1.2.A1"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A16",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A16 Einrichtung und Konfiguration von Netzmanagement-Lösungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A16"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A16_anforderung",
+                    "name": "overview",
+                    "prose": "Lösungen für das Netzmanagement SOLLTEN anhand der Sicherheitsrichtlinie, der spezifizierten Anforderungen (siehe NET1.2.A2 Anforderungsspezifikation für das Netzmanagement) und der Fein- und Umsetzungsplanung aufgebaut, sicher konfiguriert und in Betrieb genommen werden. Danach SOLLTEN die spezifischen Prozesse für das Netzmanagement eingerichtet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.2.1",
+                          "KONF.10.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A17",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A17 Regelmäßiger Soll-Ist-Vergleich im Rahmen des Netzmanagements",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A17"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A17_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE regelmäßig und nachvollziehbar geprüft werden, inwieweit die Netzmanagement-Lösung dem Sollzustand entspricht. Dabei SOLLTE geprüft werden, ob die bestehende Lösung noch die Sicherheitsrichtlinie und Anforderungsspezifikation erfüllt. Auch SOLLTE geprüft werden, inwieweit die umgesetzte Management-Struktur und die genutzten Prozesse dem aktuellen Stand entsprechen. Weiter SOLLTE verglichen werden, ob die Management-Infrastruktur aktuell ist."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.1.2",
+                          "KONF.2.5",
+                          "UMS.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A18",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A18 Schulungen für Management-Lösungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A18"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Vorgesetzte"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A18_anforderung",
+                    "name": "overview",
+                    "prose": "Für die eingesetzten Netzmanagement-Lösungen SOLLTEN Schulungs- und Trainingsmaßnahmen konzipiert und durchgeführt werden. Die Maßnahmen SOLLTEN die individuellen Gegebenheiten im Configuration-, Availability- und Capacity-Management sowie typische Situationen im Fehlermanagement abdecken. Die Schulungen und Trainings SOLLTEN regelmäßig wiederholt werden, mindestens jedoch, wenn sich größere technische oder organisatorische Änderungen innerhalb der Netzmanagement-Lösung ergeben."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "PERS.4.2.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A19",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A19 ENTFALLEN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A19"
+                  },
+                  {
+                    "name": "entfallen",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A20",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A20 ENTFALLEN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A20"
+                  },
+                  {
+                    "name": "entfallen",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A21",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A21 Entkopplung der Netzmanagement-Kommunikation",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A21"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A21_anforderung",
+                    "name": "overview",
+                    "prose": "Direkte Management-Zugriffe von Administrierenden von einem IT-System außerhalb der Managementnetze auf eine Netzkomponente SOLLTEN vermieden werden. Ist ein solcher Zugriff ohne zentrales Management-Werkzeug notwendig, SOLLTE die Kommunikation entkoppelt werden. Solche Sprungserver SOLLTEN im Management-Netz integriert und in einem getrennten Zugangssegment positioniert sein."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.2.12",
+                          "ARCH.5.1.6"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A22",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A22 Beschränkung der Management-Funktionen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A22"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A22_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTEN NUR die benötigten Management-Funktionen aktiviert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.2.4",
+                          "KONF.6.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A23",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A23 ENTFALLEN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A23"
+                  },
+                  {
+                    "name": "entfallen",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A24",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A24 Zentrale Konfigurationsverwaltung für Netzkomponenten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A24"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A24_anforderung",
+                    "name": "overview",
+                    "prose": "Software bzw. Firmware und Konfigurationsdaten für Netzkomponenten SOLLTEN automatisch über das Netz verteilt und ohne Betriebsunterbrechung installiert und aktiviert werden können. Die dafür benötigten Informationen SOLLTEN an zentraler Stelle sicher verfügbar sein sowie in die Versionsverwaltung und die Datensicherung eingebunden werden. Die zentrale Konfigurationsverwaltung SOLLTE nachhaltig gepflegt und regelmäßig auditiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.1.2",
+                          "KONF.2.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A25",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A25 Statusüberwachung der Netzkomponenten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A25"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A25_anforderung",
+                    "name": "overview",
+                    "prose": "Die grundlegenden Performance- und Verfügbarkeitsparameter der zentralen Netzkomponenten SOLLTEN kontinuierlich überwacht werden. Dafür SOLLTEN vorab die jeweiligen Schwellwerte ermittelt werden (Baselining)."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.4.12",
+                          "DET.4.12.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A26",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A26 Alarming und Logging",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A26"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A26_anforderung",
+                    "name": "overview",
+                    "prose": "Wichtige Ereignisse auf Netzkomponenten und auf den Netzmanagement-Werkzeugen SOLLTEN automatisch an ein zentrales Management-System übermittelt und dort protokolliert werden (siehe OPS.1.1.5 Protokollierung). Das zuständige Personal SOLLTE zusätzlich automatisch benachrichtigt werden. Das Alarming und Logging SOLLTE mindestens folgende Punkte beinhalten: Ausfall bzw. Nichterreichbarkeit von Netz- oder Management-Komponenten, Hardware-Fehlfunktionen, fehlerhafte Anmeldeversuche sowie kritische Zustände oder Überlastung von IT-Systemen. Ereignismeldungen bzw. Logging-Daten SOLLTEN einem zentralen Management-System entweder kontinuierlich oder gebündelt übermittelt werden. Alarmmeldungen SOLLTEN sofort wenn sie auftreten übermittelt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.3.1.4",
+                          "DET.4.15",
+                          "DET.6.1.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.3.1",
+                    "rel": "related",
+                    "text": "DET.3.1 steht unter NET.1.2.A7"
+                  },
+                  {
+                    "href": "#DET.3.1.1",
+                    "rel": "related",
+                    "text": "DET.3.1.1 steht unter NET.1.2.A7"
+                  },
+                  {
+                    "href": "#DET.3.1.5",
+                    "rel": "related",
+                    "text": "DET.3.1.5 steht unter NET.1.2.A7"
+                  },
+                  {
+                    "href": "#DET.4.12",
+                    "rel": "related",
+                    "text": "DET.4.12 steht unter NET.1.2.A25"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A27",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A27 Einbindung des Netzmanagements in die Notfallplanung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A27"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A27_anforderung",
+                    "name": "overview",
+                    "prose": "Die Netzmanagement-Lösungen SOLLTEN in die Notfallplanung der Institution eingebunden werden. Dazu SOLLTEN die Netzmanagement-Werkzeuge und die Konfigurationen der Netzkomponenten gesichert und in die Wiederanlaufpläne integriert sein."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NOT.1.1",
+                          "NOT.3.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#NOT.4.2",
+                    "rel": "related",
+                    "text": "NOT.4.2 steht unter NET.1.2.A6"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A28",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A28 Platzierung der Management-Clients für das In-Band-Management",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A28"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A28_anforderung",
+                    "name": "overview",
+                    "prose": "Für die Administration sowohl der internen als auch der externen IT-Systeme SOLLTEN dedizierte Management-Clients eingesetzt werden. Dafür SOLLTE mindestens ein Management-Client am äußeren Netzbereich (für die Administration am Internet anliegender IT-Systeme) und ein weiterer im internen Bereich (für die Administration interner IT-Systeme) platziert werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.2.7",
+                    "rel": "related",
+                    "text": "ARCH.2.2.7 steht unter NET.1.2.A9"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A29",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A29 Einsatz von VLANs im Management-Netz",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A29"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A29_anforderung",
+                    "name": "overview",
+                    "prose": "Werden Managementnetze durch VLANs getrennt, SOLLTE darauf geachtet werden, dass der äußere Paketfilter sowie die daran angeschlossenen Geräte in einem eigenen Teilnetz stehen. Zudem SOLLTE sichergestellt werden, dass das ALG dabei nicht umgangen wird."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.2.7",
+                    "rel": "related",
+                    "text": "ARCH.2.2.7 steht unter NET.1.2.A9"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "NET.1.2-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "NET.1.2.A30",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A30 Hochverfügbare Realisierung der Management-Lösung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A30"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A30_anforderung",
+                    "name": "overview",
+                    "prose": "Zentrale Management-Lösungen SOLLTEN hochverfügbar betrieben werden. Dazu SOLLTEN die Server bzw. Werkzeuge inklusive der Netzanbindungen redundant ausgelegt sein. Auch die einzelnen Komponenten SOLLTEN hochverfügbar bereitgestellt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.8.3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A31",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A31 Grundsätzliche Nutzung von sicheren Protokollen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A31"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A31_anforderung",
+                    "name": "overview",
+                    "prose": "Für das Netzmanagement SOLLTEN ausschließlich sichere Protokolle benutzt werden. Es SOLLTEN alle Sicherheitsfunktionen dieser Protokolle verwendet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.2.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.5.1.1",
+                    "rel": "related",
+                    "text": "ARCH.5.1.1 steht unter NET.1.2.A10"
+                  },
+                  {
+                    "href": "#KONF.14.1.1",
+                    "rel": "related",
+                    "text": "KONF.14.1.1 steht unter NET.1.2.A10"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A32",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A32 Physische Trennung des Managementnetzes",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A32"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Planende"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A32_anforderung",
+                    "name": "overview",
+                    "prose": "Das Managementnetz SOLLTE physisch von den produktiven Netzen getrennt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.2.11"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.2.7",
+                    "rel": "related",
+                    "text": "ARCH.2.2.7 steht unter NET.1.2.A9"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A33",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A33 Physische Trennung von Management-Segmenten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A33"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Planende"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A33_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTEN physisch getrennte Zonen mindestens für das Management von LAN-Komponenten, Sicherheitskomponenten und Komponenten zur Außenanbindung eingerichtet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.2.7",
+                    "rel": "related",
+                    "text": "ARCH.2.2.7 steht unter NET.1.2.A9"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A34",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A34 ENTFALLEN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A34"
+                  },
+                  {
+                    "name": "entfallen",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A35",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A35 Festlegungen zur Beweissicherung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A35"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A35_anforderung",
+                    "name": "overview",
+                    "prose": "Die erhobenen Protokollierungsdaten SOLLTEN für forensische Analysen gesetzeskonform und revisionssicher archiviert werden (siehe auch DER.2.2 Vorsorge für die IT-Forensik)."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.3.4",
+                          "DET.3.5",
+                          "REA.2.5.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A36",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A36 Einbindung der Protokollierung des Netzmanagements in eine SIEM-Lösung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A36"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A36_anforderung",
+                    "name": "overview",
+                    "prose": "Die Protokollierung des Netzmanagements SOLLTE in eine Security-Information-and-Event-Management (SIEM)-Lösung eingebunden werden. Dazu SOLLTEN die Anforderungskataloge zur Auswahl von Netzmanagement-Lösungen hinsichtlich der erforderlichen Unterstützung von Schnittstellen und Übergabeformaten angepasst werden (siehe NET.1.2.A2 Anforderungsspezifikation für das Netzmanagement)."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BES.2.1.4.1",
+                          "BES.4.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A37",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A37 Standortübergreifende Zeitsynchronisation",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A37"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A37_anforderung",
+                    "name": "overview",
+                    "prose": "Die Zeitsynchronisation SOLLTE über alle Standorte der Institution sichergestellt werden. Dafür SOLLTE eine gemeinsame Referenzzeit benutzt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.4.5",
+                    "rel": "related",
+                    "text": "KONF.4.5 steht unter NET.1.2.A8"
+                  }
+                ]
+              },
+              {
+                "id": "NET.1.2.A38",
+                "class": "ed23-anforderung",
+                "title": "NET.1.2.A38 Festlegung von Notbetriebsformen für die Netzmanagement-Infrastruktur",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.1.2.A38"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.1.2.A38_anforderung",
+                    "name": "overview",
+                    "prose": "Für eine schnelle Wiederherstellung der Sollzustände von Software bzw. Firmware sowie der Konfiguration der Komponenten in der Netzmanagement-Infrastruktur SOLLTEN hinreichend gute Ersatzlösungen festgelegt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NOT.4.15"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#NOT.3.1",
+                    "rel": "related",
+                    "text": "NOT.3.1 steht unter NET.1.2.A27"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
     "back-matter": {
       "resources": [
         {
@@ -64,6 +1783,957 @@
                 {
                   "algorithm": "SHA-256",
                   "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "ARCH.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): ARCH.1.1 verankert Verfahren und Regelungen zur Netzarchitektur, verlangt aber nicht die konkrete planerische Ausgestaltung der Netzmanagement-Infrastruktur. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A11",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Das Verankern von Verfahren und Regelungen zur Netzarchitektur (welche laut Erläuterung das Netzmanagement umfasst) deckt die Vorgabe einer Sicherheitsrichtlinie für das Netzmanagement inhaltlich ab. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A12",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A14",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A15",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.1.1.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A11",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): ARCH.1.1.3 deckt die Forderung direkt ab, da sie verlangt, zuständige Personen über die geltenden Verfahren und Regelungen zu informieren und diese somit bekanntzugeben. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A17",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): ARCH.1.2 fordert die Überprüfung von Verfahren auf Aktualität und überschneidet sich mit der Prüfung genutzter Prozesse im Netzmanagement, erfasst jedoch nicht die Überprüfung der umgesetzten Management-Struktur. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A33",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A11",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2.11",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A32",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ARCH.2.2.11 beschreibt als allgemeines Architekturprinzip die physische Segmentierung von Netzen und schließt die physische Trennung von Managementnetzen als Anwendungsfall ein. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2.12",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A21",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): Die Installation eines Sprungservers stellt eine technische Möglichkeit zur Entkopplung der Management-Kommunikation dar, deckt das allgemeine Entkopplungsgebot jedoch nur teilweise ab. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2.7",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A9",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): ARCH.2.2.7 fordert die generelle Installation von Management-Netzen, regelt jedoch nicht die spezifische Ausweichpflicht bei unsicherer Netzmanagement-Kommunikation. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): ARCH.2.2.7 fordert generell die Einrichtung von Management-Netzen, regelt aber nicht die spezifische Fallback-Bedingung beim Einsatz unsicherer SNMP-Protokolle. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A28",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A29",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A32",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): ARCH.2.2.7 fordert Management-Netze physisch oder durch Netzfilter, verlangt jedoch nicht zwingend die im Satz für Hochwert geforderte physische Trennung. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A33",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): ARCH.2.2.7 fordert allgemein Management-Netze, verlangt jedoch keine physisch getrennten Zonen für LAN-, Sicherheits- und Außenanbindungskomponenten. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A12",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A13",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A11",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.5.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Das Blockieren anfälliger Netzwerkprotokolle gemäß ARCH.5.1.1 umfasst laut Erläuterung explizit unsichere Versionen wie SNMP v1/v2c und deckt das Verbot des Einsatzes unsicherer SNMP-Versionen inhaltlich ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A31",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): ARCH.5.1.1 fordert das Blockieren anfälliger Netzprotokolle im Netz."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.5.1.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A21",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.8.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A30",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1,2): Die redundante Auslegung der für die Anwendung erforderlichen Hostsysteme gemäß ARCH.8.3 setzt den hochverfügbaren Betrieb der Management-Lösung technisch um. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): ASST.2.1 fordert die allgemeine Erstellung eines Inventars für Informationen und damit verbundene Assets, was die geforderte Erfassung von Informationsbeständen, Management-Daten und zugehörigen Endgeräten inhaltlich abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.2.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): ASST.2.2 fordert die allgemeine Inventarisierung von IT-Systemen und Endgeräten, was die Erfassung der im Satz genannten IT-Arbeitsplätze und -Endgeräte abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): Die G++-Maßnahme BER.4.1 fordert allgemeingültig das Prinzip der geringsten Berechtigungen (Least Privilege), welches die Beschränkung von SNMP-Zugriffen auf minimal erforderliche Rechte direkt abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A2",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker fraglich): BES.2.1 fordert die Dokumentation des Bedarfs anhand einer Leistungsbeschreibung oder Umsetzungsstrategie, was die Spezifikation der Anforderungen an die Netzmanagement-Infrastruktur abdeckt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.2.1.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A36",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): BES.2.1.4.1 fordert allgemein die Dokumentation des Bedarfs an Schnittstellen- und Datenformatkompatibilität bei Beschaffungen und deckt damit die Anpassung von Anforderungskatalogen hinsichtlich Schnittstellen und Übergabeformaten ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A36",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Die G++-Maßnahme BES.4.2 verlangt allgemein die Dokumentation von Beschaffungskriterien, was die fachspezifische Anpassung von Anforderungskatalogen für Netzmanagement-Lösungen um Schnittstellen- und Formatkriterien abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A7",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A26",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): DET.3.1.1 adressiert über fehlgeschlagene Authentifizierungen einen Teil der unerlaubten Zugriffsversuche, umfasst jedoch die weiteren in Satz 1 geforderten Netz- und Prozessstörungen nicht. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A26",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): DET.3.1.1 deckt den in Satz 3 explizit geforderten Aspekt der Protokollierung fehlerhafter Anmeldeversuche (Authentifizierungen bei Fehlschlag) direkt ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A26",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): Die G++-Maßnahme überschneidet sich mit der geforderten Erfassung von Hardware-Fehlfunktionen und kritischen Zuständen, umfasst jedoch weder das geforderte Alarming noch weitere Ereignisse wie fehlerhafte Anmeldeversuche. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): Die Maßnahme adressiert mit der optionalen Protokollierung von Störungen der Netzerreichbarkeit einen Teil der im Satz genannten Ereigniskategorien. Andere geforderte Protokollierungsanlässe wie unerlaubte Zugriffe oder Fehler in automatischen Prozessen werden nicht abgedeckt. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A26",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1.9",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A7",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A35",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (equivalent-to)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A35",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.11.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A7",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.12",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A25",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): DET.4.12 adressiert die Überwachung der Netzverfügbarkeit anhand von Schwellwerten und deckt damit den Aspekt der Verfügbarkeitsparameter ab, während Performanceparameter unberücksichtigt bleiben. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A26",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 3): DET.4.12 adressiert die Überwachung der Netzverfügbarkeit und berührt damit den Aspekt des Ausfalls bzw. der Nichterreichbarkeit, lässt jedoch weitere geforderte Ereignisse wie Hardware-Fehlfunktionen oder fehlerhafte Anmeldeversuche offen. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.12.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A25",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1,2): DET.4.12.1 adressiert mit der Überwachung der Netzauslastung einen zentralen Performanceparameter, deckt jedoch nicht alle Performance- und Verfügbarkeitsparameter der Netzkomponenten ab. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.15",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A26",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): DET.4.15 deckt den Teilaspekt der Überwachung und Meldung von Überlastungen bzw. kritischen Ressourcenauslastungen von IT-Systemen anhand von Schwellwerten direkt ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.6.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A26",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): G++-Maßnahme DET.6.1.2 fordert explizit die automatisierte Alarmierung zuständiger Personen bei sicherheitskritischen Ereignissen und deckt damit die automatische Benachrichtigung des zuständigen Personals vollständig ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A24",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): KONF.1.2 adressiert die Aktualitätsprüfung von Konfigurationsregelungen, während die nachhaltige Pflege und Auditierung der zentralen Konfigurationsverwaltung über reine Regelungsprüfungen hinausgehen. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.10.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A16",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): KONF.10.1 adressiert die sichere Grundkonfiguration von Anwendungen, worunter Netzmanagement-Applikationen fallen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.14.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die Forderung nach Deaktivierung unverschlüsselter und anfälliger Netzwerkverbindungen in KONF.14.1.1 deckt das Verbot des Einsatzes unsicherer Protokollversionen wie SNMPv1/v2c inhaltlich als allgemeinere Anforderung ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A31",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): KONF.14.1.1 fordert für Anwendungen (wie Netzmanagement-Tools) die Deaktivierung unverschlüsselter und anfälliger Verbindungen über Netze."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A16",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): KONF.2.1 adressiert die Grundkonfiguration für IT-Systeme, worunter die Systeme der Netzmanagement-Lösung fallen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A24",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): Die Maßnahme deckt die Einbindung von Konfigurationsdaten in eine Versionsverwaltung ab, umfasst jedoch nicht die geforderte zentrale sichere Bereitstellung und allgemeine Datensicherung. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A31",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): KONF.2.2 fordert die Aktivierung sicherer kryptographischer Verfahren in IT-Systemen, was die Sicherheitsfunktionen von Management-Protokollen einschließt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A22",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): KONF.2.4 fordert die Deaktivierung nicht benötigter Systemfunktionen, was als allgemeinere Fassung die Beschränkung auf benötigte Management-Funktionen inhaltlich abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A17",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): KONF.2.5 fordert die regelmäßige Überprüfung der tatsächlichen Konfiguration gegen den Referenzzustand (Sollzustand) von IT-Systemen und deckt damit die allgemeine Tätigkeit des Soll-Ist-Abgleichs für die Netzmanagement-Lösung ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.4.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): KONF.4.4 fordert allgemein die Einschränkung von Fernwartungsfunktionen gemäß Berechtigungsmanagement, verlangt aber nicht spezifisch die Beschränkung auf dedizierte Management-Server. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.4.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,2): Die Konfiguration autorisierter Zeitquellen unterstützt die Anforderung, dass Netz- und Managementkomponenten eine synchrone Uhrzeit nutzen, deckt diesen Zustand jedoch nicht vollständig ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A37",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,2): KONF.4.5 fordert die Autorisierung und Konfiguration von Zeitquellen für IT-Systeme, was die technische Sicherstellung der Zeitsynchronisation über die Systeme und Standorte der Institution abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.6.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A22",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die Forderung, nur benötigte Management-Funktionen zu aktivieren, wird durch die allgemeine Vorgabe in KONF.6.4 zur Einschränkung privilegierter Systemfunktionen auf IT-Systemen inhaltlich abgedeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A27",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die G++-Maßnahme NOT.1.1 deckt die Einbindung von Netzmanagement-Lösungen in die Notfallplanung als allgemeinere Anforderung zur Verankerung von Verfahren und Regelungen zur Notfallvorsorge inhaltlich ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A27",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,2): NOT.3.1 verlangt Wiederanlaufpläne für zeitkritische Systeme, deckt jedoch die allgemeine Einbindung von Netzmanagement-Lösungen in die übergeordnete Notfallplanung nur teilweise ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A38",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): NOT.3.1 fordert einen Wiederanlaufplan für zeitkritische Systeme und Anwendungen, wozu die schnelle Wiederherstellung der Netzmanagement-Infrastruktur gehört."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.4.15",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A38",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): NOT.4.15 fordert die Dokumentation der Vorgehensweise zur Wiederherstellung gesicherter Daten (wie Konfigurationen und Softwareständen)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die G++-Maßnahme NOT.4.2 fordert die regelmäßige Datensicherung von IT-Systemen und deckt die Sicherung der system- und konfigurationsrelevanten Daten des Netzmanagements als allgemeine Anforderung inhaltlich ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A27",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): NOT.4.2 deckt die regelmäßige Sicherung von IT- und Netzsystemen ab, verlangt jedoch nicht die spezifische Integration der Werkzeuge und Konfigurationen in Wiederanlaufpläne. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.4.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die Maßnahme NOT.4.3 verlangt die Datensicherung von Anwendungen inklusive Konfigurationsdaten und Anwendungsdaten, was die Sicherung der Daten des Netzmanagements abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERS.4.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A18",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): PERS.4.2.1 fordert produktspezifische Schulungen für Administrierende bezüglich administrativer Werkzeuge, wozu explizit Netzmanagement-Software zählt, und deckt die Durchführung entsprechender Schulungsmaßnahmen inhaltlich ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "REA.2.5.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A35",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): REA.2.5.1 regelt die Beweisdokumentation bei akuten Sicherheitsvorfällen, während NET.1.2.A35 die revisionssichere Archivierung von Protokollierungsdaten zur allgemeinen forensischen Vorsorge fordert. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A17",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Die allgemeine regelmäßige Überprüfung des Umsetzungsstatus von Anforderungen gemäß UMS.1.1 deckt die Prüfung der Einhaltung von Sicherheitsrichtlinien und Anforderungsspezifikationen inhaltlich ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.1.2.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): UMS.2.1 fordert die allgemeine Erstellung einer strukturierten Umsetzungsplanung, welche die geforderte Fein- und Umsetzungsplanung für die Netzmanagement-Infrastruktur abstrahierend abdeckt. [auch: satz_abdeckung]"
                 }
               ]
             }

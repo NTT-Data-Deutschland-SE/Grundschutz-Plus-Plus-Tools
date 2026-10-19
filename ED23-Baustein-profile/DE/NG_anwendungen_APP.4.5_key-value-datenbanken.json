@@ -1,0 +1,1230 @@
+{
+  "profile": {
+    "uuid": "6b436e5c-03aa-5a0d-a5f6-ccb1d36cc3fa",
+    "metadata": {
+      "title": "NG APP.4.5 – Key-Value-Datenbanken (Anwendungen)",
+      "last-modified": "2026-10-19T01:04:34.816253+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "NG"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "APP.4.5"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Key-Value-Datenbanken"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Anwendungen"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "system"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, APP.4.5, NG, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein APP.4.5 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe, NG-Baustein)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (Text des nutzergenerierten Bausteins (NG, NTT DATA), kein BSI-Text); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls."
+    },
+    "imports": [
+      {
+        "href": "#afe1c75e-8725-5df2-a57b-235d7d5236f4",
+        "include-controls": [
+          {
+            "with-ids": [
+              "ARCH.5.1",
+              "ARCH.7.1",
+              "BER.2.1",
+              "BER.4.1",
+              "BER.6.4",
+              "BER.7.12",
+              "BER.7.13",
+              "DET.3.1",
+              "DET.3.1.8",
+              "DET.4.6",
+              "DET.5.10.3",
+              "DET.5.3",
+              "DET.6.1",
+              "KONF.10.4",
+              "KONF.10.5.1",
+              "KONF.11.1",
+              "KONF.11.1.2",
+              "KONF.11.8",
+              "KONF.14.1",
+              "KONF.14.1.1",
+              "KONF.3.2",
+              "KONF.6.1",
+              "KONF.6.1.2",
+              "KONF.6.6",
+              "KONF.6.7",
+              "KONF.7.13",
+              "KONF.7.15",
+              "NOT.4.6"
+            ]
+          }
+        ]
+      }
+    ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "APP.4.5-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "APP.4.5.A1",
+                "class": "ed23-anforderung",
+                "title": "APP.4.5.A1 Absicherung des Netzwerkzugriffs",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.5.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.5.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Der Netzwerkzugriff auf die Key-Value-Datenbank ist auf das zwingend erforderliche Minimum beschränkt. Die Datenbank ist ausschließlich an vertrauenswürdige Schnittstellen gebunden und der Zugriff auf Port-Ebene ist durch Paketfilter strikt limitiert."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.7.15",
+                          "ARCH.5.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.5.A2",
+                "class": "ed23-anforderung",
+                "title": "APP.4.5.A2 Aktivierung einer grundlegenden Authentifizierung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.5.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.5.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Ein Authentifizierungsmechanismus für eingehende Verbindungen ist aktiviert und mit einem sicheren Passwort konfiguriert, um anonyme Vollzugriffe zu verhindern."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.11.1",
+                          "BER.6.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.5.A3",
+                "class": "ed23-anforderung",
+                "title": "APP.4.5.A3 Härtung der Konfiguration",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.5.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.5.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Potenziell gefährliche Befehle sind deaktiviert oder umbenannt. Unsichere Standardeinstellungen wurden vor der Produktivsetzung korrigiert."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.10.4",
+                          "KONF.6.7"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.5.A4",
+                "class": "ed23-anforderung",
+                "title": "APP.4.5.A4 Ausführung mit dediziertem Benutzerkonto",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.5.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.5.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Die Key-Value-Datenbank wird unter einem eigenen, dedizierten Benutzerkonto mit minimalen Rechten betrieben. Ein Betrieb als Administrator ist ausgeschlossen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.6.1",
+                          "BER.4.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "APP.4.5-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "APP.4.5.A5",
+                "class": "ed23-anforderung",
+                "title": "APP.4.5.A5 Verschlüsselung der Datenübertragung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.5.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.5.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Die gesamte Netzwerkkommunikation zwischen Anwendungen und der Datenbank sowie zwischen Cluster-Knoten ist mittels TLS verschlüsselt."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.14.1",
+                          "KONF.14.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.5.A6",
+                "class": "ed23-anforderung",
+                "title": "APP.4.5.A6 Erstellung eines differenzierten Rechtekonzepts",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.5.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Entwickler"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.5.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Ein differenziertes Rechtekonzept ist umgesetzt, bei dem jede zugreifende Anwendung einen eigenen Benutzer mit minimal erforderlichen Berechtigungen und Key-Spaces erhält."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.6.6",
+                          "BER.2.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#BER.4.1",
+                    "rel": "related",
+                    "text": "BER.4.1 steht unter APP.4.5.A4"
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.5.A7",
+                "class": "ed23-anforderung",
+                "title": "APP.4.5.A7 Sichere Konfiguration der Datenpersistenz",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.5.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.5.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Persistierte Daten (Backups, Snapshots) sind mit restriktiven Dateiberechtigungen versehen und der Speicherort ist gegen unbefugte Zugriffe abgesichert."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NOT.4.6"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.5.A8",
+                "class": "ed23-anforderung",
+                "title": "APP.4.5.A8 Regelmäßige Protokollierung und Überwachung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.5.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.5.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Verbindungsversuche und kritische Befehle werden an ein zentrales Log-Management-System übergeben und regelmäßig auf verdächtige Aktivitäten ausgewertet."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.3.1",
+                          "DET.3.1.8",
+                          "DET.4.6",
+                          "DET.6.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "APP.4.5-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "APP.4.5.A9",
+                "class": "ed23-anforderung",
+                "title": "APP.4.5.A9 Absicherung der Cluster-Kommunikation mit mTLS",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.5.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.5.A9_anforderung",
+                    "name": "overview",
+                    "prose": "In Cluster-Umgebungen ist die gesamte Kommunikation zwischen den Knoten durch gegenseitige TLS-Authentifizierung (mTLS) abgesichert, wobei Zertifikate zwingend überprüft werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.11.1.2",
+                          "BER.7.12",
+                          "BER.7.13"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.14.1",
+                    "rel": "related",
+                    "text": "KONF.14.1 steht unter APP.4.5.A5"
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.5.A10",
+                "class": "ed23-anforderung",
+                "title": "APP.4.5.A10 Einsatz in einer isolierten und gehärteten Laufzeitumgebung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.5.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.5.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Die Key-Value-Datenbank wird in einer dedizierten, gehärteten Laufzeitumgebung betrieben, in der Netzwerkzugriffe und Systemaufrufe auf das Minimum beschränkt sind."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.7.1",
+                          "KONF.6.1.2",
+                          "KONF.7.13"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.7.15",
+                    "rel": "related",
+                    "text": "KONF.7.15 steht unter APP.4.5.A1"
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.5.A11",
+                "class": "ed23-anforderung",
+                "title": "APP.4.5.A11 Verschlüsselung von persistenten Daten (Encryption at Rest)",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.5.A11"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.5.A11_anforderung",
+                    "name": "overview",
+                    "prose": "Hochsensible persistente Daten werden auf dem Speichermedium verschlüsselt abgelegt (Encryption at Rest), entweder durch Betriebssystemfunktionen oder datenbankeigene Mechanismen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.11.8",
+                          "KONF.3.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.5.A12",
+                "class": "ed23-anforderung",
+                "title": "APP.4.5.A12 Regelmäßige Konfigurations- und Schwachstellen-Audits",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.5.A12"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.5.A12_anforderung",
+                    "name": "overview",
+                    "prose": "Die Konfiguration und die Softwareversion der Key-Value-Datenbank werden regelmäßig automatisiert auf bekannte Schwachstellen (CVEs) und Abweichungen von einer sicheren Basiskonfiguration überprüft."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.10.5.1",
+                          "DET.5.3",
+                          "DET.5.10.3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "back-matter": {
+      "resources": [
+        {
+          "uuid": "afe1c75e-8725-5df2-a57b-235d7d5236f4",
+          "title": "Grundschutz++-resolved_catalog.json @ a12831136f41",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/a12831136f4122a4c43854622180a24f2576a41e/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "ARCH.5.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Die Beschränkung des Netzwerkzugriffs auf das zwingend erforderliche Minimum auf Netzebene entspricht der allgemeinen Einschränkung von Verbindungen zwischen IT-Systemen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.7.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): ARCH.7.1 fordert, Serverdienste ausschließlich auf für die Anwendung dedizierten Hostsystemen zu platzieren."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): BER.2.1 fordert eindeutige Identitäten, was die Vergabe eigener Benutzerkonten je zugreifender Anwendung stützt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A4",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker bestaetigt): Die Ausstattung des dedizierten Dienstekontos mit minimalen Rechten folgt direkt dem Prinzip der geringsten Berechtigungen."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker bestaetigt): BER.4.1 fordert die Vergabe von Berechtigungen nach dem Prinzip der geringsten Berechtigungen, was die minimal erforderlichen Berechtigungen und Key-Spaces abdeckt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.6.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A2",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Die Forderung nach Konfiguration eines sicheren Passworts überschneidet sich mit der Verankerung von Kriterien für die Qualität von Passwörtern im Berechtigungsmanagement."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.7.12",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker fraglich): BER.7.12 fordert die Verifikation der Authentizität öffentlicher Schlüssel (Zertifikatsprüfung) vor jeder Nutzung."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.7.13",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker fraglich): BER.7.13 fordert die Verifikation der Gültigkeit von Schlüsseln bzw. Zertifikaten vor jeder Nutzung."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A8",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): DET.3.1 fordert die Protokollierung sicherheitsrelevanter Ereignisse in Anwendungen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1.8",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A8",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker fraglich): DET.3.1.8 fordert die Protokollierung privilegierter Ereignisse in Anwendungen, worunter kritische Befehle in der Datenbank fallen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A8",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): DET.4.6 beinhaltet die Überwachung der Anwendungsnutzung auf Anomalien bzw. verdächtige Aktivitäten."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.10.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A12",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): Deckt die automatisierte Überwachung der Softwareversion bzw. des Patchstatus der Anwendung ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A12",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Deckt das Durchführen von Schwachstellenscans zur Erkennung bekannter Schwachstellen (CVEs) ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.6.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A8",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): DET.6.1 fordert ein Verfahren zur Beurteilung sicherheitsrelevanter Ereignisse."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.10.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A3",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): Das Deaktivieren oder Umbenennen potenziell gefährlicher Befehle entspricht der Deaktivierung nicht benötigter Anwendungsfunktionen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.10.5.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A12",
+                  "remarks": "Herkunft: KI-Vorschlag (subset-of, Konfidenz hoch, Checker bestaetigt): Deckt die automatisierte Überprüfung der Anwendungskonfiguration gegen den Referenzzustand (sichere Basiskonfiguration) exakt ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.11.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A2",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker bestaetigt): Die Aktivierung eines Authentifizierungsmechanismus zur Verhinderung anonymer Vollzugriffe auf die Datenbank setzt die Anforderung um, Zugriffe auf schützenswerte Daten in Anwendungen zu authentifizieren."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.11.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): KONF.11.1.2 fordert die clientseitige Authentifizierung der Gegenstelle vor dem Datenaustausch, was zusammen mit der Server-Authentifizierung bei TLS der gegenseitigen Authentifizierung (mTLS) zwischen Cluster-Knoten entspricht."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.11.8",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A11",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): KONF.11.8 behandelt direkt die Verschlüsselung schützenswerter Daten bei der Speicherung (at-rest) durch die Anwendung (datenbankeigene Mechanismen)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.14.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A5",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker bestaetigt): Die TLS-Verschlüsselung der Netzwerkkommunikation zwischen Anwendungen und Datenbank sowie zwischen Cluster-Knoten ist eine konkrete Ausprägung der Transportverschlüsselung für Anwendungen."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): KONF.14.1 fordert die Transportverschlüsselung der Kommunikation von Anwendungen über Netze (z. B. mittels TLS)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.14.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A5",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Da die gesamte Netzwerkkommunikation verschlüsselt ist, impliziert dies auch die Deaktivierung unverschlüsselter Verbindungen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.3.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A11",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): KONF.3.2 adressiert die Speicherverschlüsselung integrierter Festspeichermedien auf Systemebene (Betriebssystemfunktionen), was die in der Anforderung genannte Alternative abdeckt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.6.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A4",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker bestaetigt): Der Betrieb der Datenbank mit minimalen Rechten unter Ausschluss von Administratorrechten setzt die Einschränkung der für Anwendungen erforderlichen Berechtigungen auf dem IT-System um."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.6.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): KONF.6.1.2 adressiert die Isolierung von Anwendungen auf dem IT-System."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.6.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): KONF.6.6 fordert für Anwendungen, Zugriffe eines Zugangskontos auf Daten anderer Zugangskonten einzuschränken, was der Trennung über eigene Benutzer und Key-Spaces je zugreifender Anwendung entspricht."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.6.7",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A3",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Soweit gefährliche Befehle weiterhin für administrative Zwecke benötigt und daher nur umbenannt oder beschränkt werden, greift die Einschränkung privilegierter Funktionen der Anwendung."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.7.13",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): KONF.7.13 fordert explizit die Einschränkung von Systemaufrufen pro Anwendung."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.7.15",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): Die strikte Limitierung des Zugriffs auf Port-Ebene durch Paketfilter auf dem Hostsystem wird durch die Anforderung einer lokalen Firewall zur Einschränkung ein- und ausgehender Netzverbindungen abgedeckt."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): KONF.7.15 fordert die Einschränkung ein- und ausgehender Netzverbindungen durch eine lokale Firewall."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.4.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.5.A7",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker fraglich): NOT.4.6 fordert eine geschützte Aufbewahrung von Datensicherungen (Backups, Snapshots) gegen unbefugte Zugriffe."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

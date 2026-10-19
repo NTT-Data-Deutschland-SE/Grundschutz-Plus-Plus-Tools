@@ -1,0 +1,2557 @@
+{
+  "profile": {
+    "uuid": "e6d62cb1-21ec-5e32-80cd-7f1326830a7b",
+    "metadata": {
+      "title": "DER.3.1 – Audits und Revisionen (Institutionsleitung)",
+      "last-modified": "2026-10-19T01:18:09.108456+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "BSI"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "DER.3.1"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Audits und Revisionen"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Institutionsleitung"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "prozess"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, DER.3.1, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein DER.3.1 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (amtlicher Wortlaut des XML-Kompendiums 2023); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41) und dem NG Ergänzungskatalog (NG-ergaenzungskatalog.json, nutzergeneriert). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls. Prozess-Baustein ohne eigene Praktik in Grundschutz++; die Zielobjektkategorie ist nur informativ."
+    },
+    "imports": [
+      {
+        "href": "#afe1c75e-8725-5df2-a57b-235d7d5236f4",
+        "include-controls": [
+          {
+            "with-ids": [
+              "ASST.3.12",
+              "ASST.4.2",
+              "ASST.7.2",
+              "ASST.7.3",
+              "BER.4.1",
+              "BER.4.8",
+              "GC.11.1",
+              "GC.9.1.1.3",
+              "PERF.1.2",
+              "PERF.3.1",
+              "PERF.3.1.1",
+              "PERF.3.1.2",
+              "PERF.3.1.3",
+              "PERF.3.1.4",
+              "PERF.3.2",
+              "PERF.3.2.1",
+              "PERF.3.2.2",
+              "PERF.4.1",
+              "PERF.4.1.1",
+              "PERF.4.1.4",
+              "PERF.4.1.7",
+              "PERF.4.1.8",
+              "PERF.4.2",
+              "PERS.2.3.3",
+              "UMS.1.1",
+              "UMS.2.1",
+              "UMS.3.1",
+              "UMS.4.1",
+              "UMS.6.1",
+              "UMS.7.1",
+              "VRB.1.1",
+              "VRB.2.1",
+              "VRB.2.2",
+              "VRB.3.1",
+              "VRB.4.1",
+              "VRB.4.2"
+            ]
+          }
+        ]
+      },
+      {
+        "href": "#6b2c3fe8-7370-556a-9c3c-540d81d5de99",
+        "include-controls": [
+          {
+            "with-ids": [
+              "NG-DER.3.1.A12",
+              "NG-DER.3.1.A18"
+            ]
+          }
+        ]
+      }
+    ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "DER.3.1-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "DER.3.1.A1",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A1 Definition von Verantwortlichkeiten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Institutionsleitung"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Die Institutionsleitung MUSS eine Person benennen, die dafür zuständig ist, Audits bzw. Revisionen zu planen und zu initiieren. Dabei MUSS die Institutionsleitung darauf achten, dass keine Interessenkonflikte entstehen. Die Institution MUSS die Ergebnisse der Audits und Revisionen dazu verwenden, um die Sicherheitsmaßnahmen zu verbessern."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GC.9.1.1.3",
+                          "PERF.3.1",
+                          "PERF.3.1.3",
+                          "PERF.4.1.8",
+                          "PERS.2.3.3",
+                          "VRB.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A2",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A2 Vorbereitung eines Audits oder einer Revision",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Vor einem Audit oder einer Revision MUSS die Institution den Prüfgegenstand und die Prüfungsziele festlegen. Das betroffene Personal MUSS unterrichtet werden. Abhängig vom Untersuchungsgegenstand MUSS die Personalvertretung über das geplante Audit oder die geplante Revision informiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "PERF.3.1.1",
+                          "PERF.3.1.4"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.1",
+                    "rel": "related",
+                    "text": "PERF.3.1 steht unter DER.3.1.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A3",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A3 Durchführung eines Audits",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Auditteam"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Bei einem Audit MUSS das Auditteam prüfen, ob die Anforderungen aus Richtlinien, Normen, Standards und anderen relevanten Vorgaben erfüllt sind. Die geprüfte Institution MUSS die Anforderungen kennen. Das Auditteam MUSS bei jedem Audit eine Dokumentenprüfung sowie eine Vor-Ort-Prüfung durchführen. Beim Vor-Ort-Audit MUSS das Auditteam sicherstellen, dass es niemals selbst aktiv in Systeme eingreift und keine Handlungsanweisungen zu Änderungen am Prüfgegenstand erteilt. Das Auditteam MUSS sämtliche Ergebnisse eines Audits schriftlich dokumentieren und in einem Auditbericht zusammenfassen. Der Auditbericht MUSS der zuständigen Stelle in der Institution zeitnah übermittelt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "PERF.3.2",
+                          "PERF.3.2.2",
+                          "UMS.1.1",
+                          "UMS.7.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.1.4",
+                    "rel": "related",
+                    "text": "PERF.3.1.4 steht unter DER.3.1.A2"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A4",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A4 Durchführung einer Revision",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Bei einer Revision MUSS das Revisionsteam prüfen, ob die Anforderungen vollständig, korrekt, angemessen und aktuell umgesetzt sind. Die Institution MUSS festgestellte Abweichungen so schnell wie möglich korrigieren. Die jeweiligen Revisionen MÜSSEN mit einer Änderungsverfolgung dokumentiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "UMS.3.1",
+                          "UMS.6.1",
+                          "VRB.2.1",
+                          "VRB.4.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.1.4",
+                    "rel": "related",
+                    "text": "PERF.3.1.4 steht unter DER.3.1.A2"
+                  },
+                  {
+                    "href": "#UMS.1.1",
+                    "rel": "related",
+                    "text": "UMS.1.1 steht unter DER.3.1.A3"
+                  },
+                  {
+                    "href": "#UMS.7.1",
+                    "rel": "related",
+                    "text": "UMS.7.1 steht unter DER.3.1.A3"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "DER.3.1-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "DER.3.1.A5",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A5 Integration in den Informationssicherheitsprozess",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Die Institution SOLLTE eine Richtlinie zur internen ISMS-Auditierung vorgeben. Außerdem sollte sie eine Richtlinie zur Lenkung von Korrekturmaßnahmen erstellen. Die Richtlinien SOLLTEN vorgeben, dass regelmäßige Audits und Revisionen ein Teil des Sicherheitsprozesses sind und durch diesen initiiert werden. Der oder die ISB SOLLTE sicherstellen, dass die Ergebnisse der Audits und Revisionen in das ISMS zurückfließen und dieses verbessern. Der oder die ISB SOLLTE die durchgeführten Audits und Revisionen und deren Ergebnisse in den regelmäßigen Bericht an die Institutionsleitung aufnehmen. Auch SOLLTE dort festgehalten werden, welche Mängel beseitigt wurden und wie die Qualität verbessert wurde."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "PERF.4.1.1",
+                          "PERF.4.1.4",
+                          "PERF.4.1.7",
+                          "PERF.4.2",
+                          "VRB.2.2",
+                          "VRB.3.1",
+                          "VRB.4.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.1",
+                    "rel": "related",
+                    "text": "PERF.3.1 steht unter DER.3.1.A1"
+                  },
+                  {
+                    "href": "#PERF.4.1.8",
+                    "rel": "related",
+                    "text": "PERF.4.1.8 steht unter DER.3.1.A1"
+                  },
+                  {
+                    "href": "#UMS.7.1",
+                    "rel": "related",
+                    "text": "UMS.7.1 steht unter DER.3.1.A3"
+                  },
+                  {
+                    "href": "#VRB.1.1",
+                    "rel": "related",
+                    "text": "VRB.1.1 steht unter DER.3.1.A1"
+                  },
+                  {
+                    "href": "#VRB.4.1",
+                    "rel": "related",
+                    "text": "VRB.4.1 steht unter DER.3.1.A4"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A6",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A6 Definition der Prüfungsgrundlage und eines einheitlichen Bewertungsschemas",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Die Institution SOLLTE eine einheitliche Prüfungsgrundlage für Audits festlegen. Für die Bewertung der Umsetzung von Anforderungen SOLLTE ein einheitliches Bewertungsschema festgelegt und dokumentiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "PERF.3.2.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#UMS.3.1",
+                    "rel": "related",
+                    "text": "UMS.3.1 steht unter DER.3.1.A4"
+                  },
+                  {
+                    "href": "#UMS.6.1",
+                    "rel": "related",
+                    "text": "UMS.6.1 steht unter DER.3.1.A4"
+                  },
+                  {
+                    "href": "#VRB.3.1",
+                    "rel": "related",
+                    "text": "VRB.3.1 steht unter DER.3.1.A5"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A7",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A7 Erstellung eines Auditprogramms",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Der oder die ISB SOLLTE ein Auditprogramm für mehrere Jahre aufstellen, das alle durchzuführenden Audits und Revisionen erfasst. Für das Auditprogramm SOLLTEN Ziele definiert werden, die sich insbesondere aus den Institutionszielen sowie aus den Informationssicherheitszielen ableiten. Der oder die ISB SOLLTE Reserven für unvorhergesehene Ereignisse in der jährlichen Ressourcenplanung vorsehen. Das Auditprogramm SOLLTE einem eigenen kontinuierlichen Verbesserungsprozess unterliegen."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.1",
+                    "rel": "related",
+                    "text": "PERF.3.1 steht unter DER.3.1.A1"
+                  },
+                  {
+                    "href": "#VRB.1.1",
+                    "rel": "related",
+                    "text": "VRB.1.1 steht unter DER.3.1.A1"
+                  },
+                  {
+                    "href": "#VRB.3.1",
+                    "rel": "related",
+                    "text": "VRB.3.1 steht unter DER.3.1.A5"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A8",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A8 Erstellung einer Revisionsliste",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Der oder die ISB SOLLTE eine oder mehrere Revisionslisten pflegen, die den aktuellen Stand der Revisionsobjekte sowie die geplanten Revisionen dokumentieren."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "PERF.3.1.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.1",
+                    "rel": "related",
+                    "text": "PERF.3.1 steht unter DER.3.1.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A9",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A9 Auswahl eines geeigneten Audit- oder Revionsteams",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A9_anforderung",
+                    "name": "overview",
+                    "prose": "Die Institution SOLLTE für jedes Audit bzw. für jede Revision ein geeignetes Team zusammenstellen. Es SOLLTE eine Person benannt werden, die das Audit oder die Revision leitet. Diese SOLLTE die Gesamtverantwortung für die Durchführung der Audits bzw. der Revisionen tragen. Die Größe des Audit- bzw. Revisionsteams SOLLTE dem Prüfbereich entsprechen. Die Institution SOLLTE insbesondere die Kompetenzanforderungen der Prüfthemen sowie die Größe und die örtliche Verteilung des Prüfbereichs berücksichtigen. Die Mitglieder des Audit- bzw. Revisionsteams SOLLTEN angemessen qualifiziert sein. Die Neutralität des Auditteams SOLLTE sichergestellt werden. Darüber hinaus SOLLTE auch das Revisionsteam unabhängig sein. Werden externe Dienstleistende mit einem Audit oder einer Revision beauftragt, SOLLTEN diese auf ihre Unabhängigkeit hin überprüft und zur Verschwiegenheit verpflichtet werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.1.3",
+                    "rel": "related",
+                    "text": "PERF.3.1.3 steht unter DER.3.1.A1"
+                  },
+                  {
+                    "href": "#PERS.2.3.3",
+                    "rel": "related",
+                    "text": "PERS.2.3.3 steht unter DER.3.1.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A10",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A10 Erstellung eines Audit- oder Revisionsplans",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Auditteam"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Vor einem Audit oder einer größeren Revision SOLLTE ein Audit- bzw. Revisionsplan erstellt werden. Bei Audits SOLLTE der Auditplan Teil des abschließenden Auditberichts sein. Der Auditplan SOLLTE während des gesamten Audits fortgeschrieben und bei Bedarf angepasst werden. Kleinere Revisionen SOLLTEN anhand der Revisionsliste geplant werden. Die Institution SOLLTE genügend Ressourcen für das Audit- bzw. Revisionsteam vorsehen."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.1.1",
+                    "rel": "related",
+                    "text": "PERF.3.1.1 steht unter DER.3.1.A2"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A11",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A11 Kommunikation und Verhalten während der Prüfungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A11"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Auditteam"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A11_anforderung",
+                    "name": "overview",
+                    "prose": "Das Auditteam bzw. Revisionsteam SOLLTE klare Regelungen dafür aufstellen, wie das Audit- bzw. Revisionsteam und die Mitarbeitenden der zu prüfenden Institution bzw. Abteilung miteinander Informationen austauschen. Das Auditteam SOLLTE durch geeignete Maßnahmen sicherstellen, dass die bei einem Audit ausgetauschten Informationen auch vertraulich und integer bleiben. Personen, die das Audit begleiten, SOLLTEN NICHT die Prüfungen beeinflussen. Zudem SOLLTEN sie zur Vertraulichkeit verpflichtet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.4.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.1.3",
+                    "rel": "related",
+                    "text": "PERF.3.1.3 steht unter DER.3.1.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A12",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A12 Durchführung eines Auftaktgesprächs",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A12"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Auditteam"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A12_anforderung",
+                    "name": "overview",
+                    "prose": "Das Auditteam bzw. das Revisionsteam SOLLTE ein Auftaktgespräch mit den betreffenden Ansprechpartnern oder Ansprechpartnerinnen führen. Das Audit- bzw. Revisionsverfahren SOLLTE erläutert und die Rahmenbedingungen der Vor-Ort-Prüfung abgestimmt werden. Die jeweiligen Verantwortlichen SOLLTEN dies bestätigen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NG-DER.3.1.A12"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.1.1",
+                    "rel": "related",
+                    "text": "PERF.3.1.1 steht unter DER.3.1.A2"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A13",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A13 Sichtung und Prüfung der Dokumente",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A13"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Auditteam"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A13_anforderung",
+                    "name": "overview",
+                    "prose": "Die Dokumente SOLLTEN durch das Auditteam anhand der im Prüfplan festgelegten Anforderungen geprüft werden. Alle relevanten Dokumente SOLLTEN daraufhin geprüft werden, ob sie aktuell, vollständig und nachvollziehbar sind. Die Ergebnisse der Dokumentenprüfung SOLLTEN dokumentiert werden. Die Ergebnisse SOLLTEN auch in die Vor-Ort-Prüfung einfließen, soweit dies sinnvoll ist."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.2",
+                    "rel": "related",
+                    "text": "PERF.3.2 steht unter DER.3.1.A3"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A14",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A14 Auswahl von Stichproben",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A14"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Auditteam"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A14_anforderung",
+                    "name": "overview",
+                    "prose": "Das Auditteam SOLLTE die Stichproben für die Vor-Ort-Prüfung risikoorientiert auswählen und nachvollziehbar begründen. Die ausgewählten Stichproben SOLLTEN dokumentiert werden. Wird das Audit auf der Basis von Baustein-Zielobjekten und Anforderungen durchgeführt, SOLLTEN diese anhand eines vorher definierten Verfahrens ausgewählt werden. Bei der Auswahl von Stichproben SOLLTEN auch die Ergebnisse vorangegangener Audits berücksichtigt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.1.2",
+                    "rel": "related",
+                    "text": "PERF.3.1.2 steht unter DER.3.1.A8"
+                  },
+                  {
+                    "href": "#PERF.3.1.4",
+                    "rel": "related",
+                    "text": "PERF.3.1.4 steht unter DER.3.1.A2"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A15",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A15 Auswahl von geeigneten Prüfmethoden",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A15"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Auditteam"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A15_anforderung",
+                    "name": "overview",
+                    "prose": "Das Auditteam SOLLTE für die jeweils zu prüfenden Sachverhalte geeignete Methoden einsetzen. Außerdem SOLLTE darauf geachtet werden, dass alle Prüfungen verhältnismäßig sind."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.1.1",
+                    "rel": "related",
+                    "text": "PERF.3.1.1 steht unter DER.3.1.A2"
+                  },
+                  {
+                    "href": "#PERF.3.1.4",
+                    "rel": "related",
+                    "text": "PERF.3.1.4 steht unter DER.3.1.A2"
+                  },
+                  {
+                    "href": "#VRB.3.1",
+                    "rel": "related",
+                    "text": "VRB.3.1 steht unter DER.3.1.A5"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A16",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A16 Ablaufplan der Vor-Ort-Prüfung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A16"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Auditteam"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A16_anforderung",
+                    "name": "overview",
+                    "prose": "Das Auditteam SOLLTE den Ablaufplan für die Vor-Ort-Prüfung gemeinsam mit der Institution erarbeiten. Die Ergebnisse SOLLTEN im Auditplan dokumentiert werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.1.1",
+                    "rel": "related",
+                    "text": "PERF.3.1.1 steht unter DER.3.1.A2"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A17",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A17 Durchführung der Vor-Ort-Prüfung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A17"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Auditteam"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A17_anforderung",
+                    "name": "overview",
+                    "prose": "Zu Beginn der Vor-Ort-Prüfung SOLLTE das Auditteam ein Eröffnungsgespräch mit der betreffenden Institution führen. Danach SOLLTEN alle im Prüfplan festgelegten Anforderungen mit den vorgesehenen Prüfmethoden kontrolliert werden. Weicht eine ausgewählte Stichprobe vom dokumentierten Status ab, SOLLTE die Stichprobe bedarfsorientiert erweitert werden, bis der Sachverhalt geklärt ist. Nach der Prüfung SOLLTE das Auditteam ein Abschlussgespräch führen. Darin SOLLTE es kurz die Ergebnisse ohne Bewertung sowie die weitere Vorgehensweise darstellen. Das Gespräch SOLLTE protokolliert werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.1.4",
+                    "rel": "related",
+                    "text": "PERF.3.1.4 steht unter DER.3.1.A2"
+                  },
+                  {
+                    "href": "#PERF.3.2",
+                    "rel": "related",
+                    "text": "PERF.3.2 steht unter DER.3.1.A3"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A18",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A18 Durchführung von Interviews",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A18"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Auditteam"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A18_anforderung",
+                    "name": "overview",
+                    "prose": "Das Auditteam SOLLTE strukturierte Interviews führen. Die Fragen SOLLTEN knapp, präzise und leicht verständlich formuliert werden. Zudem SOLLTEN geeignete Fragetechniken eingesetzt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NG-DER.3.1.A18"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.1",
+                    "rel": "related",
+                    "text": "PERF.3.1 steht unter DER.3.1.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A19",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A19 Überprüfung des Risikobehandlungsplans",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A19"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "DARF NICHT"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Auditteam"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A19_anforderung",
+                    "name": "overview",
+                    "prose": "Das Auditteam SOLLTE prüfen, ob die verbleibenden Restrisiken für den Informationsverbund angemessen und tragbar sind. Es SOLLTE außerdem prüfen, ob sie verbindlich durch die Institutionsleitung getragen werden. Maßnahmen, die grundlegend zur Informationssicherheit der gesamten Institution beitragen, DÜRFEN NICHT in diese Risikoübernahme einfließen. Das Auditteam SOLLTE stichprobenartig verifizieren, ob bzw. wie weit die im Risikobehandlungsplan festgelegten Maßnahmen umgesetzt sind."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "PERF.1.2",
+                          "UMS.2.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A20",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A20 Durchführung einer Abschlussbesprechung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A20"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Auditteam"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A20_anforderung",
+                    "name": "overview",
+                    "prose": "Das Auditteam SOLLTE mit der auditierten Institution eine Abschlussbesprechung durchführen. Darin SOLLTEN die vorläufigen Auditergebnisse dargelegt werden. Die weiteren Tätigkeiten SOLLTEN vorgestellt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.2.2",
+                    "rel": "related",
+                    "text": "PERF.3.2.2 steht unter DER.3.1.A3"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A21",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A21 Auswertung der Prüfungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A21"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Auditteam"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A21_anforderung",
+                    "name": "overview",
+                    "prose": "Nach der Vor-Ort-Prüfung SOLLTE das Auditteam die gewonnenen Informationen weiter konsolidieren und auswerten. Nachdem auch nachgeforderte Dokumentationen und zusätzliche Informationen ausgewertet wurden, SOLLTEN die geprüften Maßnahmen endgültig bewertet werden. Um die nachgeforderten Dokumentationen bereitstellen zu können, SOLLTE das Auditteam der Institution ein ausreichendes Zeitfenster gewähren. Dokumente, die bis zum vereinbarten Termin nicht eingegangen sind, SOLLTEN als nicht existent gewertet werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.2.1",
+                    "rel": "related",
+                    "text": "PERF.3.2.1 steht unter DER.3.1.A6"
+                  },
+                  {
+                    "href": "#VRB.3.1",
+                    "rel": "related",
+                    "text": "VRB.3.1 steht unter DER.3.1.A5"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A22",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A22 Erstellung eines Auditberichts",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A22"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Auditteam"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A22_anforderung",
+                    "name": "overview",
+                    "prose": "Das Auditteam SOLLTE die gewonnenen Erkenntnisse in einen Auditbericht überführen und dort nachvollziehbar dokumentieren. Die geprüfte Institution SOLLTE sicherstellen, dass alle betroffenen Stellen innerhalb einer angemessenen Frist die für sie wichtigen und notwendigen Passagen des Auditberichts erhalten."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "PERF.4.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.2",
+                    "rel": "related",
+                    "text": "PERF.3.2 steht unter DER.3.1.A3"
+                  },
+                  {
+                    "href": "#PERF.3.2.2",
+                    "rel": "related",
+                    "text": "PERF.3.2.2 steht unter DER.3.1.A3"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A23",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A23 Dokumentation der Revisionsergebnisse",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A23"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A23_anforderung",
+                    "name": "overview",
+                    "prose": "Die Ergebnisse einer Revision SOLLTEN einheitlich durch das Revisionsteam dokumentiert werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.2",
+                    "rel": "related",
+                    "text": "PERF.3.2 steht unter DER.3.1.A3"
+                  },
+                  {
+                    "href": "#PERF.3.2.1",
+                    "rel": "related",
+                    "text": "PERF.3.2.1 steht unter DER.3.1.A6"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A24",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A24 Abschluss des Audits oder der Revision",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A24"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Auditteam"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A24_anforderung",
+                    "name": "overview",
+                    "prose": "Nach dem Audit bzw. der Revision SOLLTE das Auditteam alle relevanten Dokumente, Datenträger und IT-Systeme zurückgeben oder vernichten. Das SOLLTE mit der geprüften Institution abgestimmt werden. Aufbewahrungspflichten aus gesetzlichen oder anderen verbindlichen Anforderungen SOLLTEN hierbei entsprechend berücksichtigt werden. Der oder die ISB SOLLTE alle für das Audit- oder Revisionsteam genehmigten Zugriffe wieder deaktivieren oder löschen lassen. Mit der geprüften Institution SOLLTE vereinbart werden, wie mit den Ergebnissen umzugehen ist. Dabei SOLLTE auch festgelegt werden, dass die Auditergebnisse nicht ohne Genehmigung der geprüften Institution an andere Institutionen weitergeleitet werden dürfen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.7.2",
+                          "BER.4.8"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#VRB.3.1",
+                    "rel": "related",
+                    "text": "VRB.3.1 steht unter DER.3.1.A5"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A25",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A25 Nachbereitung eines Audits",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A25"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A25_anforderung",
+                    "name": "overview",
+                    "prose": "Die Institution SOLLTE die im Auditbericht oder bei einer Revision festgestellten Abweichungen oder Mängel in einer angemessenen Zeit abstellen. Die durchzuführenden Korrekturmaßnahmen inklusive Zeitpunkt und Zuständigkeiten SOLLTEN dokumentiert werden. Auch abgeschlossene Korrekturmaßnahmen SOLLTEN dokumentiert werden. Die Institution SOLLTE dazu ein definiertes Verfahren etablieren und einsetzen. Gab es schwerwiegende Abweichungen oder Mängel, SOLLTE das Audit- bzw. Revisionsteam überprüfen, ob die Korrekturmaßnahmen durchgeführt wurden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "UMS.4.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.1.2",
+                    "rel": "related",
+                    "text": "PERF.1.2 steht unter DER.3.1.A19"
+                  },
+                  {
+                    "href": "#UMS.2.1",
+                    "rel": "related",
+                    "text": "UMS.2.1 steht unter DER.3.1.A19"
+                  },
+                  {
+                    "href": "#UMS.3.1",
+                    "rel": "related",
+                    "text": "UMS.3.1 steht unter DER.3.1.A4"
+                  },
+                  {
+                    "href": "#UMS.6.1",
+                    "rel": "related",
+                    "text": "UMS.6.1 steht unter DER.3.1.A4"
+                  },
+                  {
+                    "href": "#VRB.1.1",
+                    "rel": "related",
+                    "text": "VRB.1.1 steht unter DER.3.1.A1"
+                  },
+                  {
+                    "href": "#VRB.2.1",
+                    "rel": "related",
+                    "text": "VRB.2.1 steht unter DER.3.1.A4"
+                  },
+                  {
+                    "href": "#VRB.4.1",
+                    "rel": "related",
+                    "text": "VRB.4.1 steht unter DER.3.1.A4"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A26",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A26 Überwachen und Anpassen des Auditprogramms",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A26"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A26_anforderung",
+                    "name": "overview",
+                    "prose": "Das Auditprogramm SOLLTE kontinuierlich überwacht und angepasst werden, sodass Termine, Auditziele, Auditinhalte und die Auditqualität eingehalten werden. Mithilfe der bestehenden Anforderungen an das Auditprogramm und mit den Ergebnissen der durchgeführten Audits SOLLTE überprüft werden, ob das Auditprogramm angemessen ist. Bei Bedarf SOLLTE es angepasst werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#PERF.3.1",
+                    "rel": "related",
+                    "text": "PERF.3.1 steht unter DER.3.1.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.3.1.A27",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A27 Aufbewahrung und Archivierung von Unterlagen zu Audits und Revisionen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A27"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.3.1.A27_anforderung",
+                    "name": "overview",
+                    "prose": "Die Institution SOLLTE Auditprogramme sowie Unterlagen zu Audits und Revisionen entsprechend den regulatorischen Anforderungen nachvollziehbar und revisionssicher ablegen und aufbewahren. Dabei SOLLTE sichergestellt werden, dass lediglich berechtigte Personen auf Auditprogramme und Unterlagen zugreifen können. Die Institution SOLLTE die Auditprogramme und Unterlagen nach Ablauf der Aufbewahrungsfrist sicher vernichten."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.3.12",
+                          "ASST.7.3",
+                          "BER.4.1",
+                          "GC.11.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "DER.3.1-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "DER.3.1.A28",
+                "class": "ed23-anforderung",
+                "title": "DER.3.1.A28 ENTFALLEN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.3.1.A28"
+                  },
+                  {
+                    "name": "entfallen",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "true"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "back-matter": {
+      "resources": [
+        {
+          "uuid": "afe1c75e-8725-5df2-a57b-235d7d5236f4",
+          "title": "Grundschutz++-resolved_catalog.json @ a12831136f41",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/a12831136f4122a4c43854622180a24f2576a41e/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "6b2c3fe8-7370-556a-9c3c-540d81d5de99",
+          "title": "NG Ergänzungskatalog zu den ED23-Baustein-Profilen – Anforderungen ohne Entsprechung im Anwenderkatalog Grundschutz++",
+          "description": "NG Ergänzungskatalog mit 69 nutzergenerierten Controls, Datei NG-ergaenzungskatalog.json neben diesem Profil",
+          "rlinks": [
+            {
+              "href": "NG-ergaenzungskatalog.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "294687c3394f61715fdfd8c24bda821ffe4fbe0e30c11016ab59d24f89acfb3d"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "ASST.3.12",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A27",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): ASST.3.12 verlangt die Autorisierung des Zugriffs von Personen auf Daten im Rahmen des Berechtigungsmanagements, was die Beschränkung des Zugriffs auf Auditunterlagen auf berechtigte Personen allgemeingültig abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A11",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): ASST.4.2 fordert die Sicherstellung von Vertraulichkeit und Integrität bei der Übertragung bzw. beim Austausch von Informationen und deckt damit die allgemeine Anforderung aus Satz 2 ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.7.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A24",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): ASST.7.2 verlangt die Festlegung und Einhaltung von Aufbewahrungsfristen basierend auf gesetzlichen und regulatorischen Vorgaben und deckt damit die allgemeine Pflicht zur Berücksichtigung von Aufbewahrungspflichten ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.7.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A27",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): ASST.7.3 fordert allgemein das Löschen oder Vernichten von Daten bei Erreichen der Aufbewahrungsfrist und deckt damit das sichere Vernichten der Auditunterlagen nach Fristablauf inhaltlich ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A27",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Die allgemeine G++-Maßnahme BER.4.1 fordert die Einschränkung von Berechtigungen nach dem Least-Privilege-Prinzip und deckt damit die Beschränkung des Zugriffs auf Auditunterlagen für ausschließlich berechtigte Personen inhaltlich ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.4.8",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A24",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GC.11.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A27",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): GC.11.1 fordert als allgemeinere Maßnahme die nachvollziehbare und geschützte Ablage sowie Archivierung von ISMS-Dokumenten über deren gesamten Lebenszyklus. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GC.9.1.1.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): GC.9.1.1.3 verlangt allgemein Maßnahmen zur Vermeidung von Interessenkonflikten bei der Rollen- und Aufgabenvergabe im ISMS und deckt damit die Vermeidung von Interessenkonflikten bei der Benennung von Prüf- und Revisionsverantwortlichen ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A19",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): Die G++-Maßnahme verankert die regelmäßige Überprüfung und Fortschreibung des Umsetzungsplans im ISMS-Monitoring, was sich mit der Verifikation des Umsetzungsstands von Maßnahmen überschneidet; die spezifische Prüfungspflicht durch ein externes oder internes Auditteam bleibt dabei unberücksichtigt. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A25",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 5): Satz 5 fordert die Überprüfung der Durchführung festgelegter Korrekturmaßnahmen nach Audits, was sich mit der Prüfung des Umsetzungsfortschritts und der Fristeinhaltung gemäß PERF.1.2 überschneidet."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A1",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A2",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): PERF.3.1 fordert ein Verfahren zum Aufbau und zur Pflege von Auditprogrammen, deckt jedoch die Vorgabe einer formellen Richtlinie zur internen ISMS-Auditierung nur teilweise ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equivalent-to, Teilanforderung 1,4): G++ PERF.3.1 fordert die Etablierung eines Verfahrens zum Aufbau und zur Pflege von Auditprogrammen, was das Aufstellen eines umfassenden Auditprogramms inhaltlich abdeckt. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): PERF.3.1 verankert das übergeordnete Verfahren für Auditprogramme, schreibt jedoch nicht spezifisch die Führung und Dokumentation konkreter Revisionslisten vor. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A18",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A26",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1,2,3): Die Forderung nach einem Verfahren zur Pflege des Auditprogramms in PERF.3.1 deckt die kontinuierliche Überwachung und Anpassung des Programms inhaltlich ab. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.3.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Die Erstellung eines Auditplans nach PERF.3.1.1 verlangt explizit die vorab erfolgende Festlegung der Prüfungsziele sowie des Umfangs und der Zielobjekte (Prüfgegenstand). [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equivalent-to, Teilanforderung 1): PERF.3.1.1 fordert für jedes Audit die Festlegung eines Auditplans, was der geforderten Erstellung eines Audit- bzw. Revisionsplans vor Durchführung einer Prüfung entspricht. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A12",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A15",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): PERF.3.1.1 adressiert die methodische Festlegung im Rahmen der Auditplanung, fordert jedoch nicht den operativen Einsatz geeigneter Prüfmethoden während der Durchführung. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A16",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,2): Die G++-Maßnahme PERF.3.1.1 fordert die Festlegung eines Auditplans, der den genauen Ablauf der Überprüfung festlegt, und deckt damit die Erarbeitung des Ablaufplans ab. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.3.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A8",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): PERF.3.1.2 adressiert die risikoorientierte Auswahl von Prüfobjekten bei der Auditprogrammplanung, fordert jedoch nicht die spezifische, nachvollziehbare Begründung von Vor-Ort-Stichproben durch das Auditteam. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.3.1.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): PERF.3.1.3 adressiert die Unabhängigkeit und Objektivität von Auditoren, während der Ziel-Satz die Vermeidung von Interessenkonflikten bei der Benennung der zuständigen Person für Auditplanung durch die Leitung fordert. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A9",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equivalent-to, Teilanforderung 1,5,6,7,8): Beide Anforderungen zielen deckungsgleich darauf ab, für Audits bzw. Revisionen ein fachlich geeignetes Prüfteam zusammenzustellen bzw. anzuweisen. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A11",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.3.1.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): PERF.3.1.4 adressiert die Festlegung des Auditumfangs (organisatorischer und technischer Prüfgegenstand) vor Beginn des Audits inhaltlich passend zur Forderung des Satzes. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,3): PERF.3.1.4 fordert die Durchführung von Audits in angemessenem Umfang und überschneidet sich mit der inhaltlichen Überprüfung von Richtlinien und Standards, ohne diese Vorgabenkategorien im Detail zu benennen. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): PERF.3.1.4 fordert die Durchführung von Audits in angemessenem Umfang und überschneidet sich mit der Revisionsprüfung auf Umsetzung von Anforderungen, ohne die spezifischen Revisionskriterien im Einzelnen zu regeln. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A14",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A15",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Die Forderung nach der Durchführung von Audits in angemessenem Umfang deckt das Kriterium der Verhältnismäßigkeit aller Prüfungen inhaltlich ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A17",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): PERF.3.1.4 fordert die Durchführung von Audits in angemessenem Umfang und berührt die Prüfung der Anforderungen, ohne den konkreten Ablaufschritt im Rahmen der Vor-Ort-Prüfung festzulegen. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.3.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 5): PERF.3.2 fordert ein allgemeines Verfahren zur Erstellung aussagekräftiger Auditberichte und schließt die Zusammenfassung aller Prüfungsergebnisse in einem Bericht vollständig ein. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): Die Forderung nach Dokumentation der Ergebnisse aus der Dokumentenprüfung wird durch das in PERF.3.2 verlangte Verfahren zur Erstellung von Auditberichten zur vollständigen Dokumentation der Auditergebnisse abgedeckt. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A17",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A22",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): PERF.3.2 fordert übergreifend ein Verfahren zur Erstellung aussagekräftiger Auditberichte und deckt die Berichterstellung durch das Auditteam vollständig ab. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A23",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): PERF.3.2 fordert ein Verfahren zur Erstellung strukturierter und nachvollziehbarer Auditberichte und deckt damit die Dokumentation der Revisionsergebnisse inhaltlich ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.3.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 2): Die G++-Maßnahme adressiert die Festlegung eines einheitlichen Bewertungsschemas für Auditfeststellungen, lässt jedoch die explizite Forderung nach dessen Dokumentation offen. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A21",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A23",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.3.2.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 6): Die G++-Maßnahme fordert die Information relevanter Stakeholder über die Auditergebnisse, was die Übermittlung des Auditberichts an die zuständige Stelle inhaltlich abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A20",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Die Forderung zur Information relevanter Stakeholder ueber die Auditergebnisse deckt als allgemeinere Pflicht auch die Darlegung vorlaeufiger Auditergebnisse gegenueber der auditierten Organisationseinheit ab. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A22",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Die allgemeine Pflicht zur Information relevanter Stakeholder über Auditergebnisse in PERF.3.2.2 schließt die gezielte Bereitstellung relevanter Passagen des Auditberichts an betroffene Stellen vollständig ein. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A22",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (equivalent-to)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.4.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 6): Beide Anforderungen überschneiden sich thematisch bei der Berichterstattung über den Umsetzungsstatus von Maßnahmen an die Leitung, beziehen sich jedoch auf unterschiedliche Kontexte (Mängelbeseitigung aus Audits/Revisionen vs. Folgemaßnahmen vorangegangener Managementbewertungen)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.4.1.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 5): Die Maßnahme adressiert die Aufnahme von Audit- und Prüfungsergebnissen in den Managementbericht, deckt die Berichterstattung über IS-Revisionen jedoch nicht vollumfänglich ab. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.4.1.7",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 6): Satz 6 fordert, im Bericht an die Leitung festzuhalten, welche Mängel beseitigt wurden, was sich direkt mit der Dokumentation der erfolgreichen Maßnahmenumsetzung im Managementbericht nach PERF.4.1.7 überschneidet."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.4.1.8",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): PERF.4.1.8 fokussiert auf die Dokumentation abgeleiteter Verbesserungen im Managementbericht, während Satz 3 die tatsächliche operative und konzeptionelle Nutzung der Prüfergebnisse zur Verbesserung der Maßnahmen verlangt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 6): PERF.4.1.8 adressiert die Dokumentation abgeleiteter Verbesserungen im Managementbericht und deckt damit den Aspekt der Qualitätsverbesserung aus Satz 6 ab, während das explizite Festhalten beseitigter Mängel offenbleibt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 5): Satz 5 fordert ausdrücklich die Aufnahme von Auditergebnissen in den regelmäßigen Bericht an die Institutionsleitung und deckt sich damit direkt mit der Berichtspflicht von PERF.4.2."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERS.2.3.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 2): Die empfohlene Rollentrennung zwischen Implementierung und Überprüfung adressiert einen wesentlichen Teilaspekt zur Vermeidung von Interessenkonflikten, deckt aber nicht alle denkbaren Konfliktarten ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A9",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 7,8): Die Rollentrennung zwischen Implementierung und Überprüfung unterstützt die Neutralität des Auditteams, deckt den weiter gefassten Begriff der Neutralität jedoch nur teilweise ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Satz 1 verlangt die Prüfung, ob Anforderungen aus Vorgaben und Standards erfüllt sind, was der Ermittlung des Umsetzungsstatus von Anforderungen im Auditkontext entspricht."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A4",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (equal-to)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A19",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A25",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): UMS.2.1 adressiert die allgemeine Festlegung von Maßnahmen im Rahmen einer Umsetzungsplanung, schließt jedoch die spezifische Dokumentation von Zeitpunkt und Zuständigkeiten für Korrekturmaßnahmen aus Audits nicht vollständig ein."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A4",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A6",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A25",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): UMS.3.1 fordert die Zuweisung von Zuständigen für offene Anforderungen, während Satz 2 die Dokumentation von Korrekturmaßnahmen einschließlich Zeitpunkt und Zuständigkeiten nach einem Audit verlangt. Die Schnittmenge liegt in der Benennung der Verantwortlichen für die Maßnahmenumsetzung."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A25",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): Die Maßnahme adressiert die Festlegung von Zieldaten, während der Satz im Auditkontext zusätzlich die Dokumentation der Korrekturmaßnahmen und Zuständigkeiten empfiehlt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.6.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A4",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A6",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A25",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): UMS.6.1 verankert ein allgemeines Verfahren zur Nachverfolgung der Maßnahmenumsetzung, fordert aber nicht spezifisch die Dokumentation bereits abgeschlossener Korrekturmaßnahmen. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.7.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Satz 1 fordert die konkrete Überprüfung der Einhaltung von Vorgaben, Richtlinien und Standards im Rahmen eines Audits, was als Verfahren zur Compliance-Überprüfung der Maßnahme entspricht."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A4",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A5",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "VRB.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): VRB.1.1 verlangt ein Verfahren zur kontinuierlichen Verbesserung des ISMS, welches Erkenntnisse aus Prüfungen und Überwachungen systematisch zur Verbesserung der Sicherheitsmaßnahmen nutzt. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): Die G++-Maßnahme VRB.1.1 etabliert das allgemeine Verfahren zur kontinuierlichen Verbesserung des ISMS, bei dem Erkenntnisse aus Überprüfungen und Audits systematisch in Verbesserungsmaßnahmen des ISMS überführt werden. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A7",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A25",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): VRB.1.1 verlangt die Etablierung eines systematischen Verfahrens zur Umsetzung von Erkenntnissen in Verbesserungs- und Korrekturmaßnahmen, was die Forderung nach einem definierten Nachbereitungsverfahren abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "VRB.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A4",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A25",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): VRB.2.1 verlangt eine Methode zur Ursachen- und Wiederauftretensprüfung von Nicht-Konformitäten, deckt aber das geforderte Verfahren zur Umsetzung und Dokumentation von Korrekturmaßnahmen nicht vollständig ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "VRB.2.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A5",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "VRB.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A5",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A6",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A7",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (equivalent-to)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A15",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (equivalent-to)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A21",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A24",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "VRB.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): VRB.4.1 verlangt die Festlegung von Maßnahmen zur Behebung von Fehlerursachen, während S2 die operative Korrektur von Revisionsabweichungen fordert. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): DER.3.1.A5 Satz 2 fordert eine Richtlinie zur Lenkung von Korrekturmaßnahmen im Audit-Kontext, während VRB.4.1 die Festlegung konkreter Korrekturmaßnahmen zur Beseitigung von Fehlerursachen verlangt. Beide Anforderungen überschneiden sich im Themenfeld des Managements von Korrekturmaßnahmen."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A25",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): VRB.4.1 zielt auf die Festlegung von Maßnahmen zur Beseitigung von Fehlerursachen ab, während S1 das operative Abstellen festgestellter Audit- und Revisionsmängel vorschreibt. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "VRB.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.3.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): VRB.4.2 verlangt generell die Festlegung von Verbesserungsmaßnahmen, deckt jedoch den konkreten Rückfluss und die ISB-Verantwortung für Audit- und Revisionsergebnisse nicht vollständig ab."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

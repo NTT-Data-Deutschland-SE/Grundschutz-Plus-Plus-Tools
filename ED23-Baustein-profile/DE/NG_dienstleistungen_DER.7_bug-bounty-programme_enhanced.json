@@ -1,0 +1,2432 @@
+{
+  "profile": {
+    "uuid": "7d80de19-aa29-578c-bac7-0b8dd2534838",
+    "metadata": {
+      "title": "NG DER.7 – Bug-Bounty-Programme (Dienstleistungen) – Enhanced (ED2023)",
+      "last-modified": "2026-10-19T01:04:34.854799+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "NG"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "DER.7"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Bug-Bounty-Programme"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Dienstleistungen"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "prozess"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, DER.7, NG, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein DER.7 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe, NG-Baustein)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (Text des nutzergenerierten Bausteins (NG, NTT DATA), kein BSI-Text); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls. Prozess-Baustein ohne eigene Praktik in Grundschutz++; die Zielobjektkategorie ist nur informativ."
+    },
+    "imports": [
+      {
+        "href": "#afe1c75e-8725-5df2-a57b-235d7d5236f4",
+        "include-controls": [
+          {
+            "with-ids": [
+              "DET.1.1.1",
+              "DET.1.1.2",
+              "DET.1.2",
+              "DET.5.1",
+              "DET.5.2",
+              "DET.5.9",
+              "DET.5.9.1",
+              "PERF.4.1.5"
+            ]
+          }
+        ]
+      }
+    ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "DER.7-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "DER.7.A1",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A1 Festlegung einer Richtlinie für Schwachstellenmeldungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS eine von der Institutionsleitung verabschiedete Richtlinie für den Umgang mit extern gemeldeten Schwachstellen existieren. Diese Richtlinie MUSS die grundlegenden Ziele, Verantwortlichkeiten und die Verpflichtung der Institution zur Zusammenarbeit mit Sicherheitsforschern verbindlich festlegen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.5.1",
+                          "DET.5.9",
+                          "DET.1.1.1",
+                          "DET.1.1.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A2",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A2 Erstellung und Veröffentlichung einer Vulnerability Disclosure Policy",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS eine klare und leicht auffindbare Vulnerability Disclosure Policy (VDP) erstellt und veröffentlicht werden. Die VDP MUSS eine Erklärung der Absicht, den präferierten Meldekanal, eine Beschreibung der im Geltungsbereich liegenden Systeme (Scope) sowie die Arten der ausdrücklich nicht gestatteten Tests enthalten."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A3",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A3 Einrichtung eines dedizierten und sicheren Meldekanals",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS ein klar definierter und sicherer Kanal für die Entgegennahme von Schwachstellenmeldungen eingerichtet werden (z. B. über eine definierte E-Mail-Adresse mit veröffentlichtem kryptografischem Schlüssel). Dieser Kanal MUSS regelmäßig überwacht werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A4",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A4 Formulierung einer rechtlichen Schutzzusage (Safe Harbor)",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Die VDP MUSS eine rechtliche Schutzzusage (Safe Harbor) enthalten. Es MUSS zugesichert werden, dass die Institution keine rechtlichen Schritte gegen Personen einleitet, die Schwachstellen im Rahmen der in der VDP definierten Regeln und in gutem Glauben suchen und melden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A5",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A5 Definition eines initialen Triage-Prozesses",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS ein interner Prozess definiert werden, wie eingehende Meldungen bestätigt, auf ihre Validität geprüft und an die zuständigen Stellen weitergeleitet werden. Alle Meldenden MÜSSEN zeitnah eine Eingangsbestätigung erhalten."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "DER.7-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "DER.7.A6",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A6 Detaillierte Definition von Scope und Testregeln",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Der Geltungsbereich (Scope) des Programms MUSS definieren, welche Anwendungen und Systeme abgedeckt sind. Es MÜSSEN Regeln für die Durchführung von Tests festgelegt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.5.9.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A7",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A7 Etablierung eines transparenten Belohnungssystems",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Für ein Bug-Bounty-Programm MUSS ein Belohnungssystem etabliert werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9.1",
+                    "rel": "related",
+                    "text": "DET.5.9.1 steht unter DER.7.A6"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A8",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A8 Etablierung eines Kommunikations- und Eskalationskonzepts",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS ein Kommunikationskonzept für die Interaktion mit den Forschenden existieren."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A9",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A9 Integration in das Schwachstellen- und Incident-Management",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A9_anforderung",
+                    "name": "overview",
+                    "prose": "Verifizierte Schwachstellenmeldungen MÜSSEN in den internen Schwachstellenmanagementprozess überführt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.5.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.1",
+                    "rel": "related",
+                    "text": "DET.5.1 steht unter DER.7.A1"
+                  },
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A10",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A10 Nutzung einer Bug-Bounty-Plattform",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Die effiziente Verwaltung des Programms MUSS sichergestellt sein."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9.1",
+                    "rel": "related",
+                    "text": "DET.5.9.1 steht unter DER.7.A6"
+                  },
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "DER.7-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "DER.7.A11",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A11 Durchführung von privaten oder zeitlich begrenzten Programmen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A11"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A11_anforderung",
+                    "name": "overview",
+                    "prose": "Für besonders schützenswerte Systeme MÜSSEN erweiterte Prüfungen in Betracht gezogen werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9.1",
+                    "rel": "related",
+                    "text": "DET.5.9.1 steht unter DER.7.A6"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A12",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A12 Proaktives Forscher-Management und Beziehungsaufbau",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A12"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A12_anforderung",
+                    "name": "overview",
+                    "prose": "Die Institution MUSS den Kontakt zu meldenden Sicherheitsforschern professionell pflegen."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9.1",
+                    "rel": "related",
+                    "text": "DET.5.9.1 steht unter DER.7.A6"
+                  },
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A13",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A13 Analyse und Optimierung der Programm-Metriken",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A13"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A13_anforderung",
+                    "name": "overview",
+                    "prose": "Das Bug-Bounty-Programm MUSS regelmäßig auf seine Wirksamkeit überprüft werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "PERF.4.1.5",
+                          "DET.1.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9.1",
+                    "rel": "related",
+                    "text": "DET.5.9.1 steht unter DER.7.A6"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A14",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A14 Verknüpfung von Erkenntnissen mit dem Secure SDLC",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A14"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A14_anforderung",
+                    "name": "overview",
+                    "prose": "Gewonnene Erkenntnisse über Schwachstellen MÜSSEN an die Entwicklungsteams kommuniziert werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.1",
+                    "rel": "related",
+                    "text": "DET.5.1 steht unter DER.7.A1"
+                  },
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "back-matter": {
+      "resources": [
+        {
+          "uuid": "afe1c75e-8725-5df2-a57b-235d7d5236f4",
+          "title": "Grundschutz++-resolved_catalog.json @ a12831136f41",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/a12831136f4122a4c43854622180a24f2576a41e/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "DET.1.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "DET.1.1.1_stm",
+              "parts": [
+                {
+                  "id": "DET.1.1.1-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Regelungen sind nur fragmentarisch oder als Notizen vorhanden.",
+                  "parts": [
+                    {
+                      "id": "DET.1.1.1-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Es gibt keine zentrale Ablage für Detektionsverfahren."
+                    },
+                    {
+                      "id": "DET.1.1.1-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Sichtung von ungeordneten Dokumentenfragmenten."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.1.1.1-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Verfahren sind in einfachen Dokumenten (z. B. Wiki) festgehalten.",
+                  "parts": [
+                    {
+                      "id": "DET.1.1.1-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Grundlegende schriftliche Fixierung der Abläufe ist erfolgt."
+                    },
+                    {
+                      "id": "DET.1.1.1-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Stichprobenartige Prüfung des internen Wikis auf Detektionsanleitungen."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.1.1.1-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Detektion MUSS die Verfahren und Regelungen dokumentieren.",
+                  "parts": [
+                    {
+                      "id": "DET.1.1.1-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Alle Verfahren zur Detektion müssen in einer formellen Dokumentation festgehalten werden."
+                    },
+                    {
+                      "id": "DET.1.1.1-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Vollständigkeitsprüfung der Dokumentation gegen die Anforderungen."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.1.1.1-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Dokumentation erfolgt versioniert in einem zentralen GRC-System.",
+                  "parts": [
+                    {
+                      "id": "DET.1.1.1-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Änderungen an Detektionsregeln werden historisiert und freigegeben."
+                    },
+                    {
+                      "id": "DET.1.1.1-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Revisionshistorie im Git-Repository der Sicherheitsrichtlinien."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.1.1.1-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Dokumentation erfolgt als 'Docs-as-Code' direkt mit den Detektions-Skripten.",
+                  "parts": [
+                    {
+                      "id": "DET.1.1.1-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Automatisierte Generierung der Dokumentation aus Konfigurationsdateien (z.B. Sigma Rules)."
+                    },
+                    {
+                      "id": "DET.1.1.1-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der CI-Pipeline auf automatische Doku-Builds. Check: 'git log -p docs/'."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Deckt die schriftliche Dokumentation der Verfahren und Regelungen im Bereich Detektion ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.1.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "DET.1.1.2_stm",
+              "parts": [
+                {
+                  "id": "DET.1.1.2-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Aufgaben werden bei Bedarf spontan zugewiesen.",
+                  "parts": [
+                    {
+                      "id": "DET.1.1.2-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Keine festen Verantwortlichkeiten für Detektionsaufgaben."
+                    },
+                    {
+                      "id": "DET.1.1.2-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Befragung der IT-Mitarbeiter nach ihren aktuellen Aufgaben zur Detektion."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.1.1.2-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Aufgaben sind groben Rollen zugeordnet, aber nicht individuell fixiert.",
+                  "parts": [
+                    {
+                      "id": "DET.1.1.2-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Es gibt eine generelle Zuweisung, wer für Monitoring zuständig ist."
+                    },
+                    {
+                      "id": "DET.1.1.2-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Einsicht in ein Organigramm oder eine einfache Aufgabenliste."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.1.1.2-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Detektion MUSS die mit den Verfahren und Regelungen verbundenen Aufgaben {{ insert: param, det.1.1.2-prm1 }} zuweisen.",
+                  "parts": [
+                    {
+                      "id": "DET.1.1.2-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Zuweisung der Detektionsaufgaben gemäß den definierten Parametern an spezifische Rollen."
+                    },
+                    {
+                      "id": "DET.1.1.2-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Abgleich der Rollenbeschreibungen mit der Aufgabenmatrix."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.1.1.2-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Aufgaben sind in einem Ticketsystem mit klaren SLAs hinterlegt.",
+                  "parts": [
+                    {
+                      "id": "DET.1.1.2-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Automatisierte Zuweisung von Detektions-Events an Bearbeiter."
+                    },
+                    {
+                      "id": "DET.1.1.2-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Ticket-Historie. Check: 'jira-cli issue list --project SEC'."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Deckt die verbindliche Festlegung und Zuweisung der Verantwortlichkeiten ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "DET.1.2_stm",
+              "parts": [
+                {
+                  "id": "DET.1.2-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Audit",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Prüfung findet nur bei schweren Störungen statt.",
+                  "parts": [
+                    {
+                      "id": "DET.1.2-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Kein geplanter Review-Prozess für Detektionsregeln."
+                    },
+                    {
+                      "id": "DET.1.2-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung, ob in der Vergangenheit Anpassungen dokumentiert wurden."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.1.2-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Audit",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Unregelmäßige manuelle Durchsicht der Regelungen.",
+                  "parts": [
+                    {
+                      "id": "DET.1.2-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Regelungen werden gelegentlich auf Aktualität geprüft."
+                    },
+                    {
+                      "id": "DET.1.2-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Einsicht in Protokolle der letzten (unregelmäßigen) Revision."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.1.2-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Audit",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Detektion MUSS die Verfahren und Regelungen {{ insert: param, det.1.2-prm1 }} und anlassbezogen auf Aktualität überprüfen.",
+                  "parts": [
+                    {
+                      "id": "DET.1.2-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Turnusmäßige und ereignisgesteuerte Überprüfung der Detektionsprozesse."
+                    },
+                    {
+                      "id": "DET.1.2-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Abgleich der Prüfprotokolle mit dem festgelegten Intervall."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.1.2-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Audit",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Prüfung beinhaltet Effektivitätsmessungen mittels Simulationen.",
+                  "parts": [
+                    {
+                      "id": "DET.1.2-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Regelmäßige Breach-and-Attack Simulationen validieren die Regeln."
+                    },
+                    {
+                      "id": "DET.1.2-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Simulationsberichte. Check: 'grep \"success\" bas_report.log'."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.1.2-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Audit",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Kontinuierliche, automatisierte Validierung der Detektionsqualität.",
+                  "parts": [
+                    {
+                      "id": "DET.1.2-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Echtzeit-Metriken (MTTD) steuern den Review-Prozess automatisch."
+                    },
+                    {
+                      "id": "DET.1.2-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Audit des Dashboards für Detektionseffizienz. API-Check der Metriken."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A13",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): DET.1.2 fordert die regelmäßige und anlassbezogene Überprüfung der Verfahren und Regelungen der Detektion, einschließlich der Verfahren für externe Schwachstellenmeldungen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.1",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "DET.5.1_stm",
+              "parts": [
+                {
+                  "id": "DET.5.1-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Schwachstellen werden sporadisch nach Bekanntwerden in Fachmedien gesucht.",
+                  "parts": [
+                    {
+                      "id": "DET.5.1-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Abonnieren Sie Security-Newsletter für Ihre Kernsysteme."
+                    },
+                    {
+                      "id": "DET.5.1-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Nachweis: Liste der abonnierten Sicherheits-Mailinglisten."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.5.1-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Regelmäßige manuelle Prüfung der Asset-Bestände auf bekannte Schwachstellen.",
+                  "parts": [
+                    {
+                      "id": "DET.5.1-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Führen Sie monatliche Abgleiche Ihrer Softwareliste mit CVE-Datenbanken durch."
+                    },
+                    {
+                      "id": "DET.5.1-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Audit: Stichprobenartiger Abgleich installierter Softwareversionen gegen CVEs."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.5.1-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Detektion SOLLTE Verfahren und Regelungen zur Erkennung und Behandlung von Schwachstellen verankern.",
+                  "parts": [
+                    {
+                      "id": "DET.5.1-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Etablieren Sie einen formalen Prozess für das Vulnerability Management."
+                    },
+                    {
+                      "id": "DET.5.1-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfen Sie das schriftliche Konzept zum Umgang mit Sicherheitslücken."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.5.1-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Automatisierte Schwachstellenscans sind in den IT-Betrieb integriert.",
+                  "parts": [
+                    {
+                      "id": "DET.5.1-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Setzen Sie Open-Source-Scanner ein, um wöchentlich das Netzwerk zu prüfen."
+                    },
+                    {
+                      "id": "DET.5.1-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Check: `openvas-cli` Report der letzten 7 Tage einsehen."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.5.1-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Kontinuierliches Schwachstellenmanagement mit automatischer Risiko-Priorisierung.",
+                  "parts": [
+                    {
+                      "id": "DET.5.1-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Integration von Agents auf allen Endpunkten für Echtzeit-Transparenz."
+                    },
+                    {
+                      "id": "DET.5.1-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Audit: Zeitspanne von der Veröffentlichung einer Lücke bis zur Erkennung im System prüfen."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A1",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A9",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A14",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.2",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "DET.5.2_stm",
+              "parts": [
+                {
+                  "id": "DET.5.2-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Risk Treatment",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Gefundene Schwachstellen werden in Notizen oder E-Mails festgehalten.",
+                  "parts": [
+                    {
+                      "id": "DET.5.2-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Schreiben Sie sich auf, welche Systeme Lücken aufweisen."
+                    },
+                    {
+                      "id": "DET.5.2-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Audit: Sichten von E-Mails zum Thema 'Vulnerability'."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.5.2-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Risk Treatment",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Führen einer zentralen Tabelle (z.B. Excel) aller bekannten Schwachstellen.",
+                  "parts": [
+                    {
+                      "id": "DET.5.2-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Listen Sie Asset-Name, CVE-ID und geschätztes Risiko manuell auf."
+                    },
+                    {
+                      "id": "DET.5.2-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Aktualität der Schwachstellen-Tabelle."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.5.2-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Risk Treatment",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Detektion SOLLTE Schwachstellen bei Entdeckung inklusive betroffener Komponenten, Kritikalität und Status dokumentieren.",
+                  "parts": [
+                    {
+                      "id": "DET.5.2-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Nutzen Sie ein strukturiertes Format zur Erfassung aller relevanten Schwachstellendaten."
+                    },
+                    {
+                      "id": "DET.5.2-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Einsicht in das Schwachstellenregister und Abgleich mit Asset-Daten."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.5.2-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Risk Treatment",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Einsatz eines Datenbankgestützten Vulnerability Management Systems (VMS).",
+                  "parts": [
+                    {
+                      "id": "DET.5.2-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Verknüpfen Sie das Register mit einem Ticketsystem zur Nachverfolgung der Behebung."
+                    },
+                    {
+                      "id": "DET.5.2-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Audit: Verfolgung einer Schwachstelle vom Scan bis zum 'Closed'-Ticket."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.5.2-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Risk Treatment",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Voll integriertes Asset- und Schwachstellenregister mit Real-Time-Dashboard.",
+                  "parts": [
+                    {
+                      "id": "DET.5.2-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Automatischer Abgleich mit der CMDB für sofortige Impact-Analyse."
+                    },
+                    {
+                      "id": "DET.5.2-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Dashboard-Genauigkeit durch Vergleich mit einem frischen Scan."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Verifizierte Schwachstellen werden gemäß DET.5.2 im Schwachstellenregister zur weiteren Nachverfolgung und Behandlung dokumentiert."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.9",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "DET.5.9_stm",
+              "parts": [
+                {
+                  "id": "DET.5.9-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Annahme von Meldungen über die allgemeine Kontakt-E-Mail.",
+                  "parts": [
+                    {
+                      "id": "DET.5.9-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Leiten Sie externe Security-Mails an die IT weiter."
+                    },
+                    {
+                      "id": "DET.5.9-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung, ob Meldungen im Support-System ankommen."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.5.9-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Bereitstellung einer security@ E-Mail-Adresse.",
+                  "parts": [
+                    {
+                      "id": "DET.5.9-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Veröffentlichen Sie den Kontakt im Impressum."
+                    },
+                    {
+                      "id": "DET.5.9-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Webseiten-Check auf Vorhandensein des Kontakts."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.5.9-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Detektion SOLLTE eine Vorgehensweise zur Entgegennahme und Behandlung von externen Schwachstellenmeldungen verankern.",
+                  "parts": [
+                    {
+                      "id": "DET.5.9-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Erstellen Sie eine Richtlinie für Vulnerability Disclosure."
+                    },
+                    {
+                      "id": "DET.5.9-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Sichtung der Disclosure-Policy. `curl /.well-known/security.txt` "
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.5.9-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Portal für Coordinated Vulnerability Disclosure (CVD).",
+                  "parts": [
+                    {
+                      "id": "DET.5.9-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Bieten Sie sichere Upload-Möglichkeiten für Reports an."
+                    },
+                    {
+                      "id": "DET.5.9-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Test des Meldeportals auf Erreichbarkeit."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.5.9-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Implementation",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Betrieb eines Bug-Bounty-Programms mit festen SLAs.",
+                  "parts": [
+                    {
+                      "id": "DET.5.9-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Anreizsystem für ethische Hacker zur Meldung von Lücken."
+                    },
+                    {
+                      "id": "DET.5.9-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Statistik der behobenen Meldungen prüfen."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (subset-of, Konfidenz hoch, Checker fraglich): DET.5.9 verlangt eine Vorgehensweise zur Entgegennahme und Behandlung externer Schwachstellenmeldungen; DER.7.A1 konkretisiert dies als eine von der Institutionsleitung verabschiedete Richtlinie mit Zielen, Verantwortlichkeiten und Kooperationsverpflichtung."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A2",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A3",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A4",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A5",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A6",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A8",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker bestaetigt): DET.5.9 fordert die Entgegennahme und Behandlung externer Schwachstellenmeldungen, was die Überführung verifizierter Meldungen in die interne Behandlung einschließt."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker bestaetigt): Die effiziente organisatorische und technische Verwaltung von eingehenden Meldungen ist Teil der Vorgehensweise zur Entgegennahme und Behandlung externer Schwachstellenmeldungen nach DET.5.9."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A12",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker fraglich): Die professionelle Kontaktpflege mit meldenden Sicherheitsforschenden ist Teil einer geordneten Vorgehensweise zur Entgegennahme und Behandlung externer Schwachstellenmeldungen."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A14",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker fraglich): DET.5.9 umfasst die Behandlung externer Schwachstellenmeldungen, ohne die Weitergabe gewonnener Erkenntnisse an Entwicklungsteams ausdrücklich zu fordern."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.9.1",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "DET.5.9.1_stm",
+              "parts": [
+                {
+                  "id": "DET.5.9.1-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Meldungen über Schwachstellen werden sporadisch und formlos entgegengenommen.",
+                  "parts": [
+                    {
+                      "id": "DET.5.9.1-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Sicherstellen, dass eine Kontaktmöglichkeit für externe Sicherheitsforscher existiert."
+                    },
+                    {
+                      "id": "DET.5.9.1-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Website auf ein Impressum oder eine Kontakt-E-Mail für Sicherheitsfragen."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.5.9.1-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Ein Vulnerability Disclosure Policy (VDP) ist veröffentlicht, ohne finanzielle Anreize.",
+                  "parts": [
+                    {
+                      "id": "DET.5.9.1-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Richtlinie zur Meldung von Schwachstellen auf der Webseite bereitstellen."
+                    },
+                    {
+                      "id": "DET.5.9.1-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfen, ob die VDP-Datei unter /.well-known/security.txt erreichbar ist."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.5.9.1-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Detektion KANN ein Bonusprogramm für externe Schwachstellenmeldungen verankern.",
+                  "parts": [
+                    {
+                      "id": "DET.5.9.1-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Einführung eines formalen Programms zur Belohnung von Schwachstellenmeldungen."
+                    },
+                    {
+                      "id": "DET.5.9.1-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Nachweis der Richtlinie für das Bonusprogramm und Dokumentation der Bearbeitungsprozesse."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.5.9.1-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Ein aktives Bug-Bounty-Programm mit definiertem Budget und SLA ist etabliert.",
+                  "parts": [
+                    {
+                      "id": "DET.5.9.1-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Nutzung einer Plattform zur Verwaltung von Meldungen und Auszahlungen."
+                    },
+                    {
+                      "id": "DET.5.9.1-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Einsicht in die Plattform-Statistiken und Prüfung der Einhaltung von Reaktionszeiten."
+                    }
+                  ]
+                },
+                {
+                  "id": "DET.5.9.1-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Improvement",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Integration des Bonusprogramms in den DevSecOps-Zyklus mit automatischer Triage.",
+                  "parts": [
+                    {
+                      "id": "DET.5.9.1-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Meldungen werden direkt in das Issue-Tracking-System überführt und priorisiert."
+                    },
+                    {
+                      "id": "DET.5.9.1-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Audit des Workflows von der Meldung bis zum Patch-Deployment via API-Logs."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz niedrig, Checker fraglich): DET.5.9.1 erwähnt ein Bonusprogramm für externe Schwachstellenmeldungen, enthält aber keine Vorgaben zur Abgrenzung des Geltungsbereichs und zu Testregeln."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A7",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A10",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A11",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A12",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A13",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.4.1.5",
+          "adds": [
+            {
+              "position": "ending",
+              "by-id": "PERF.4.1.5_stm",
+              "parts": [
+                {
+                  "id": "PERF.4.1.5-m1_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Risk Treatment",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m1"
+                    }
+                  ],
+                  "prose": "Maßnahmen werden nur bei offensichtlichem Versagen hinterfragt.",
+                  "parts": [
+                    {
+                      "id": "PERF.4.1.5-m1_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Reaktive Prüfung der Angemessenheit."
+                    },
+                    {
+                      "id": "PERF.4.1.5-m1_custom_asm",
+                      "name": "assessment",
+                      "prose": "Befragung zur Wirksamkeitsprüfung nach Vorfällen."
+                    }
+                  ]
+                },
+                {
+                  "id": "PERF.4.1.5-m2_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Risk Treatment",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m2"
+                    }
+                  ],
+                  "prose": "Es erfolgt eine jährliche Bestätigung, dass Maßnahmen 'grundsätzlich okay' sind.",
+                  "parts": [
+                    {
+                      "id": "PERF.4.1.5-m2_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Pauschale Bewertung ohne Einzelprüfung."
+                    },
+                    {
+                      "id": "PERF.4.1.5-m2_custom_asm",
+                      "name": "assessment",
+                      "prose": "Einsicht in die jährliche Pauschalbestätigung."
+                    }
+                  ]
+                },
+                {
+                  "id": "PERF.4.1.5-m3_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Risk Treatment",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m3"
+                    }
+                  ],
+                  "prose": "Monitoring-Evaluation SOLLTE eine Evaluation der Eignung umgesetzter Sicherheitsmaßnahmen zur Erreichung der Sicherheitsziele oder ob Maßnahmen geändert oder ergänzt werden müssen als Ergebnis der Überprüfung in einem Managementbericht dokumentieren.",
+                  "parts": [
+                    {
+                      "id": "PERF.4.1.5-m3_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Bewerten Sie jede Maßnahme gegen die definierten Schutzziele C-I-A."
+                    },
+                    {
+                      "id": "PERF.4.1.5-m3_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Eignungsmatrix im Managementbericht."
+                    }
+                  ]
+                },
+                {
+                  "id": "PERF.4.1.5-m4_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Risk Treatment",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m4"
+                    }
+                  ],
+                  "prose": "Die Evaluation nutzt Wirksamkeitsmetriken (Key Effectiveness Indicators), um Maßnahmen objektiv zu bewerten.",
+                  "parts": [
+                    {
+                      "id": "PERF.4.1.5-m4_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Definition von Messgrößen für jede Sicherheitsmaßnahme."
+                    },
+                    {
+                      "id": "PERF.4.1.5-m4_custom_asm",
+                      "name": "assessment",
+                      "prose": "Abgleich der Metriken mit den Evaluationsergebnissen."
+                    }
+                  ]
+                },
+                {
+                  "id": "PERF.4.1.5-m5_custom",
+                  "name": "statement",
+                  "props": [
+                    {
+                      "name": "control_class",
+                      "value": "Management",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "phase",
+                      "value": "Risk Treatment",
+                      "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/tree/main/Dokumentation/namespaces/gpp_enhancement_props.md"
+                    },
+                    {
+                      "name": "label",
+                      "value": "m5"
+                    }
+                  ],
+                  "prose": "Automatisierte Continuous-Security-Testing-Systeme liefern Daten zur tatsächlichen Wirksamkeit für die Evaluation.",
+                  "parts": [
+                    {
+                      "id": "PERF.4.1.5-m5_custom_gdn",
+                      "name": "guidance",
+                      "prose": "Einsatz von Breach-and-Attack-Simulation (BAS) Tools (Open Source)."
+                    },
+                    {
+                      "id": "PERF.4.1.5-m5_custom_asm",
+                      "name": "assessment",
+                      "prose": "Prüfung der Simulationsberichte; `cat /var/log/bas_results.json`."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A13",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker fraglich): PERF.4.1.5 verlangt die Evaluation der Eignung und Wirksamkeit umgesetzter Sicherheitsmaßnahmen, worunter auch ein etabliertes Bug-Bounty-Programm fällt."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

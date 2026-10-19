@@ -1,0 +1,1322 @@
+{
+  "profile": {
+    "uuid": "2c87451e-c596-5bd9-970b-afb59fbc7e61",
+    "metadata": {
+      "title": "NG APP.4.7 – Zeitreihen-Datenbanken (Anwendungen)",
+      "last-modified": "2026-10-19T01:05:56.597604+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "NG"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "APP.4.7"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Zeitreihen-Datenbanken"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Anwendungen"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "system"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, APP.4.7, NG, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein APP.4.7 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe, NG-Baustein)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (Text des nutzergenerierten Bausteins (NG, NTT DATA), kein BSI-Text); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls."
+    },
+    "imports": [
+      {
+        "href": "#afe1c75e-8725-5df2-a57b-235d7d5236f4",
+        "include-controls": [
+          {
+            "with-ids": [
+              "ARCH.2.1",
+              "ARCH.5.1",
+              "ARCH.5.2",
+              "ASST.4.2",
+              "ASST.7.2",
+              "BER.4.1",
+              "BER.4.1.1",
+              "BER.5.4",
+              "BER.5.7",
+              "BER.6.4",
+              "BES.2.1",
+              "BES.2.1.3",
+              "DET.3.1",
+              "DET.3.1.8",
+              "DET.3.1.9",
+              "DET.6.1",
+              "KONF.10.1",
+              "KONF.10.3",
+              "KONF.11.1",
+              "KONF.11.1.2",
+              "KONF.11.8",
+              "KONF.14.1",
+              "KONF.14.1.1",
+              "KONF.15.2",
+              "KONF.3.2",
+              "KONF.7.15"
+            ]
+          }
+        ]
+      }
+    ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "APP.4.7-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "APP.4.7.A1",
+                "class": "ed23-anforderung",
+                "title": "APP.4.7.A1 Planung des Einsatzes von Zeitreihen-Datenbanken",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.7.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.7.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Vor dem Einsatz einer Zeitreihen-Datenbank MUSS eine Anforderungsanalyse durchgeführt werden. Dabei MÜSSEN die benötigten Kapazitäten, das Mengengerüst für zu verarbeitende Metriken sowie die Sicherheitsanforderungen an die gespeicherten Daten ermittelt werden. Basierend darauf MUSS ein sicheres Architektur- und Betriebskonzept erstellt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BES.2.1",
+                          "BES.2.1.3",
+                          "KONF.10.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.7.A2",
+                "class": "ed23-anforderung",
+                "title": "APP.4.7.A2 Absicherung des Netzwerkzugriffs auf die Datenbank",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.7.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "DARF NICHT"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.7.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Der Netzwerkzugriff auf die Zeitreihen-Datenbank MUSS strikt auf die Systeme beschränkt werden, die Daten schreiben oder lesen müssen. Die Datenbank MUSS netzwerktechnisch durch eine Firewall geschützt werden. Dienste DÜRFEN NICHT an öffentliche oder ungeschützte Netzwerkschnittstellen gebunden werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.5.1",
+                          "KONF.7.15",
+                          "ARCH.5.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.7.A3",
+                "class": "ed23-anforderung",
+                "title": "APP.4.7.A3 Aktivierung der Authentifizierung für Schreib- und Lesezugriffe",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.7.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.7.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Alle Schreib- und Lesezugriffe auf die Datenbank MÜSSEN authentifiziert werden. Es MÜSSEN sichere Passwörter oder kryptografisch starke Authentifizierungs-Token verwendet werden. Ein anonymer Zugriff auf produktive Daten MUSS deaktiviert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.11.1",
+                          "BER.6.4",
+                          "BER.5.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.7.A4",
+                "class": "ed23-anforderung",
+                "title": "APP.4.7.A4 Absicherung der administrativen Schnittstellen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.7.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.7.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Der Zugriff auf administrative Web-Oberflächen und Konfigurations-APIs MUSS durch starke, nicht standardisierte Anmeldedaten geschützt sein. Standard-Benutzerkonten MÜSSEN umbenannt oder serverseitig deaktiviert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.10.3",
+                          "BER.5.7"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#BER.6.4",
+                    "rel": "related",
+                    "text": "BER.6.4 steht unter APP.4.7.A3"
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.7.A5",
+                "class": "ed23-anforderung",
+                "title": "APP.4.7.A5 Schutz von Metrik-Endpunkten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.7.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.7.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Metrik-Endpunkte, die von pull-basierten Systemen abgefragt werden, MÜSSEN so konfiguriert sein, dass sie ausschließlich für das legitime Monitoring-System erreichbar sind. Dies MUSS durch Netzsegmentierung oder hostbasierte Firewall-Regeln sichergestellt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.7.15",
+                    "rel": "related",
+                    "text": "KONF.7.15 steht unter APP.4.7.A2"
+                  },
+                  {
+                    "href": "#ARCH.5.1",
+                    "rel": "related",
+                    "text": "ARCH.5.1 steht unter APP.4.7.A2"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "APP.4.7-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "APP.4.7.A6",
+                "class": "ed23-anforderung",
+                "title": "APP.4.7.A6 Verschlüsselung der gesamten Kommunikation",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.7.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.7.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Die Kommunikation von Administratoren und Dashboards mit der Zeitreihen-Datenbank MUSS mittels TLS verschlüsselt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.14.1",
+                          "KONF.14.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.7.A7",
+                "class": "ed23-anforderung",
+                "title": "APP.4.7.A7 Umsetzung eines differenzierten Berechtigungskonzepts",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.7.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.7.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Ein grundlegendes Berechtigungskonzept MUSS umgesetzt werden, das strikt zwischen schreibenden und lesenden Zugriffen trennt."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.4.1",
+                          "BER.4.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.7.A8",
+                "class": "ed23-anforderung",
+                "title": "APP.4.7.A8 Systematische Verwaltung von Datenaufbewahrungszeiten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.7.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.7.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Richtlinien für die Aufbewahrung von Daten (Retention Policies) MÜSSEN definiert und grundlegend umgesetzt werden, um unkontrolliertes Speicherwachstum zu verhindern."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.7.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.7.A9",
+                "class": "ed23-anforderung",
+                "title": "APP.4.7.A9 Protokollierung und Überwachung sicherheitsrelevanter Ereignisse",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.7.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.7.A9_anforderung",
+                    "name": "overview",
+                    "prose": "Administrative Änderungen, fehlgeschlagene Anmeldeversuche und kritische Systemereignisse der Datenbank MÜSSEN lokal protokolliert und regelmäßig geprüft werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.3.1",
+                          "DET.3.1.8",
+                          "DET.3.1.9",
+                          "DET.6.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "APP.4.7-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "APP.4.7.A10",
+                "class": "ed23-anforderung",
+                "title": "APP.4.7.A10 Erzwingung gegenseitiger Authentifizierung (mTLS)",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.7.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.7.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Für die Kommunikation zwischen hochsensiblen Datensammlern und der Zeitreihen-Datenbank MUSS eine starke Authentifizierung der Clients erfolgen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.11.1.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.11.1",
+                    "rel": "related",
+                    "text": "KONF.11.1 steht unter APP.4.7.A3"
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.7.A11",
+                "class": "ed23-anforderung",
+                "title": "APP.4.7.A11 Verschlüsselung der gespeicherten Daten (Encryption at Rest)",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.7.A11"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.7.A11_anforderung",
+                    "name": "overview",
+                    "prose": "Werden besonders schützenswerte Informationen gespeichert, MÜSSEN die Daten auf dem Speichermedium grundlegend verschlüsselt werden (z.B. Full Disk Encryption)."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.11.8",
+                          "KONF.3.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.7.A12",
+                "class": "ed23-anforderung",
+                "title": "APP.4.7.A12 Begrenzung von Ressourcen für Abfragen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.7.A12"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.7.A12_anforderung",
+                    "name": "overview",
+                    "prose": "Grundlegende Ressourcenlimits (z.B. globale Timeouts) MÜSSEN konfiguriert werden, um Überlastungen der Datenbank zu vermeiden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.15.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "APP.4.7.A13",
+                "class": "ed23-anforderung",
+                "title": "APP.4.7.A13 Sicherstellung der Datenintegrität durch kryptografische Signaturen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "APP.4.7.A13"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "APP.4.7.A13_anforderung",
+                    "name": "overview",
+                    "prose": "Die Integrität der Daten MUSS durch sichere Transportprotokolle (z.B. TLS) auf dem Weg zur Datenbank gewährleistet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.4.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.14.1",
+                    "rel": "related",
+                    "text": "KONF.14.1 steht unter APP.4.7.A6"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "back-matter": {
+      "resources": [
+        {
+          "uuid": "afe1c75e-8725-5df2-a57b-235d7d5236f4",
+          "title": "Grundschutz++-resolved_catalog.json @ a12831136f41",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/a12831136f4122a4c43854622180a24f2576a41e/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "ARCH.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A5",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): ARCH.2.1 und ARCH.2.2 fordern die Netzsegmentierung und die Einschränkung von Verbindungen zwischen Segmenten (S2)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.5.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A2",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker bestaetigt): ARCH.5.1 fordert, Verbindungen zwischen IT-Systemen einzuschränken, was die strikte Beschränkung des Netzwerkzugriffs auf berechtigte lesende und schreibende Systeme (S1) sowie den Firewall-Schutz im Netz (S2) abdeckt."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A5",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker fraglich): ARCH.5.1 fordert allgemein die Einschränkung von Verbindungen zwischen IT-Systemen, worunter die Beschränkung des Zugriffs auf Metrik-Endpunkte durch das legitime Monitoring-System fällt (S1)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.5.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A2",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker fraglich): ARCH.5.2 fordert das Blockieren direkter Verbindungen ins öffentliche Netz, was das Binden von Datenbankdiensten an öffentliche Schnittstellen (S3) verhindert."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A13",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker bestaetigt): ASST.4.2 fordert übergreifend die Wahrung von Vertraulichkeit und Integrität von Daten beim Transport."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.7.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A8",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): Das Control fordert die Verankerung von Aufbewahrungs- und Löschfristen für Daten, was der Definition von Retention Policies entspricht."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.4.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A7",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker bestaetigt): Die strikte Trennung zwischen lesenden und schreibenden Zugriffen setzt das Prinzip der geringsten Berechtigungen für die Zeitreihen-Datenbank konkret um."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.4.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A7",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker fraglich): Ein Berechtigungskonzept, das zwischen lesenden (z. B. Dashboards) und schreibenden (z. B. Agenten) Zugriffen trennt, wird typischerweise über rollenbasierte Berechtigungen abgebildet."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.5.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A3",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): BER.5.4 fordert bei kryptografischen Authentifizierungsmitteln etablierte Algorithmen, was kryptografisch starke Authentifizierungs-Token (S2) abdeckt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.5.7",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A4",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): BER.5.7 verlangt die Deaktivierung vorkonfigurierter Authentisierungsmittel von Anwendungen (S1, S2)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.6.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A3",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): BER.6.4 fordert Kriterien für die Qualität von Passwörtern, was den Einsatz sicherer Passwörter (S2) abdeckt."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A4",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): BER.6.4 stellt über Passwortqualitätskriterien starke Anmeldedaten sicher (S1)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): BES.2.1 fordert die Erfassung des Bedarfs vor der Beschaffung anhand einer Leistungsbeschreibung oder Umsetzungsstrategie, was die Anforderungsanalyse vor dem Einsatz (S1) abdeckt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.2.1.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker fraglich): Die Ermittlung der benötigten Kapazitäten und des Mengengerüsts (S2) entspricht der Dokumentation der Systemvoraussetzungen bei der Bedarfserfassung."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): Das Control fordert die Protokollierung sicherheitsrelevanter Ereignisse in Anwendungen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1.8",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): Deckt die Protokollierung privilegierter Ereignisse und administrativer Änderungen in der Anwendung ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1.9",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): Deckt die Protokollierung von Fehlermeldungen und kritischen Ereignissen der Anwendung ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.6.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Trägt den Teil der Anforderung, der die regelmäßige Prüfung und Beurteilung der protokollierten sicherheitsrelevanten Ereignisse verlangt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.10.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker fraglich): Die Erstellung eines sicheren Architektur- und Betriebskonzepts für die Datenbank (S3) wird durch die Dokumentation einer Grundkonfiguration für Anwendungen (sowie die Verfahren im Konfigurationsmanagement nach KONF.1.1) getragen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.10.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A4",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): KONF.10.3 fordert die Änderung von Default-Zugangsdaten in Anwendungen (S1)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.11.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A3",
+                  "remarks": "Herkunft: KI-Vorschlag (equivalent-to, Konfidenz hoch, Checker fraglich): KONF.11.1 fordert, Zugriffe auf schützenswerte Daten in Anwendungen im Einklang mit dem Identitäts- und Berechtigungsmanagement zu authentifizieren, was S1 und den Ausschluss anonymen Zugriffs (S3) direkt umsetzt."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker bestaetigt): Das Control fordert die Authentifizierung von Zugriffen auf schützenswerte Daten in Anwendungen gemäß den Vorgaben des Identitäts- und Berechtigungsmanagements."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.11.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): Das Control verlangt die gegenseitige bzw. clientseitige Authentifizierung der Gegenstelle vor dem Datenaustausch bei Netzverbindungen von Anwendungen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.11.8",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A11",
+                  "remarks": "Herkunft: KI-Vorschlag (equivalent-to, Konfidenz hoch, Checker fraglich): KONF.11.8 fordert explizit die Verschlüsselung schützenswerter Daten bei der Speicherung (at-rest) für Anwendungen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.14.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker bestaetigt): Das Control verlangt allgemein die Verschlüsselung der Kommunikation von Anwendungen beim Transport über Netze (z. B. mittels TLS); die Anforderung konkretisiert dies für Administrations- und Dashboard-Verbindungen zur Zeitreihen-Datenbank."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A13",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): KONF.14.1 fordert den Einsatz kryptografischer Transportprotokolle (wie TLS) für die Kommunikation von Anwendungen über Netze, wodurch auch der in der Anforderung geforderte Integritätsschutz auf dem Transportweg realisiert wird."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.14.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Die zwingende Vorgabe von TLS für die Kommunikation impliziert, dass unverschlüsselte und anfällige Verbindungen deaktiviert sind."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.15.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A12",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): KONF.15.2 behandelt die Begrenzung der Rechenleistung für Anwendungen von Hostsystemen, um Überlastungen zu vermeiden."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.3.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A11",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): Die Anforderung nennt Full Disk Encryption als Beispiel für die grundlegende Verschlüsselung auf dem Speichermedium, was durch KONF.3.2 (Speicherverschlüsselung integrierter Festspeichermedien auf IT-Systemen) abgedeckt wird."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.7.15",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A2",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): KONF.7.15 verlangt den Einsatz einer lokalen Firewall zur Einschränkung ein- und ausgehender Netzverbindungen (S2) sowie das Verhindern des Zugriffs über ungeschützte Netzwerkschnittstellen (S3)."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "APP.4.7.A5",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): KONF.7.15 fordert eine lokale (hostbasierte) Firewall zur Einschränkung ein- und ausgehender Netzverbindungen auf die legitimen Gegenstellen (S1, S2)."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
