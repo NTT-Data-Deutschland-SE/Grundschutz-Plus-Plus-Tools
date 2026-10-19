@@ -49,6 +49,10 @@ def is_recoverable(exc: BaseException) -> bool:
     code = getattr(exc, "code", None) or getattr(exc, "status_code", None)
     if isinstance(code, int):
         return code == 429 or 500 <= code < 600
+    # Transport-level failures of the HTTP stack (httpx.ReadError, httpcore.ConnectError, ...)
+    # carry no status and often an empty message; they are connection drops, hence transient.
+    if type(exc).__module__.split(".")[0] in ("httpx", "httpcore"):
+        return True
     msg = str(exc).lower()
     return any(s in msg for s in (
         "429", "resource_exhausted", "rate limit", "quota",
@@ -62,7 +66,7 @@ def error_detail(exc: BaseException, action: str) -> str:
     """One line with action, code/status and the upstream message — what an operator needs."""
     code = getattr(exc, "code", None) or getattr(exc, "status_code", None)
     status = getattr(exc, "status", None)
-    message = getattr(exc, "message", None) or str(exc)
+    message = getattr(exc, "message", None) or str(exc) or type(exc).__name__
     tag = " ".join(str(p) for p in (code, status) if p)
     prefix = f"{action} failed" + (f" ({tag})" if tag else "")
     return f"{prefix}: {message}" if message else prefix

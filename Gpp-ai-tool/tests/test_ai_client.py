@@ -119,6 +119,8 @@ def test_is_recoverable_classification():
     assert mod.is_recoverable(SimpleNamespace(code=503))
     assert mod.is_recoverable(RuntimeError("deadline exceeded"))
     assert mod.is_recoverable(OSError("[Errno -3] Temporary failure in name resolution"))
+    import httpcore
+    assert mod.is_recoverable(httpcore.ReadError()) and mod.error_detail(httpcore.ReadError(), "AI call") == "AI call failed: ReadError"
     assert not mod.is_recoverable(SimpleNamespace(code=400))
     assert not mod.is_recoverable(RuntimeError("invalid argument"))
 
