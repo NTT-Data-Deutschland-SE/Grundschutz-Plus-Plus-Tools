@@ -54,6 +54,7 @@ def is_recoverable(exc: BaseException) -> bool:
         "429", "resource_exhausted", "rate limit", "quota",
         "503", "unavailable", "500", "internal", "502", "504",
         "deadline", "timeout", "timed out", "connection", "reset",
+        "name resolution", "nodename nor servname", "network is unreachable", "connecterror",
     ))
 
 
