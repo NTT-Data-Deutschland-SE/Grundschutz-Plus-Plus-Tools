@@ -61,7 +61,7 @@ Einzelwerkzeuge in `one-page-apps/`: eigenständig, ohne `gpp-core.js`, von der 
 ## Hinweise zum Umstieg
 
 - **Einmal mit Strg+F5 laden.** Kern und Stylesheet sind unverändert.
-- Die neuen Profile werden in den Werkzeugen erst nach dem Selbst-Pin-Bump sichtbar (`GPP_TOOLS_PIN_COMMIT` zeigt auf den Commit mit den regenerierten Profilen; zweiter Commit „Selbst-Pin auf …“).
+- Die neuen Profile werden in den Werkzeugen erst nach dem Selbst-Pin-Bump sichtbar (`GPP_TOOLS_PIN_COMMIT` und `MST_PIN_COMMIT` zeigen auf `6392ea7`, den Commit mit den regenerierten Profilen; zweiter Commit „Selbst-Pin auf 6392ea7“).
 - Ein NG-Ergänzungskatalog, dessen SHA-256 nicht zur Profil-Back-Matter passt, wird abgewiesen; nach jeder Regeneration der Profile ist der Katalog-Hash in allen betroffenen Profilen neu (die Pipeline schreibt das selbst).
 - Wer im Generator Edition 2023 einen eigenen Mapping-Prompt gespeichert hat, ergänzt den `[NG]`-Satz selbst (Prompt-Vorlage im Werkzeug).
 - Die Auslieferung bleibt `GS++-oscal-app.zip` (zwölf Dateien); eine einzelne HTML-Datei allein läuft nicht.
