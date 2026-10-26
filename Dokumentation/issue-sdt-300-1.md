@@ -1,5 +1,7 @@
 Anwenderkatalog Grundschutz++ (Build 2026-10-22) gegen BSI-Standard 300-1 v1.0: Prüfliste der Abweichungen und offene Punkte
 
+> Angelegt am 2026-10-26 als https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/issues/116
+
 ## Zusammenfassung
 
 Der BSI-Standard 300-1 „Methodik Grundschutz++" (Version 1.0, 20.10.2026) ist veröffentlicht; der Anwenderkatalog soll an ihn angepasst werden. Der Build vom 2026-10-22 (Commit 160c177) enthält diese Anpassung noch nicht. Dieses Issue ist die aus Anwendersicht nachgerechnete Prüfliste: Teil A nennt die Stellen, an denen Standard und Katalog sich widersprechen und der Katalog voraussichtlich nachzieht. Teil B nennt Punkte, die der Standard selbst nicht entscheidet. Ein kurzer dritter Teil listet redaktionelle Funde am Standard; falls das Repository dafür der falsche Kanal ist, gehen sie an das Referat S 13.
