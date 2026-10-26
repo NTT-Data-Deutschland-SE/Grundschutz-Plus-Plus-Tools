@@ -1,9 +1,8 @@
 # Anhang A: Control-Register der Methodik
 
-**Handbuch zur Grundschutz++ Methodik · Version 0.1** · generiert am 2026-08-02 aus `BSI-Methodik-Grundschutz++-catalog.json`, Build 2026-07-29 · 95 Controls
+**Handbuch zur Grundschutz++ Methodik · Version 0.2** · generiert am 2026-10-26 aus `BSI-Methodik-Grundschutz++-catalog.json`, Build 2026-10-22 (Stand-der-Technik-Bibliothek, Commit 160c177 vom 2026-10-23) · 95 Controls
 
-Dieses Register ist skriptgeneriert; bei neuem Katalog-Build neu erzeugen, nicht von Hand pflegen. Einrückung der Titel zeigt die Verschachtelungsebene.
-
+Dieses Register ist skriptgeneriert; bei neuem Katalog-Build neu erzeugen, nicht von Hand pflegen. Einrückung der Titel zeigt die Verschachtelungsebene. Gegenüber dem Build 2026-07-29 geändert: GC.12.1 (Dokument „Risikobetrachtung" statt „Risikobewertung", Parameter im Statement), PERF.2.1 (Titel „Überprüfung" statt „Überwachung").
 
 ## GC – Governance und Compliance (35 Controls)
 
@@ -26,7 +25,7 @@ Dieses Register ist skriptgeneriert; bei neuem Katalog-Build neu erzeugen, nicht
 | GC.5.1.3 | · Erstellung einer Sicherheitsleitlinie | MUSS | 0 | Informationssicherheitsleitlinie |
 | GC.5.1.4 | · Freigabe der Sicherheitsleitlinie | MUSS | 0 | Informationssicherheitsleitlinie |
 | GC.6.1 | Festlegung des Geltungsbereichs | MUSS | 0 | – |
-| GC.7.1 | Vorgehen bei der Infomationssicherheitseinstufung | MUSS | 0 | – |
+| GC.7.1 | Vorgehen bei der Informationssicherheitseinstufung | MUSS | 0 | – |
 | GC.7.1.1 | · Festlegung der Geschäftsprozesse | MUSS | 0 | Geschäftsprozesse |
 | GC.7.1.2 | · Festlegung des Schutzbedarfs | MUSS | 0 | Schutzbedarfsfeststellung |
 | GC.7.2 | Geschäftsprozesse mit hohem Schutzbedarf | MUSS | 0 | Risikobetrachtung |
@@ -43,7 +42,7 @@ Dieses Register ist skriptgeneriert; bei neuem Katalog-Build neu erzeugen, nicht
 | GC.10.1.1 | · Externer Austausch zur Informationssicherheit | SOLLTE | 4 | – |
 | GC.10.1.2 | · Kommunikation im Projektmanagement | MUSS | 0 | – |
 | GC.11.1 | Dokumentenlenkung | MUSS | 0 | Richtlinie zur Lenkung von Dokumenten und Aufzeichnungen |
-| GC.12.1 | Methodik für das Risikomanagement | MUSS | 0 | Risikobewertung |
+| GC.12.1 | Methodik für das Risikomanagement | MUSS | 0 | Risikobetrachtung |
 
 ## STM – Strukturmodellierung (15 Controls)
 
@@ -103,7 +102,7 @@ Dieses Register ist skriptgeneriert; bei neuem Katalog-Build neu erzeugen, nicht
 | PERF.1.1 | Verfahren und Regelungen | MUSS | 0 | – |
 | PERF.1.2 | Evaluation des Umsetzungsplans | MUSS | 0 | – |
 | PERF.1.3 | Aktualität der Anforderungen | MUSS | 0 | – |
-| PERF.2.1 | Überwachung der Einhaltung von Verpflichtungen | SOLLTE | 2 | – |
+| PERF.2.1 | Überprüfung der Einhaltung von Verpflichtungen | SOLLTE | 2 | – |
 | PERF.3.1 | Aufbau und Pflege eines Auditprogramms | MUSS | 0 | – |
 | PERF.3.1.1 | · Erstellen eines Auditsplans | SOLLTE | 3 | – |
 | PERF.3.1.2 | · Planen von internen Audits | MUSS | 0 | – |
@@ -124,7 +123,3 @@ Dieses Register ist skriptgeneriert; bei neuem Katalog-Build neu erzeugen, nicht
 | PERF.4.1.9 | · Maßnahmenvorschläge | MUSS | 0 | Managementbericht |
 | PERF.4.2 | Bericht an die Institutionsleitung | MUSS | 0 | – |
 | PERF.5.1 | Methoden und Tools | MUSS | 0 | – |
-
----
-
-*Generiert aus dem Katalog; Aufwand = `effort_level` (Definition der Stufen 0–5: Kapitel 3.4).*
