@@ -4,7 +4,7 @@
 
 Urteile: **(a)** durch den Standard entschieden, **(b)** durch die angekündigte Katalogänderung erledigt, im Build 2026-10-22 noch nicht enthalten, **(c)** nicht betroffen. Regel: eigene Issues schließen, fremde kommentieren. Eigene Konten: Christoph-Puppe-Work, christoph-puppe. Der Platzhalter `https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/issues/116` steht für das neue Sammel-Issue zu den Katalogabweichungen.
 
-**Ausgeführt am 2026-10-26:** Sammel-Issue angelegt als https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/issues/116. Geschlossen mit Kommentar: BSI #96, #81, #78, #32 (Konto Christoph-Puppe-Work), #106, #47 (Konto christoph-puppe). Kommentiert: BSI #95, #27; AG-1 #74, #71, #64. Nicht ausgeführt (optional): BSI #77, #53, BSI-Audit-AI #193.
+**Ausgeführt am 2026-10-26:** Sammel-Issue angelegt als https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/issues/116. Geschlossen mit Kommentar: BSI #96, #81, #78, #32 (Konto Christoph-Puppe-Work), #106, #47 (Konto christoph-puppe). Kommentiert: BSI #95, #27; AG-1 #74, #71, #64. Nicht ausgeführt (optional): BSI #77, #53, BSI-Audit-AI #193. Nachtrag 26.10.: #81 wieder geöffnet (Datei `bsi-81-reopen.md`), weil die Pflichtaufnahme kategorieloser Anforderungen die Frage der Prozessmodellierung nicht beantwortet.
 
 ## 1. Geprüfte Issues und Discussions
 
@@ -40,7 +40,7 @@ Die 20 geschlossenen Issues wurden gesichtet (Werkzeugthemen, Mapping-QS); keine
 | #84 | Resolved Catalogs ohne Resolution-Provenienz | christoph-puppe | unser | (c) | keine |
 | #83 | MD5 als Hash-Algo | christoph-puppe | unser | (c) | keine |
 | #82 | Zuweisung „IT-Produkte" nicht geregelt | Christoph-Puppe-Work | unser | (c) Anhang 1 behält die Definition, keine Zuweisungsregel (3.4.2, S. 16 f.) | keine |
-| #81 | Modellierung von Prozessen: 265 Controls ohne Kategorie | Christoph-Puppe-Work | unser | (a) 3.4 und 3.4.1, S. 15 f.: verpflichtend aufnehmen, Nichtanwendbarkeit im Status (4.1.1); (b) STM.2.1.5-Guidance im Build unverändert | schließen mit Kommentar |
+| #81 | Modellierung von Prozessen: 265 Controls ohne Kategorie | Christoph-Puppe-Work | unser | (a) 3.4 und 3.4.1, S. 15 f.: verpflichtend aufnehmen, Nichtanwendbarkeit im Status (4.1.1); (b) STM.2.1.5-Guidance im Build unverändert; die Pflichtaufnahme löst die Prozessfrage nicht (DEV: 25 Controls über „Anwendungen", 9 kategorielos) | geschlossen und am 26.10. wieder geöffnet, Kommentar in Abschnitt 3 |
 | #80 | 36 von 95 Methodik-Controls ohne documentation-Prop | Christoph-Puppe-Work | unser | (c) Standard macht keine Aussage zu Props | keine |
 | #79 | CONTRIBUTING.md: AG-Forks archiviert | Christoph-Puppe-Work | unser | (c) | keine |
 | #78 | RISK.1.9 nicht im Anwenderkatalog, Restrisiko nur SOLLTE | Christoph-Puppe-Work | unser | (a) 2.11, S. 11; 4.1.1, S. 18; Kriterium 30, S. 38: Restrisiko-Pflicht mit Leitungsfreigabe; (b) UMS.1.2 SOLLTE, RISK.1.9 nicht importiert | schließen mit Kommentar |
@@ -182,7 +182,15 @@ Zur offenen Frage in den Quick Wins („Status pro Anforderung in 4 Stufen ... v
 
 Durch den BSI-Standard 300-1 (Version 1.0 vom 20.10.2026), Kapitel 4.1.1 (S. 18) entschieden: drei Werte „erfüllt", „nicht erfüllt", „nicht anwendbar", kein „teilweise"; temporäre und dauerhafte Nichterfüllung nach Kapitel 4.1.2. Der Fund betrifft die Guidance zu UMS.1.1, nicht UMS.2.1. Geschlossen.
 
-## 4. Befehle (noch nicht ausgeführt)
+### BSI #81 (wieder geöffnet am 26.10., Datei `bsi-81-reopen.md`)
+
+Wiedereröffnet. Der Standard 300-1 regelt in Kapitel 3.4.1 (S. 16) nur den Weg der kategorielosen Anforderungen ins Anforderungspaket („verpflichtend in das Anforderungspaket aufzunehmen"); die Frage dieses Issues bleibt offen: Welche Prozesse hat ein Informationsverbund, und wie werden die Anforderungen der prozessförmigen Praktiken ausgewählt?
+
+Nachgerechnet am Build 2026-10-22: 265 der 901 Kernel-Controls tragen keine Zielobjektkategorie, darunter REA vollständig (23 von 23), TEST 35 von 36, BER 68 von 92, DET 43 von 82, NOT 25 von 37. Am Beispiel Softwareentwicklung greift keiner der beiden Mechanismen: Von den 34 DEV-Controls hängen 25 an der Kategorie „Anwendungen", die jeder Informationsverbund hat, und 9 tragen keine Kategorie. Ein Verbund ohne eigene Entwicklung bekommt damit alle 34 ins Anforderungspaket und müsste sie nach Kapitel 4.1.1 (S. 18) einzeln mit Begründung als „nicht anwendbar" führen. Dasselbe gilt für Notfallplanung, Vorfallsbehandlung oder Änderungen und Tests, wenn der Prozess außerhalb des Verbunds liegt oder in einem anderen Managementsystem geführt wird.
+
+Der Standard verlagert die Relevanzentscheidung aus der Modellierung (STM.2.1.5) in den Umsetzungsstatus; eine Regel, mit der ein Verbund einen Prozess als nicht vorhanden erklärt, bevor dessen Anforderungen ins Paket fallen, fehlt in beiden. Der Vorschlag bleibt: eine Prozess-Wurzel im Namespace der Zielobjektkategorien oder eine Zuordnung von Praktiken zu Prozessen, sodass die Nichtexistenz eines Prozesses eine einzige begründete Entscheidung ist und nicht 34. Bezug: #116, Punkt A.2.
+
+## 4. Befehle (am 26.10. ausgeführt, ohne die optionalen)
 
 Platzhalter `https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/issues/116` vorher in allen Dateien ersetzen, zum Beispiel mit `sed -i 's#https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/issues/116#https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/issues/NNN#' .../issue-comments/*.md`.
 
