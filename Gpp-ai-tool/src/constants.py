@@ -59,11 +59,11 @@ BSI_2023_PLAIN_JSON_PATH = _ED23_RAW + "BSI_GS_OSCAL_current_2023.json"  # 111 B
 # these two values together (or override both via env), re-run the pin script over the
 # profile directories, and commit the result as one change.
 GPP_CATALOG_PIN_COMMIT = os.environ.get(
-    "GPP_CATALOG_PIN_COMMIT", "a12831136f4122a4c43854622180a24f2576a41e"
+    "GPP_CATALOG_PIN_COMMIT", "160c177db6c84d3c621fff614559943b1de8c600"
 )
 GPP_CATALOG_PIN_SHA256 = os.environ.get(
     "GPP_CATALOG_PIN_SHA256",
-    "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645",
+    "7c3acebd0867724e8fc2e6ce73f942642fcd37e533600e0952699f130a8bca90",
 )
 GPP_KOMPENDIUM_JSON_PATH = (
     "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/"

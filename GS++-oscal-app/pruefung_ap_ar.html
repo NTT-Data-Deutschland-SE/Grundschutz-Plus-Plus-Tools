@@ -561,7 +561,7 @@ gppCollapsibleLog({consoleEl:document.querySelector('.logbox'),
 /* Quelle für die Pin-Übersicht in config.html anmelden (Grundregel 8). */
 gppRegisterSources(GPP_TOOL_ID,[{id:'ed23-anforderungen',label:'G++/ED23 Anforderungen (Hilfsdatei)',
     repo:'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',path:'hilfsdateien/gpp_ed23_anforderungen.json',
-    default:'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/hilfsdateien/gpp_ed23_anforderungen.json'}]);
+    default:'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/7fc5416d987f36dffe27c1fe920cbc8896152854/hilfsdateien/gpp_ed23_anforderungen.json'}]);
 // ============================================================
 // LOG-KONSOLE (fünf Level, ms-Timestamps, Autoscroll, Clear)
 // ============================================================
@@ -664,11 +664,11 @@ const S={
 
 // --- G++-Katalog-Pin (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8) ---
 // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
-const GPP_CATALOG_PIN_COMMIT='a12831136f4122a4c43854622180a24f2576a41e';
-const GPP_CATALOG_PIN_SHA256='27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645';
+const GPP_CATALOG_PIN_COMMIT='160c177db6c84d3c621fff614559943b1de8c600';
+const GPP_CATALOG_PIN_SHA256='7c3acebd0867724e8fc2e6ce73f942642fcd37e533600e0952699f130a8bca90';
 const CATALOG_URL=`https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json`;
 // uuid5(NAMESPACE_URL, CATALOG_URL) — identisch zu den gepinnten Repo-Profilen.
-const GPP_CATALOG_RESOURCE_UUID='afe1c75e-8725-5df2-a57b-235d7d5236f4';
+const GPP_CATALOG_RESOURCE_UUID='c45ef8e9-7d97-5035-b3df-6af73bf31126';
 async function sha256Hex(buf){const d=await crypto.subtle.digest('SHA-256',buf);return Array.from(new Uint8Array(d)).map(b=>b.toString(16).padStart(2,'0')).join('')}
 // Back-matter-Resource für den gepinnten Katalog — feldidentisch zur Ausgabe von scripts/pin_profile_imports.py.
 function pinnedCatalogResource(){return{uuid:GPP_CATALOG_RESOURCE_UUID,title:`Grundschutz++-resolved_catalog.json @ ${GPP_CATALOG_PIN_COMMIT.slice(0,12)}`,rlinks:[{href:CATALOG_URL,hashes:[{algorithm:'SHA-256',value:GPP_CATALOG_PIN_SHA256}]}]}}
@@ -2149,7 +2149,7 @@ function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace
 
 // --- BSI ED2023 Anforderungen (vorberechnet von Gpp-ai-tool, ohne Laufzeit-KI) ---
 let ED23_MAP={};
-const ED23_MAP_URL="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/hilfsdateien/gpp_ed23_anforderungen.json";
+const ED23_MAP_URL="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/7fc5416d987f36dffe27c1fe920cbc8896152854/hilfsdateien/gpp_ed23_anforderungen.json";
 function buildEd23MapFromOscal(doc){if(doc&&doc.gpp_ed23_anforderungen_map)return doc.gpp_ed23_anforderungen_map;const out={},mc=doc&&doc["mapping-collection"];if(!mc)return out;(mc.mappings||[]).forEach(mp=>(mp.maps||[]).forEach(m=>{const src=(m.sources||[])[0];if(!src)return;const cid=src["id-ref"];(m.targets||[]).forEach(t=>{const label=(t.props||[]).find(p=>p.name==="label"||p.name==="title");(out[cid]=out[cid]||[]).push({id:t["id-ref"],name:(label&&label.value)||"",begruendung:m.remarks||"",relationship:m.relationship||""})})}));return out}
 // BSI-GSMap (ED23-UA -> GS++) als zweite, gekennzeichnete Quelle; für die Anzeige je GS++-Control
 // invertiert, subset-of/superset-of auf die Leserichtung GS++ -> ED23 gespiegelt.

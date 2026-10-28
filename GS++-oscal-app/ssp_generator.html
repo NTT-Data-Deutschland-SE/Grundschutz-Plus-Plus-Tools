@@ -908,16 +908,16 @@
         gppRegisterSources(GPP_TOOL_ID, [
             { id: 'c5-katalog', label: 'BSI C5:2026 Katalog', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
               path: 'kataloge/c5-2026-oscal-catalog.json',
-              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/kataloge/c5-2026-oscal-catalog.json' },
+              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/7fc5416d987f36dffe27c1fe920cbc8896152854/kataloge/c5-2026-oscal-catalog.json' },
             { id: 'c3a-katalog', label: 'C3A Katalog', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
               path: 'kataloge/c3a_oscal_catalog.json',
-              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/kataloge/c3a_oscal_catalog.json' },
+              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/7fc5416d987f36dffe27c1fe920cbc8896152854/kataloge/c3a_oscal_catalog.json' },
             { id: 'methodik-profil', label: 'Methodik-Prozessprofil', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
               path: 'Zielobjektkategorien/profile/process/methodik_process_profile.json',
-              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/Zielobjektkategorien/profile/process/methodik_process_profile.json' },
+              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/7fc5416d987f36dffe27c1fe920cbc8896152854/Zielobjektkategorien/profile/process/methodik_process_profile.json' },
             { id: 'ed23-anforderungen', label: 'G++/ED23 Anforderungen (Hilfsdatei)', repo: 'NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools',
               path: 'hilfsdateien/gpp_ed23_anforderungen.json',
-              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/hilfsdateien/gpp_ed23_anforderungen.json' },
+              default: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/7fc5416d987f36dffe27c1fe920cbc8896152854/hilfsdateien/gpp_ed23_anforderungen.json' },
         ]);
 
         // --- CONFIG & STATE ---
@@ -927,11 +927,11 @@
         // Gleiche Werte wie Gpp-ai-tool/src/constants.py und die gepinnten Repo-Profile.
         // Bewusst NICHT über gppSource umleitbar: SHA-256 und resource-uuid (uuid5 der
         // URL) sind hier fest verdrahtet — ein Repin würde Hash und Inhalt auseinanderziehen.
-        const GPP_CATALOG_PIN_COMMIT = 'a12831136f4122a4c43854622180a24f2576a41e';
-        const GPP_CATALOG_PIN_SHA256 = '27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645';
+        const GPP_CATALOG_PIN_COMMIT = '160c177db6c84d3c621fff614559943b1de8c600';
+        const GPP_CATALOG_PIN_SHA256 = '7c3acebd0867724e8fc2e6ce73f942642fcd37e533600e0952699f130a8bca90';
         const CATALOG_URL_BASE = `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${GPP_CATALOG_PIN_COMMIT}/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json`;
         // uuid5(NAMESPACE_URL, CATALOG_URL_BASE) — identisch zu den gepinnten Repo-Profilen.
-        const GPP_CATALOG_RESOURCE_UUID = 'afe1c75e-8725-5df2-a57b-235d7d5236f4';
+        const GPP_CATALOG_RESOURCE_UUID = 'c45ef8e9-7d97-5035-b3df-6af73bf31126';
 
         async function sha256Hex(buf) {
             const d = await crypto.subtle.digest('SHA-256', buf);
@@ -941,11 +941,11 @@
            Repo mit 24-h-Cache statt einer contents-Anfrage je Verzeichnis. */
         const GPP_REPO_OWNER = 'NTT-Data-Deutschland-SE';
         const GPP_REPO_NAME = 'Grundschutz-Plus-Plus-Tools';
-        const GPP_TOOLS_PIN_COMMIT = '6392ea770379c7377707c355b57a850f6a8fb291';
+        const GPP_TOOLS_PIN_COMMIT = '7fc5416d987f36dffe27c1fe920cbc8896152854';
         const SDT_REPO_OWNER = 'BSI-Bund';
         const SDT_REPO_NAME = 'Stand-der-Technik-Bibliothek';
         // BSI implementation_layer: fertige Component-Definitions (Keycloak, Netzarchitektur, ...)
-        const SDT_PIN_COMMIT = 'a12831136f4122a4c43854622180a24f2576a41e';
+        const SDT_PIN_COMMIT = '160c177db6c84d3c621fff614559943b1de8c600';
         const PRAKTIKEN_FILE_SUFFIX = '_process_profile.json';
 
         // Praktik-Kürzel → Begriff. Fallback für die Anzeige, falls der Basis-Katalog (mit
@@ -963,8 +963,8 @@
 
         /* Pin-Override aus config.html (gppSource) gilt für das registrierte
            Standard-Profil; das Enhanced-Profil folgt demselben Commit. */
-        const METHODIK_URL_STANDARD_DEFAULT = 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/Zielobjektkategorien/profile/process/methodik_process_profile.json';
-        const METHODIK_URL_ENHANCED_DEFAULT = 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/Zielobjektkategorien/profile/process/methodik_process_profile_enhanced.json';
+        const METHODIK_URL_STANDARD_DEFAULT = 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/7fc5416d987f36dffe27c1fe920cbc8896152854/Zielobjektkategorien/profile/process/methodik_process_profile.json';
+        const METHODIK_URL_ENHANCED_DEFAULT = 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/7fc5416d987f36dffe27c1fe920cbc8896152854/Zielobjektkategorien/profile/process/methodik_process_profile_enhanced.json';
         const METHODIK_URL_STANDARD = gppSource('methodik-profil', METHODIK_URL_STANDARD_DEFAULT);
         const METHODIK_URLS = {
             standard: METHODIK_URL_STANDARD,
@@ -985,12 +985,12 @@
             {
                 name: 'C5:2026 OSCAL Katalog',
                 sourceId: 'c5-katalog',
-                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/kataloge/c5-2026-oscal-catalog.json'
+                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/7fc5416d987f36dffe27c1fe920cbc8896152854/kataloge/c5-2026-oscal-catalog.json'
             },
             {
                 name: ' C3A - Criteria enabling Cloud Computing Autonomy',
                 sourceId: 'c3a-katalog',
-                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/kataloge/c3a_oscal_catalog.json'
+                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/7fc5416d987f36dffe27c1fe920cbc8896152854/kataloge/c3a_oscal_catalog.json'
             }
         ];
 
@@ -1018,16 +1018,16 @@
         /* Gepinnte Mindeststandard-Profile (Ordner mindeststandards/, erzeugt mit „Mindeststandard → OSCAL“):
            Commit + SHA-256 je Profil, nie Branch. Die Datei kommt vom Pin-Commit und muss den Hash treffen,
            sonst wird nichts übernommen. Neue Exporte: Commit und Hashes hier nachziehen (check_pins.py prüft SHA-256-Konstanten). */
-        const MST_PIN_COMMIT = '6392ea770379c7377707c355b57a850f6a8fb291'; // Release 4.3, Commit 1 (umgepinnte Staende), 16.10.2026
+        const MST_PIN_COMMIT = '7fc5416d987f36dffe27c1fe920cbc8896152854'; // Release 4.3, Commit 1 (umgepinnte Staende), 16.10.2026
         const MST_PINNED = [
-            { file: 'mindeststandard-hv-2.0.profile.json', kurz: 'HV', version: '2.0', stand: '11/2023', title: "Mindeststandard des BSI zum HV-Benchmark kompakt 5.0 (Version 2.0)", sha256: 'c33832867686d71be5c19f7eeb0aba65dfdbcad52699b4e16745304d5f9e189a' },
-            { file: 'mindeststandard-isms_itkb-1.0a.profile.json', kurz: 'ISMS ITKB', version: '1.0a', stand: '07/2025', title: "Regelungsdokument für das Informationssicherheitsmanagementsystem in der IT-Konsolidierung Bund (Mindeststandard ISMS ITKB) (Version 1.0a)", sha256: '792ff6bca79d346e3f671088a8891449fe415106c0461578a5c539477be6981a' },
-            { file: 'mindeststandard-mdm-2.0.profile.json', kurz: 'MDM', version: '2.0', stand: '09/2022', title: "Mindeststandard des BSI für Mobile Device Management (Version 2.0)", sha256: 'e1e1076fb5a16434fe4e763df6164c33401bebc3f9db4fd834840dc0bfdf0288' },
-            { file: 'mindeststandard-ncd-2.1.profile.json', kurz: 'NCD', version: '2.1', stand: '12/2022', title: "Mindeststandard des BSI zur Nutzung externer Cloud-Dienste (Version 2.1)", sha256: 'a5ccf050363246c3a7e246a60365c920aca943ad6107ae2aa380e46f25ca10e4' },
-            { file: 'mindeststandard-pd-2.1.profile.json', kurz: 'PD', version: '2.1', stand: '11/2024', title: "Mindeststandard des BSI zur Protokollierung und Detektion von Cyber-Angriffen (Version 2.1)", sha256: '114b6bf5cc86e81a4c80db18e879cbe11c0fd91844242b3315d761c02c120eb8' },
-            { file: 'mindeststandard-tls-2.4.profile.json', kurz: 'TLS', version: '2.4', stand: '05/2023', title: "Mindeststandard des BSI zur Verwendung von Transport Layer Security (TLS) (Version 2.4)", sha256: '320e47a07854d088fdd8d9ff858c640b7751b10a6a38840918710d6ce3cf996f' },
-            { file: 'mindeststandard-vk-1.0.profile.json', kurz: 'VK', version: '1.0', stand: '10/2021', title: "Mindeststandard des BSI für Videokonferenzdienste (Version 1.0)", sha256: '1cc6c789d87bc44b31fca80c0f2e43dd00811107fd7d78650d9fb127dd30f87d' },
-            { file: 'mindeststandard-wb-3.0.profile.json', kurz: 'WB', version: '3.0', stand: '02/2024', title: "Mindeststandard des BSI für Webbrowser (Version 3.0)", sha256: '675826e54a9fa6307e24d1ebe2d3031e372bf7bc316d4ee57f65c3a1b9b10fe3' }
+            { file: 'mindeststandard-hv-2.0.profile.json', kurz: 'HV', version: '2.0', stand: '11/2023', title: "Mindeststandard des BSI zum HV-Benchmark kompakt 5.0 (Version 2.0)", sha256: '4a8c86b67da9b697d0610fae8a8ef2900fe1dd65bb0a3bd14934ea8a3c1e6159' },
+            { file: 'mindeststandard-isms_itkb-1.0a.profile.json', kurz: 'ISMS ITKB', version: '1.0a', stand: '07/2025', title: "Regelungsdokument für das Informationssicherheitsmanagementsystem in der IT-Konsolidierung Bund (Mindeststandard ISMS ITKB) (Version 1.0a)", sha256: '7ee1b40c0e190701824a5a60e89c570a41061c71c4e78a230c6e58d77857f412' },
+            { file: 'mindeststandard-mdm-2.0.profile.json', kurz: 'MDM', version: '2.0', stand: '09/2022', title: "Mindeststandard des BSI für Mobile Device Management (Version 2.0)", sha256: 'd80cb484cca0585a2a8d286a5d646a9c2938c1331a169581c105e474feeb5291' },
+            { file: 'mindeststandard-ncd-2.1.profile.json', kurz: 'NCD', version: '2.1', stand: '12/2022', title: "Mindeststandard des BSI zur Nutzung externer Cloud-Dienste (Version 2.1)", sha256: '5f7309f6ea823cb79ff7c16a69c059390a85223103bb0a5e1035828ce463696f' },
+            { file: 'mindeststandard-pd-2.1.profile.json', kurz: 'PD', version: '2.1', stand: '11/2024', title: "Mindeststandard des BSI zur Protokollierung und Detektion von Cyber-Angriffen (Version 2.1)", sha256: 'dd79582373251b15ce90a0f03f0b38d54535dafdd9f9a7e3ec590ae779edf9d1' },
+            { file: 'mindeststandard-tls-2.4.profile.json', kurz: 'TLS', version: '2.4', stand: '05/2023', title: "Mindeststandard des BSI zur Verwendung von Transport Layer Security (TLS) (Version 2.4)", sha256: 'fa984d29914c8788bd3e7043571db4eda423d38c1e53a2f9015fbc5eed5cafc0' },
+            { file: 'mindeststandard-vk-1.0.profile.json', kurz: 'VK', version: '1.0', stand: '10/2021', title: "Mindeststandard des BSI für Videokonferenzdienste (Version 1.0)", sha256: 'b45f7e9e2f19f05ae86dc7b4341346e496202bffab3692936fb2ff7797c740a1' },
+            { file: 'mindeststandard-wb-3.0.profile.json', kurz: 'WB', version: '3.0', stand: '02/2024', title: "Mindeststandard des BSI für Webbrowser (Version 3.0)", sha256: '1199a8a2af8819a8582f31548bd429189f9903e7063cc1e59789526ba999c522' }
         ];
 
         const OSCAL_NAMESPACES = {
@@ -1648,7 +1648,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         // --- BSI ED2023 Anforderungen (vorberechnet von Gpp-ai-tool, ohne Laufzeit-KI) ---
         let ED23_MAP = {};
         // Pin-Override aus config.html (gppSource); nur Anzeigedaten, kein Export-Pin.
-        const ED23_MAP_URL = gppSource('ed23-anforderungen', "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/hilfsdateien/gpp_ed23_anforderungen.json");
+        const ED23_MAP_URL = gppSource('ed23-anforderungen', "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/7fc5416d987f36dffe27c1fe920cbc8896152854/hilfsdateien/gpp_ed23_anforderungen.json");
         // Flatten an OSCAL 1.2.2 mapping-collection (or the legacy bespoke map) into
         // { controlId: [{id, name, begruendung}] } for the ED23 panel.
         function buildEd23MapFromOscal(doc) {
@@ -1671,7 +1671,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
         let BSI_ITGS_MAP = {};
         // Pin des BSI-GSMap ITGS→GS++ auf denselben Commit wie der Katalog; der SHA-256
         // wird beim Laden geprueft (Grundregel 8, gilt auch fuers Mapping).
-        const BSI_ITGS_MAP_PIN_COMMIT = 'a12831136f4122a4c43854622180a24f2576a41e';
+        const BSI_ITGS_MAP_PIN_COMMIT = '160c177db6c84d3c621fff614559943b1de8c600';
         const BSI_ITGS_MAP_PIN_SHA256 = 'df7ea11261ace956a3ebb440f60928851a4815f5545775ac9b24e4d3d22f267f';
         const BSI_ITGS_MAP_URL = `https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/${BSI_ITGS_MAP_PIN_COMMIT}/control_layer/Mappings/IT-GS2023-zu-GSpp/ITGS-to-GS%2B%2B-mapping_collection.json`;
         function buildBsiItgsMapFromOscal(doc) {

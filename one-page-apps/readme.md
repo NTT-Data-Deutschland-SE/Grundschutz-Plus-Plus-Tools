@@ -150,7 +150,7 @@ zugeordnet sind, und dann flach eingefügt. Der Export prüft offene
 Anforderungen, Parameter ohne Wert, SOLLTE-Controls unter MUSS-Anforderungen
 ohne Anhebung, fragliche Checker-Urteile, neue Controls ohne Praktik und
 zielobjektbezogene neue Controls ohne Zielobjektkategorie.
-Quellen: Anwenderkatalog und GSMap sind auf den Commit `a128311` gepinnt und
+Quellen: Anwenderkatalog und GSMap sind auf den Commit `160c177d` gepinnt und
 werden per SHA-256 geprüft; ein anderer Katalogstand geht nur per Datei und
 wird in der Back-Matter als solcher ausgewiesen. Arbeitsstände liegen als
 Autosave im `localStorage` und als JSON-Datei. Bei CORS-Fehlern über `file://`
