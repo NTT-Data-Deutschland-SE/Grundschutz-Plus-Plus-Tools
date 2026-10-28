@@ -56,7 +56,7 @@ Einzelwerkzeuge in `one-page-apps/`: eigenständig, ohne `gpp-core.js`, von der 
 ## Hinweise zum Umstieg
 
 - **Einmal mit Strg+F5 laden.** Kern und Stylesheet sind unverändert.
-- Die Selbst-Pins (`GPP_TOOLS_PIN_COMMIT`, `MST_PIN_COMMIT`, `GPPT_PIN`) zeigen auf Commit 1 dieses Releases, den Stand mit den umgepinnten Profilen (zweiter Commit „Selbst-Pin auf …“).
+- Die Selbst-Pins (`GPP_TOOLS_PIN_COMMIT`, `MST_PIN_COMMIT`, `GPPT_PIN`) zeigen auf `7fc5416`, Commit 1 dieses Releases mit den umgepinnten Profilen (zweiter Commit „Selbst-Pin auf 7fc5416“, ZIP neu gebaut).
 - Neu erzeugte Profile, SSPs, Prüfpläne und POA&Ms nennen in ihrer Back-Matter die neue Katalog-Resource (URL mit `160c177d`, SHA-256 `7c3acebd…`, UUID `c45ef8e9…`). Ältere Dateien verweisen weiter auf den Stand `a1283113`, der unter seiner Commit-URL erreichbar bleibt.
 - Wer den MDM-Stand nutzt: BER.5.2 heißt jetzt „Zurücksetzung und Ersetzung von Authentifizierungsmitteln“; die Zuordnungen MDM.2.2.04 a/b und MDM.2.6.18 a hängen unverändert daran.
 - Die Auslieferung bleibt `GS++-oscal-app.zip` (zwölf Dateien); eine einzelne HTML-Datei allein läuft nicht.

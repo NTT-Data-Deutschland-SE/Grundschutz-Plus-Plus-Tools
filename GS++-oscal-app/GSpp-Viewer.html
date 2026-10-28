@@ -588,10 +588,10 @@
                 <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/160c177db6c84d3c621fff614559943b1de8c600/control_layer/Grundschutz%2B%2B/sources/catalogs/Methodik-Grundschutz%2B%2B/BSI-Methodik-Grundschutz%2B%2B-catalog.json">Methodik (GS++)</option>
                 <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/160c177db6c84d3c621fff614559943b1de8c600/control_layer/Kernel/BSI-Stand-der-Technik-Kernel-catalog.json">Kernel (SdT)</option>
                 <option value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/160c177db6c84d3c621fff614559943b1de8c600/control_layer/Risikomanagement/BSI-Anforderungen-zum-Risikomanagement-catalog.json">Risikomanagement</option>
-                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/kataloge/c5-2026-oscal-catalog.json">C5:2026</option>
-                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/kataloge/c3a_oscal_catalog.json">C3A - Criteria enabling Cloud Computing Autonomy</option>
-                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/beispiel-kataloge/kritis_oscal_catalog.json">KRITIS (Beispiel, Test-Katalog)</option>
-                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/beispiel-kataloge/dsgvo_oscal_catalog.json">DSGVO (Beispiel, Test-Katalog)</option>
+                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/7fc5416d987f36dffe27c1fe920cbc8896152854/kataloge/c5-2026-oscal-catalog.json">C5:2026</option>
+                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/7fc5416d987f36dffe27c1fe920cbc8896152854/kataloge/c3a_oscal_catalog.json">C3A - Criteria enabling Cloud Computing Autonomy</option>
+                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/7fc5416d987f36dffe27c1fe920cbc8896152854/beispiel-kataloge/kritis_oscal_catalog.json">KRITIS (Beispiel, Test-Katalog)</option>
+                <option value="https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/7fc5416d987f36dffe27c1fe920cbc8896152854/beispiel-kataloge/dsgvo_oscal_catalog.json">DSGVO (Beispiel, Test-Katalog)</option>
             </select>
 
             <input type="text" id="urlInput" class="filter-select" placeholder="URL zum OSCAL-Katalog..." value="https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/160c177db6c84d3c621fff614559943b1de8c600/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json">
@@ -675,7 +675,7 @@
         /* Quellen für die Pin-Übersicht in config.html anmelden. Gepinnt ist der
            Normalfall (Grundregel 8); die Update-Prüfung sitzt in config.html. */
         const STDT_PIN = '160c177db6c84d3c621fff614559943b1de8c600';
-        const GPPT_PIN = '6392ea770379c7377707c355b57a850f6a8fb291';
+        const GPPT_PIN = '7fc5416d987f36dffe27c1fe920cbc8896152854';
         const GPP_SOURCES = [
             { id: 'methodik-katalog', label: 'G++ Methodik-Katalog', repo: 'BSI-Bund/Stand-der-Technik-Bibliothek',
               path: 'control_layer/Grundschutz++/sources/catalogs/Methodik-Grundschutz++/BSI-Methodik-Grundschutz++-catalog.json',
@@ -905,7 +905,7 @@
         // Vorberechnetes Mapping G++-Control -> passende BSI ED2023-Anforderungen
         // (erzeugt von Gpp-ai-tool stage_ed23_anforderungen, statt zur Laufzeit per KI).
         let ED23_MAP = {};
-        const ED23_MAP_URL = "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/hilfsdateien/gpp_ed23_anforderungen.json";
+        const ED23_MAP_URL = "https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/7fc5416d987f36dffe27c1fe920cbc8896152854/hilfsdateien/gpp_ed23_anforderungen.json";
         // Flatten an OSCAL 1.2.2 mapping-collection (or the legacy bespoke map) into
         // { controlId: [{id, name, begruendung, relationship}] } for the ED23 panel.
         function buildEd23MapFromOscal(doc) {
