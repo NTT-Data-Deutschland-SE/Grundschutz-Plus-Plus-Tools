@@ -1,0 +1,1317 @@
+{
+  "profile": {
+    "uuid": "24cc825c-6106-5549-ae58-03c18f8e1504",
+    "metadata": {
+      "title": "NG SYS.1.10 – Server unter OpenBSD (Hostsysteme)",
+      "last-modified": "2026-10-19T01:04:35.044328+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "NG"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "SYS.1.10"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Server unter OpenBSD"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Hostsysteme"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "system"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, SYS.1.10, NG, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein SYS.1.10 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe, NG-Baustein)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (Text des nutzergenerierten Bausteins (NG, NTT DATA), kein BSI-Text); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls."
+    },
+    "imports": [
+      {
+        "href": "#afe1c75e-8725-5df2-a57b-235d7d5236f4",
+        "include-controls": [
+          {
+            "with-ids": [
+              "ARCH.8.1",
+              "ARCH.8.3",
+              "ASST.2.3.1",
+              "ASST.5.2",
+              "BER.6.4",
+              "DET.3.1.1",
+              "DET.3.1.6",
+              "DET.4.9",
+              "DET.5.10",
+              "DEV.2.3",
+              "KONF.2.1",
+              "KONF.2.4",
+              "KONF.3.2",
+              "KONF.4.3",
+              "KONF.4.4",
+              "KONF.7.10",
+              "KONF.7.13",
+              "KONF.7.15",
+              "KONF.7.9",
+              "KONF.8.1.1",
+              "TEST.3.1.2",
+              "TEST.3.1.3"
+            ]
+          }
+        ]
+      }
+    ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "SYS.1.10-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "SYS.1.10.A1",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.10.A1 Planung des Servereinsatzes unter OpenBSD",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.10.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.10.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Vor der Installation MUSS eine Planung erfolgen, für welche konkreten Aufgaben der OpenBSD-Server eingesetzt werden soll. Es MUSS festgelegt werden, welche Dienste und Drittanbieter-Software für den Betrieb zwingend erforderlich sind."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.2.1",
+                          "ASST.2.3.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.10.A2",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.10.A2 Gesicherte und minimalistische Installation",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.10.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.10.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Die Installation des Betriebssystems MUSS von einem kryptografisch verifizierten Installationsmedium (z. B. via signify) erfolgen. Während der Installation DÜRFEN ausschließlich die für den Einsatzzweck zwingend benötigten Dateisets ausgewählt werden. Für das lokale Administrator-Konto (root) MUSS ein sicheres Passwort vergeben werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "TEST.3.1.3",
+                          "KONF.2.4",
+                          "BER.6.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.10.A3",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.10.A3 Regelmäßiges Einspielen von Sicherheitspatches",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.10.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.10.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS ein Prozess etabliert werden, der sicherstellt, dass bereitgestellte Sicherheitspatches für das OpenBSD-Basissystem zeitnah und systematisch (z. B. unter Nutzung des Werkzeugs syspatch) eingespielt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.5.10",
+                          "KONF.8.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.10.A4",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.10.A4 Aktivierung und Basiskonfiguration der Firewall",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.10.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.10.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Die systemeigene Paketfilter-Firewall MUSS aktiviert werden. In der zugehörigen Regelbasis MUSS eine \"Default Deny\"-Strategie umgesetzt sein, bei der jeglicher Netzwerkverkehr standardmäßig blockiert und nur explizit benötigter Datenverkehr erlaubt wird."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.7.15"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.10.A5",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.10.A5 Absicherung des administrativen Fernzugriffs",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.10.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.10.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Der Secure-Shell-Dienst (SSH) MUSS so konfiguriert werden, dass eine direkte Anmeldung des root-Benutzers unterbunden ist. Die passwortbasierte Authentifizierung MUSS serverseitig deaktiviert sein; stattdessen MUSS für den administrativen Fernzugriff ein schlüsselbasiertes kryptografisches Verfahren erzwungen werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.4.3",
+                          "KONF.4.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.10.A6",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.10.A6 Kontrollierte Installation von Drittanbieter-Software",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.10.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.10.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Software, die nicht Teil des auditierten OpenBSD-Basissystems ist, DARF ausschließlich über die offiziellen Paketquellen (Packages/Ports) aus vertrauenswürdigen Repositories installiert werden. Es DARF nur Software installiert werden, die für den definierten Einsatzzweck des Servers zwingend erforderlich ist."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.7.9",
+                          "TEST.3.1.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ASST.2.3.1",
+                    "rel": "related",
+                    "text": "ASST.2.3.1 steht unter SYS.1.10.A1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "SYS.1.10-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "SYS.1.10.A7",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.10.A7 Systematische Release-Upgrades",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.10.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.10.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS ein Prozess etabliert werden, um die halbjährlichen Release-Upgrades des OpenBSD-Projekts zeitnah durchzuführen. Es MUSS sichergestellt werden, dass ausschließlich Versionen betrieben werden, für die das Projekt noch offiziellen Support und Sicherheitsaktualisierungen anbietet."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.5.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.10",
+                    "rel": "related",
+                    "text": "DET.5.10 steht unter SYS.1.10.A3"
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.10.A8",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.10.A8 Konsequente Deaktivierung nicht benötigter Dienste",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.10.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.10.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Alle im Basissystem enthaltenen, aber für den spezifischen Einsatzzweck des Servers nicht benötigten Hintergrunddienste und Daemons MÜSSEN dauerhaft deaktiviert werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.2.4",
+                    "rel": "related",
+                    "text": "KONF.2.4 steht unter SYS.1.10.A2"
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.10.A9",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.10.A9 Härtung der Dateisysteme",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.10.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.10.A9_anforderung",
+                    "name": "overview",
+                    "prose": "Für die eingebundenen Dateisysteme MÜSSEN restriktive und sicherheitsrelevante Mount-Optionen konfiguriert werden. Insbesondere MÜSSEN Partitionen (z. B. /tmp, /var oder /home) mit den Optionen nodev, nosuid und noexec eingebunden werden, sofern dies technisch umsetzbar ist."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.7.10"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.10.A10",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.10.A10 Konfiguration der Systemprotokollierung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.10.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.10.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Der Systemprotokollierungsdienst MUSS so konfiguriert werden, dass sicherheitsrelevante Ereignisse, Authentifizierungsversuche und Firewall-Logs umfassend erfasst werden. Die Protokolldaten MÜSSEN an ein zentrales Log-Management-System weitergeleitet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.3.1.1",
+                          "DET.3.1.6"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "SYS.1.10-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "SYS.1.10.A11",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.10.A11 Einsatz von Festplattenverschlüsselung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.10.A11"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.10.A11_anforderung",
+                    "name": "overview",
+                    "prose": "Datenträger mit sensiblen Informationen MÜSSEN mit der in das Betriebssystem integrierten Verschlüsselung (z. B. softraid) verschlüsselt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.3.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.10.A12",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.10.A12 Hochverfügbarkeit für sicherheitskritische Netzwerkkomponenten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.10.A12"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.10.A12_anforderung",
+                    "name": "overview",
+                    "prose": "Für sicherheitskritische Netzwerkkomponenten MUSS ein hochverfügbarer Cluster (z. B. mittels CARP und pfsync) aufgebaut werden, um eine redundante und ausfallsichere Funktion sicherzustellen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.8.1",
+                          "ARCH.8.3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.10.A13",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.10.A13 Nutzung erweiterter Sicherheitsmechanismen für eigene Anwendungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.10.A13"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Entwickler"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.10.A13_anforderung",
+                    "name": "overview",
+                    "prose": "Werden auf dem System eigene Anwendungen oder komplexe Skripte entwickelt und betrieben, MÜSSEN diese so konzipiert oder angepasst werden, dass sie die systemeigenen Sicherheitsmechanismen zur Einschränkung von Systemaufrufen (z. B. pledge) und zur Limitierung des sichtbaren Dateisystems (z. B. unveil) nutzen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "KONF.7.13",
+                          "DEV.2.3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.10.A14",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.10.A14 Erstellung eines gehärteten, angepassten Kernels",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.10.A14"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.10.A14_anforderung",
+                    "name": "overview",
+                    "prose": "Für Systeme mit maximalen Schutzanforderungen MUSS ein eigener, minimierter Kernel kompiliert werden. Dabei MÜSSEN alle nicht zwingend benötigten Treiber, Protokolle und Funktionalitäten entfernt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#KONF.2.4",
+                    "rel": "related",
+                    "text": "KONF.2.4 steht unter SYS.1.10.A2"
+                  }
+                ]
+              },
+              {
+                "id": "SYS.1.10.A15",
+                "class": "ed23-anforderung",
+                "title": "SYS.1.10.A15 Regelmäßige Überprüfung der Systemintegrität",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "SYS.1.10.A15"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "SYS.1.10.A15_anforderung",
+                    "name": "overview",
+                    "prose": "Die Integrität der Dateien des Basissystems MUSS regelmäßig überwacht werden, indem die kryptografischen Prüfsummen der installierten Dateien gegen die offiziellen Signaturen des jeweiligen Releases abgeglichen werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.4.9"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "back-matter": {
+      "resources": [
+        {
+          "uuid": "afe1c75e-8725-5df2-a57b-235d7d5236f4",
+          "title": "Grundschutz++-resolved_catalog.json @ a12831136f41",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/a12831136f4122a4c43854622180a24f2576a41e/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "ARCH.8.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A12",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): ARCH.8.1 fordert die Installation redundanter Netzkomponenten im Kernnetz, was den Aufbau eines hochverfügbaren Clusters für sicherheitskritische Netzwerkkomponenten abdeckt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.8.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A12",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Soweit das OpenBSD-Hostsystem selbst als Netzwerkdienst-Server betrieben wird, deckt ARCH.8.3 die redundante Installation erforderlicher Hostsysteme ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.2.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Die Festlegung zwingend erforderlicher Drittanbieter-Software entspricht der Autorisierung von Anwendungen auf IT-Systemen."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): ASST.2.3.1 verlangt die Autorisierung der Nutzung von Anwendungen auf IT-Systemen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.5.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A7",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz niedrig, Checker bestaetigt): ASST.5.2 fordert geregelte Wartungen für IT-Systeme, worunter auch Release-Upgrades fallen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.6.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A2",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): BER.6.4 fordert Kriterien für die Qualität von Passwörtern, was die Vergabe eines sicheren Passworts für das lokale Administrator-Konto (S3) abdeckt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): DET.3.1.1 deckt die Protokollierung von erfolgreichen und fehlgeschlagenen Authentifizierungen auf IT-Systemen ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker fraglich): DET.3.1.6 ermöglicht über den Parameter die Protokollierung systemspezifischer Ereignisse wie Firewall-Logs."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.9",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A15",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker fraglich): DET.4.9 sieht die regelmäßige Überprüfung des IT-Systems auf Manipulationsversuche vor, was durch den regelmäßigen Abgleich kryptografischer Prüfsummen der Systemdateien gegen offizielle Release-Signaturen umgesetzt wird."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.10",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A3",
+                  "remarks": "Herkunft: KI-Vorschlag (equivalent-to, Konfidenz hoch, Checker bestaetigt): DET.5.10 fordert die Verankerung eines zeitnahen Patchmanagements, was dem Prozess zum zeitnahen und systematischen Einspielen von Sicherheitspatches entspricht."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A7",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): DET.5.10 fordert ein zeitnahes Patchmanagement, deckt jedoch die ausschließliche Nutzung unterstützter Betriebssystem-Releases (End-of-Life-Management) nicht explizit ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DEV.2.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A13",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker fraglich): DEV.2.3 verlangt in der Entwicklung die Konzeption von Anwendungen zur Ausführung mit geringstmöglichen Berechtigungen, was den Einbau von Mechanismen wie pledge und unveil in eigene Anwendungen trägt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Die Festlegung der für den Betrieb erforderlichen Dienste und Drittanbieter-Software vor der Installation ist Teil der dokumentierten Grundkonfiguration eines Systems."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A2",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): KONF.2.4 fordert die Deaktivierung nicht benötigter Systemfunktionen, was die Beschränkung auf zwingend benötigte Dateisets bei der Installation (S2) trägt."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A8",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker bestaetigt): Die Deaktivierung nicht benötigter Hintergrunddienste und Daemons ist ein direkter Anwendungsfall der Deaktivierung nicht benötigter Systemfunktionen gemäß KONF.2.4."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A14",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker fraglich): KONF.2.4 fordert die Deaktivierung nicht benötigter Systemfunktionen; das Kompilieren eines minimierten Kernels ohne unnötige Treiber, Protokolle und Funktionalitäten ist eine spezifische technische Ausprägung dieser Anforderung."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.3.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A11",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker fraglich): KONF.3.2 fordert die Verschlüsselung integrierter Festspeichermedien von IT-Systemen, was der geforderten Festplattenverschlüsselung für Datenträger mit sensiblen Informationen entspricht."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.4.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A5",
+                  "remarks": "Herkunft: KI-Vorschlag (subset-of, Konfidenz hoch, Checker bestaetigt): KONF.4.3 fordert die Authentifizierung von Fernwartungsfunktionen im Einklang mit dem Identitäts- und Berechtigungsmanagement."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.4.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A5",
+                  "remarks": "Herkunft: KI-Vorschlag (subset-of, Konfidenz hoch, Checker fraglich): KONF.4.4 fordert die Einschränkung von Fernwartungsfunktionen, worunter das Unterbinden der direkten root-Anmeldung über SSH fällt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.7.10",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Die Mount-Option noexec dient der Einschränkung der Ausführung von Anwendungen auf bestimmten Partitionen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.7.13",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A13",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker bestaetigt): KONF.7.13 adressiert unmittelbar die Einschränkung von Systemaufrufen pro Anwendung (wie durch pledge unter OpenBSD)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.7.15",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A4",
+                  "remarks": "Herkunft: KI-Vorschlag (equivalent-to, Konfidenz hoch, Checker fraglich): KONF.7.15 verlangt eine lokale Firewall zur Einschränkung ein- und ausgehender Netzverbindungen auf IT-Systemen, was die Aktivierung des Paketfilters und die Beschränkung auf explizit benötigten Verkehr vollständig abdeckt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.7.9",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz hoch, Checker fraglich): KONF.7.9 fordert die Einschränkung der Installation von Anwendungen auf IT-Systemen, was die Beschränkung auf erforderliche Software und vertrauenswürdige Paketquellen abdeckt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.8.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A3",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): KONF.8.1.1 adressiert die automatische Installation von Sicherheitsupdates auf IT-Systemen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "TEST.3.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): TEST.3.1.2 untersagt die Einbindung externer Softwareartefakte aus unzuverlässigen oder unbekannten Quellen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "TEST.3.1.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "SYS.1.10.A2",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): TEST.3.1.3 verlangt das Testen der Integrität von Softwareartefakten, was die kryptografische Verifikation des Installationsmediums (S1) abdeckt."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

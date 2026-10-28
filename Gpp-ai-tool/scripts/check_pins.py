@@ -49,7 +49,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 UA = f"check-pins/{VERSION}"
 
 SELF_REPO = "NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools"
@@ -60,7 +60,7 @@ SELF_REPO = "NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools"
 # (wird aus dem Ordner gebaut, traegt dieselben Pins).
 # hilfsdateien/ und QS/fixtures/ sind Provenienz: sie halten fest, gegen welchen Stand sie
 # entstanden sind (QS-Fixtures: Analyse-Payloads der Messlaeufe), und werden nie umgepinnt.
-SKIP_DIRS = {".git", ".claude", "hilfsdateien", "fixtures", "node_modules", "__pycache__"}
+SKIP_DIRS = {".git", ".claude", "hilfsdateien", "fixtures", "node_modules", "__pycache__", ".venv", "venv", ".cache", ".pytest_cache"}
 SKIP_SUFFIXES = {".zip", ".png", ".jpg", ".pdf", ".pyc", ".docx", ".xlsx"}
 SKIP_NAMES = {"RELEASE_NOTES_v3.0.md", "RELEASE_NOTES_v4.0.md"}
 
@@ -76,6 +76,18 @@ BARE_CONST = re.compile(
 SHA256_CONST = re.compile(
     r"(?P<name>[A-Z][A-Z0-9_]*PIN[A-Z0-9_]*SHA256[A-Z0-9_]*)\s*[:=]\s*[\"']?(?P<hash>[0-9a-f]{64})\b"
 )
+
+# Quellen, deren URL im Code nur als f-String aus einer PIN-Konstante entsteht (constants.py)
+# und daher vom RAW_URL-Scan erst in generierten Artefakten gefunden wird. Sie werden aus der
+# nackten Konstante registriert, damit Upstream-Vergleich und SHA-256-Pruefung immer laufen.
+KNOWN_SOURCES = [
+    ("NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL",
+     "BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json", "ED23_CATALOG_PIN_COMMIT"),
+    ("NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL",
+     "BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023.json", "ED23_CATALOG_PIN_COMMIT"),
+    ("BSI-Bund/Stand-der-Technik-Bibliothek",
+     "control_layer/Mappings/IT-GS2023-zu-GSpp/ITGS-to-GS++-mapping_collection.json", "ITGS_PIN_COMMIT"),
+]
 
 # Props/Felder, deren Aenderung kosmetisch ist (Rotation je Publikation).
 COSMETIC_PROP_NAMES = {"alt-identifier"}
@@ -143,7 +155,9 @@ def scan(root: Path) -> tuple[dict, list[BareConst], list[HashConst]]:
             continue
         rel = p.relative_to(root).as_posix()
         for m in RAW_URL.finditer(text):
-            path = urllib.parse.unquote(m["path"])
+            # Fragment-Links (…catalog.json#KONF.1.1, rel="related" der Ergaenzungskataloge)
+            # zeigen auf dieselbe gepinnte Datei; das Fragment ist kein Upstream-Pfad.
+            path = urllib.parse.unquote(m["path"]).split("#", 1)[0]
             src = sources.setdefault((m["repo"], path), Source(m["repo"], path))
             src.pins[m["sha"]].add(rel)
             src.count += 1
@@ -344,6 +358,13 @@ def main(argv=None) -> int:
     root = args.root or Path(__file__).resolve().parents[2]
     cache = args.cache or Path(os.environ.get("TEMP") or "/tmp") / "check_pins"
     sources, bare, hashes = scan(root)
+    for repo, path, const in KNOWN_SOURCES:
+        for b in bare:
+            if b.name == const:
+                src = sources.setdefault((repo, path), Source(repo, path))
+                src.pins[b.sha].add(b.file)
+                src.count += 1
+                break
 
     report = {"version": VERSION, "root": str(root), "sources": [], "bare": [],
               "sha256": [], "exit": 0}

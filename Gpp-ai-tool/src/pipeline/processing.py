@@ -2,67 +2,57 @@
 Core data processing logic for the OSCAL generation pipeline.
 
 This module contains the orchestrator function for running the entire pipeline
-from start to finish, executing each stage in the correct sequence.
+from start to finish, executing each stage in the correct sequence. Every stage reads
+its inputs from disk and persists its own output, so any stage can be rerun alone.
 """
 
 import logging
-from pipeline import stage_gpp, stage_match_bausteine, stage_profiles, stage_ED23_profiles_enhanced, stage_base_process_enhanced, stage_ed23_anforderungen, stage_prozessbausteine
+
+from pipeline import (
+    stage_gpp,
+    stage_match_bausteine,
+    stage_profiles,
+    stage_ed23_anforderungen,
+    stage_prozessbausteine,
+    stage_ed23_baustein_abgleich,
+    stage_ng_katalog,
+    stage_ED23_profiles_enhanced,
+    stage_base_process_enhanced,
+)
 
 logger = logging.getLogger(__name__)
 
 
 async def run_full_pipeline() -> None:
-    """
-    Executes the entire data processing and OSCAL generation pipeline.
+    """Executes the entire pipeline in dependency order.
 
-    This function orchestrates the full, end-to-end pipeline, running each
-    stage in the required order to ensure data dependencies are met.
+    1 gpp (deterministic) → 2 match_bausteine (AI) → 3 profiles (deterministic) →
+    4 ed23_anforderungen (AI) → 5 prozessbausteine (AI) → 6 ed23_baustein_abgleich (AI,
+    deterministic sources first) → 7 ng_katalog (deterministic) → 8 ED23_profiles_enhanced
+    (deterministic structure + cached maturity AI) → 9 base_process_enhanced (AI).
+    stage_profiles is no longer an input of the ED23 profile stage; it still produces the
+    Zielobjektkategorie profiles the GS++ apps use.
     """
     logger.info("--- Starting Full Pipeline Execution ---")
-
+    steps = [
+        ("GPP", stage_gpp.run_stage_gpp),
+        ("MATCH BAUSTEINE", stage_match_bausteine.run_stage_match_bausteine),
+        ("PROFILES", stage_profiles.run_stage_profiles),
+        ("ED23_ANFORDERUNGEN", stage_ed23_anforderungen.run_stage_ed23_anforderungen),
+        ("PROZESSBAUSTEINE", stage_prozessbausteine.run_stage_prozessbausteine),
+        ("ED23_BAUSTEIN_ABGLEICH", stage_ed23_baustein_abgleich.run_stage_ed23_baustein_abgleich),
+        ("NG_KATALOG", stage_ng_katalog.run_stage_ng_katalog),
+        ("ED23_PROFILES_ENHANCED", stage_ED23_profiles_enhanced.run_stage_ED23_profiles_enhanced),
+        ("BASE_PROCESS_ENHANCED", stage_base_process_enhanced.run_stage_base_process_enhanced),
+    ]
     try:
-        # Stage 1: Process G++ Kompendium and create deterministic mappings.
-        logger.info("--- STAGE: GPP ---")
-        stage_gpp.run_stage_gpp()
-        logger.info("--- STAGE: GPP - COMPLETE ---")
-
-        # Stage 2: Perform high-level Baustein-to-Zielobjekt mapping.
-        logger.info("--- STAGE: MATCH BAUSTEINE ---")
-        await stage_match_bausteine.run_stage_match_bausteine()
-        logger.info("--- STAGE: MATCH BAUSTEINE - COMPLETE ---")
-
-        # Stage 3: Generate the base OSCAL profiles for each Zielobjekt.
-        logger.info("--- STAGE: PROFILES ---")
-        stage_profiles.run_stage_profiles()
-        logger.info("--- STAGE: PROFILES - COMPLETE ---")
-
-        # Stage 4: Generate ED2023 enhanced profiles (per Baustein).
-        logger.info("--- STAGE: ED23_PROFILES_ENHANCED ---")
-        logger.info("Starting: Generating ED2023 enhanced profiles.")
-        await stage_ED23_profiles_enhanced.run_stage_ED23_profiles_enhanced()
-        logger.info("--- STAGE: ED23_PROFILES_ENHANCED - COMPLETE ---")
-
-        # Stage 5: Generate base process enhanced profiles.
-        logger.info("--- STAGE: BASE_PROCESS_ENHANCED ---")
-        logger.info("Starting: Generating base process enhanced profiles.")
-        await stage_base_process_enhanced.run_stage_base_process_enhanced()
-        logger.info("--- STAGE: BASE_PROCESS_ENHANCED - COMPLETE ---")
-
-        # Stage 6: Map each G++ control to its matching BSI ED2023 Anforderungen.
-        logger.info("--- STAGE: ED23_ANFORDERUNGEN ---")
-        await stage_ed23_anforderungen.run_stage_ed23_anforderungen()
-        logger.info("--- STAGE: ED23_ANFORDERUNGEN - COMPLETE ---")
-
-        # Stage 7: Map each ED2023 Prozessbaustein-Anforderung to its single best G++ control.
-        logger.info("--- STAGE: PROZESSBAUSTEINE ---")
-        await stage_prozessbausteine.run_stage_prozessbausteine()
-        logger.info("--- STAGE: PROZESSBAUSTEINE - COMPLETE ---")
-
-
-
-    except Exception as e:
+        for name, fn in steps:
+            logger.info(f"--- STAGE: {name} ---")
+            result = fn()
+            if hasattr(result, "__await__"):
+                await result
+            logger.info(f"--- STAGE: {name} - COMPLETE ---")
+    except Exception:
         logger.critical("A critical error occurred during the full pipeline execution.", exc_info=True)
-        # Re-raise the exception to ensure the script exits with a non-zero status code.
         raise
-    
     logger.info("--- Full Pipeline Execution Finished Successfully ---")

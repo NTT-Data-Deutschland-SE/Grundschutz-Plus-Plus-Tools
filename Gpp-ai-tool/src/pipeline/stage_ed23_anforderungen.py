@@ -33,7 +33,7 @@ Precision measures (issue #28 — mappings were too broad and unspecific):
   and every candidate is then re-judged by a strict, self-contained verification call
   (control context + that one Anforderung's sentences — no corpus needed) that decides
   match / satz_nr / Begründung (precision). Only verified candidates reach the output.
-  The two passes intentionally use different models (see ED23_MAKER_MODEL in constants):
+  The two passes are the same model in two roles (MAKER_THINKING_LEVEL / CHECKER_THINKING_LEVEL):
   the maker model nominates generously, the stricter default model judges.
 
 Cost measures (docs/token-kostenplan.md): the maker runs in BATCHES of
@@ -67,7 +67,6 @@ from constants import (
     ED23_BATCH_RESPONSE_SCHEMA_PATH,
     ED23_VERIFY_RESPONSE_SCHEMA_PATH,
     ED23_SATZ_ABDECKUNG_JSON_PATH,
-    ED23_MAKER_MODEL,
     ED23_MAKER_BATCH_SIZE,
     PROMPT_CONFIG_PATH,
 )
@@ -287,8 +286,8 @@ async def _match_batch(
     prompt_template: str,
     schema: Dict[str, Any],
     id_lookup: Dict[str, Dict[str, Any]],
-    cached_content: str,
     inline_prefix: str,
+    system_instruction: str,
     semaphore: asyncio.Semaphore,
 ) -> Dict[str, List[Dict[str, Any]]]:
     """Maker recall pass for a BATCH of controls in one call (Kostenplan Maßnahme 3).
@@ -301,7 +300,8 @@ async def _match_batch(
     user_prompt = prompt_template.format(
         n=len(batch), controls_block=batch_controls_block(batch)
     )
-    prompt = user_prompt if cached_content else f"{inline_prefix}\n\n{user_prompt}"
+    # Stable prefix (corpus) first, the varying batch last: that is the implicit-cache layout.
+    prompt = f"{inline_prefix}\n\n{user_prompt}"
     label = f"ED23Abgleich-Batch-{batch_ids[0]}..{batch_ids[-1]}"
     async with semaphore:
         try:
@@ -309,8 +309,8 @@ async def _match_batch(
                 prompt=prompt,
                 json_schema=schema,
                 request_context_log=label,
-                cached_content=cached_content,
-                model_override=ED23_MAKER_MODEL,
+                thinking=app_config.maker_thinking_level,
+                system_instruction=system_instruction,
             )
         except Exception as e:
             logger.warning(f"AI matching failed for batch {batch_ids}: {e}")
@@ -413,6 +413,7 @@ async def _verify_candidate(
                 prompt=prompt,
                 json_schema=verify_schema,
                 request_context_log=f"ED23Verify-{control_id}-{candidate['id']}",
+                thinking=app_config.checker_thinking_level,
             )
         except Exception as e:
             logger.warning(
@@ -543,15 +544,11 @@ async def run_stage_ed23_anforderungen() -> None:
 
     ai_client = AiClient(app_config)
 
-    # Explicit context cache: the corpus is the cached content, the short ED23 system prompt the
-    # cached system instruction. Reused across every per-control call.
-    # The cache must live on the maker model — the candidate pass is the only cached caller.
-    cached_content = ai_client.create_context_cache(
-        content=corpus_text, system_instruction=system_instruction, model_override=ED23_MAKER_MODEL
-    )
-    # Fallback prefix inlined into each prompt when caching is unavailable (system + corpus).
+    # The corpus is the stable prefix of every maker prompt (implicit caching discounts a
+    # repeated prefix; there is no explicit cache on Argon). The system instruction goes into
+    # the request's system field.
     inline_prefix = (
-        f"{system_instruction}\n\nVerfügbare BSI ED2023 Anforderungen "
+        f"Verfügbare BSI ED2023 Anforderungen "
         f"(Format: ID | Name | Beschreibung als nummerierte Sätze (S1) (S2) ...):\n{corpus_text}"
     )
 
@@ -596,18 +593,14 @@ async def run_stage_ed23_anforderungen() -> None:
     async def _match_and_store(batch) -> None:
         result = await _match_batch(
             ai_client, batch, batch_prompt_template, batch_schema, id_lookup,
-            cached_content, inline_prefix, semaphore,
+            inline_prefix, system_instruction, semaphore,
         )
         async with checkpoint_lock:
             kandidaten_map.update(result)
             _save_checkpoint()
 
-    try:
-        if batches:
-            await asyncio.gather(*(_match_and_store(b) for b in batches))
-    finally:
-        # The cache serves only the maker phase; release it before the (long) verify phase.
-        ai_client.delete_context_cache(cached_content)
+    if batches:
+        await asyncio.gather(*(_match_and_store(b) for b in batches))
     async with checkpoint_lock:
         _save_checkpoint(force=True)
 

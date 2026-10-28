@@ -1,0 +1,1097 @@
+{
+  "profile": {
+    "uuid": "1698bbee-ef4a-553b-bfbf-fcb572687f4b",
+    "metadata": {
+      "title": "NG DER.7 – Bug-Bounty-Programme (Dienstleistungen)",
+      "last-modified": "2026-10-19T01:04:34.851625+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "NG"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "DER.7"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Bug-Bounty-Programme"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Dienstleistungen"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "prozess"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, DER.7, NG, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein DER.7 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe, NG-Baustein)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (Text des nutzergenerierten Bausteins (NG, NTT DATA), kein BSI-Text); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls. Prozess-Baustein ohne eigene Praktik in Grundschutz++; die Zielobjektkategorie ist nur informativ."
+    },
+    "imports": [
+      {
+        "href": "#afe1c75e-8725-5df2-a57b-235d7d5236f4",
+        "include-controls": [
+          {
+            "with-ids": [
+              "DET.1.1.1",
+              "DET.1.1.2",
+              "DET.1.2",
+              "DET.5.1",
+              "DET.5.2",
+              "DET.5.9",
+              "DET.5.9.1",
+              "PERF.4.1.5"
+            ]
+          }
+        ]
+      }
+    ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "DER.7-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "DER.7.A1",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A1 Festlegung einer Richtlinie für Schwachstellenmeldungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS eine von der Institutionsleitung verabschiedete Richtlinie für den Umgang mit extern gemeldeten Schwachstellen existieren. Diese Richtlinie MUSS die grundlegenden Ziele, Verantwortlichkeiten und die Verpflichtung der Institution zur Zusammenarbeit mit Sicherheitsforschern verbindlich festlegen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.5.1",
+                          "DET.5.9",
+                          "DET.1.1.1",
+                          "DET.1.1.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A2",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A2 Erstellung und Veröffentlichung einer Vulnerability Disclosure Policy",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS eine klare und leicht auffindbare Vulnerability Disclosure Policy (VDP) erstellt und veröffentlicht werden. Die VDP MUSS eine Erklärung der Absicht, den präferierten Meldekanal, eine Beschreibung der im Geltungsbereich liegenden Systeme (Scope) sowie die Arten der ausdrücklich nicht gestatteten Tests enthalten."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A3",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A3 Einrichtung eines dedizierten und sicheren Meldekanals",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS ein klar definierter und sicherer Kanal für die Entgegennahme von Schwachstellenmeldungen eingerichtet werden (z. B. über eine definierte E-Mail-Adresse mit veröffentlichtem kryptografischem Schlüssel). Dieser Kanal MUSS regelmäßig überwacht werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A4",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A4 Formulierung einer rechtlichen Schutzzusage (Safe Harbor)",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Die VDP MUSS eine rechtliche Schutzzusage (Safe Harbor) enthalten. Es MUSS zugesichert werden, dass die Institution keine rechtlichen Schritte gegen Personen einleitet, die Schwachstellen im Rahmen der in der VDP definierten Regeln und in gutem Glauben suchen und melden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A5",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A5 Definition eines initialen Triage-Prozesses",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS ein interner Prozess definiert werden, wie eingehende Meldungen bestätigt, auf ihre Validität geprüft und an die zuständigen Stellen weitergeleitet werden. Alle Meldenden MÜSSEN zeitnah eine Eingangsbestätigung erhalten."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "DER.7-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "DER.7.A6",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A6 Detaillierte Definition von Scope und Testregeln",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Der Geltungsbereich (Scope) des Programms MUSS definieren, welche Anwendungen und Systeme abgedeckt sind. Es MÜSSEN Regeln für die Durchführung von Tests festgelegt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.5.9.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A7",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A7 Etablierung eines transparenten Belohnungssystems",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Für ein Bug-Bounty-Programm MUSS ein Belohnungssystem etabliert werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9.1",
+                    "rel": "related",
+                    "text": "DET.5.9.1 steht unter DER.7.A6"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A8",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A8 Etablierung eines Kommunikations- und Eskalationskonzepts",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS ein Kommunikationskonzept für die Interaktion mit den Forschenden existieren."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A9",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A9 Integration in das Schwachstellen- und Incident-Management",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A9_anforderung",
+                    "name": "overview",
+                    "prose": "Verifizierte Schwachstellenmeldungen MÜSSEN in den internen Schwachstellenmanagementprozess überführt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.5.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.1",
+                    "rel": "related",
+                    "text": "DET.5.1 steht unter DER.7.A1"
+                  },
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A10",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A10 Nutzung einer Bug-Bounty-Plattform",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Die effiziente Verwaltung des Programms MUSS sichergestellt sein."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9.1",
+                    "rel": "related",
+                    "text": "DET.5.9.1 steht unter DER.7.A6"
+                  },
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "DER.7-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "DER.7.A11",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A11 Durchführung von privaten oder zeitlich begrenzten Programmen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A11"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A11_anforderung",
+                    "name": "overview",
+                    "prose": "Für besonders schützenswerte Systeme MÜSSEN erweiterte Prüfungen in Betracht gezogen werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9.1",
+                    "rel": "related",
+                    "text": "DET.5.9.1 steht unter DER.7.A6"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A12",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A12 Proaktives Forscher-Management und Beziehungsaufbau",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A12"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A12_anforderung",
+                    "name": "overview",
+                    "prose": "Die Institution MUSS den Kontakt zu meldenden Sicherheitsforschern professionell pflegen."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9.1",
+                    "rel": "related",
+                    "text": "DET.5.9.1 steht unter DER.7.A6"
+                  },
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A13",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A13 Analyse und Optimierung der Programm-Metriken",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A13"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A13_anforderung",
+                    "name": "overview",
+                    "prose": "Das Bug-Bounty-Programm MUSS regelmäßig auf seine Wirksamkeit überprüft werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "PERF.4.1.5",
+                          "DET.1.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.9.1",
+                    "rel": "related",
+                    "text": "DET.5.9.1 steht unter DER.7.A6"
+                  }
+                ]
+              },
+              {
+                "id": "DER.7.A14",
+                "class": "ed23-anforderung",
+                "title": "DER.7.A14 Verknüpfung von Erkenntnissen mit dem Secure SDLC",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "DER.7.A14"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "NG"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "DER.7.A14_anforderung",
+                    "name": "overview",
+                    "prose": "Gewonnene Erkenntnisse über Schwachstellen MÜSSEN an die Entwicklungsteams kommuniziert werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.5.1",
+                    "rel": "related",
+                    "text": "DET.5.1 steht unter DER.7.A1"
+                  },
+                  {
+                    "href": "#DET.5.9",
+                    "rel": "related",
+                    "text": "DET.5.9 steht unter DER.7.A1"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "back-matter": {
+      "resources": [
+        {
+          "uuid": "afe1c75e-8725-5df2-a57b-235d7d5236f4",
+          "title": "Grundschutz++-resolved_catalog.json @ a12831136f41",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/a12831136f4122a4c43854622180a24f2576a41e/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "DET.1.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Deckt die schriftliche Dokumentation der Verfahren und Regelungen im Bereich Detektion ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.1.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Deckt die verbindliche Festlegung und Zuweisung der Verantwortlichkeiten ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A13",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): DET.1.2 fordert die regelmäßige und anlassbezogene Überprüfung der Verfahren und Regelungen der Detektion, einschließlich der Verfahren für externe Schwachstellenmeldungen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A1",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A9",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A14",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Verifizierte Schwachstellen werden gemäß DET.5.2 im Schwachstellenregister zur weiteren Nachverfolgung und Behandlung dokumentiert."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.9",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (subset-of, Konfidenz hoch, Checker fraglich): DET.5.9 verlangt eine Vorgehensweise zur Entgegennahme und Behandlung externer Schwachstellenmeldungen; DER.7.A1 konkretisiert dies als eine von der Institutionsleitung verabschiedete Richtlinie mit Zielen, Verantwortlichkeiten und Kooperationsverpflichtung."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A2",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A3",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A4",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A5",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A6",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A8",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz hoch, Checker bestaetigt): DET.5.9 fordert die Entgegennahme und Behandlung externer Schwachstellenmeldungen, was die Überführung verifizierter Meldungen in die interne Behandlung einschließt."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A10",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker bestaetigt): Die effiziente organisatorische und technische Verwaltung von eingehenden Meldungen ist Teil der Vorgehensweise zur Entgegennahme und Behandlung externer Schwachstellenmeldungen nach DET.5.9."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A12",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker fraglich): Die professionelle Kontaktpflege mit meldenden Sicherheitsforschenden ist Teil einer geordneten Vorgehensweise zur Entgegennahme und Behandlung externer Schwachstellenmeldungen."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A14",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker fraglich): DET.5.9 umfasst die Behandlung externer Schwachstellenmeldungen, ohne die Weitergabe gewonnener Erkenntnisse an Entwicklungsteams ausdrücklich zu fordern."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.9.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A6",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz niedrig, Checker fraglich): DET.5.9.1 erwähnt ein Bonusprogramm für externe Schwachstellenmeldungen, enthält aber keine Vorgaben zur Abgrenzung des Geltungsbereichs und zu Testregeln."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A7",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A10",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A11",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A12",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A13",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.4.1.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "DER.7.A13",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz mittel, Checker fraglich): PERF.4.1.5 verlangt die Evaluation der Eignung und Wirksamkeit umgesetzter Sicherheitsmaßnahmen, worunter auch ein etabliertes Bug-Bounty-Programm fällt."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

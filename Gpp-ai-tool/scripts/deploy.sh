@@ -27,7 +27,7 @@ IMAGE_NAME="oscal-generator"
 GCR_HOSTNAME="gcr.io"
 IMAGE_TAG="$GCR_HOSTNAME/$GCP_PROJECT_ID/$IMAGE_NAME:latest"
 
-# Change to the application's root directory to provide the correct build context.
+# Build context is the tool root (Dockerfile lives there; one image serves every stage).
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd "$SCRIPT_DIR/.."
 

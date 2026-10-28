@@ -2,10 +2,54 @@
   "profile": {
     "uuid": "e355342a-da64-527f-b283-28552fcee5c1",
     "metadata": {
-      "title": "NET.2.1 - WLANs",
-      "last-modified": "2026-07-28T15:36:44.272375+00:00",
-      "version": "0.0.1",
-      "oscal-version": "1.2.2"
+      "title": "NET.2.1 – WLAN-Betrieb (WLANs)",
+      "last-modified": "2026-10-19T01:18:10.231120+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "BSI"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "NET.2.1"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "WLAN-Betrieb"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "WLANs"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "system"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, NET.2.1, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein NET.2.1 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (amtlicher Wortlaut des XML-Kompendiums 2023); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41) und dem NG Ergänzungskatalog (NG-ergaenzungskatalog.json, nutzergeneriert). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls."
     },
     "imports": [
       {
@@ -13,52 +57,985 @@
         "include-controls": [
           {
             "with-ids": [
+              "ARCH.1.1",
+              "ARCH.1.1.2",
+              "ARCH.1.1.3",
               "ARCH.2.1",
               "ARCH.2.2",
-              "ARCH.2.2.1",
-              "ARCH.2.2.10",
-              "ARCH.2.2.11",
-              "ARCH.2.2.2",
-              "ARCH.2.2.3",
-              "ARCH.2.2.4",
-              "ARCH.2.2.5",
-              "ARCH.2.2.6",
-              "ARCH.2.2.7",
-              "ARCH.2.2.8",
-              "ARCH.2.2.9",
-              "ARCH.2.5",
               "ARCH.2.6",
               "ARCH.3.1",
               "ARCH.3.2",
               "ARCH.3.3",
               "ARCH.3.4",
-              "ARCH.4.1",
-              "ARCH.4.1.1",
-              "ARCH.4.1.2",
-              "ARCH.4.2",
-              "ARCH.4.3",
               "ARCH.5.1",
-              "ARCH.5.1.1",
-              "ARCH.5.1.12",
-              "ARCH.5.1.2",
-              "ARCH.5.1.3",
-              "ARCH.5.1.4",
-              "ARCH.8.1",
-              "ARCH.9.1",
-              "ARCH.9.5",
               "ASST.2.2.1",
+              "ASST.6.1",
+              "BER.5.14",
+              "BER.5.6",
+              "BER.6.4",
+              "BER.7.2",
+              "BES.2.1",
+              "BES.4.2",
               "DET.4.11",
-              "DET.4.11.2",
-              "DET.4.11.3",
-              "DET.4.12",
-              "DET.4.12.1",
-              "GEB.6.3",
-              "SENS.10.4"
+              "DET.4.19",
+              "DET.4.2",
+              "DET.4.9",
+              "DET.5.3",
+              "GEB.6.2",
+              "KONF.2.3",
+              "KONF.2.4",
+              "KONF.2.5",
+              "PERF.3.2",
+              "UMS.1.1",
+              "VRB.2.1"
+            ]
+          }
+        ]
+      },
+      {
+        "href": "#6b2c3fe8-7370-556a-9c3c-540d81d5de99",
+        "include-controls": [
+          {
+            "with-ids": [
+              "NG-NET.2.1.A15"
             ]
           }
         ]
       }
     ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "NET.2.1-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "NET.2.1.A1",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A1 Festlegung einer Strategie für den Einsatz von WLANs",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Bevor in einer Institution WLANs eingesetzt werden, MUSS festgelegt sein, welche generelle Strategie die Institution im Hinblick auf die Kommunikation über WLANs plant. Insbesondere MUSS geklärt und festgelegt werden, in welchen Organisationseinheiten, für welche Anwendungen und zu welchem Zweck WLANs eingesetzt und welche Informationen darüber übertragen werden dürfen. Ebenso MUSS der Abdeckungsbereich des WLAN festgelegt werden. Außerdem MUSS schon in der Planungsphase festgelegt sein, wer für die Administration der unterschiedlichen WLAN-Komponenten zuständig ist, welche Schnittstellen es zwischen den am Betrieb beteiligten Verantwortlichen gibt und wann welche Informationen zwischen den Zuständigen ausgetauscht werden müssen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.1.1",
+                          "ARCH.1.1.2",
+                          "ARCH.3.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.2.1.A2",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A2 Auswahl eines geeigneten WLAN-Standards",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "DARF NICHT"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Planende"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Im Rahmen der WLAN-Planung MUSS zuerst ermittelt werden, welche der von der Institution betriebenen Geräte (z. B. Mikrowellengeräte, Bluetooth-Geräte) in das ISM-Band bei 2,4 GHz sowie in das 5 GHz-Band abstrahlen. Außerdem MÜSSEN die vorhandenen Sicherheitsmechanismen der einzelnen WLAN-Standards gegeneinander abgewogen werden. Generell MUSS sichergestellt sein, dass nur als allgemein sicher anerkannte Verfahren zur Authentisierung und Verschlüsselung eingesetzt werden. Die Entscheidungsgründe MÜSSEN dokumentiert werden. Geräte, die von anerkannt sicheren Verfahren auf unsichere zurückgreifen müssen, DÜRFEN NICHT mehr eingesetzt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.3.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.2.1.A3",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A3 Auswahl geeigneter Kryptoverfahren für WLAN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "DARF NICHT"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Planende"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Die Kommunikation über die Luftschnittstelle MUSS komplett kryptografisch abgesichert werden. Kryptografische Verfahren, die unsicherer als WPA2 sind, DÜRFEN NICHT mehr eingesetzt werden. Wird WPA2 mit Pre-Shared Keys (WPA2-PSK) verwendet, dann MUSS ein komplexer Schlüssel mit einer Mindestlänge von 20 Zeichen verwendet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.6.4",
+                          "BER.7.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.3.4",
+                    "rel": "related",
+                    "text": "ARCH.3.4 steht unter NET.2.1.A2"
+                  }
+                ]
+              },
+              {
+                "id": "NET.2.1.A4",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A4 Geeignete Aufstellung von Access Points",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Haustechnik"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Access Points MÜSSEN zugriffs- und diebstahlsicher montiert werden. Wenn sie aufgestellt werden, MÜSSEN die erforderlichen Bereiche ausreichend abgedeckt werden. Darüber hinaus MUSS darauf geachtet werden, dass sich die Funkwellen in Bereichen, die nicht durch das WLAN versorgt werden sollen, möglichst nicht ausbreiten. Außeninstallationen MÜSSEN vor Witterungseinflüssen und elektrischen Entladungen geeignet geschützt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.3.1",
+                          "GEB.6.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.3.2",
+                    "rel": "related",
+                    "text": "ARCH.3.2 steht unter NET.2.1.A1"
+                  }
+                ]
+              },
+              {
+                "id": "NET.2.1.A5",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A5 Sichere Basis-Konfiguration der Access Points",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "DARF NICHT"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Access Points DÜRFEN NICHT in der Konfiguration des Auslieferungszustandes verwendet werden. Voreingestellte SSIDs (Service Set Identifiers), Zugangskennwörter oder kryptografische Schlüssel MÜSSEN vor dem produktiven Einsatz geändert werden. Außerdem MÜSSEN unsichere Administrationszugänge abgeschaltet werden. Access Points DÜRFEN NUR über eine geeignet verschlüsselte Verbindung administriert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.3.3",
+                          "BER.5.6",
+                          "KONF.2.3",
+                          "KONF.2.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.2.1.A6",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A6 Sichere Konfiguration der WLAN-Infrastruktur",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS sichergestellt sein, dass mittels der WLAN-Kommunikation keine Sicherheitszonen gekoppelt werden und hierdurch etablierte Schutzmaßnahmen umgangen werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.2.1.A7",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A7 Aufbau eines Distribution Systems",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Planende"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Bevor ein kabelgebundenes Distribution System aufgebaut wird, MUSS prinzipiell entschieden werden, ob physisch oder logisch durch VLANs auf den Access Switches des kabelbasierten LANs getrennt wird."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.2.1.A8",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A8 Verhaltensregeln bei WLAN-Sicherheitsvorfällen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Bei einem Sicherheitsvorfall MUSS der IT-Betrieb passende Gegenmaßnahmen einleiten: Am Übergabepunkt der WLAN-Kommunikation ins interne LAN SOLLTE bei einem Angriff auf das WLAN die Kommunikation selektiv pro SSID, Access Point oder sogar für die komplette WLAN-Infrastruktur gesperrt werden. Wurden Access Points gestohlen, MÜSSEN festgelegte Sicherheitsmaßnahmen umgesetzt werden, damit der Access Point oder hierauf abgespeicherte Informationen nicht missbraucht werden können. Wurden WLAN-Clients entwendet und wird eine zertifikatsbasierte Authentisierung verwendet, MÜSSEN die Client-Zertifikate gesperrt werden. Es MUSS ausgeschlossen werden, dass entwendete Geräte unberechtigt verwendet werden, um auf das Netz der Institution zuzugreifen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.6.1",
+                          "BER.5.14"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "NET.2.1-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "NET.2.1.A9",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A9 Sichere Anbindung von WLANs an ein LAN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Planende"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A9_anforderung",
+                    "name": "overview",
+                    "prose": "Werden WLANs an ein LAN angebunden, SOLLTE der Übergang zwischen WLANs und LAN abgesichert werden, beispielsweise durch einen Paketfilter. Der Access Point SOLLTE unter Berücksichtigung der Anforderung NET.2.1.A7 Aufbau eines Distribution Systems eingebunden sein."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.5.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.2",
+                    "rel": "related",
+                    "text": "ARCH.2.2 steht unter NET.2.1.A6"
+                  }
+                ]
+              },
+              {
+                "id": "NET.2.1.A10",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A10 Erstellung einer Sicherheitsrichtlinie für den Betrieb von WLANs",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Ausgehend von der allgemeinen Sicherheitsrichtlinie der Institution SOLLTEN die wesentlichen Kernaspekte für einen sicheren Einsatz von WLANs konkretisiert werden. Die Richtlinie SOLLTE allen Verantwortlichen bekannt sein, die an Aufbau und Betrieb von WLANs beteiligt sind. Sie SOLLTE zudem Grundlage für ihre Arbeit sein. Die Umsetzung der in der Richtlinie geforderten Inhalte SOLLTE regelmäßig überprüft werden. Werden die Inhalte der Richtlinie nicht umgesetzt, MUSS geeignet reagiert werden. Die Ergebnisse SOLLTEN geeignet dokumentiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.1.1.3",
+                          "UMS.1.1",
+                          "VRB.2.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.2.1.A11",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A11 Geeignete Auswahl von WLAN-Komponenten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A11"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A11_anforderung",
+                    "name": "overview",
+                    "prose": "Anhand der Ergebnisse der Planungsphase SOLLTE eine Anforderungsliste erstellt werden, mithilfe derer die am Markt erhältlichen Produkte bewertet werden können. Werden WLAN-Komponenten beschafft, SOLLTE neben Sicherheit auch auf Datenschutz und Kompatibilität der WLAN-Komponenten untereinander geachtet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BES.2.1",
+                          "BES.4.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.2.1.A12",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A12 Einsatz einer geeigneten WLAN-Management-Lösung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A12"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A12_anforderung",
+                    "name": "overview",
+                    "prose": "Eine zentrale Managementlösung SOLLTE eingesetzt werden. Der Leistungsumfang der eingesetzten Lösung SOLLTE im Einklang mit den Anforderungen der WLAN-Strategie sein."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#BES.2.1",
+                    "rel": "related",
+                    "text": "BES.2.1 steht unter NET.2.1.A11"
+                  }
+                ]
+              },
+              {
+                "id": "NET.2.1.A13",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A13 Regelmäßige Sicherheitschecks in WLANs",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A13"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A13_anforderung",
+                    "name": "overview",
+                    "prose": "WLANs SOLLTEN regelmäßig daraufhin überprüft werden, ob eventuell Sicherheitslücken existieren. Zusätzlich SOLLTE regelmäßig nach unbefugt installierten Access Points innerhalb der bereitgestellten WLANs gesucht werden. Weiterhin SOLLTEN die Performance und Abdeckung gemessen werden. Die Ergebnisse von Sicherheitschecks SOLLTEN nachvollziehbar dokumentiert und mit dem Soll-Zustand abgeglichen werden. Abweichungen SOLLTEN untersucht werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.2.6",
+                          "ASST.2.2.1",
+                          "DET.4.11",
+                          "DET.4.19",
+                          "DET.5.3"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.3.1",
+                    "rel": "related",
+                    "text": "ARCH.3.1 steht unter NET.2.1.A4"
+                  },
+                  {
+                    "href": "#VRB.2.1",
+                    "rel": "related",
+                    "text": "VRB.2.1 steht unter NET.2.1.A10"
+                  }
+                ]
+              },
+              {
+                "id": "NET.2.1.A14",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A14 Regelmäßige Audits der WLAN-Komponenten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A14"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A14_anforderung",
+                    "name": "overview",
+                    "prose": "Bei allen Komponenten der WLAN-Infrastruktur SOLLTE regelmäßig überprüft werden, ob alle festgelegten Sicherheitsmaßnahmen umgesetzt sind. Außerdem SOLLTE überprüft werden ob alle Komponenten korrekt konfiguriert sind. Öffentlich aufgestellte Access Points SOLLTEN regelmäßig stichprobenartig daraufhin geprüft werden, ob es gewaltsame Öffnungs- oder Manipulationsversuche gab. Die Auditergebnisse SOLLTEN nachvollziehbar dokumentiert und mit dem Soll-Zustand abgeglichen werden. Abweichungen SOLLTEN untersucht werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.4.9",
+                          "KONF.2.5",
+                          "PERF.3.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#UMS.1.1",
+                    "rel": "related",
+                    "text": "UMS.1.1 steht unter NET.2.1.A10"
+                  },
+                  {
+                    "href": "#VRB.2.1",
+                    "rel": "related",
+                    "text": "VRB.2.1 steht unter NET.2.1.A10"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "NET.2.1-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "NET.2.1.A15",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A15 Verwendung eines VPN zur Absicherung von WLANs",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A15"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A15_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE ein VPN eingesetzt werden, um die Kommunikation über die WLAN-Infrastruktur zusätzlich abzusichern."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NG-NET.2.1.A15"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NET.2.1.A16",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A16 Zusätzliche Absicherung bei der Anbindung von WLANs an ein LAN",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A16"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A16_anforderung",
+                    "name": "overview",
+                    "prose": "Wird eine WLAN-Infrastruktur an ein LAN angebunden, SOLLTE der Übergang zwischen WLANs und LAN entsprechend des höheren Schutzbedarfs zusätzlich abgesichert werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.2.2",
+                    "rel": "related",
+                    "text": "ARCH.2.2 steht unter NET.2.1.A6"
+                  },
+                  {
+                    "href": "#ARCH.5.1",
+                    "rel": "related",
+                    "text": "ARCH.5.1 steht unter NET.2.1.A9"
+                  }
+                ]
+              },
+              {
+                "id": "NET.2.1.A17",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A17 Absicherung der Kommunikation zwischen Access Points",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A17"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A17_anforderung",
+                    "name": "overview",
+                    "prose": "Die Kommunikation zwischen den Access Points über die Funkschnittstelle und das LAN SOLLTE verschlüsselt erfolgen."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.3.4",
+                    "rel": "related",
+                    "text": "ARCH.3.4 steht unter NET.2.1.A2"
+                  }
+                ]
+              },
+              {
+                "id": "NET.2.1.A18",
+                "class": "ed23-anforderung",
+                "title": "NET.2.1.A18 Einsatz von Wireless Intrusion Detection/Wireless Intrusion Prevention Systemen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "NET.2.1.A18"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "NET.2.1.A18_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTEN Wireless Intrusion Detection Systeme bzw. Wireless Intrusion Prevention Systeme eingesetzt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.4.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#DET.4.19",
+                    "rel": "related",
+                    "text": "DET.4.19 steht unter NET.2.1.A13"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
     "back-matter": {
       "resources": [
         {
@@ -71,6 +1048,612 @@
                 {
                   "algorithm": "SHA-256",
                   "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "6b2c3fe8-7370-556a-9c3c-540d81d5de99",
+          "title": "NG Ergänzungskatalog zu den ED23-Baustein-Profilen – Anforderungen ohne Entsprechung im Anwenderkatalog Grundschutz++",
+          "description": "NG Ergänzungskatalog mit 69 nutzergenerierten Controls, Datei NG-ergaenzungskatalog.json neben diesem Profil",
+          "rlinks": [
+            {
+              "href": "NG-ergaenzungskatalog.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "294687c3394f61715fdfd8c24bda821ffe4fbe0e30c11016ab59d24f89acfb3d"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "ARCH.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ARCH.1.1 fordert übergeordnet Verfahren und Regelungen zur Netzarchitektur inklusive kabelloser Netze, was die strategische Festlegung des WLAN-Einsatzes inhaltlich abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.1.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): ARCH.1.1.2 deckt die Zuweisung von Administrationszuständigkeiten ab, umfasst jedoch nicht die zusätzlich in S4 geforderte Festlegung von Schnittstellen und Informationsflüssen zwischen den Beteiligten. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.1.1.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): ARCH.1.1.3 fordert ausdrücklich die Information der zuständigen Personen über geltende Verfahren und Regelungen, was der geforderten Bekanntgabe der Richtlinie an die Verantwortlichen entspricht. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ARCH.2.1 fordert allgemein die Konzeption und Verankerung einer Netzsegmentierung, was die grundlegende Entscheidung über die Art der Trennung (physisch oder logisch) für Netzbereiche wie das Distribution System mit abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ARCH.2.2 fordert als allgemeinere Maßnahme die Einschränkung und Kontrolle von Verbindungen zwischen Netzsegmenten, wodurch das unzulässige Koppeln von Sicherheitszonen (auch über WLAN) adressiert wird. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A9",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ARCH.2.2 deckt als allgemeine Vorgabe zur Einschränkung von Verbindungen zwischen Netzsegmenten auch die Absicherung des Übergangs zwischen WLAN und LAN ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A16",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die G++-Maßnahme ARCH.2.2 deckt die zusätzliche Absicherung des Übergangs zwischen WLAN und LAN als allgemeine Anforderung zur Einschränkung von Verbindungen zwischen Netzsegmenten inhaltlich ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A13",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): Das Testen der Netzabdeckung überschneidet sich mit der geforderten Funkabdeckung beim Aufstellen von Access Points, deckt die eigentliche Pflicht zur Gewährleistung ausreichender Abdeckung jedoch nicht vollständig ab. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 3): Die G++-Maßnahme empfiehlt das Testen der Netzabdeckung und deckt damit den Teilaspekt der Abdeckungsmessung ab, lässt jedoch die zusätzlich geforderte Performancemessung offen. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.3.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A1",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (equivalent-to)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 3): ARCH.3.2 adressiert die Einschränkung der Funkausbreitung als Kann-Bestimmung spezifisch für Sicherheitsbereiche, erfasst jedoch nicht die generelle Vermeidung unerwünschter Ausbreitung in alle nicht zu versorgenden Bereiche. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.3.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 2): Die Maßnahme empfiehlt institutionsspezifische SSIDs und adressiert damit nur die Änderung voreingestellter Netznamen, während das Ändern von Zugangskennwörtern und kryptografischen Schlüsseln unberücksichtigt bleibt. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.3.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 3): ARCH.3.4 empfiehlt die standardbasierte Verschlüsselung der WLAN-Netzanbindung und adressiert damit den kryptografischen Teilaspekt, während eigenständige Anforderungen an Authentisierungsverfahren nicht vollständig umfasst sind. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (equivalent-to, Teilanforderung 1): ARCH.3.4 empfiehlt die Verschlüsselung der WLAN-Netzanbindung nach anerkannten Standards, was der geforderten vollständigen kryptografischen Absicherung der Kommunikation über die Luftschnittstelle inhaltlich entspricht. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A17",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.5.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A9",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ARCH.5.1 fordert allgemein die Einschränkung und Filterung von Netzverbindungen (z. B. durch Paketfilter), was die Absicherung des Netzübergangs zwischen WLAN und LAN inhaltlich abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A16",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): ARCH.5.1 fordert die generelle Einschränkung von Verbindungen zwischen Netzen bzw. IT-Systemen (z. B. mittels Paketfiltern oder Gateways), was die zusätzliche Absicherung von Netzübergängen wie zwischen WLAN und LAN abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.2.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Die G++-Maßnahme fordert allgemein das Aufdecken unautorisierter IT-Systeme in Netzen, was die spezifische Suche nach unbefugten WLAN Access Points (Rogue APs) inhaltlich voll abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.6.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): ASST.6.1 fordert allgemein eine Vorgehensweise bei abhandengekommenen oder gestohlenen Assets, um Missbrauch des Geräts sowie der darauf befindlichen Informationen durch koordinierte Schutz- und Gegenmaßnahmen zu verhindern. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.5.14",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3,4): BER.5.14 fordert die Sperrung kompromittierter Authentifizierungsmittel, was das Sperren von Client-Zertifikaten bei Diebstahl von WLAN-Clients direkt als allgemeine Pflicht abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.5.6",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): Satz 2 fordert das Ändern voreingestellter Zugangskennwörter und kryptografischer Schlüssel auf Access Points und überschneidet sich damit direkt mit dem Umgang mit vorkonfigurierten Authentisierungsmitteln auf IT-Systemen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.6.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): BER.6.4 verankert Kriterien für die Passwortqualität allgemein, enthält jedoch nicht die spezifische technische Vorgabe einer Mindestlänge von 20 Zeichen für WPA2-Pre-Shared-Keys."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.7.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): BER.7.2 fordert allgemein normkonforme Schlüssellängen, schließt die spezifische Mindestlänge von 20 Zeichen sowie die Komplexitätsforderung für WPA2-PSK jedoch nicht explizit ein. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A11",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): BES.2.1 fordert die Dokumentation des Bedarfs anhand einer Leistungsbeschreibung für Beschaffungen, was die geforderte Erstellung einer Anforderungsliste zur Produktbewertung inhaltlich abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): G++ BES.2.1 fordert die allgemeine Erfassung und Dokumentation des Bedarfs anhand einer Leistungsbeschreibung oder Umsetzungsstrategie, was den Abgleich des Leistungsumfangs einer Lösung mit der Strategie abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A11",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): BES.4.2 fordert die Dokumentation von Beschaffungskriterien als Bewertungsmaßstäbe bei der Anschaffung von IT-Produkten, was die allgemeinere Fassung der geforderten Anforderungsliste zur Produktbewertung darstellt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.11",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A13",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.19",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Die automatisierte Überwachung von Räumen nach unautorisierten Sendeanlagen umfasst das Aufspüren unbefugt installierter Access Points als speziellen Fall von Funksendern. [auch: satz_abdeckung, gsmap]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A18",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (equivalent-to)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A18",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): DET.4.2 fordert die automatisierte Erkennung von Angriffen mittels netz- oder hostbasierter Systeme (IDS/IPS), was den Einsatz von Wireless Intrusion Detection bzw. Prevention Systemen als spezifische Ausprägung für Funknetze allgemein abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.9",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): DET.4.9 sieht eine allgemeine regelmäßige Überprüfung von IT-Systemen auf Manipulationsversuche vor und schließt die stichprobenartige Prüfung öffentlich aufgestellter Access Points vollständig ein. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): DET.5.3 verankert Schwachstellenscans im Netz, deckt jedoch darüber hinausgehende WLAN-spezifische Sicherheitsüberprüfungen nicht vollständig ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.6.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): GEB.6.2 fordert allgemein die vor unbefugtem Zugriff und Diebstahl geschützte Platzierung von IT-Systemen, was die zugriffs- und diebstahlsichere Montage von Access Points inhaltlich abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): KONF.2.3 deckt die Änderung voreingestellter Zugangskennwörter und kryptografischer Schlüssel ab, schließt die geforderte Anpassung von SSIDs als Netzwerk-Identifikatoren jedoch nicht ein. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): KONF.2.4 deckt das Abschalten unsicherer Administrationszugänge als allgemeine Deaktivierung aus Sicherheitssicht nicht benötigter bzw. unsicherer Systemfunktionen, Protokolle und Schnittstellen inhaltlich ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "KONF.2.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): KONF.2.5 fordert die regelmäßige Überprüfung der tatsächlichen Konfiguration von IT-Systemen gegen den Referenzzustand, was der geforderten Überprüfung auf korrekte Konfiguration der Komponenten entspricht. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.3.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): PERF.3.2 deckt die Dokumentation der Auditergebnisse ab, umfasst jedoch nicht den geforderten Abgleich mit dem Soll-Zustand. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "UMS.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): UMS.1.1 fordert die regelmäßige Überprüfung des Umsetzungsstatus von Anforderungen und deckt damit die allgemeine Pflicht zur regelmäßigen Überprüfung der Umsetzung der Richtlinieninhalte ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die G++-Maßnahme fordert die allgemeinere Fassung der regelmäßigen Überprüfung des Umsetzungsstatus von Sicherheitsmaßnahmen, was die Prüfung der WLAN-Komponenten mit einschließt. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "VRB.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A10",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 5): VRB.2.1 fordert die systematische Untersuchung und Ursachenanalyse von Nicht-Konformitäten und deckt damit die allgemeinere Fassung der geforderten Untersuchung von Abweichungen ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "NET.2.1.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 5): VRB.2.1 fordert die methodische Untersuchung von Nicht-Konformitäten bzw. Abweichungen hinsichtlich ihrer Ursachen und deckt damit die allgemeine Forderung zur Untersuchung von Abweichungen ab. [auch: satz_abdeckung]"
                 }
               ]
             }

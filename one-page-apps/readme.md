@@ -26,6 +26,18 @@ Der Ablauf entspricht dem [SSP-Generator](../GS++-oscal-app/ssp_generator.html)
 der Hauptsammlung; wer mit Grundschutz++ arbeitet, nimmt jenen. Dieser hier ist
 für Häuser gedacht, die (noch) auf der Edition 2023 aufsetzen.
 
+**NG-Bausteine (ab ED23 V1.7).** Der gepinnte Katalog enthält neben den 111
+Bausteinen des BSI 12 nutzergenerierte Bausteine von NTT DATA (APP.4.5, APP.4.7,
+APP.4.8, APP.4.9, APP.4.10, SYS.1.10, SYS.1.11, SYS.1.2.4, SYS.5.1, ORP.6,
+OPS.1.1.8, DER.7), die der Katalog selbst nicht markiert. Das Werkzeug führt
+sie als Konstante `ED23_NG_BAUSTEINE` (Differenz der Baustein-IDs zur reinen
+BSI-Datei am selben Commit), zeigt an Bausteinen, Assets und Anforderungen ein
+NG-Badge, nennt sie der KI-Zuordnung als `[NG]`, schreibt in Profil und SSP die
+Props `herkunft=NG` bzw. `ed23-baustein` (Namespace
+[`ed23-baustein`](../Dokumentation/namespaces/ed23_baustein_props.md)) und
+prüft die Liste beim Laden gegen den Katalogstand; „NG-Liste prüfen“ in der
+Rail lädt auf Wunsch die BSI-Datei (15 MB) und vergleicht.
+
 ## [YAML → OSCAL Konverter (C5:2026)](./c5-oscal-converter.html)
 
 Wandelt die YAML-Kriteriendateien des BSI C5:2026 in einen

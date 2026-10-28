@@ -2,10 +2,54 @@
   "profile": {
     "uuid": "77a63c03-d177-508e-840e-b60b6d7f6d2a",
     "metadata": {
-      "title": "INF.12 - Netze",
-      "last-modified": "2026-07-28T15:39:05.043767+00:00",
-      "version": "0.0.1",
-      "oscal-version": "1.2.2"
+      "title": "INF.12 – Verkabelung (Netze)",
+      "last-modified": "2026-10-19T01:18:09.943132+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "BSI"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "INF.12"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Verkabelung"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Netze"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "system"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, INF.12, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein INF.12 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (amtlicher Wortlaut des XML-Kompendiums 2023); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41) und dem NG Ergänzungskatalog (NG-ergaenzungskatalog.json, nutzergeneriert). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls."
     },
     "imports": [
       {
@@ -13,45 +57,986 @@
         "include-controls": [
           {
             "with-ids": [
-              "ARCH.2.1",
-              "ARCH.2.2",
-              "ARCH.2.2.1",
-              "ARCH.2.2.10",
-              "ARCH.2.2.11",
-              "ARCH.2.2.2",
-              "ARCH.2.2.3",
-              "ARCH.2.2.4",
-              "ARCH.2.2.5",
-              "ARCH.2.2.6",
-              "ARCH.2.2.7",
-              "ARCH.2.2.8",
-              "ARCH.2.2.9",
-              "ARCH.2.5",
-              "ARCH.2.6",
-              "ARCH.4.2",
-              "ARCH.4.3",
-              "ARCH.5.1",
-              "ARCH.5.1.1",
-              "ARCH.5.1.12",
-              "ARCH.5.1.2",
-              "ARCH.5.1.3",
-              "ARCH.5.1.4",
-              "ARCH.8.1",
+              "ARCH.1.1.1",
+              "ARCH.2.4",
+              "ARCH.8.2",
               "ARCH.9.1",
-              "ARCH.9.5",
-              "ASST.2.2.1",
-              "DET.4.11",
-              "DET.4.11.2",
-              "DET.4.11.3",
-              "DET.4.12",
-              "DET.4.12.1",
-              "GEB.6.3",
-              "SENS.10.4"
+              "ASST.3.4",
+              "ASST.5.2",
+              "BES.4.8",
+              "BES.7.1",
+              "DET.2.1",
+              "GEB.1.3.1",
+              "GEB.1.4",
+              "GEB.1.5",
+              "GEB.10.2",
+              "GEB.9.1",
+              "GEB.9.1.3",
+              "GEB.9.4",
+              "GEB.9.5",
+              "GEB.9.5.1",
+              "TEST.2.2.2",
+              "TEST.4.2"
+            ]
+          }
+        ]
+      },
+      {
+        "href": "#6b2c3fe8-7370-556a-9c3c-540d81d5de99",
+        "include-controls": [
+          {
+            "with-ids": [
+              "NG-INF.12.A8"
             ]
           }
         ]
       }
     ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "INF.12-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "INF.12.A1",
+                "class": "ed23-anforderung",
+                "title": "INF.12.A1 Auswahl geeigneter Kabeltypen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.12.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb, Haustechnik"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.12.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Bei der Auswahl von Kabeltypen MUSS geprüft werden, welche übertragungstechnischen Eigenschaften notwendig sind. Die einschlägigen Normen und Vorschriften MÜSSEN beachtet werden. Auch die Umgebungsbedingungen im Betrieb und bei der Verlegung MÜSSEN berücksichtigt werden. Hinsichtlich der Umgebungsbedingungen MÜSSEN die folgenden Faktoren beachtet werden: Temperaturen, Kabelwege, Zugkräfte bei der Verlegung, die Art der Verlegung sowie die Entfernung zwischen den Endpunkten und möglichen Störquellen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.9.5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.12.A2",
+                "class": "ed23-anforderung",
+                "title": "INF.12.A2 Planung der Kabelführung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.12.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb, Haustechnik"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.12.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Kabel, Kabelwege und Kabeltrassen MÜSSEN aus funktionaler und aus physikalischer Sicht ausreichend dimensioniert werden. Dabei MÜSSEN künftige Notwendigkeiten eingerechnet werden, z. B. genügend Platz für mögliche technische Erweiterungen in Kabelkanälen und -trassen. Bei der gemeinsamen Führung von IT- und Stromverkabelung in einer Trasse MUSS das Übersprechen zwischen den einzelnen Kabeln verhindert werden. Es MUSS darauf geachtet werden, dass die IT-Verkabelung und die elektrotechnische Verkabelung mit dem normgerechten Trennungsabstand geführt werden. Erkennbare Gefahrenquellen MÜSSEN umgangen werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.1.4"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.9.5",
+                    "rel": "related",
+                    "text": "GEB.9.5 steht unter INF.12.A1"
+                  }
+                ]
+              },
+              {
+                "id": "INF.12.A3",
+                "class": "ed23-anforderung",
+                "title": "INF.12.A3 Fachgerechte Installation",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.12.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb, Haustechnik"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.12.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Die Installationsarbeiten der Verkabelung MÜSSEN fachkundig und sorgfältig erfolgen. Bei der Installation MÜSSEN alle relevanten Normen beachtet werden. Die fachgerechte Ausführung der Verkabelung MUSS durch eine fachkundige Person in allen Phasen überprüft werden. Bei Anlieferung des Materials MUSS geprüft werden, ob die richtigen Kabel und Anschlusskomponenten geliefert wurden. Es MUSS darauf geachtet werden, dass die Montage keine Beschädigungen verursacht. Außerdem MÜSSEN die Kabelwege so gewählt werden, dass eine Beschädigung der verlegten Kabel durch die normale Nutzung des Gebäudes ausgeschlossen ist."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BES.7.1",
+                          "GEB.9.1",
+                          "GEB.9.5.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.9.5",
+                    "rel": "related",
+                    "text": "GEB.9.5 steht unter INF.12.A1"
+                  }
+                ]
+              },
+              {
+                "id": "INF.12.A4",
+                "class": "ed23-anforderung",
+                "title": "INF.12.A4 EMV-taugliche Stromversorgung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.12.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Haustechnik"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.12.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Die Stromversorgung MUSS EMV (Elektromagnetische Verträglichkeit) -tauglich sein. Dafür MUSS das Stromverteilnetz als TN-S-System aufgebaut sein. Bei Aufbau und Betrieb des Stromverteilnetzes MÜSSEN die in den entsprechenden Normen empfohlenen Trennungsabstände soweit wie möglich eingehalten werden. Vorkehrungen gegen Einstrahlungen von außen, Abstrahlung durch die Stromleitung sowie zur Erkennung von Ausgleichsströmen MÜSSEN getroffen werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.9.1",
+                    "rel": "related",
+                    "text": "GEB.9.1 steht unter INF.12.A3"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "INF.12-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "INF.12.A5",
+                "class": "ed23-anforderung",
+                "title": "INF.12.A5 Anforderungsanalyse für die Verkabelung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.12.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb, Haustechnik"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.12.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Grundsätzlich SOLLTEN die Anforderungen analysiert werden, die Einfluss auf eine zukunftssichere, bedarfsgerechte und wirtschaftliche Ausführung der Verkabelung haben. In dieser Anforderungsanalyse SOLLTE zunächst abgeschätzt werden, wie die kurzfristige Nutzung der Verkabelung innerhalb der Institution aussieht. Darauf aufbauend SOLLTE die längerfristige Entwicklung der Nutzung abgeschätzt werden. Darüber hinaus MÜSSEN die Schutzziele der Verfügbarkeit, Integrität und Vertraulichkeit bei der Anforderungsanalyse für die Verkabelung mit betrachtet werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.9.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.9.5",
+                    "rel": "related",
+                    "text": "GEB.9.5 steht unter INF.12.A1"
+                  }
+                ]
+              },
+              {
+                "id": "INF.12.A6",
+                "class": "ed23-anforderung",
+                "title": "INF.12.A6 Abnahme der Verkabelung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.12.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb, Haustechnik"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.12.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Für die Verkabelung SOLLTE es einen Abnahmeprozess geben. Verkabelungen SOLLTEN immer dann abgenommen werden, wenn alle (gegebenenfalls im Rahmen eines Meilensteins) durchzuführenden Aufgaben abgeschlossen sind. Die Ausführenden SOLLTE hierfür die Aufgaben als abgeschlossen und zur Abnahme bereit gemeldet haben. Außerdem SOLLTEN sich bei den Kontrollen durch die auftraggebende Institution keine inakzeptablen Mängel gezeigt haben. Der Abnahmetermin SOLLTE so gewählt werden, dass die Kontrollen zur Abnahme in ausreichender Zeit vorbereitet werden können. Die auftragnehmende Institution MUSS spätestens zum Abnahmetermin schriftlich belegen, dass sämtliche Normen und Vorschriften eingehalten wurden, die für das Gewerk gelten. Bei der Abnahme MUSS der tatsächliche Umfang der Leistungen überprüft werden. Für das Abnahmeprotokoll SOLLTE eine Checkliste vorbereitet werden. Das Abnahmeprotokoll MUSS von den Teilnehmenden und Verantwortlichen rechtsverbindlich unterzeichnet werden. Das Protokoll MUSS Bestandteil der internen Dokumentation der Verkabelung sein."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BES.4.8",
+                          "GEB.1.3.1",
+                          "TEST.4.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#BES.7.1",
+                    "rel": "related",
+                    "text": "BES.7.1 steht unter INF.12.A3"
+                  },
+                  {
+                    "href": "#GEB.9.5",
+                    "rel": "related",
+                    "text": "GEB.9.5 steht unter INF.12.A1"
+                  }
+                ]
+              },
+              {
+                "id": "INF.12.A7",
+                "class": "ed23-anforderung",
+                "title": "INF.12.A7 Überspannungsschutz",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.12.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Haustechnik"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.12.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Jedes elektrisch leitende Netz SOLLTE gegen Überspannungen geschützt werden. Hierfür MUSS ein entsprechendes Überspannungsschutzkonzept erstellt werden, das den gültigen Normen entspricht. Netzersatzanlagen (NEA) und unterbrechungsfreie Stromversorgungen (USV) MÜSSEN in das Überspannungsschutzkonzept aufgenommen werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.9.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.12.A8",
+                "class": "ed23-anforderung",
+                "title": "INF.12.A8 Entfernen und Deaktivieren nicht mehr benötigter Kabel",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.12.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb, Haustechnik"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.12.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Wenn Kabel nicht mehr benötigt werden, SOLLTEN sie fachgerecht und vollständig entfernt werden. Nachdem Kabel entfernt wurden, MÜSSEN die Brandschottungen fachgerecht verschlossen werden. Kabel, die aktuell nicht mehr benötigt werden, aber mit der vorhandenen Technik sinnvoll als Reserve an Ort und Stelle verbleiben können, SOLLTEN in einem betriebsfähigen Zustand erhalten werden. Solche Kabel MÜSSEN mindestens an den Endpunkten entsprechend gekennzeichnet werden. Grundsätzlich SOLLTE eine Übersicht über nicht mehr benötigte Kabel aufgestellt werden. Aus der Dokumentation SOLLTE hervorgehen, welche Kabel entfernt oder deaktiviert wurden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NG-INF.12.A8"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.12.A9",
+                "class": "ed23-anforderung",
+                "title": "INF.12.A9 Brandschutz in Trassen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.12.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Haustechnik"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.12.A9_anforderung",
+                    "name": "overview",
+                    "prose": "Trassen SOLLTEN ausreichend dimensioniert werden. Trassen SOLLTEN über eine ausreichende Be- und Entlüftung verfügen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.10.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.9.1",
+                    "rel": "related",
+                    "text": "GEB.9.1 steht unter INF.12.A3"
+                  },
+                  {
+                    "href": "#GEB.9.5",
+                    "rel": "related",
+                    "text": "GEB.9.5 steht unter INF.12.A1"
+                  }
+                ]
+              },
+              {
+                "id": "INF.12.A10",
+                "class": "ed23-anforderung",
+                "title": "INF.12.A10 Dokumentation und Kennzeichnung der Verkabelung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.12.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb, Haustechnik"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.12.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Eine Institution SOLLTE sicherstellen, dass sie für ihre Verkabelung sowohl über eine interne als auch eine externe Dokumentation verfügt. Die interne Dokumentation MUSS alle Aufzeichnungen zur Installation und zum Betrieb der Verkabelung enthalten. Die interne Dokumentation SOLLTE so umfangreich angefertigt und gepflegt werden, dass der Betrieb und dessen Weiterentwicklung bestmöglich unterstützt werden. Die externe Dokumentation (Beschriftung von Anschlüssen zur Unterstützung des Betriebs) der Verkabelung SOLLTE möglichst neutral gehalten werden. Jede Veränderung im Netz SOLLTE dokumentiert werden. Eine Interims- oder Arbeitsversion der Dokumentation SOLLTE unmittelbar, d. h. am Tag selbst angepasst werden. Die Stamm-Dokumentation MUSS spätestens 4 Wochen nach Abschluss der jeweiligen Arbeiten aktualisiert sein. Es SOLLTE geprüft werden, ob ein Dokumentenmanagement für die Dokumentation eingesetzt werden kann. Die Dokumentation SOLLTE regelmäßig überprüft und aktualisiert werden. Sämtliche technischen Einrichtungen, die im Rahmen der Verkabelung dokumentiert sind, MÜSSEN hinsichtlich der Dokumentationstreue spätestens nach 4 Jahren geprüft werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.1.1.1",
+                          "ARCH.2.4",
+                          "ASST.3.4",
+                          "GEB.1.5",
+                          "TEST.2.2.2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.12.A11",
+                "class": "ed23-anforderung",
+                "title": "INF.12.A11 Neutrale Dokumentation in den Verteilern",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.12.A11"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb, Haustechnik"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.12.A11_anforderung",
+                    "name": "overview",
+                    "prose": "In jedem Verteiler SOLLTE es eine Dokumentation geben, die den derzeitigen Stand von Rangierungen und Leitungsbelegungen wiedergibt. Die Dokumentation im Verteiler MUSS ein sicheres Schalten ermöglichen. Die Dokumentation im Verteiler SOLLTE möglichst neutral gehalten werden. In der Dokumentation im Verteiler SOLLTEN nur bestehende und genutzte Verbindungen sowie auflaufende Reservekabel aufgeführt sein. Falls möglich, SOLLTEN keine Hinweise auf die Art gegeben werden, wie Kabel genutzt werden. Es SOLLTEN nur solche Hinweise gegeben werden, die ausdrücklich vorgeschrieben sind. Alle weitergehenden Informationen SOLLTEN in einer Revisionsdokumentation aufgeführt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ASST.3.4",
+                    "rel": "related",
+                    "text": "ASST.3.4 steht unter INF.12.A10"
+                  }
+                ]
+              },
+              {
+                "id": "INF.12.A12",
+                "class": "ed23-anforderung",
+                "title": "INF.12.A12 Kontrolle elektrotechnischer Anlagen und bestehender Verbindungen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.12.A12"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb, Haustechnik"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.12.A12_anforderung",
+                    "name": "overview",
+                    "prose": "Alle elektrischen Anlagen und Betriebsmittel SOLLTEN gemäß DGUV Vorschrift 3, entsprechend den in § 5 Prüfung genannten Durchführungsanweisungen, regelmäßig geprüft werden. Alle Unregelmäßigkeiten, die festgestellt werden, MÜSSEN unverzüglich dokumentiert werden. Festgestellte Unregelmäßigkeiten MÜSSEN unverzüglich den zuständigen Organisationseinheiten gemeldet werden. Die zuständigen Organisationseinheiten MÜSSEN die festgestellten Unregelmäßigkeiten so zeitnah beheben, dass eine Gefährdung von Personen ausgeschlossen werden kann. Die Verfügbarkeit der elektrischen Anlagen und Betriebsmittel MUSS hierbei im erforderlichen Maß sichergestellt sein."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.5.2",
+                          "DET.2.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.12.A13",
+                "class": "ed23-anforderung",
+                "title": "INF.12.A13 Vermeidung elektrischer Zündquellen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.12.A13"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Haustechnik"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.12.A13_anforderung",
+                    "name": "overview",
+                    "prose": "Die Nutzung privater Elektrogeräte innerhalb einer Institution SOLLTE klar geregelt werden. Alle Elektrogeräte MÜSSEN durch eine Elektrofachkraft geprüft und für sicher befunden werden, bevor sie eingesetzt werden. Die Verwendung von Steckdosenleisten SOLLTE soweit wie möglich vermieden werden. Fehlende Steckdosen SOLLTEN durch eine Elektrofachkraft fachgerecht nachgerüstet werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.9.1",
+                    "rel": "related",
+                    "text": "GEB.9.1 steht unter INF.12.A3"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "INF.12-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "INF.12.A14",
+                "class": "ed23-anforderung",
+                "title": "INF.12.A14 A-B-Versorgung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.12.A14"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Haustechnik"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.12.A14_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE geprüft werden, ob anstelle einer einzügigen Stromversorgung eine zweizügige sogenannte A-B-Versorgung geschaffen werden soll, die wichtige IT-Komponenten und andere Verbraucher versorgt. Dabei SOLLTE die Funktionsfähigkeit der Stromversorgung permanent durch geeignete technische Einrichtungen überwacht werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "GEB.9.1.3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "INF.12.A15",
+                "class": "ed23-anforderung",
+                "title": "INF.12.A15 Materielle Sicherung der Verkabelung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.12.A15"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb, Haustechnik"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.12.A15_anforderung",
+                    "name": "overview",
+                    "prose": "Für alle Räume eines Gebäudes, insbesondere in Räumen mit Publikumsverkehr sowie in unübersichtlichen Bereichen SOLLTE überlegt werden, Kabel und Verteiler gegen unbefugte Zugriffe zu sichern. In jedem Fall SOLLTEN die Zahl und der Umfang derjenigen Stellen möglichst gering gehalten werden, an denen Einrichtungen der Energieversorgung und Zugangspunkte des Datennetzes für Unbefugte zugänglich sind."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.9.5.1",
+                    "rel": "related",
+                    "text": "GEB.9.5.1 steht unter INF.12.A3"
+                  }
+                ]
+              },
+              {
+                "id": "INF.12.A16",
+                "class": "ed23-anforderung",
+                "title": "INF.12.A16 Nutzung von Schranksystemen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.12.A16"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "Haustechnik"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.12.A16_anforderung",
+                    "name": "overview",
+                    "prose": "Elektrotechnische Anschlüsse und -verteiler SOLLTEN in Schranksystemen aufgestellt oder in diese eingebaut werden. Bei der Dimensionierung der Schranksysteme SOLLTE das erwartete Wachstum für den geplanten Einsatzzeitraum berücksichtigt werden."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#GEB.9.1",
+                    "rel": "related",
+                    "text": "GEB.9.1 steht unter INF.12.A3"
+                  }
+                ]
+              },
+              {
+                "id": "INF.12.A17",
+                "class": "ed23-anforderung",
+                "title": "INF.12.A17 Redundanzen für die IT-Verkabelung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "INF.12.A17"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "INF.12.A17_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE geprüft werden, ob eine redundante primäre IT-Verkabelung geschaffen werden soll, die über unabhängige Trassen geführt wird. Ebenso SOLLTE geprüft werden, ob die Anschlüsse an IT- oder TK-Provider redundant ausgelegt werden sollen. Bei hohen oder sehr hohen Verfügbarkeitsanforderungen SOLLTE überlegt werden, in den relevanten Gebäuden die Sekundär- und Tertiärverkabelung redundant auszulegen. Dabei SOLLTEN redundant ausgelegte Teile der Sekundärverkabelung in unterschiedlichen Brandabschnitten geführt werden. Wird eine redundante Verkabelung verwendet, SOLLTE deren Funktionsfähigkeit regelmäßig geprüft werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.8.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ARCH.9.1",
+                    "rel": "related",
+                    "text": "ARCH.9.1 steht unter INF.12.A5"
+                  },
+                  {
+                    "href": "#ASST.5.2",
+                    "rel": "related",
+                    "text": "ASST.5.2 steht unter INF.12.A12"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
     "back-matter": {
       "resources": [
         {
@@ -64,6 +1049,448 @@
                 {
                   "algorithm": "SHA-256",
                   "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "6b2c3fe8-7370-556a-9c3c-540d81d5de99",
+          "title": "NG Ergänzungskatalog zu den ED23-Baustein-Profilen – Anforderungen ohne Entsprechung im Anwenderkatalog Grundschutz++",
+          "description": "NG Ergänzungskatalog mit 69 nutzergenerierten Controls, Datei NG-ergaenzungskatalog.json neben diesem Profil",
+          "rlinks": [
+            {
+              "href": "NG-ergaenzungskatalog.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "294687c3394f61715fdfd8c24bda821ffe4fbe0e30c11016ab59d24f89acfb3d"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "ARCH.1.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A10",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.2.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A10",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.8.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A17",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 2): Die Maßnahme behandelt die redundante Anbindung von TK-Providern, lässt jedoch die zusätzlich geforderte redundante Auslegung von IT-Provideranschlüssen unberücksichtigt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ARCH.9.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A5",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A17",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (superset-of)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.3.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): Die Maßnahme fordert allgemein die Kennzeichnung von Assets ohne vertrauliche Daten (wie Netzstruktur oder Standort), was die neutrale Beschriftung von Verkabelungsanschlüssen direkt abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A11",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3,5): ASST.3.4 fordert allgemein die Kennzeichnung ohne vertrauliche Informationen wie Netzstrukturen zur Vermeidung von Ausspähung, was das neutrale Halten der Verteilerdokumentation inhaltlich abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.5.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): ASST.5.2 fordert allgemein regelmäßige Wartungen zur Funktionserhaltung, deckt die spezifische elektrotechnische Prüfpflicht nach DGUV Vorschrift 3 jedoch nur als Schnittmenge ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A17",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 5): Die G++-Maßnahme ASST.5.2 fordert die regelmäßige Ausführung von Wartungsmaßnahmen zur Erhaltung der Funktionsfähigkeit von IT- und Infrastruktur-Assets, was die regelmäßige Funktionsprüfung redundanter Verkabelungen als allgemeinerer Rahmen abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.4.8",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 6): BES.4.8 deckt die Anforderung ab, indem es als allgemeine Vorgabe die Vereinbarung von Konformitäts- und Einhaltungsnachweisen bezüglich geltender Kriterien und Normen durch den Auftragnehmer fordert. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.7.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): BES.7.1 fordert als allgemeine Eingangskontrolle die Prüfung gelieferter Leistungen und Produkte anhand von Akzeptanzkriterien vor der Verwendung, was die Eingangsprüfung von geliefertem Verkabelungsmaterial abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1,4,7): BES.7.1 fordert die generelle Prüfung und Akzeptanztestung erbrachter Leistungen vor deren Einsatz, was die Etablierung eines Abnahmeprozesses für Gewerke wie die Verkabelung abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): DET.2.1 regelt das Meldeverfahren für IT-Sicherheitsereignisse; die unverzügliche Meldung festgestellter elektrotechnischer Unregelmäßigkeiten berührt ähnliche organisatorische Meldeprozesse im Infrastrukturbereich, liegt jedoch außerhalb des primären IT-Sicherheits-Scopes. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.1.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Die Maßnahme adressiert die übergeordnete Abnahme von Standorten anhand von Kriterien, fordert jedoch keinen eigenständigen Abnahmeprozess speziell für die Verkabelungsinfrastruktur."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.1.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 5): Die G++-Maßnahme GEB.1.4 verlangt allgemein die Platzierung schützenswerter Infrastrukturen außerhalb gefährdeter Bereiche, was das Umgehen erkennbarer Gefahrenquellen bei der Trassenführung abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.1.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): GEB.1.5 adressiert Strukturpläne und Verlaufswege für Netzanschlüsse, fordert jedoch nicht die spezifische interne und externe Dokumentation sowie Kennzeichnung der gesamten Verkabelung."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.10.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): Das Control fordert Brandschutz nach den entsprechenden Normen, wozu bei der Verkabelung auch die ausreichende Dimensionierung und Belüftung von Trassen zählt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.9.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): GEB.9.1 fordert die Einhaltung relevanter Normen für die Stromversorgung und -verkabelung, deckt jedoch nicht den gesamten Geltungsbereich aller sonstigen Verkabelungstypen (z. B. Datenkabel) der Kabelinfrastruktur ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A4",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1,2,3): GEB.9.1 fordert eine normgerechte Stromversorgung nach Standards wie DIN VDE 0100, was die grundlegende Anforderung an eine fachgerechte und EMV-taugliche Stromversorgung im Gebäude abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (subset-of, Konfidenz mittel, Checker fraglich): Eine norm- und bedarfsgerechte Stromverkabelung umfasst auch ausreichend dimensionierte sowie be- und entlüftete Kabeltrassen zur Vermeidung von Überhitzung, die Anforderung spezifiziert diesen Aspekt für Trassen konkret."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): Die Forderung nach einer norm- und bedarfsgerechten Stromversorgung und -verkabelung nach DIN VDE 0100 deckt das fachgerechte Nachrüsten von Steckdosen als allgemeinere Maßnahme ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A16",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz niedrig, Checker bestaetigt): Das Control fordert eine norm- und bedarfsgerechte Stromversorgung und -verkabelung, verlangt jedoch nicht explizit den Einbau elektrotechnischer Anschlüsse und Verteiler in ausreichend dimensionierte Schranksysteme."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.9.1.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A14",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Die G++-Maßnahme behandelt die Installation einer redundanten Stromversorgung auf Standortebene, was sich inhaltlich mit der Prüfung einer zweizügigen A-B-Versorgung überschneidet. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.9.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): Die Installation von Überspannungsschutzeinrichtungen adressiert den Schutz leitender Netze, stellt jedoch nur eine konkrete technische Maßnahme zur Erreichung des umfassenden Schutzziels dar. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.9.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A1",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,2): GEB.9.5 fordert eine bedarfsgerechte Datenverkabelung, die laut Erläuterung darauf ausgelegt sein muss, die erforderlichen übertragungstechnischen Eigenschaften wie Bandbreite und Antwortzeiten zu erreichen. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,3,4): Die geforderte norm- und bedarfsgerechte Datenverkabelung überschneidet sich mit der funktionalen und physikalischen Dimensionierung von Datenkabeln und Trassen, umfasst jedoch nicht explizit alle Trassen dimensionierenden Faktoren. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,2): Beide Anforderungen betreffen die sachgerechte Durchführung von Verkabelungsinstallationen, setzen jedoch unterschiedliche Schwerpunkte hinsichtlich Normkonformität bzw. Fachkunde und Sorgfalt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Satz 1 fordert die Analyse von Anforderungen für eine bedarfsgerechte Ausführung der Verkabelung, was sich direkt mit der bedarfsgerechten Auslegung der Datenverkabelung in GEB.9.5 deckt."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 6): Satz 6 fordert den schriftlichen Nachweis der Einhaltung aller einschlägigen Normen und Vorschriften für die Verkabelung, was sich direkt mit der in GEB.9.5 geforderten normgerechten Datenverkabelung überschneidet."
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A9",
+                  "remarks": "Herkunft: KI-Vorschlag (subset-of, Konfidenz mittel, Checker fraglich): Eine norm- und bedarfsgerechte Datenverkabelung schließt die fachgerechte Auslegung und Dimensionierung der genutzten Kabeltrassen ein."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.9.5.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 6): Die Maßnahme empfiehlt allgemein eine geschützte Kabelverlegung, was sich mit dem Schutz vor Kabelbeschädigungen überschneidet, ohne spezifisch auf die Wahl der Kabelwege bei normaler Gebäudenutzung einzugehen. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A15",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): Die Maßnahme empfiehlt eine geschützte Kabelverlegung, deckt damit jedoch nur den Schutz von Leitungswegen ab und spart die Absicherung von Verteilern aus. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "TEST.2.2.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 5): Die G++-Maßnahme fordert als allgemeine Regelung die Dokumentation von Änderungen, was die Dokumentation von Veränderungen im Netz inhaltlich abdeckt. [auch: satz_abdeckung, gsmap]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "TEST.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "INF.12.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 9): Die Maßnahme adressiert die Signatur einer Freigabeerklärung bei Änderungen und Tests, während Satz 9 die rechtsverbindliche Unterzeichnung des Abnahmeprotokolls einer Verkabelung durch Teilnehmende und Verantwortliche fordert. Es besteht eine inhaltliche Überschneidung bezüglich der formellen Unterzeichnung, jedoch weichen Kontext und Adressatenkreis voneinander ab."
                 }
               ]
             }

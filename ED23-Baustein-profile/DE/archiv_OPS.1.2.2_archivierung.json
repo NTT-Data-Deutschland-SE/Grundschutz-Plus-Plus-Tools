@@ -1,0 +1,2130 @@
+{
+  "profile": {
+    "uuid": "96d26f7f-6490-5dd9-b222-133c64abb1ad",
+    "metadata": {
+      "title": "OPS.1.2.2 – Archivierung (Archiv)",
+      "last-modified": "2026-10-19T01:18:10.666315+00:00",
+      "version": "2026-10-19",
+      "oscal-version": "1.2.2",
+      "props": [
+        {
+          "name": "herkunft",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "BSI"
+        },
+        {
+          "name": "ed23-baustein",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "OPS.1.2.2"
+        },
+        {
+          "name": "ed23-baustein-titel",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Archivierung"
+        },
+        {
+          "name": "zielobjektkategorie",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "Archiv"
+        },
+        {
+          "name": "ed23-katalog-pin",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "62f080393956331bb202f2c057eb416af8fcd4de"
+        },
+        {
+          "name": "ed23-schicht",
+          "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+          "value": "prozess"
+        },
+        {
+          "name": "keywords",
+          "value": "ED23, OPS.1.2.2, Grundschutz++"
+        }
+      ],
+      "links": [
+        {
+          "href": "#eeb526e2-be22-5e91-9677-ea325446081e",
+          "rel": "source",
+          "text": "Baustein OPS.1.2.2 im BSI-IT-Grundschutz-Katalog Edition 2023 (benutzerdefinierte OSCAL-Ausgabe)"
+        }
+      ],
+      "remarks": "Erzeugt von Gpp-ai-tool 5.0.1 (stage_ED23_profiles_enhanced). Die Anforderungen des Bausteins sind Gruppen mit dem Originaltext als Part „overview“ (amtlicher Wortlaut des XML-Kompendiums 2023); die Controls stammen aus dem Anwenderkatalog Grundschutz++ (Pin a12831136f41) und dem NG Ergänzungskatalog (NG-ergaenzungskatalog.json, nutzergeneriert). Jede Zuordnung nennt ihre Herkunft in der Prop ed23-anforderung des Controls. Prozess-Baustein ohne eigene Praktik in Grundschutz++; die Zielobjektkategorie ist nur informativ."
+    },
+    "imports": [
+      {
+        "href": "#afe1c75e-8725-5df2-a57b-235d7d5236f4",
+        "include-controls": [
+          {
+            "with-ids": [
+              "ARCH.8.3",
+              "ASST.1.1",
+              "ASST.1.1.1",
+              "ASST.1.2",
+              "ASST.2.1",
+              "ASST.3.1",
+              "ASST.3.13",
+              "ASST.3.14",
+              "ASST.5.2",
+              "ASST.7.2",
+              "ASST.7.2.1",
+              "BER.7.14",
+              "BER.7.8",
+              "BES.2.1",
+              "BES.4.3",
+              "BES.7.1",
+              "DET.3.1",
+              "DET.3.1.12",
+              "DET.3.1.7",
+              "DET.3.3",
+              "DET.4.15",
+              "DET.5.8",
+              "DET.6.1",
+              "DET.6.1.2",
+              "GC.2.1",
+              "GC.3.1",
+              "GEB.3.3",
+              "GEB.6.2",
+              "GEB.8.1",
+              "GEB.8.1.1",
+              "NOT.1.1.1",
+              "NOT.4.16.1",
+              "NOT.4.2",
+              "NOT.4.3",
+              "NOT.4.4",
+              "NOT.4.5.1",
+              "NOT.4.8",
+              "NOT.4.9",
+              "PERF.3.2",
+              "PERS.4.2",
+              "PERS.4.2.1",
+              "REA.2.6.5",
+              "SENS.1.1",
+              "TEST.2.2.2",
+              "TEST.3.1.1",
+              "VRB.2.1"
+            ]
+          }
+        ]
+      },
+      {
+        "href": "#6b2c3fe8-7370-556a-9c3c-540d81d5de99",
+        "include-controls": [
+          {
+            "with-ids": [
+              "NG-OPS.1.2.2.A15",
+              "NG-OPS.1.2.2.A21",
+              "NG-OPS.1.2.2.A4",
+              "NG-OPS.1.2.2.A9"
+            ]
+          }
+        ]
+      }
+    ],
+    "merge": {
+      "combine": {
+        "method": "use-first"
+      },
+      "custom": {
+        "groups": [
+          {
+            "id": "OPS.1.2.2-B",
+            "class": "ed23-stufe",
+            "title": "Basis-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "B"
+              }
+            ],
+            "groups": [
+              {
+                "id": "OPS.1.2.2.A1",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A1 Ermittlung von Einflussfaktoren für die elektronische Archivierung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A1"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A1_anforderung",
+                    "name": "overview",
+                    "prose": "Bevor entschieden wird, welche Verfahren und Produkte für die elektronische Archivierung eingesetzt werden, MÜSSEN die technischen, rechtlichen und organisatorischen Einflussfaktoren ermittelt und dokumentiert werden. Die Ergebnisse MÜSSEN in das Archivierungskonzept einfließen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BES.2.1",
+                          "GC.3.1",
+                          "NOT.1.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A2",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A2 Entwicklung eines Archivierungskonzepts",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A2"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A2_anforderung",
+                    "name": "overview",
+                    "prose": "Es MUSS definiert werden, welche Ziele mit der Archivierung erreicht werden sollen. Hierbei MUSS insbesondere berücksichtigt werden, welche Regularien einzuhalten sind, welche Mitarbeitende zuständig sind und welcher Funktions- und Leistungsumfang angestrebt wird. Die Ergebnisse MÜSSEN in einem Archivierungskonzept erfasst werden. Die Institutionsleitung MUSS in diesen Prozess einbezogen werden. Das Archivierungskonzept MUSS regelmäßig an die aktuellen Gegebenheiten der Institution angepasst werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.1.1.1",
+                          "ASST.1.2",
+                          "ASST.7.2.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A3",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A3 Geeignete Aufstellung von Archivsystemen und Lagerung von Archivmedien",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A3"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A3_anforderung",
+                    "name": "overview",
+                    "prose": "Die IT-Komponenten eines Archivsystems MÜSSEN in gesicherten Räumen aufgestellt werden. Es MUSS sichergestellt sein, dass nur berechtigte Personen die Räume betreten dürfen. Archivspeichermedien MÜSSEN geeignet gelagert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.3.13",
+                          "GEB.3.3",
+                          "GEB.6.2",
+                          "GEB.8.1",
+                          "GEB.8.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A4",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A4 Konsistente Indizierung von Daten bei der Archivierung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A4"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb, Benutzende"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A4_anforderung",
+                    "name": "overview",
+                    "prose": "Alle in einem Archiv abgelegten Daten, Dokumente und Datensätze MÜSSEN eindeutig indiziert werden. Dazu MUSS bereits während der Konzeption festgelegt werden, welche Struktur und welchen Umfang die Indexangaben für ein Archiv haben sollen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.2.1",
+                          "NG-OPS.1.2.2.A4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A5",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A5 Regelmäßige Aufbereitung von archivierten Datenbeständen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A5"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A5_anforderung",
+                    "name": "overview",
+                    "prose": "Über den gesamten Archivierungszeitraum hinweg MUSS sichergestellt werden, dass das verwendete Datenformat von den benutzten Anwendungen verarbeitet werden kann, die gespeicherten Daten auch zukünftig lesbar und so reproduzierbar sind, dass Semantik und Beweiskraft beibehalten werden, das benutzte Dateisystem auf dem Speichermedium von allen beteiligten Komponenten verarbeitet werden kann, die Speichermedien jederzeit technisch einwandfrei gelesen werden können sowie die verwendeten kryptografischen Verfahren zur Verschlüsselung und zum Beweiswerterhalt mittels digitaler Signatur, Siegel, Zeitstempel oder technischen Beweisdaten (Evidence Records) dem Stand der Technik entsprechen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NOT.4.5.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A6",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A6 Schutz der Integrität der Indexdatenbank von Archivsystemen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A6"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A6_anforderung",
+                    "name": "overview",
+                    "prose": "Die Integrität der Indexdatenbank MUSS sichergestellt und überprüfbar sein. Außerdem MUSS die Indexdatenbank regelmäßig gesichert werden. Die Datensicherungen MÜSSEN wiederherstellbar sein. Mittlere und große Archive SOLLTEN über redundante Indexdatenbanken verfügen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ARCH.8.3",
+                          "NOT.4.16.1",
+                          "NOT.4.3",
+                          "NOT.4.4"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A7",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A7 Regelmäßige Datensicherung der System- und Archivdaten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A7"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A7_anforderung",
+                    "name": "overview",
+                    "prose": "Alle Archivdaten, die zugehörigen Indexdatenbanken sowie die Systemdaten MÜSSEN regelmäßig gesichert werden (siehe CON.3 Datensicherungskonzept)."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NOT.4.2"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#NOT.4.3",
+                    "rel": "related",
+                    "text": "NOT.4.3 steht unter OPS.1.2.2.A6"
+                  },
+                  {
+                    "href": "#NOT.4.4",
+                    "rel": "related",
+                    "text": "NOT.4.4 steht unter OPS.1.2.2.A6"
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A8",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A8 Protokollierung der Archivzugriffe",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A8"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A8_anforderung",
+                    "name": "overview",
+                    "prose": "Alle Zugriffe auf elektronische Archive MÜSSEN protokolliert werden. Dafür SOLLTEN Datum, Uhrzeit, Benutzender, Client und die ausgeführten Aktionen sowie Fehlermeldungen aufgezeichnet werden. Im Archivierungskonzept SOLLTE festgelegt werden, wie lange die Protokolldaten aufbewahrt werden. Die Protokolldaten der Archivzugriffe SOLLTEN regelmäßig ausgewertet werden. Dabei SOLLTEN die institutionsinternen Vorgaben beachtet werden. Auch SOLLTE definiert sein, welche Ereignisse welchen Mitarbeitenden angezeigt werden, wie z. B. Systemfehler, Timeouts oder wenn Datensätze kopiert werden. Kritische Ereignisse SOLLTEN sofort nach der Erkennung geprüft und, falls nötig, weiter eskaliert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.7.2",
+                          "DET.3.1",
+                          "DET.3.1.12",
+                          "DET.3.1.7",
+                          "DET.3.3",
+                          "DET.6.1",
+                          "DET.6.1.2",
+                          "REA.2.6.5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A9",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A9 Auswahl geeigneter Datenformate für die Archivierung von Dokumenten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A9"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "1"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A9_anforderung",
+                    "name": "overview",
+                    "prose": "Für die Archivierung MUSS ein geeignetes Datenformat ausgewählt werden. Es MUSS gewährleisten, dass sich Archivdaten sowie ausgewählte Merkmale des ursprünglichen Dokumentmediums langfristig und originalgetreu reproduzieren lassen. Die Dokumentstruktur des ausgewählten Datenformats MUSS eindeutig interpretierbar und elektronisch verarbeitbar sein. Die Syntax und Semantik der verwendeten Datenformate SOLLTE dokumentiert und von einer Standardisierungsorganisation veröffentlicht sein. Es SOLLTE für eine beweis- und revisionssichere Archivierung ein verlustfreies Bildkompressionsverfahren benutzt werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.1.1",
+                          "NG-OPS.1.2.2.A9"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "OPS.1.2.2-S",
+            "class": "ed23-stufe",
+            "title": "Standard-Anforderungen",
+            "props": [
+              {
+                "name": "label",
+                "value": "S"
+              }
+            ],
+            "groups": [
+              {
+                "id": "OPS.1.2.2.A10",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A10 Erstellung einer Richtlinie für die Nutzung von Archivsystemen",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A10"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A10_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE sichergestellt werden, dass Mitarbeitende das Archivsystem so benutzen, wie es im Archivierungskonzept vorgesehen ist. Dazu SOLLTE eine Administrations- und eine Benutzungsrichtlinie erstellt werden. Die Administrationsrichtlinie SOLLTE folgende Punkte enthalten: Festlegung der Verantwortung für Betrieb und Administration, Vereinbarungen über Leistungsparameter beim Betrieb (unter anderem Service Level Agreements), Modalitäten der Vergabe von Zutritts- und Zugriffsrechten, Modalitäten der Vergabe von Zugangsrechten zu den vom Archiv bereitgestellten Diensten, Regelungen zum Umgang mit archivierten Daten und Archivmedien, Überwachung des Archivsystems und der Umgebungsbedingungen, Regelungen zur Datensicherung, Regelungen zur Protokollierung sowie Trennung von Produzenten und Konsumenten (OAIS-Modell)."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.3.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ASST.1.1.1",
+                    "rel": "related",
+                    "text": "ASST.1.1.1 steht unter OPS.1.2.2.A2"
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A11",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A11 Einweisung in die Administration und Bedienung des Archivsystems",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A11"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb, Benutzende"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A11_anforderung",
+                    "name": "overview",
+                    "prose": "Die zuständigen Mitarbeitende des IT-Betriebs und die Benutzenden SOLLTEN für ihren Aufgabenbereich geschult werden. Die Schulung der Mitarbeitenden des IT-Betriebs SOLLTE folgende Themen umfassen: Systemarchitektur und Sicherheitsmechanismen des verwendeten Archivsystems und des darunterliegenden Betriebssystems, Installation und Bedienung des Archivsystems und Umgang mit Archivmedien, Dokumentation der Administrationstätigkeiten sowie Eskalationsprozeduren. Die Schulung der Benutzende SOLLTE folgende Themen umfassen: Umgang mit dem Archivsystem, Bedienung des Archivsystems sowie rechtliche Rahmenbedingungen der Archivierung. Die Durchführung der Schulungen sowie die Teilnahme SOLLTEN dokumentiert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "PERS.4.2",
+                          "PERS.4.2.1",
+                          "SENS.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A12",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A12 Überwachung der Speicherressourcen von Archivmedien",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A12"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "MUSS"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A12_anforderung",
+                    "name": "overview",
+                    "prose": "Die auf den Archivmedien vorhandene freie Speicherkapazität SOLLTE kontinuierlich überwacht werden. Sobald ein definierter Grenzwert unterschritten wird, MÜSSEN zuständige Mitarbeitende automatisch alarmiert werden. Die Alarmierung SOLLTE rollenbezogen erfolgen. Es MÜSSEN immer ausreichend leere Archivmedien verfügbar sein, um Speicherengpässen schnell vorbeugen zu können."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.3.14",
+                          "DET.4.15"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A13",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A13 Regelmäßige Revision der Archivierungsprozesse",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A13"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A13_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE regelmäßig überprüft werden, ob die Archivierungsprozesse noch korrekt und ordnungsgemäß funktionieren. Dazu SOLLTE eine Checkliste erstellt werden, die Fragen zu Verantwortlichkeiten, Organisationsprozessen, zum Einsatz der Archivierung, zur Redundanz der Archivdaten, zur Administration und zur technischen Beurteilung des Archivsystems enthält. Die Auditergebnisse SOLLTEN nachvollziehbar dokumentiert und mit dem Soll-Zustand abgeglichen werden. Abweichungen SOLLTE nachgegangen werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "PERF.3.2",
+                          "VRB.2.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ASST.1.2",
+                    "rel": "related",
+                    "text": "ASST.1.2 steht unter OPS.1.2.2.A2"
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A14",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A14 Regelmäßige Beobachtung des Marktes für Archivsysteme",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A14"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A14_anforderung",
+                    "name": "overview",
+                    "prose": "Der Markt für Archivsysteme SOLLTE regelmäßig und systematisch beobachtet werden. Dabei SOLLTEN unter anderem folgende Kriterien beobachtet werden: Veränderungen bei Standards, Wechsel der Technik bei herstellenden Unternehmen von Hard- und Software, veröffentlichte Sicherheitslücken oder Schwachstellen sowie der Verlust der Sicherheitseignung bei kryptografischen Algorithmen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "DET.5.8",
+                          "GC.2.1"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ASST.1.2",
+                    "rel": "related",
+                    "text": "ASST.1.2 steht unter OPS.1.2.2.A2"
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A15",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A15 Regelmäßige Aufbereitung von kryptografisch gesicherten Daten bei der Archivierung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A15"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A15_anforderung",
+                    "name": "overview",
+                    "prose": "Es SOLLTE kontinuierlich beobachtet werden, wie sich das Gebiet der Kryptografie entwickelt, um beurteilen zu können, ob ein Algorithmus weiterhin zuverlässig und ausreichend sicher ist (siehe auch OPS.1.2.2.A20 Geeigneter Einsatz kryptografischer Verfahren bei der Archivierung). Archivdaten, die mit kryptografischen Verfahren gesichert wurden, die sich in absehbarer Zeit nicht mehr zur Sicherung eignen werden, SOLLTEN rechtzeitig mit geeigneten Verfahren neu gesichert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.7.14",
+                          "NG-OPS.1.2.2.A15"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A16",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A16 Regelmäßige Erneuerung technischer Archivsystem-Komponenten",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A16"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A16_anforderung",
+                    "name": "overview",
+                    "prose": "Archivsysteme SOLLTEN über lange Zeiträume auf dem aktuellen technischen Stand gehalten werden. Neue Hard- und Software SOLLTE vor der Installation in einem laufenden Archivsystem ausführlich getestet werden. Wenn neue Komponenten in Betrieb genommen oder neue Dateiformate eingeführt werden, SOLLTE ein Migrationskonzept erstellt werden. Darin SOLLTEN alle Änderungen, Tests und erwarteten Testergebnisse beschrieben sein. Die Konvertierung der einzelnen Daten SOLLTE dokumentiert werden (Transfervermerk). Wenn Archivdaten in neue Formate konvertiert werden, SOLLTE geprüft werden, ob die Daten aufgrund rechtlicher Anforderungen zusätzlich in ihren ursprünglichen Formaten zu archivieren sind."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "ASST.5.2",
+                          "BES.7.1",
+                          "TEST.2.2.2",
+                          "TEST.3.1.1"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A17",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A17 Auswahl eines geeigneten Archivsystems",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A17"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A17_anforderung",
+                    "name": "overview",
+                    "prose": "Ein neues Archivsystem SOLLTE immer auf Basis der im Archivierungskonzept beschriebenen Vorgaben ausgewählt werden. Es SOLLTE die dort formulierten Anforderungen erfüllen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BES.4.3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A18",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A18 Verwendung geeigneter Archivmedien",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A18"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A18_anforderung",
+                    "name": "overview",
+                    "prose": "Für die Archivierung SOLLTEN geeignete Medien ausgewählt und benutzt werden. Dabei SOLLTEN folgende Aspekte berücksichtigt werden: das zu archivierende Datenvolumen, die mittleren Zugriffszeiten sowie die mittleren gleichzeitigen Zugriffe auf das Archivsystem. Ebenfalls SOLLTEN die Archivmedien die Anforderungen an eine Langzeitarchivierung hinsichtlich Revisionssicherheit und Lebensdauer erfüllen."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NOT.4.9"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A19",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A19 Regelmäßige Funktions- und Recoverytests bei der Archivierung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A19"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "3"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A19_anforderung",
+                    "name": "overview",
+                    "prose": "Für die Archivierung SOLLTEN regelmäßige Funktions- und Recoverytests durchgeführt werden. Die Archivierungsdatenträger SOLLTEN mindestens einmal jährlich daraufhin überprüft werden, ob sie noch lesbar und integer sind. Für die Fehlerbehebung SOLLTEN geeignete Prozesse definiert werden. Weiterhin SOLLTEN die Hardwarekomponenten des Archivsystems regelmäßig auf ihre einwandfreie Funktion hin geprüft werden. Es SOLLTE regelmäßig geprüft werden, ob alle Archivierungsprozesse fehlerfrei funktionieren."
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ASST.5.2",
+                    "rel": "related",
+                    "text": "ASST.5.2 steht unter OPS.1.2.2.A16"
+                  },
+                  {
+                    "href": "#NOT.4.16.1",
+                    "rel": "related",
+                    "text": "NOT.4.16.1 steht unter OPS.1.2.2.A6"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "OPS.1.2.2-H",
+            "class": "ed23-stufe",
+            "title": "Anforderungen bei erhöhtem Schutzbedarf",
+            "props": [
+              {
+                "name": "label",
+                "value": "H"
+              }
+            ],
+            "groups": [
+              {
+                "id": "OPS.1.2.2.A20",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A20 Geeigneter Einsatz kryptografischer Verfahren bei der Archivierung",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A20"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "rolle",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "IT-Betrieb"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A20_anforderung",
+                    "name": "overview",
+                    "prose": "Um lange Aufbewahrungsfristen abdecken zu können, SOLLTEN Archivdaten nur mit kryptografischen Verfahren auf Basis aktueller Standards und Normen gesichert werden."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "BER.7.8",
+                          "NOT.4.8"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "OPS.1.2.2.A21",
+                "class": "ed23-anforderung",
+                "title": "OPS.1.2.2.A21 Übertragung von Papierdaten in elektronische Archive",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "OPS.1.2.2.A21"
+                  },
+                  {
+                    "name": "level",
+                    "ns": "https://www.bsi.bund.de/ns/grundschutz",
+                    "value": "5"
+                  },
+                  {
+                    "name": "modal_verb",
+                    "ns": "https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek/tree/main/documentation/namespaces/modal_verbs.csv",
+                    "value": "SOLLTE"
+                  },
+                  {
+                    "name": "herkunft",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "BSI"
+                  },
+                  {
+                    "name": "anforderungsart",
+                    "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                    "value": "umsetzungsanforderung",
+                    "remarks": "Einordnung durch das Modell"
+                  }
+                ],
+                "parts": [
+                  {
+                    "id": "OPS.1.2.2.A21_anforderung",
+                    "name": "overview",
+                    "prose": "Werden z. B. Dokumente auf Papier digitalisiert und in ein elektronisches Archiv überführt, SOLLTE sichergestellt werden, dass die digitale Kopie mit dem Originaldokument bildlich und inhaltlich übereinstimmt."
+                  }
+                ],
+                "insert-controls": [
+                  {
+                    "include-controls": [
+                      {
+                        "with-ids": [
+                          "NG-OPS.1.2.2.A21"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#ASST.7.2.1",
+                    "rel": "related",
+                    "text": "ASST.7.2.1 steht unter OPS.1.2.2.A2"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "back-matter": {
+      "resources": [
+        {
+          "uuid": "afe1c75e-8725-5df2-a57b-235d7d5236f4",
+          "title": "Grundschutz++-resolved_catalog.json @ a12831136f41",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/BSI-Bund/Stand-der-Technik-Bibliothek/a12831136f4122a4c43854622180a24f2576a41e/control_layer/Grundschutz%2B%2B/Grundschutz%2B%2B-resolved_catalog.json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "27a9d50092bd6c8fef5c0f83495e125bd54383a1ebf5d4f763803fce0380c645"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "eeb526e2-be22-5e91-9677-ea325446081e",
+          "title": "BSI_GS_OSCAL_current_2023_benutzerdefinierte.json @ 62f080393956",
+          "description": "BSI IT-Grundschutz-Kompendium Edition 2023 als OSCAL (benutzerdefinierte Ausgabe NTT DATA DACH: 111 BSI-Bausteine und 12 nutzergenerierte NG-Bausteine)",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "ab94fb31de6dbbc64c5a0be5b51dd90a73a7400d78ce5f0ccc2261dd91a39b0c"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "6b2c3fe8-7370-556a-9c3c-540d81d5de99",
+          "title": "NG Ergänzungskatalog zu den ED23-Baustein-Profilen – Anforderungen ohne Entsprechung im Anwenderkatalog Grundschutz++",
+          "description": "NG Ergänzungskatalog mit 69 nutzergenerierten Controls, Datei NG-ergaenzungskatalog.json neben diesem Profil",
+          "rlinks": [
+            {
+              "href": "NG-ergaenzungskatalog.json",
+              "media-type": "application/json",
+              "hashes": [
+                {
+                  "algorithm": "SHA-256",
+                  "value": "294687c3394f61715fdfd8c24bda821ffe4fbe0e30c11016ab59d24f89acfb3d"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modify": {
+      "alters": [
+        {
+          "control-id": "ARCH.8.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): ARCH.8.3 adressiert allgemein redundante Hostsysteme für Anwendungen, formuliert jedoch keine spezifische Vorgabe für redundante Indexdatenbanken in Archivsystemen. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A9",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.1.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): Die G++-Maßnahme ASST.1.1.1 fordert allgemein die Dokumentation von Verfahren und Regelungen für Informationen und Assets, was die Dokumentation der Archivierungsregelungen in einem Konzept umfasst. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): Die Erstellung von Administrations- und Benutzungsrichtlinien ist ein konkreter Anwendungsfall der allgemeinen Dokumentationspflicht von Verfahren und Regelungen gemäß ASST.1.1.1. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A2",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 5): ASST.1.2 fordert die regelmäßige und anlassbezogene Überprüfung von Verfahren und Regelungen auf Aktualität und Anpassung an aktuelle Gegebenheiten, was die regelmäßige Anpassung des Archivierungskonzepts abdeckt. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A13",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A14",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A4",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A10",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die G++-Maßnahme ASST.3.1 fordert die Anweisung von Nutzenden bezüglich der geltenden Regelungen für die Nutzung von Informationen und Assets, was die bestimmungsgemäÔe Nutzung des Archivsystems gemäß Konzept allgemein abdeckt. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.3.13",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): ASST.3.13 regelt die generelle Lagerung physischer Assets in vorgesehenen Lagern, umfasst jedoch nicht die spezifischen konservatorischen oder archivierungsbezogenen Lagerungsbedingungen für Archivspeichermedien. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.3.14",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A12",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): Die Bereithaltung ausreichender leerer Archivmedien als Reserve zur Vorbeugung von Engpässen stellt einen Spezialfall der allgemeinen Forderung nach einer Reserve physischer Assets dar. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.5.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A16",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A19",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): ASST.5.2 fordert die regelmäßige Durchführung von Wartungsmaßnahmen zur Erhaltung der Funktionsfähigkeit von IT- und Hardware-Assets, was die regelmäßige Funktionsprüfung der Archiv-Hardwarekomponenten als allgemeine Anforderung abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.7.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): Die G++-Maßnahme ASST.7.2 fordert allgemein die Festlegung von Aufbewahrungsfristen für Daten, was laut Erläuterung explizit auch Protokolldateien umfasst und somit die Festlegung von Aufbewahrungsfristen für Archivierungsprotokolle inhaltlich abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "ASST.7.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A2",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A21",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.7.14",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A15",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BER.7.8",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A20",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): Die Maßnahme fordert allgemein etablierte Algorithmen bei der Schlüsselnutzung, deckt die spezifischen Anforderungen an normgerechte kryptografische Verfahren für die Archivierung jedoch nur teilweise ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A1",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.4.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A17",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Die G++-Maßnahme BES.4.3 deckt als allgemeine Vorgabe zur Durchführung von Beschaffungen anhand zuvor festgelegter Kriterien die Auswahl eines neuen Archivsystems auf Basis des Archivierungskonzepts inhaltlich ab. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "BES.7.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A16",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): BES.7.1 deckt das Testen neuer Hard- und Software vor dem produktiven Einsatz als allgemeine Eingangspruefung und Akzeptanztest vor der ersten Verwendung ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1,3): DET.3.1 fordert die grundlegende Protokollierung sicherheitsrelevanter Ereignisse für Anwendungen und deckt damit die allgemeine Pflicht zur Protokollierung von Zugriffen auf elektronische Archive ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1.12",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): DET.3.1.12 deckt das Protokollieren von Zugriffen auf elektronische Archive als allgemeine Anforderung zur Protokollierung von Datenverarbeitungen und -zugriffen inhaltlich ab. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.1.7",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): DET.3.1.7 überschneidet sich mit den Kernfeldern für Zeit, Quelle und Ziel, deckt jedoch spezifische Inhalte wie die ausgeführten Aktionen und Fehlermeldungen bei Archivzugriffen nicht vollständig ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.3.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A8",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.4.15",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A12",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (subset-of) [auch: prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.5.8",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A14",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): DET.5.8 verlangt die regelmäßige Überprüfung verfügbarer Informationen zu relevanten Bedrohungen und deckt damit die Beobachtung veröffentlichter Sicherheitslücken, Schwachstellen und der Sicherheitseignung kryptografischer Algorithmen ab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.6.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 4): DET.6.1 regelt die kriterienbasierte Beurteilung von Ereignissen, was sich mit der regelmäßigen Auswertung von Archiv-Zugriffsprotokollen überschneidet. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "DET.6.1.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 7): DET.6.1.2 fordert die automatisierte Alarmierung bei Vorfällen, deckt jedoch die anschließende Prüfung und manuelle Eskalation kritischer Archivzugriffe nicht ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GC.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A14",
+                  "remarks": "Herkunft: KI-Vorschlag (superset-of, Konfidenz niedrig, Checker fraglich): GC.2.1 fordert die Analyse relevanter externer Rahmenbedingungen, wozu auch technologische Entwicklungen am Markt und Veränderungen bei Standards gehören."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GC.3.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz niedrig, Checker bestaetigt): GC.3.1 deckt die systematische Erfassung rechtlicher und regulatorischer Compliance-Verpflichtungen ab, die als rechtliche Einflussfaktoren in die Archivierungsplanung einfließen."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.3.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 2): GEB.3.3 verlangt die Authentifizierung von Zutritten an Standorten und wirkt damit darauf hin, dass nur Berechtigte Räume betreten, regelt aber nicht die spezifischen Aufstell- und Archivierungsbedingungen. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.6.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): GEB.6.2 fordert die geschützte Platzierung von IT-Systemen vor dem Zugriff Unbefugter und deckt damit die Aufstellung von Archiv-IT-Komponenten in gesicherten Räumen als allgemeinere Maßnahme ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.8.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): GEB.8.1 deckt den Schutz vor unbefugtem Zugriff durch verschließbare Behältnisse ab, während eine geeignete Archivlagerung nach Satz 3 zusätzliche konservatorische und umgebungsbezogene Anforderungen umfassen kann. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "GEB.8.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A3",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 3): Die Platzierung geschäftskritischer Speichermedien in Datenträgerarchiven deckt einen Teilaspekt der geforderten geeigneten Lagerung von Archivmedien ab. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.1.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A1",
+                  "remarks": "Herkunft: KI-Vorschlag (intersects-with, Konfidenz mittel, Checker bestaetigt): In Grundschutz++ ist die Langzeitarchivierung in der Praktik Notfallplanung (NOT.4.5) verortet; NOT.1.1.1 verlangt die Dokumentation der zugehörigen Verfahren und Regelungen (Archivierungskonzept)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.4.16.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 3): NOT.4.16.1 verlangt die regelmäßige Überprüfung der Wiederherstellung von Daten, wodurch die geforderte Wiederherstellbarkeit der Datensicherungen inhaltlich abgedeckt wird. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A19",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): NOT.4.2 adressiert die regelmäßige Sicherung von Systemdaten als Teilmenge der umfassenden Sicherung von Archivdaten, Indexdatenbanken und Systemdaten. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.4.3",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A6",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 2): NOT.4.3 fordert die regelmaessige Datensicherung von Anwendungen inklusive Backend-Datenbanken und deckt damit die regelmaessige Sicherung der Indexdatenbank ab. [auch: satz_abdeckung]"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A7",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1): Satz 1 fordert die regelmäßige Sicherung von Indexdatenbanken und Archivdaten, was als anwendungsbezogene Datensicherung direkt unter NOT.4.3 fällt."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.4.4",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A6",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                },
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A7",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.4.5.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A5",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (subset-of, Teilanforderung 1): Die Maßnahme adressiert die Archivierung der für den Datenzugriff nötigen System-Assets, deckt jedoch andere Pflichten aus Satz 1 wie Medienintegrität und die Nachführung kryptografischer Verfahren nach Stand der Technik nicht ab. [auch: prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.4.8",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A20",
+                  "remarks": "Herkunft: prozessbausteine_mapping (1:1-Zuordnung)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "NOT.4.9",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A18",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,3): Beide Anforderungen adressieren die Eignung von Speichermedien für Aufbewahrungszeiträume, unterscheiden sich jedoch im Anwendungsbereich zwischen Notfall-Datensicherungen und Archivierung. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERF.3.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 3): PERF.3.2 deckt die Dokumentation der Auditergebnisse ab, schließt den geforderten Abgleich mit dem Soll-Zustand jedoch nicht ein. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERS.4.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A11",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 1,3): PERS.4.2 fordert rollenspezifische Schulungen für das Personal entsprechend ihren jeweiligen Aufgaben, was die allgemeine Schulungspflicht für IT-Betrieb und Benutzende aus Satz 1 abdeckt. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "PERS.4.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A11",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1,2): PERS.4.2.1 deckt die produktspezifische Schulung von Administrierenden ab, schließt die für Benutzende geforderten Schulungsmaßnahmen jedoch nicht ein. [auch: satz_abdeckung, prozessbausteine_mapping]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "REA.2.6.5",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A8",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 7): Die Maßnahme verankert den Mechanismus zur Eskalation, umfasst jedoch weder die operative Prüfung noch den spezifischen Kontext der Archivzugriffskontrolle. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "SENS.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A11",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (intersects-with, Teilanforderung 1): SENS.1.1 schafft die organisatorischen Verfahren für rollenspezifische Schulungen, umfasst jedoch nicht die spezifische Schulung für Administration und Bedienung von Archivsystemen. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "TEST.2.2.2",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A16",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "TEST.3.1.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A16",
+                  "remarks": "Herkunft: BSI-GSMap ITGS→GS++ (intersects-with)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "control-id": "VRB.2.1",
+          "adds": [
+            {
+              "position": "ending",
+              "props": [
+                {
+                  "name": "ed23-anforderung",
+                  "ns": "https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein",
+                  "value": "OPS.1.2.2.A13",
+                  "remarks": "Herkunft: gpp_ed23_anforderungen (superset-of, Teilanforderung 4): VRB.2.1 fordert die systematische Überprüfung und Ursachenanalyse von Nicht-Konformitäten bzw. Abweichungen und deckt damit die allgemeinere Fassung der geforderten Tätigkeit ab. [auch: satz_abdeckung]"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

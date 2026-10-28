@@ -50,10 +50,10 @@ Die Architektur ist als modulare, mehrstufige Pipeline implementiert (Python). D
 
 Der `AiClient` ist die zentrale Komponente für Interaktionen mit Google Vertex AI (nutzt das `google-genai` SDK).
 
-*   **Modell-Konfiguration:** Verwendet standardmäßig `gemini-2.5-flash` (`GROUND_TRUTH_MODEL`). Für `stage_component` wird ein Override auf `gemini-3-pro-preview` (`GROUND_TRUTH_MODEL_PRO`) genutzt.
+*   **Modell-Konfiguration:** Ein Modell für alles, `gemini-4-argon` (`GEMINI_MODEL`); Qualität und Kosten werden je Call über den Thinking-Level gesetzt (`MAKER_THINKING_LEVEL` medium für Kandidaten- und Anreicherungs-Calls, `CHECKER_THINKING_LEVEL` high für Prüf- und Abwägungs-Calls), nie über ein zweites Modell. Kein explizites Caching: der stabile Prompt-Prefix (Korpus) wird implizit gecacht.
 *   **Strukturierte Ausgabe:** Nutzt `GenerationConfig` mit `response_mime_type="application/json"` und `response_schema`.
 *   **Asynchrone Verarbeitung:** Implementiert asynchrone Anfragen (via `.aio` accessor) für parallele Verarbeitung, gesteuert durch `asyncio.Semaphore`.
-*   **Robuste Fehlerbehandlung:** Implementiert einen manuellen asynchronen Retry-Mechanismus mit exponentiellem Backoff. Es werden API-Fehler, Netzwerkfehler (httpx) und Validierungsfehler (wenn die KI kein Schema-konformes JSON liefert) abgefangen.
+*   **Robuste Fehlerbehandlung:** Retry nur bei transienten Fehlern (429, 5xx, Timeouts) und bei Schema-Verstößen der Antwort, exponentieller Backoff, höchstens `API_MAX_RETRIES` (5) Wiederholungen je Call; permanente Fehler (400/401/403/404) brechen sofort mit Grund ab.
 *   **Validierung:** Jede Antwort wird mittels `jsonschema.validate` validiert.
 
 ```python

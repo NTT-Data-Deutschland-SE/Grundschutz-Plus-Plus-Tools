@@ -873,9 +873,11 @@
                 öffnen</button>
             <button type="button" onclick="clearAIChunkCacheUI()" class="rail-nav-item"><span
                     class="glyph">⋯</span>Chunk-Cache leeren</button>
+            <button type="button" onclick="verifyNgList()" class="rail-nav-item" title="Lädt die reine BSI-Datei (15 MB) vom selben Commit und vergleicht die Baustein-IDs mit der NG-Liste"><span
+                    class="glyph">⊘</span>NG-Liste prüfen (15 MB)</button>
         </div>
 
-        <div class="rail-foot">Build ED23 V1.6</div>
+        <div class="rail-foot">Build ED23 V1.7</div>
     </aside>
     <div id="rail-splitter" class="rail-splitter" title="Breite der Rail ziehen"></div>
 
@@ -885,8 +887,9 @@
             <section class="glass page-intro">
                 <h1 class="text-2xl font-bold text-white">OSCAL SSP Generator — IT-Grundschutz Edition 2023</h1>
                 <p class="mt-2 text-slate-400 text-sm max-w-2xl leading-relaxed">
-                    BSI IT-Grundschutz Edition 2023 (benutzerdefinierte OSCAL-Ausgabe mit Reifegraden):
-                    Bausteine als Profile, Absicherung Basis/Standard, integrierte Risikoanalyse und
+                    BSI IT-Grundschutz Edition 2023 (benutzerdefinierte OSCAL-Ausgabe mit Reifegraden; 111 Bausteine
+                    des BSI und 12 nutzergenerierte Bausteine „NG“ von NTT DATA, im Werkzeug und in den Exporten als NG
+                    markiert): Bausteine als Profile, Absicherung Basis/Standard, integrierte Risikoanalyse und
                     Generierung von Profile &amp; SSP.
                 </p>
             </section>
@@ -1099,6 +1102,16 @@
         // Commit-gepinnt (Handbuch 3.13/3.14, Grundregel 8); der SHA-256-Pin im Export wird
         // zusätzlich über die tatsächlich geladenen Bytes berechnet.
         const CATALOG_URL_BASE = 'https://raw.githubusercontent.com/NTTDATA-DACH/BSI-GS-Benutzerdefinierte-Edition23-OSCAL/62f080393956331bb202f2c057eb416af8fcd4de/BS_GK_OSCAL_JSON_DATA/BSI_GS_OSCAL_current_2023_benutzerdefinierte.json';
+        // Nutzergenerierte Bausteine (NG, NTT DATA) im benutzerdefinierten ED23-Katalog: der Katalog
+        // selbst trägt keinen Marker. Die Liste ist die Differenz der Baustein-IDs zwischen
+        // BSI_GS_OSCAL_current_2023_benutzerdefinierte.json und BSI_GS_OSCAL_current_2023.json
+        // (gleicher Ordner, gleicher Commit wie CATALOG_URL_BASE) und MUSS bei einem Pin-Wechsel neu
+        // abgeleitet werden („NG-Liste prüfen" in der Rail oder Dokumentation/namespaces/ed23_baustein_props.md).
+        const ED23_NG_BAUSTEINE = new Set(['APP.4.5', 'APP.4.7', 'APP.4.8', 'APP.4.9', 'APP.4.10',
+            'SYS.1.10', 'SYS.1.11', 'SYS.1.2.4', 'SYS.5.1', 'ORP.6', 'OPS.1.1.8', 'DER.7']);
+        // Namespace der Herkunfts-Kennzeichnung (Dokumentation/namespaces/ed23_baustein_props.md).
+        const ED23_NS = 'https://github.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/ns/ed23-baustein';
+        const NG_TOOLTIP = 'Nutzergenerierter Baustein (NTT DATA), nicht vom BSI';
 
         // Pin-Unterstützung (Handbuch 3.13/3.14, Katalogarbeit-Skill Grundregel 8):
         // Für den ED23-Basiskatalog gibt es keinen festgeschriebenen Commit-Pin, daher
@@ -1131,12 +1144,12 @@
             {
                 // Commit-gepinnt: fester Stand statt Default-Branch.
                 name: 'C5:2026 OSCAL Katalog',
-                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2d17c83071c067b3acdb9a13f851d4a0104a83ab/kataloge/c5-2026-oscal-catalog.json'
+                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/kataloge/c5-2026-oscal-catalog.json'
             },
             {
                 // Commit-gepinnt: fester Stand statt Default-Branch.
                 name: ' C3A - Criteria enabling Cloud Computing Autonomy',
-                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/2d17c83071c067b3acdb9a13f851d4a0104a83ab/kataloge/c3a_oscal_catalog.json'
+                href: 'https://raw.githubusercontent.com/NTT-Data-Deutschland-SE/Grundschutz-Plus-Plus-Tools/6392ea770379c7377707c355b57a850f6a8fb291/kataloge/c3a_oscal_catalog.json'
             }
         ];
 
@@ -1202,7 +1215,7 @@
         ];
         function zielobjektKategorieFromSource(source) {
             if (!source) return '';
-            const file = String(source).split('/').pop() || '';
+            const file = (String(source).split('/').pop() || '').replace(/^NG_/i, '');
             return normKategorieSlug(file.replace(/\.json$/i, '').replace(/_profile$/i, ''));
         }
         // Baustein-Schicht → OSCAL-Typ, wenn die Komponente über Ed2023-Bausteine
@@ -1511,6 +1524,7 @@ Extrahiere Assets, Prozesse, Risiken, Maßnahmen/Controls sowie konkrete Aussage
         const DEFAULT_MAPPING_PROMPT = `Du modellierst einen Informationsverbund nach BSI IT-Grundschutz Edition 2023.
 Ordne jedem Asset die zutreffenden System-Bausteine aus der Kandidatenliste zu (exakte Baustein-IDs, typischerweise 1 bis 4 je Asset, z.B. Webserver → SYS.1.1 und APP.3.2); passt keiner, gib ein leeres Array zurück.
 Ordne jedem Prozess genau einen Prozess-Baustein aus der Kandidatenliste zu (exakte ID); passt keiner, gib einen leeren String zurück.
+Bausteine mit [NG] sind nutzergenerierte Ergänzungen (NTT DATA), keine BSI-Bausteine: ordne sie zu, wenn sie fachlich passen, und nenne das in rationale.
 Setze schutzbedarf nur bei klar erhöhtem Schutzbedarf (hoch/sehr hoch) auf "erhöht", sonst auf "normal-SdT".
 Halte rationale extrem knapp (höchstens ein kurzer Satz).
 
@@ -1636,11 +1650,22 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             });
             return controls;
         }
+        // NG-Helfer: Baustein einer Anforderungs-ID, wenn er nutzergeneriert ist (sonst null); Badge; Name.
+        function ngBausteinOf(cid) {
+            const b = String(cid || '').toUpperCase().replace(/\.A\d+[A-Z]?$/, '');
+            return ED23_NG_BAUSTEINE.has(b) ? b : null;
+        }
+        function ngBadge(extraClass = '', title = NG_TOOLTIP) {
+            return `<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-fuchsia-900/60 text-fuchsia-200 border border-fuchsia-600 ${extraClass}" title="${title}">NG</span>`;
+        }
+        function bausteinName(b) {
+            return `${b.id} ${b.title}${b.isNg ? ' (NG)' : ''}`;
+        }
         // Baustein-IDs einer Komponente/Praktik als Anzeige-Label
         function bausteinLabel(bausteinIds) {
             return (bausteinIds || []).map(bid => {
                 const b = bpState.bausteinIndex.get(String(bid).toUpperCase());
-                return b ? `${b.id} ${b.title}` : bid;
+                return b ? bausteinName(b) : bid;
             }).join(', ');
         }
 
@@ -3724,8 +3749,9 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             }
             ensureAIMappingConsent();
             await ensureAIMappingCandidates();
-            const systemKandidaten = systemBausteine().map(b => `${b.id}: ${b.title}`);
-            const prozessKandidaten = processBausteine().map(b => `${b.id}: ${b.title}`);
+            const ngHinweis = b => b.isNg ? ' [NG: nutzergenerierter Baustein von NTT DATA, nicht vom BSI]' : '';
+            const systemKandidaten = systemBausteine().map(b => `${b.id}: ${b.title}${ngHinweis(b)}`);
+            const prozessKandidaten = processBausteine().map(b => `${b.id}: ${b.title}${ngHinweis(b)}`);
             const prompt = buildAIPrompt('mapping', {
                 systembausteine: systemKandidaten.join('\n'),
                 prozessbausteine: prozessKandidaten.join('\n'),
@@ -3802,7 +3828,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 const controls = bausteinControls([baustein.id]);
                 bpState.praktiken.set(key, {
                     id: crypto.randomUUID(),
-                    name: `${baustein.id} ${baustein.title}`,
+                    name: bausteinName(baustein),
                     url: `baustein:${baustein.id}`,
                     bausteine: [baustein.id],
                     controls,
@@ -3983,7 +4009,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 const analysisAssetByName = new Map((bpState.aiAnalysis?.assets || []).map(a => [a.name.toLowerCase(), a]));
                 lines.push('Assets/Komponenten:');
                 bpState.components.forEach(c => {
-                    const bausteine = c.bausteine?.length ? c.bausteine.join(', ') : 'importiertes Profil';
+                    const bausteine = c.bausteine?.length ? c.bausteine.map(b => ngBausteinOf(b) ? `${b} (NG)` : b).join(', ') : 'importiertes Profil';
                     const detail = cleanAIString(analysisAssetByName.get(c.name.toLowerCase())?.description);
                     lines.push(`- ${c.name} (Bausteine: ${bausteine}, Schutzbedarf: ${c.schutzbedarf || 'normal-SdT'}, ${c.controls.size} Anforderungen)${detail ? `: ${detail}` : ''}`);
                 });
@@ -4194,12 +4220,16 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     collect(ctl.controls);
                 });
                 collect(baustein.controls);
+                const isNg = ED23_NG_BAUSTEINE.has(String(baustein.id).toUpperCase());
+                // Anforderungen eines NG-Bausteins tragen den Marker auch im Control-Index.
+                if (isNg) controls.forEach(c => { const e = bpState.controlsIndex.get(c.id); if (e) e.isNg = true; });
                 bpState.bausteinIndex.set(String(baustein.id).toUpperCase(), {
                     id: baustein.id,
                     title: baustein.title || baustein.id,
                     layer: layerId,
                     layerTitle,
                     isProcess,
+                    isNg,
                     controls
                 });
             };
@@ -4215,7 +4245,39 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 });
                 walk(layer.groups);
             });
+            // Plausibilität der NG-Liste gegen den geladenen Katalogstand (kostenlos): jede NG-ID
+            // muss als Baustein vorkommen, sonst passt die Konstante nicht mehr zum Pin.
+            const fehlend = [...ED23_NG_BAUSTEINE].filter(id => !bpState.bausteinIndex.has(id));
+            if (fehlend.length) aiLog('warn', `NG-Liste passt nicht zum Katalogstand: ${fehlend.join(', ')} nicht im Katalog — nach einem Pin-Wechsel ED23_NG_BAUSTEINE neu ableiten („NG-Liste prüfen")`);
         }
+
+        // Opt-in: die reine BSI-Datei desselben Commits laden und die Baustein-IDs mit der
+        // NG-Liste vergleichen (Differenz = NG). Bewusst nicht beim Seitenstart: 15 MB.
+        window.verifyNgList = async function () {
+            const plainUrl = CATALOG_URL_BASE.replace('_benutzerdefinierte.json', '.json');
+            aiLog('info', `NG-Liste prüfen: lade ${plainUrl} …`);
+            try {
+                const res = await fetch(plainUrl);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                const plain = new Set();
+                (data?.catalog?.groups || []).forEach(layer => {
+                    const walk = groups => (groups || []).forEach(g => {
+                        if (g.id && (g.class === 'baustein' || (g.controls && !g.groups))) plain.add(String(g.id).toUpperCase());
+                        walk(g.groups);
+                    });
+                    walk(layer.groups);
+                });
+                const alle = new Set(bpState.bausteinIndex.keys());
+                const diff = [...alle].filter(id => !plain.has(id)).sort();
+                const zuViel = [...ED23_NG_BAUSTEINE].filter(id => !diff.includes(id));
+                const zuWenig = diff.filter(id => !ED23_NG_BAUSTEINE.has(id));
+                if (!zuViel.length && !zuWenig.length) aiLog('ok', `NG-Liste stimmt: ${diff.length} Bausteine nur im benutzerdefinierten Katalog (${plain.size} BSI-Bausteine).`);
+                else aiLog('warn', `NG-Liste weicht ab — in der Konstante, aber BSI: ${zuViel.join(', ') || '–'}; nicht in der Konstante, aber NG: ${zuWenig.join(', ') || '–'}`);
+            } catch (e) {
+                aiLog('error', `NG-Liste prüfen fehlgeschlagen: ${e.message}`);
+            }
+        };
 
         function mergeControlsIntoIndex(controlEntries) {
             controlEntries.forEach((entry, id) => {
@@ -4258,7 +4320,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 buildBausteinIndex(data);
 
                 statusEl.className = "meta-pill status-ok";
-                statusEl.innerHTML = `✓ Edition 2023 · ${bpState.bausteinIndex.size} Bausteine · ${bpState.controlsIndex.size} Anforderungen`;
+                const ngCount = [...bpState.bausteinIndex.values()].filter(b => b.isNg).length;
+                statusEl.innerHTML = `✓ Edition 2023 · ${bpState.bausteinIndex.size} Bausteine <span title="${NG_TOOLTIP}">(davon ${ngCount} NG)</span> · ${bpState.controlsIndex.size} Anforderungen`;
             } catch (e) {
                 statusEl.className = "meta-pill status-err";
                 statusEl.innerHTML = `△ Fehler beim Laden des Katalogs`;
@@ -4450,7 +4513,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
                 <div class="mb-6 p-5 bg-slate-900/80 border border-blue-700/60 rounded-xl shadow-inner">
                     <h3 class="text-sm font-bold text-blue-400 uppercase mb-2">3. Prozess-Bausteine (Optional)</h3>
-                    <p class="text-xs text-slate-400 mb-4">Prozess-Bausteine (ISMS, ORP, CON, OPS, DER) gelten einmal je Informationsverbund. ${ED23_MANDATORY_BAUSTEIN} ist bereits über die Absicherung enthalten.</p>
+                    <p class="text-xs text-slate-400 mb-4">Prozess-Bausteine (ISMS, ORP, CON, OPS, DER) gelten einmal je Informationsverbund. ${ED23_MANDATORY_BAUSTEIN} ist bereits über die Absicherung enthalten. Mit NG markierte Bausteine sind nutzergenerierte Ergänzungen (NTT DATA), nicht Teil des IT-Grundschutz-Kompendiums.</p>
                     <input type="text" id="praktiken-filter" oninput="renderProcessBausteinList(this.value)" class="w-full px-3 py-2 mb-3 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:outline-none focus:border-blue-500 placeholder-slate-500" placeholder="⌕ Prozess-Baustein filtern (ID oder Titel)...">
                     <div id="praktiken-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-64 overflow-y-auto custom-scroll pr-2">
                         <div class="text-sm text-slate-500 italic">Lade Bausteine aus dem Katalog...</div>
@@ -4459,7 +4522,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
                 <div class="pt-2">
                     <h3 class="text-sm font-bold text-slate-300 uppercase mb-2">4. Assets (Zielobjekte) mit System-Bausteinen</h3>
-                    <p class="text-xs text-slate-400 mb-4">Ein Asset erhält einen oder mehrere System-Bausteine (APP, SYS, IND, NET, INF) — z. B. Webserver → SYS.1.1 + APP.3.2.</p>
+                    <p class="text-xs text-slate-400 mb-4">Ein Asset erhält einen oder mehrere System-Bausteine (APP, SYS, IND, NET, INF) — z. B. Webserver → SYS.1.1 + APP.3.2. Mit NG markierte Bausteine sind nutzergenerierte Ergänzungen (NTT DATA), nicht Teil des IT-Grundschutz-Kompendiums.</p>
                     <div class="mb-4">
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Bausteine wählen (<span id="baustein-picker-count">0</span> ausgewählt)</label>
                         <input type="text" id="baustein-picker-filter" oninput="renderAssetBausteinPicker(this.value)" class="w-full px-3 py-2 mb-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 placeholder-slate-500" placeholder="⌕ System-Baustein filtern (z.B. SYS.1.1, Webserver)...">
@@ -4556,7 +4619,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 return `
                     <label class="flex items-start space-x-3 p-3 bg-slate-800 border border-slate-700 rounded-lg hover:border-blue-500 cursor-pointer transition-colors">
                         <input type="checkbox" ${checked} onchange="togglePraktik(this, '${b.id}')" class="mt-0.5 form-checkbox h-4 w-4 text-blue-500 rounded border-slate-600 bg-slate-900 focus:ring-blue-500 focus:ring-offset-slate-800">
-                        <span class="text-sm text-slate-200"><span class="font-mono font-bold">${b.id}</span> ${b.title}<span class="block text-[10px] text-slate-500">${b.layerTitle}</span></span>
+                        <span class="text-sm text-slate-200"><span class="font-mono font-bold">${b.id}</span> ${b.title}${b.isNg ? ' ' + ngBadge() : ''}<span class="block text-[10px] text-slate-500">${b.layerTitle}</span></span>
                     </label>
                 `;
             }).join('');
@@ -4569,7 +4632,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             if (checkbox.checked) {
                 bpState.praktiken.set(key, {
                     id: crypto.randomUUID(),
-                    name: `${baustein.id} ${baustein.title}`,
+                    name: bausteinName(baustein),
                     url: `baustein:${baustein.id}`,
                     bausteine: [baustein.id],
                     controls: bausteinControls([baustein.id])
@@ -4602,7 +4665,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                 return `
                     <label class="flex items-start space-x-2 p-2 bg-slate-800 border border-slate-700 rounded-lg hover:border-emerald-500 cursor-pointer transition-colors">
                         <input type="checkbox" ${checked} onchange="toggleAssetBaustein(this, '${key}')" class="mt-0.5 form-checkbox h-4 w-4 text-emerald-500 rounded border-slate-600 bg-slate-900 focus:ring-emerald-500 focus:ring-offset-slate-800">
-                        <span class="text-xs text-slate-200"><span class="font-mono font-bold">${b.id}</span> ${b.title}<span class="block text-[10px] text-slate-500">${b.layerTitle}</span></span>
+                        <span class="text-xs text-slate-200"><span class="font-mono font-bold">${b.id}</span> ${b.title}${b.isNg ? ' ' + ngBadge() : ''}<span class="block text-[10px] text-slate-500">${b.layerTitle}</span></span>
                     </label>
                 `;
             }).join('');
@@ -4739,7 +4802,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                                 <span class="px-2 py-0.5 rounded text-[10px] uppercase ${schutzBadge} border">⬡ ${c.schutzbedarf || 'normal-SdT'}</span>
                                 ${c.aiGenerated ? '<span class="px-2 py-0.5 rounded text-[10px] uppercase bg-purple-900 text-purple-300 border border-purple-700" title="Aus der KI-Dokumentanalyse zugeordnet">◉ KI</span>' : ''}
                             </div>
-                            <div class="text-xs text-indigo-400 mt-1">+ ${c.controls.size} Anforderungen${c.bausteine?.length ? ` aus ${c.bausteine.join(', ')}` : ' (importiertes Profil)'}</div>
+                            <div class="text-xs text-indigo-400 mt-1">+ ${c.controls.size} Anforderungen${c.bausteine?.length ? ` aus ${c.bausteine.join(', ')}` : ' (importiertes Profil)'}${(c.bausteine || []).some(ngBausteinOf) ? ' ' + ngBadge() : ''}</div>
                         </div>
                         <button onclick="removeAsset(${i})" class="text-red-400 hover:text-red-300 font-bold p-2 text-sm">✕</button>
                     </li>
@@ -4824,6 +4887,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
 
                     let badges = mods.length > 0 ? `<span class="bg-blue-900/50 text-blue-300 border border-blue-700 text-[10px] px-2 py-0.5 rounded font-bold ml-2">${mods.length} Anpassungen</span>` : '';
                     if (isMuss) badges += `<span class="bg-red-900/50 text-red-300 border border-red-700 text-[10px] px-2 py-0.5 rounded font-bold ml-1">MUSS</span>`;
+                    const ngB = info?.isNg ? ngBausteinOf(cid) : null;
+                    if (ngB) badges += ngBadge('ml-1', `Anforderung des nutzergenerierten Bausteins ${ngB} (NTT DATA), nicht vom BSI`);
 
                     // Hier wurde die Änderung vorgenommen: Hinzufügen des info.text (Statement) unter dem Titel
                     // Mit line-clamp-2 und title-Attribut, um UI sauber zu halten, aber kompletten Text per Hover anzubieten.
@@ -4861,11 +4926,11 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             fullHtml += renderGroup(`Absicherung · ${ED23_MANDATORY_BAUSTEIN} Sicherheitsmanagement`, '<span class="px-2 py-0.5 rounded bg-emerald-900 text-emerald-300 text-[10px] font-bold">◈ BASE</span>', bpState.methodik.controls, bpState.methodik.uuid, true);
 
             bpState.praktiken.forEach(p => {
-                fullHtml += renderGroup(`Prozess: ${p.name}${p.aiGenerated ? ' ◉' : ''}`, '<span class="px-2 py-0.5 rounded bg-blue-900 text-blue-300 text-[10px] font-bold">◇ PRAKTIK</span>', p.controls, p.id, false);
+                fullHtml += renderGroup(`Prozess: ${p.name}${p.aiGenerated ? ' ◉' : ''}`, '<span class="px-2 py-0.5 rounded bg-blue-900 text-blue-300 text-[10px] font-bold">◇ PRAKTIK</span>' + ((p.bausteine || []).some(ngBausteinOf) ? ngBadge('ml-1') : ''), p.controls, p.id, false);
             });
 
             bpState.components.forEach(c => {
-                fullHtml += renderGroup(`Asset: ${c.name}${c.aiGenerated ? ' ◉' : ''}`, '<span class="px-2 py-0.5 rounded bg-indigo-900 text-indigo-300 text-[10px] font-bold">▣ ASSET</span>', c.controls, c.id, false);
+                fullHtml += renderGroup(`Asset: ${c.name}${c.aiGenerated ? ' ◉' : ''}`, '<span class="px-2 py-0.5 rounded bg-indigo-900 text-indigo-300 text-[10px] font-bold">▣ ASSET</span>' + ((c.bausteine || []).some(ngBausteinOf) ? ngBadge('ml-1') : ''), c.controls, c.id, false);
             });
 
             bpState.catalogs.slice(1).forEach(catalog => {
@@ -5494,7 +5559,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                         }
                         if (baustein && baustein.isProcess) {
                             bpState.praktiken.set(baustein.id.toUpperCase(), {
-                                id: c.uuid, name: `${baustein.id} ${baustein.title}`,
+                                id: c.uuid, name: bausteinName(baustein),
                                 url: `baustein:${baustein.id}`, bausteine: [baustein.id],
                                 controls: bausteinControls([baustein.id])
                             });
@@ -5726,10 +5791,26 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
             return btoa(utf8Bytes);
         }
 
+        // Prop herkunft=NG für Komponenten und Anforderungen nutzergenerierter Bausteine.
+        function ngHerkunftProp(bausteine) {
+            const ng = (bausteine || []).map(ngBausteinOf).filter(Boolean);
+            return {
+                name: 'herkunft', ns: ED23_NS, value: 'NG',
+                remarks: `Nutzergenerierte Bausteine (NTT DATA): ${[...new Set(ng)].join(', ')}; nicht Teil des IT-Grundschutz-Kompendiums des BSI.`
+            };
+        }
+
         function generateProfile(t) {
             const ts = new Date().toISOString();
             const setParams = [], altersMap = new Map();
             const profileMetadataProps = [];
+            // Herkunft NG: jeder nutzergenerierte Baustein im Geltungsbereich wird am Profil genannt.
+            const ngImScope = new Set();
+            [...bpState.praktiken.values(), ...bpState.components].forEach(x => (x.bausteine || []).forEach(b => { if (ngBausteinOf(b)) ngImScope.add(ngBausteinOf(b)); }));
+            [...ngImScope].sort().forEach(b => profileMetadataProps.push({
+                name: 'ed23-baustein', ns: ED23_NS, value: b,
+                remarks: 'Herkunft: NG — nutzergenerierter Baustein (NTT DATA), nicht Teil des IT-Grundschutz-Kompendiums des BSI.'
+            }));
 
             bpState.modifications.forEach((mods, key) => {
                 const [sourceId, cid] = key.split('||');
@@ -5929,9 +6010,10 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     uuid: p.id,
                     type: "process-procedure",
                     title: `Prozess: ${p.name}`,
-                    description: `Prozess-Baustein ${(p.bausteine || []).join(', ')} der Edition 2023.`,
+                    description: `Prozess-Baustein ${(p.bausteine || []).join(', ')} der Edition 2023${(p.bausteine || []).some(ngBausteinOf) ? ' (NG: nutzergeneriert, NTT DATA)' : ''}.`,
                     status: { state: "operational" },
-                    props: [{ name: "baustein-ids", ns: ED23_BAUSTEIN_NS, value: (p.bausteine || []).join(',') }],
+                    props: [{ name: "baustein-ids", ns: ED23_BAUSTEIN_NS, value: (p.bausteine || []).join(',') },
+                            ...((p.bausteine || []).some(ngBausteinOf) ? [ngHerkunftProp(p.bausteine)] : [])],
                     links: [{ href: p.url, rel: "profile" }]
                 });
             });
@@ -5946,6 +6028,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     }
                 ];
                 if (c.bausteine?.length) props.push({ name: "baustein-ids", ns: ED23_BAUSTEIN_NS, value: c.bausteine.join(',') });
+                if ((c.bausteine || []).some(ngBausteinOf)) props.push(ngHerkunftProp(c.bausteine));
                 props.push({
                     name: "zielobjektkategorie",
                     ns: OSCAL_NAMESPACES.sourceProfile,
@@ -5960,7 +6043,8 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     value: c.sourceId,
                     remarks: 'Aus der KI-gestützten Dokumentanalyse übernommen.'
                 });
-                const bausteinHinweis = c.bausteine?.length ? ` Modelliert mit Baustein(en) ${c.bausteine.join(', ')} der Edition 2023.` : '';
+                const bausteinText = (c.bausteine || []).map(b => ngBausteinOf(b) ? `${b} (NG: nutzergeneriert)` : b).join(', ');
+                const bausteinHinweis = c.bausteine?.length ? ` Modelliert mit Baustein(en) ${bausteinText} der Edition 2023.` : '';
                 sspComponents.push({
                     uuid: c.id,
                     type: mapZielobjektComponentType(c.source, c.bausteine),
@@ -5969,7 +6053,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     description: c.description
                         ? `${c.description}${bausteinHinweis}`
                         : (c.bausteine?.length
-                            ? `Instanz '${c.name}', modelliert mit Baustein(en) ${c.bausteine.join(', ')} der Edition 2023.`
+                            ? `Instanz '${c.name}', modelliert mit Baustein(en) ${bausteinText} der Edition 2023.`
                             : `Instanz '${c.name}', basierend auf Profil ${c.source.split('/').pop()}.`),
                     status: { state: c.state || "operational" },
                     props,
@@ -6288,10 +6372,16 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     "by-components": byComps
                 };
                 if (aiControl?.sourceDocument) {
-                    requirement.props = [{
+                    requirement.props = [...(requirement.props || []), {
                         name: 'source-document',
                         ns: OSCAL_NAMESPACES.aiDocumentAnalysis,
                         value: aiControl.sourceDocument
+                    }];
+                }
+                if (ngBausteinOf(cid)) {
+                    requirement.props = [...(requirement.props || []), {
+                        name: 'herkunft', ns: ED23_NS, value: 'NG',
+                        remarks: `Anforderung des nutzergenerierten Bausteins ${ngBausteinOf(cid)} (NTT DATA), nicht vom BSI.`
                     }];
                 }
                 if (aiAnalysisResourceUuid && aiControl) {
@@ -6415,7 +6505,7 @@ Verfügbare Controls als Kandidaten für mitigatingControlIds (ID: Titel):
                     uuid: resUuid,
                     title: `OSCAL-Katalog: ${catalog.name || 'Katalog'}${index === 0 ? ' (Basis)' : ''}`,
                     description: index === 0
-                        ? 'Basis-Katalog dieser Blaupause. Alle Controls ohne eigenen Katalogbezug stammen hieraus.'
+                        ? `Basis-Katalog dieser Blaupause. Alle Controls ohne eigenen Katalogbezug stammen hieraus. Enthält neben den 111 BSI-Bausteinen 12 nutzergenerierte Bausteine (NG, NTT DATA): ${[...ED23_NG_BAUSTEINE].join(', ')}.`
                         : `Zusätzlich importierter Katalog. Die daraus übernommenen Controls sind über die Komponente "Katalog-Umsetzung: ${catalog.name}" zugeordnet.`,
                     props: [{ name: 'catalog-role', ns: OSCAL_NAMESPACES.sourceCatalog, value: index === 0 ? 'base-catalog' : 'additional-catalog' }],
                     rlinks: [{
