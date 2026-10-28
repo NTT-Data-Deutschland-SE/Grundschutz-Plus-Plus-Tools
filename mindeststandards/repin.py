@@ -5,12 +5,14 @@ Stellt Profil und Ergänzungskatalog eines Stamms mechanisch von einem alten auf
 neuen Commit der Stand-der-Technik-Bibliothek um und löst den Katalog gegen den neuen
 Stand neu auf (gleicher Resolver wie buildCatalog() in mindeststandard-oscal.html).
 Gedacht für Pin-Wechsel OHNE inhaltliche Änderung der verwendeten Controls; das Skript
-prüft das selbst und bricht ab, wenn sich mehr als Kategorienamen geändert haben.
+prüft das selbst und bricht ab, wenn sich mehr als Kategorienamen und Control-Klasse geändert haben;
+upstream umformulierte Controls nimmt --accept-changed bewusst in der neuen Fassung mit (die alters des
+Profils bleiben unverändert).
 
 Aufruf (Repo-Wurzel):
   uv run --no-project python -I -X utf8 mindeststandards/repin.py \
       --alt <alter-katalog.json> --neu <neuer-katalog.json> --neu-commit <40er-SHA> \
-      [--check-only] [--stem mindeststandard-pd-2.1 ...]
+      [--check-only] [--stem mindeststandard-pd-2.1 ...] [--accept-changed BER.5.2,...]
 
 Mit --check-only wird nur der Resolver gegen die vorhandenen Kataloge geprüft
 (Stämme, deren Profil schon auf dem neuen Pin steht, müssen bis auf uuid und
@@ -38,6 +40,8 @@ RENAMES = {'Endgeräte': 'Mobile Endgeräte', 'Faxe': 'Faxanwendungen', 'Datentr
 # Formulierungen in Statements, die der Umbenennung folgen (Katalogwortlaut vorher -> nachher)
 PHRASES = [('Konfiguration für Endgeräte', 'Konfiguration für Mobile Endgeräte'),
            ('Nutzende von Endgeräten', 'Nutzende von Mobilen Endgeräten')]
+# Umbenannte Control-Klasse (Build 2026-10-22, Kernel-Konsolidierung: alle 901 Kernel-Controls)
+CLASS_RENAMES = {'BSI-Stand-der-Technik-Kernel-G0': 'BSI-Stand-der-Technik-Kernel'}
 
 
 def tool_constant(name: str) -> str:
@@ -77,16 +81,35 @@ def load_catalog(path: Path):
 def normalize_renames(ctl):
     """Alten Katalogwortlaut auf den neuen heben, genau so eng wie der Katalog selbst umbenannt
     hat: Kategorienwerte (target_object_categories) als Liste, Statements über die festen
-    Formulierungen; sonstige Prosa (Guidance, „stationäre Endgeräte“) bleibt unangetastet."""
+    Formulierungen, Control-Klassen über CLASS_RENAMES; sonstige Prosa (Guidance, „stationäre Endgeräte“) bleibt unangetastet."""
     c = copy.deepcopy(ctl)
 
     def walk(node):
         if isinstance(node, dict):
             if node.get('name') == 'target_object_categories' and isinstance(node.get('value'), str):
                 node['value'] = rename_categories(node['value'])
+            if node.get('class') in CLASS_RENAMES:
+                node['class'] = CLASS_RENAMES[node['class']]
             if isinstance(node.get('prose'), str):
                 for before, after in PHRASES:
                     node['prose'] = node['prose'].replace(before, after)
+            for v in node.values():
+                walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v)
+    walk(c)
+    return c
+
+
+def normalize_class(ctl):
+    """Nur die Klassenumbenennung (CLASS_RENAMES), rekursiv auch in verschachtelten Kind-Controls."""
+    c = copy.deepcopy(ctl)
+
+    def walk(node):
+        if isinstance(node, dict):
+            if node.get('class') in CLASS_RENAMES:
+                node['class'] = CLASS_RENAMES[node['class']]
             for v in node.values():
                 walk(v)
         elif isinstance(node, list):
@@ -192,7 +215,10 @@ def main(argv=None) -> int:
     ap.add_argument('--neu-commit', required=True, help='40er Commit-SHA des neuen Pins')
     ap.add_argument('--stem', action='append', help='nur diese Stämme (Standard: alle mit altem Pin)')
     ap.add_argument('--check-only', action='store_true', help='nur Resolver gegen vorhandene Kataloge prüfen')
+    ap.add_argument('--accept-changed', action='append', default=[],
+                    help='Control-IDs (kommagetrennt), die upstream umformuliert wurden und in der neuen Fassung übernommen werden')
     args = ap.parse_args(argv)
+    accept = {i.strip() for s in args.accept_changed for i in s.split(',') if i.strip()}
 
     warnings: list[str] = []
     warn = warnings.append
@@ -239,23 +265,40 @@ def main(argv=None) -> int:
             continue
         # 1) Inhaltliche Prüfung: verwendete Controls dürfen sich nur in Kategorienamen unterscheiden
         ids = [i for imp in p['imports'] for ic in imp.get('include-controls', []) for i in ic.get('with-ids', []) if i in old or i in new]
-        changed = []
+        changed, accepted, n_class = [], [], 0
         for i in ids:
             if i not in new:
                 sys.exit(f'{stem}: {i} fehlt im neuen Katalog')
             a, b = dumps(old[i]), dumps(new[i])
-            if a != b:
-                a2 = dumps(normalize_renames(old[i]))
-                if a2 != b:
-                    sys.exit(f'{stem}: {i} hat sich zwischen den Pins inhaltlich geändert, kein mechanischer Pin-Wechsel möglich')
+            if a == b:
+                continue
+            only_class = dumps(normalize_class(old[i]))
+            if only_class != a:
+                n_class += 1
+            if only_class == b:
+                continue
+            if dumps(normalize_renames(old[i])) == b:
                 changed.append(i)
+            elif i in accept:
+                accepted.append(i)
+            else:
+                sys.exit(f'{stem}: {i} hat sich zwischen den Pins inhaltlich geändert, kein mechanischer Pin-Wechsel möglich'
+                         f' (--accept-changed {i}, wenn die neue Fassung übernommen werden soll)')
+        mech = []
+        if n_class:
+            mech.append('Control-Klasse ' + ', '.join(f'{a} → {b}' for a, b in CLASS_RENAMES.items()) + f' ({n_class} Controls)')
+        if changed:
+            mech.append(f'umbenannte Zielobjektkategorien ({len(changed)}: {", ".join(changed)})')
+        befund = ('nur in ' + '; '.join(mech)) if mech else 'nicht'
+        uebernommen = (f' Upstream umformuliert (Titel und Statement) und in der neuen Fassung übernommen: {", ".join(accepted)};'
+                       ' die Anpassungen des Profils an diesen Controls (alters) bleiben unverändert.') if accepted else ''
         # 2) Ergänzungskatalog
         erg_sha = None
         if erg is not None:
             em = erg['catalog']['metadata']
             em['last-modified'] = now_iso()
             em['remarks'] = em['remarks'].replace(f'Pin {old_commit[:12]}', f'Pin {args.neu_commit[:12]}')
-            em['remarks'] += f' Pin am {dt.date.today().isoformat()} mechanisch von {old_commit[:12]} auf {args.neu_commit[:12]} umgestellt (repin.py); die verwendeten Controls des Anwenderkatalogs unterscheiden sich zwischen beiden Ständen nur in umbenannten Zielobjektkategorien.'
+            em['remarks'] += f' Pin am {dt.date.today().isoformat()} mechanisch von {old_commit[:12]} auf {args.neu_commit[:12]} umgestellt (repin.py); die verwendeten Controls des Anwenderkatalogs unterscheiden sich zwischen beiden Ständen {befund}.{uebernommen}'
             erg['catalog']['uuid'] = str(uuid.uuid4())
             n_cat = n_link = 0
             for g in erg['catalog'].get('groups', []):
@@ -312,7 +355,7 @@ def main(argv=None) -> int:
                                 n_phr += 1
         pm = p['metadata']
         pm['last-modified'] = now_iso()
-        pm['remarks'] += f' Pin am {dt.date.today().isoformat()} mechanisch von {old_commit[:12]} auf {args.neu_commit[:12]} umgestellt (repin.py, Katalog neu aufgelöst); die {len(ids)} verwendeten Controls unterscheiden sich zwischen beiden Ständen nur in umbenannten Zielobjektkategorien ({len(changed)} betroffen: {", ".join(changed) or "keines"}).'
+        pm['remarks'] += f' Pin am {dt.date.today().isoformat()} mechanisch von {old_commit[:12]} auf {args.neu_commit[:12]} umgestellt (repin.py, Katalog neu aufgelöst); die {len(ids)} verwendeten Controls unterscheiden sich zwischen beiden Ständen {befund}.{uebernommen}'
         p['uuid'] = str(uuid.uuid4())
         prof_text_new = dumps(prof)
         prof_p.write_text(prof_text_new, encoding='utf-8', newline='')
@@ -320,13 +363,13 @@ def main(argv=None) -> int:
         cm = copy.deepcopy(cat['catalog']['metadata'])
         cm['last-modified'] = now_iso()
         for pr in cm.get('props', []):
-            if pr.get('name') == 'resolution-tool':
+            if pr.get('name') == 'resolution-tool' and 'repin.py' not in pr['value']:
                 pr['value'] += ' · mindeststandards/repin.py (gleicher Resolver)'
         cm['remarks'] += f' Am {dt.date.today().isoformat()} gegen den Anwenderkatalog-Stand {args.neu_commit[:12]} neu aufgelöst (repin.py).'
         new_catalog = build_catalog(prof, erg, new, cm, warn)
         cat_p.write_text(dumps(new_catalog), encoding='utf-8', newline='')
         n_ctl = sum(1 for _ in iter_controls(new_catalog['catalog']['groups']))
-        print(f'  {stem}: Profil auf {args.neu_commit[:12]} ({len(ids)} Controls, {len(changed)} mit Kategorienamen, {n_phr} Statement-Formulierungen nachgezogen), Katalog neu aufgelöst: {n_ctl} Controls, SHA-256 Profil {sha256(prof_text_new)[:12]}')
+        print(f'  {stem}: Profil auf {args.neu_commit[:12]} ({len(ids)} Controls, {n_class} mit neuer Klasse, {len(changed)} mit Kategorienamen, {len(accepted)} upstream umformuliert, {n_phr} Statement-Formulierungen nachgezogen), Katalog neu aufgelöst: {n_ctl} Controls, SHA-256 Profil {sha256(prof_text_new)[:12]}')
     for w in warnings:
         print('  Hinweis:', w)
     return rc

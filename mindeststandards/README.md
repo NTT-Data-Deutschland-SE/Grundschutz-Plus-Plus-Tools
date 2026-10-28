@@ -51,13 +51,17 @@ dort fehlt `merge/combine/@method`, das Metaschema 1.2.2 kennt das Attribut
 ## Pin wechseln
 
 ```bash
-uv run --no-project python -I -X utf8 mindeststandards/repin.py --alt <alter-katalog.json> --neu <neuer-katalog.json> --neu-commit <40er-SHA>
+uv run --no-project python -I -X utf8 mindeststandards/repin.py --alt <alter-katalog.json> --neu <neuer-katalog.json> --neu-commit <40er-SHA> [--accept-changed <Control-IDs>]
 ```
 
 `repin.py` stellt alle Stände, die noch auf dem alten Commit stehen, auf den
 neuen um (siehe oben) und verlangt, dass der neue Commit und der SHA-256 zu den
 Konstanten in `mindeststandard-oscal.html` passen. Mit `--check-only` prüft es
 nur, ob sein Resolver die vorhandenen Kataloge byteidentisch reproduziert.
+Umbenannte Zielobjektkategorien und die Control-Klasse gelten als mechanisch;
+Controls, die upstream umformuliert wurden, übernimmt es nur mit
+`--accept-changed <IDs>` in der neuen Fassung (die `alters` des Profils
+bleiben), sonst bricht es ab.
 Nach einem Pin-Wechsel die Hashes in `MST_PINNED` des SSP-Generators
 nachziehen.
 
@@ -74,10 +78,11 @@ Auslegung, kein Dokument des BSI.
 
 ## Stand
 
-Erstmals abgelegt am 16.10.2026 (Commit `22ed7b6`, builds 1.2.1 und 1.4.1), mit Release 4.3 auf `a128311` umgepinnt; Werkzeug „Mindeststandard → OSCAL“.
+Erstmals abgelegt am 16.10.2026 (Commit `22ed7b6`, builds 1.2.1 und 1.4.1), mit Release 4.3 auf `a128311` und mit Release 5.1 am 28.10.2026 auf `160c177d` umgepinnt; Werkzeug „Mindeststandard → OSCAL“.
 
-Alle Stände importieren den Anwenderkatalog am Commit `a128311` (SHA-256
-`27a9d500…`, Resource-UUID `afe1c75e-8725-5df2-a57b-235d7d5236f4`).
+Alle Stände importieren den Anwenderkatalog am Commit `160c177d` (Build
+2026-10-22; SHA-256 `7c3acebd…`, Resource-UUID
+`c45ef8e9-7d97-5035-b3df-6af73bf31126`).
 
 | Mindeststandard | Version | Stand BSI | Build | Controls | Ergänzungskatalog |
 |---|---|---|---|---|---|
@@ -99,5 +104,17 @@ werden Import, Back-Matter-Resource (URL, SHA-256, UUID) und die Querverweise
 des Ergänzungskatalogs umgestellt, Kategorienwerte und die Katalogformulierung
 „Konfiguration für Mobile Endgeräte“ nachgezogen, und der Katalog wird mit dem
 Resolver des Werkzeugs neu aufgelöst; die Remarks der Dateien halten das fest.
+
+Am 28.10.2026 (Release 5.1) wurden alle acht Stände mit `repin.py` von
+`a128311` auf `160c177d` umgestellt. Zwischen diesen Katalogständen
+unterscheiden sich die verwendeten Controls nur in der Control-Klasse
+(`BSI-Stand-der-Technik-Kernel-G0` → `BSI-Stand-der-Technik-Kernel`,
+Kernel-Konsolidierung des Builds 2026-10-22; `repin.py` kennt die
+Umbenennung als mechanisch), mit einer Ausnahme: BER.5.2 (MDM) hat das BSI
+in Titel und Statement umformuliert („Zurücksetzung und Ersetzung von
+Authentifizierungsmitteln“); der Stand übernimmt das Control mit
+`--accept-changed BER.5.2` in der neuen Fassung, das ersetzende
+MUSS-Statement des MDM-Profils (`BER.5.2_stm`) bleibt unverändert. Die
+Remarks von Profil und Ergänzungskatalog nennen beides.
 Der Mindeststandard NdB 3.0 (VS-NfD) liegt nicht öffentlich vor und fehlt
 deshalb.
