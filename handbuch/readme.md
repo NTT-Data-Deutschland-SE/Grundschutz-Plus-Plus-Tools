@@ -1,8 +1,8 @@
 # Handbuch zur Grundschutz++ Methodik – Gliederung
 
-**Version 0.1 (Entwurf zur Abstimmung)** · Stand: 2026-08-02
+**Version 0.2 (Entwurf zur Abstimmung)** · Stand: 2026-10-26 · Änderung 0.2: Quellenrangfolge um den BSI-Standard 300-1 (Version 1.0, 20.10.2026) ergänzt, normative Basis auf den Katalog-Build 2026-10-22 gehoben, neuer Abschnitt 2.7 zu den Prozessschritten des Standards.
 
-Normative Basis: `BSI-Methodik-Grundschutz++-catalog.json`, Build 2026-07-29. Der Katalog enthält 95 Methodik-Controls in fünf Praktiken: GC (35), STM (15), UMS (11), VRB (10), PERF (24). Verbindlichkeit im Bestand: 76 MUSS, 19 SOLLTE, kein KANN. Alle 95 Controls tragen `sec_level: normal-SdT`.
+Normative Basis: `BSI-Methodik-Grundschutz++-catalog.json`, Build 2026-10-22 (Stand-der-Technik-Bibliothek, Commit 160c177 vom 2026-10-23). Der Katalog enthält 95 Methodik-Controls in fünf Praktiken: GC (35), STM (15), UMS (11), VRB (10), PERF (24). Verbindlichkeit im Bestand: 76 MUSS, 19 SOLLTE, kein KANN. Alle 95 Controls tragen `sec_level: normal-SdT`. Zweite normative Quelle ist seit dem 20.10.2026 der BSI-Standard 300-1 „Methodik Grundschutz++" (Version 1.0, 42 Seiten). Das BSI passt den Anwenderkatalog an den Standard an; der Build 2026-10-22 enthält diese Anpassung noch nicht (Kapitel 1.4).
 
 Abgestimmte Vorentscheidungen (2026-08-02):
 
@@ -20,7 +20,7 @@ Das Handbuch folgt der Katalogreihenfolge GC, STM, UMS, VRB, PERF. Dass damit di
 - 1.1 Was Grundschutz++ ist: maschinenlesbarer Anforderungskatalog statt Kompendium; Einordnung in die Stand-der-Technik-Bibliothek (Control Layer, Nachbarkataloge, Mapping-Sammlungen)
 - 1.2 Gegenstand und Abgrenzung dieses Handbuchs: nur die Methodik-Praktiken; die Kernel-Sicherheitsanforderungen (ASST bis TEST) werden ausschließlich dort erwähnt, wo die Methodik auf sie verweist
 - 1.3 Zielgruppe und Lesarten: ISBs, Auditoren, Berater mit IT-Grundschutz-Vorwissen ohne Grundschutz++-Erfahrung
-- 1.4 Quellen und Rangfolge: Katalog normativ; BSI-Standard 200-2 nur als Auslegungshilfe bei Lücken; Auditierungs- und Zertifizierungsschema für Prüf- und Zertifizierungsfolgen. Umgang mit Widersprüchen: Kasten „Abweichung zu 200-2 / Schema", nie stille Harmonisierung
+- 1.4 Quellen und Rangfolge: Katalog normativ; BSI-Standard 300-1 als zweite normative Quelle und Zielzustand des angekündigten Katalog-Updates; Auditierungs- und Zertifizierungsschema für Prüf- und Zertifizierungsfolgen; BSI-Standard 200-2 nur noch als historischer Vergleich (Kapitel 10). Umgang mit Widersprüchen: Kästen „Standard 300-1 und Katalog-Build 2026-10-22" beziehungsweise „Abweichung zu 200-2 / Schema", nie stille Harmonisierung
 
 ### Kapitel 2: Die Methodik im Überblick
 
@@ -29,6 +29,7 @@ Das Handbuch folgt der Katalogreihenfolge GC, STM, UMS, VRB, PERF. Dass damit di
 - 2.3 Die Praktik als Adressat: Anforderungssubjekt ist die Praktik selbst („Governance und Compliance MUSS …"), nicht eine Rolle oder Person; Konsequenzen für Zuständigkeitszuordnung (Bezug GC.9 Sicherheitsorganisation)
 - 2.4 Das Dokumentenmodell: die über `documentation`-Props geforderten ISMS-Dokumente (u. a. ISMS-Regelwerk, Informationssicherheitsleitlinie, Informationsverbund, Anforderungspaket, Umsetzungsplan, Auditbericht, Managementbericht); 59 der 95 Controls fordern ein zugeordnetes Dokument
 - 2.5 Wie ein Grundschutz++-ISMS in der Praxis anläuft: typische Reihenfolge der ersten Schritte entlang der Controls (GC.1.1 als Ausgangs- und Endpunkt)
+- 2.7 Die fünf Prozessschritte des Standards 300-1 und ihre Zuordnung zu den Praktiken
 
 ### Kapitel 3: Den Katalog lesen – OSCAL-Lesart der Methodik
 
@@ -110,7 +111,7 @@ Jedes Praktik-Kapitel folgt derselben Schablone. Pro Untergruppe: **Anforderungs
 
 ### Kapitel 10: Herkunft und Vergleich – 200-2 und Edition 2023 (historischer Vergleich, explizit gekennzeichnet)
 
-- 10.1 Was aus BSI-Standard 200-2 wurde: Vorgehensweisen Basis-/Standard-/Kern-Absicherung vs. Praktiken-Modell
+- 10.1 Was aus BSI-Standard 200-2 wurde: Vorgehensweisen Basis-/Standard-/Kern-Absicherung vs. Praktiken-Modell; dreigliedrige Zuordnung 200-2-Phasen, 300-1-Prozessschritte, Praktiken
 - 10.2 Begriffsverschiebungen (u. a. Informationsverbund, Anforderungspaket statt Modellierung, Sicherheitsniveau statt Schutzbedarfskategorien-Logik)
 - 10.3 Mapping-Sammlungen der Bibliothek (ISO 27001 → GS++, IT-GS 2023 → GS++) als Migrationshilfe
 - 10.4 Konsolidierte Abweichungen zu 200-2 aus den Praktik-Kapiteln
@@ -131,6 +132,7 @@ Jedes Praktik-Kapitel folgt derselben Schablone. Pro Untergruppe: **Anforderungs
 - Dateibenennung: `NN_kuerzel_vX.Y.md` (z. B. `04_gc_v0.1.md`); dieses Dokument ist `00_gliederung_v0.1.md`
 - Jede normative Aussage trägt eine Control-ID; Zahlen und Prop-Werte werden bei jeder Kapitelerstellung gegen den Katalog geprüft, nie aus dem Gedächtnis übernommen
 - Anhänge A und B werden per Skript aus dem Katalog generiert, nicht von Hand gepflegt
+- Aussagen aus dem Standard 300-1 tragen Kapitel und Seite („Standard 300-1, Kap. 4.1.1 (S. 18)"); wo Standard und Katalog-Build sich widersprechen, steht ein Kasten mit beiden Fassungen und der erwarteten Katalogänderung, Anhang D führt die Stellen als D38 bis D44
 - Vorgeschlagene Schreibreihenfolge: Kapitel 4 (GC) zuerst, weil dort alle Schablonen-Elemente vorkommen und sich die Kapitelvorlage bewähren muss; danach 5 bis 8, dann 9 und 10; Teil I zuletzt, wenn der Stoff steht
 
 ## Offene Punkte zur Abstimmung
